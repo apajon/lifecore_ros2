@@ -1,0 +1,31 @@
+name: Release
+
+on:
+    schedule:
+        - cron: "0 3 * * 1"
+          timezone: "America/Montreal"
+    workflow_dispatch:
+
+permissions:
+    contents: read
+
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        concurrency:
+            group: ${{ github.workflow }}-release-${{ github.ref_name }}
+            cancel-in-progress: false
+
+        permissions:
+            contents: write
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v5
+              with:
+                  fetch-depth: 0
+
+            - name: Run Python Semantic Release
+              uses: python-semantic-release/python-semantic-release@v10.5.3
+              with:
+                  github_token: ${{ secrets.GITHUB_TOKEN }}
