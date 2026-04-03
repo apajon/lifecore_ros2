@@ -12,6 +12,7 @@ authors = [
   { name = "Adrien Pajon", email = "7260230+apajon@users.noreply.github.com" }
 ]
 dependencies = [
+  "numpy>=2.4.4",
   "pydantic>=2.0",
 ]
 
