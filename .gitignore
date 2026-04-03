@@ -16,3 +16,6 @@ log/
 # VSCode / IDE
 .vscode/
 .idea/
+
+# Generated version file (setuptools-scm)
+src/lifecore_ros2/_version.py
