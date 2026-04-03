@@ -9,7 +9,7 @@ description = "A composable lifecycle framework for ROS 2"
 readme = "README.md"
 requires-python = ">=3.12"
 authors = [
-  { name = "Adrien Pajon", email = "adrien.pajon@gmail.com" }
+  { name = "Adrien Pajon", email = "7260230+apajon@users.noreply.github.com" }
 ]
 dependencies = [
   "pydantic>=2.0",
