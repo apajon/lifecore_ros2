@@ -29,6 +29,11 @@ dev = [
   "build>=1.2.2",
 ]
 
+[dependency-groups]
+docs = [
+  "sphinx>=8.0",
+]
+
 [tool.setuptools]
 package-dir = {"" = "src"}
 
@@ -72,3 +77,16 @@ ignore = ["E203", "E501"]
 quote-style = "double"
 indent-style = "space"
 line-ending = "lf"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = [
+  "-p", "no:launch_testing",
+  "-p", "no:launch_pytest",
+  "-p", "no:launch_ros",
+  "-p", "no:ament_copyright",
+  "-p", "no:ament_flake8",
+  "-p", "no:ament_lint",
+  "-p", "no:ament_pep257",
+  "-p", "no:ament_xmllint",
+]
