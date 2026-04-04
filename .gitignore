@@ -19,3 +19,6 @@ log/
 
 # Generated version file (setuptools-scm)
 src/lifecore_ros2/_version.py
+
+# Documentation build artifacts
+docs/_build/
