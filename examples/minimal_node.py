@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-import rclpy
-from rclpy.executors import SingleThreadedExecutor
 from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
 
 from lifecore_ros2.core import ComposedLifecycleNode, LifecycleComponent
@@ -33,6 +31,9 @@ class MinimalNode(ComposedLifecycleNode):
 
 
 def main() -> None:
+    import rclpy
+    from rclpy.executors import SingleThreadedExecutor
+
     rclpy.init(args=["--ros-args", "--log-level", "minimal_lifecore_node:=debug"])
 
     node = MinimalNode()
