@@ -147,9 +147,9 @@ But: prouver que l’architecture marche réellement.
 
 ### À faire
 
-* [ ] créer un exemple `PublisherComponent`
-* [ ] publier périodiquement ou via méthode explicite
-* [ ] démontrer l’échec contrôlé si publication hors activation
+* [x] créer un exemple `PublisherComponent`
+* [x] publier périodiquement ou via méthode explicite
+* [x] démontrer l’échec contrôlé si publication hors activation
 
 ---
 

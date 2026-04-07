@@ -38,7 +38,7 @@ class PeriodicPublisher(PublisherComponent):
         msg = String()
         msg.data = f"hello #{self._counter}"
         self.publish(msg)
-        self.node.get_logger().info(f"[{self.name}] published: {msg.data!r}")
+        self.node.get_logger().info(f"[{self.name}] published on [{self.topic_name}]: {msg.data!r}")
         self._counter += 1
 
 
