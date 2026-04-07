@@ -14,6 +14,7 @@
 
 ## Preferred Commands
 
+- Package manager: `uv` (never use `pip` directly)
 - Format: `ruff format .`
 - Lint: `ruff check .`
 - Type-check: `pyright`
@@ -22,6 +23,12 @@
 - Pre-commit all hooks: `pre-commit run --all-files`
 
 Use these commands for validation after changes that touch code or configuration.
+
+## CI Cost Controls
+
+- Prefer docs validation on pull requests and manual dispatch instead of every push.
+- Keep docs workflow changes path-scoped to documentation-related files.
+- Favor local docs build (`uv run --group docs python -m sphinx -b html docs docs/_build/html`) before pushing.
 
 ## Code Conventions
 
