@@ -94,31 +94,31 @@ src/lifecore_ros2/
 
 ### À faire
 
-* [ ] vérifier que `topic_name`, `msg_type`, `qos_profile` sont bien stockés proprement
-* [ ] vérifier le typage minimal correct
-* [ ] vérifier que la classe reste légère et abstraite conceptuellement
-* [ ] éviter toute logique ROS active dedans
+* [x] vérifier que `topic_name`, `msg_type`, `qos_profile` sont bien stockés proprement
+* [x] vérifier le typage minimal correct
+* [x] vérifier que la classe reste légère et abstraite conceptuellement
+* [x] éviter toute logique ROS active dedans
 
 ## 3.2 `SubscriberComponent`
 
 ### À faire
 
-* [ ] vérifier que la subscription est créée uniquement au `on_configure`
-* [ ] vérifier que les messages sont ignorés tant que le composant n’est pas actif
-* [ ] vérifier que le cleanup détruit bien la subscription
-* [ ] vérifier que `_is_active` est correctement géré sur activate/deactivate/cleanup
-* [ ] vérifier que la méthode abstraite `on_message()` est bien le point d’entrée métier
-* [ ] vérifier qu’aucun message n’est traité hors activation
+* [x] vérifier que la subscription est créée uniquement au `_on_configure`
+* [x] vérifier que les messages sont ignorés tant que le composant n’est pas actif
+* [x] vérifier que le cleanup détruit bien la subscription
+* [x] vérifier que `_is_active` est correctement géré sur activate/deactivate/cleanup
+* [x] vérifier que la méthode abstraite `on_message()` est bien le point d’entrée métier
+* [x] vérifier qu’aucun message n’est traité hors activation
 
 ## 3.3 `PublisherComponent`
 
 ### À faire
 
-* [ ] vérifier que le publisher est créé uniquement au `on_configure`
-* [ ] vérifier que le cleanup détruit bien le publisher
-* [ ] vérifier que `publish()` échoue proprement si non configuré
-* [ ] vérifier que `publish()` échoue proprement si inactif
-* [ ] vérifier que `_is_active` est correctement géré sur activate/deactivate/cleanup
+* [x] vérifier que le publisher est créé uniquement au `_on_configure`
+* [x] vérifier que le cleanup détruit bien le publisher
+* [x] vérifier que `publish()` échoue proprement si non configuré
+* [x] vérifier que `publish()` échoue proprement si inactif
+* [x] vérifier que `_is_active` est correctement géré sur activate/deactivate/cleanup
 
 ---
 
@@ -211,21 +211,21 @@ Note:
 
 ### À faire
 
-* [ ] ajouter une section “What is lifecore_ros2?”
-* [ ] ajouter une section “Design principles”
-* [ ] ajouter une section “Minimal example”
-* [ ] ajouter une section “Current status”
-* [ ] ajouter une section “Roadmap”
+* [x] ajouter une section “What is lifecore_ros2?”
+* [x] ajouter une section “Design principles”
+* [x] ajouter une section “Minimal example”
+* [x] ajouter une section “Current status”
+* [x] ajouter une section “Roadmap”
 
 ## 7.2 Principes à documenter explicitement
 
 ### À écrire
 
-* [ ] ROS2 lifecycle est le centre du design
-* [ ] aucune machine à états parallèle globale
-* [ ] le node orchestre, les components exécutent
-* [ ] les subscriptions peuvent exister avant activation, mais le traitement métier est gate par l’activation
-* [ ] `TopicComponent` est une base commune, pas un mega composant
+* [x] ROS2 lifecycle est le centre du design
+* [x] aucune machine à états parallèle globale
+* [x] le node orchestre, les components exécutent
+* [x] les subscriptions peuvent exister avant activation, mais le traitement métier est gate par l’activation
+* [x] `TopicComponent` est une base commune, pas un mega composant
 
 ---
 
@@ -298,7 +298,7 @@ Note:
 
 * [x] ajouter les tests minimaux
 * [x] nettoyer l'API publique
-* [ ] améliorer le README
+* [x] améliorer le README
 
 ## Priorité 3
 

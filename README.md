@@ -70,8 +70,9 @@ uv run --group docs python -m sphinx -b html docs docs/_build/html
 The repository currently includes:
 - examples/minimal_node.py for a minimal composed lifecycle node with a simple component
 - examples/minimal_subscriber.py for a lifecycle-aware subscriber component example
+- examples/minimal_publisher.py for a lifecycle-aware publisher component example
 
-### Lifecycle Walkthrough (Option 3)
+## Minimal Example
 
 Run the minimal lifecycle node:
 
@@ -98,6 +99,35 @@ What to expect:
 - deactivate gates runtime behavior
 - cleanup releases component resources
 
+### Publisher Walkthrough
+
+Run the publisher example:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+uv run --extra dev python examples/minimal_publisher.py
+```
+
+In another terminal, activate the node and observe published messages:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+ros2 lifecycle set /publisher_demo_node configure
+ros2 lifecycle set /publisher_demo_node activate
+ros2 topic echo /chatter
+```
+
+Then deactivate to stop the flow:
+
+```bash
+ros2 lifecycle set /publisher_demo_node deactivate
+```
+
+What to expect:
+- messages are published only while the node is active
+- deactivation stops publication immediately
+- publication outside activation is guarded by `PublisherComponent.publish()`
+
 ## Documentation
 
 The Sphinx documentation lives under docs/ and currently includes:
@@ -108,6 +138,16 @@ The Sphinx documentation lives under docs/ and currently includes:
 
 ## Current Status
 
-The project is in early development. The core lifecycle primitives and topic-oriented components exist, but test coverage and end-to-end examples are still growing.
+The project is in early development, with a working V0 baseline:
+- core lifecycle primitives and topic-oriented components are implemented
+- minimal node, subscriber, and publisher examples are available
+- a focused pytest suite validates core behavior (19 passing tests)
 
-See TODO.md for the current roadmap.
+## Roadmap
+
+Near-term focus:
+- keep improving runnable examples and ergonomics
+- extend docs with richer usage patterns
+- prepare release/versioning validation tasks
+
+See TODO.md for the full roadmap.
