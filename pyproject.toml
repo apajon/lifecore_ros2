@@ -49,7 +49,7 @@ version_file = "src/lifecore_ros2/_version.py"
 
 [tool.semantic_release]
 version_toml = []
-build_command = "python -m build"
+build_command = "python -m pip install --quiet build && python -m build"
 tag_format = "v{version}"
 commit_parser = "conventional"
 allow_zero_version = true
