@@ -233,11 +233,11 @@ Note:
 
 ## À faire
 
-* [ ] vérifier que `setuptools-scm` génère correctement `_version.py`
-* [ ] vérifier que `python-semantic-release` est cohérent avec le workflow GitHub Action
-* [ ] vérifier que le workflow release ne se déclenche que selon la stratégie retenue
-* [ ] créer le premier tag `v0.0.1` si ce n’est pas déjà fait
-* [ ] vérifier qu’un futur bump automatique produit bien des tags au format `vX.Y.Z`
+* [x] vérifier que `setuptools-scm` génère correctement `_version.py`
+* [x] vérifier que `python-semantic-release` est cohérent avec le workflow GitHub Action
+* [x] vérifier que le workflow release ne se déclenche que selon la stratégie retenue
+* [x] créer le premier tag `v0.0.1` si ce n’est pas déjà fait
+* [x] vérifier qu’un futur bump automatique produit bien des tags au format `vX.Y.Z`
 
 ---
 
