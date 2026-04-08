@@ -128,6 +128,35 @@ What to expect:
 - deactivation stops publication immediately
 - publication outside activation is guarded by `PublisherComponent.publish()`
 
+### Subscriber Walkthrough
+
+Run the subscriber example:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+uv run --extra dev python examples/minimal_subscriber.py
+```
+
+In another terminal, publish before activation (message should be ignored):
+
+```bash
+source /opt/ros/jazzy/setup.bash
+ros2 lifecycle set /demo_node configure
+ros2 topic pub --once /chatter std_msgs/msg/String "{data: 'before activate'}"
+```
+
+Then activate and publish again:
+
+```bash
+ros2 lifecycle set /demo_node activate
+ros2 topic pub --once /chatter std_msgs/msg/String "{data: 'after activate'}"
+```
+
+What to expect:
+- no `Received:` log appears for `before activate`
+- `Received: after activate` appears once active
+- deactivation stops message handling again
+
 ## Documentation
 
 The Sphinx documentation lives under docs/ and currently includes:

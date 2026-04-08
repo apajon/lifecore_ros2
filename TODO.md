@@ -141,7 +141,7 @@ But: prouver que l’architecture marche réellement.
 
 * [x] créer un exemple `SubscriberComponent` avec `std_msgs/msg/String`
 * [x] loguer les messages reçus
-* [ ] démontrer que les messages sont ignorés hors activation
+* [x] démontrer que les messages sont ignorés hors activation
 
 ## 4.3 Exemple publisher concret
 

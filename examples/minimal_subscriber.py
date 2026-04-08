@@ -28,14 +28,14 @@ def main() -> None:
     import rclpy
     from rclpy.executors import SingleThreadedExecutor
 
-    rclpy.init(args=["--ros-args", "--log-level", "minimal_lifecore_node:=debug"])
+    rclpy.init(args=["--ros-args", "--log-level", "demo_node:=debug"])
 
     node = DemoNode()
     executor = SingleThreadedExecutor()
     executor.add_node(node)
 
     try:
-        node.get_logger().info("Minimal lifecycle node ready")
+        node.get_logger().info("Subscriber demo node ready (configure + activate to process /chatter)")
         executor.spin()
     except KeyboardInterrupt:
         pass
