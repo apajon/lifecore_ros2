@@ -2,9 +2,10 @@ from __future__ import annotations
 
 import traceback
 from abc import ABC, abstractmethod
+from collections.abc import Callable
 from functools import wraps
 from logging import getLogger
-from typing import TYPE_CHECKING, Protocol, cast
+from typing import TYPE_CHECKING, Any, Protocol, cast
 
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.managed_entity import ManagedEntity
@@ -12,6 +13,8 @@ from rclpy.lifecycle.node import LifecycleState
 
 if TYPE_CHECKING:
     from .composed_lifecycle_node import ComposedLifecycleNode
+
+_LifecycleHook = Callable[["LifecycleComponent", LifecycleState], TransitionCallbackReturn]
 
 
 class _LoggerLike(Protocol):
@@ -22,16 +25,16 @@ class _LoggerLike(Protocol):
     def error(self, msg: str) -> None: ...
 
 
-def lifecycle_guard_component(strict: bool = True):
+def _lifecycle_guard_component(strict: bool = True) -> Callable[[_LifecycleHook], _LifecycleHook]:
     """Decorator to guard lifecycle component methods.
 
     Args:
-        strict (bool, optional): If True, invalid return values will result in ERROR. Defaults to True.
+        strict: If ``True``, invalid return values will result in ERROR.
     """
 
-    def decorator(method):
+    def decorator(method: _LifecycleHook) -> _LifecycleHook:
         @wraps(method)
-        def wrapper(self, *args, **kwargs):
+        def wrapper(self: LifecycleComponent, state: LifecycleState) -> TransitionCallbackReturn:
             log: _LoggerLike = getLogger(__name__)
 
             if hasattr(self, "get_logger") and callable(self.get_logger):
@@ -43,7 +46,7 @@ def lifecycle_guard_component(strict: bool = True):
 
             if not isinstance(self, LifecycleComponent):
                 msg = (
-                    f"{method.__qualname__} is decorated with lifecycle_guard_component "
+                    f"{method.__qualname__} is decorated with _lifecycle_guard_component "
                     f"but self is {type(self).__name__}, expected LifecycleComponent"
                 )
 
@@ -57,7 +60,7 @@ def lifecycle_guard_component(strict: bool = True):
             try:
                 log.debug(f"[{component_name}.{method_name}] start")
 
-                result = method(self, *args, **kwargs)
+                result = method(self, state)
 
                 valid_returns = (
                     TransitionCallbackReturn.SUCCESS,
@@ -110,13 +113,13 @@ class LifecycleComponent(ManagedEntity, ABC):
             raise RuntimeError(f"Component '{self._name}' is not attached to a node")
         return self._node
 
-    def get_logger(self):
+    def get_logger(self) -> Any:
         return self.node.get_logger()
 
-    def get_parent_name(self):
+    def get_parent_name(self) -> str:
         return self.node.get_name()
 
-    def get_parent_namespace(self):
+    def get_parent_namespace(self) -> str:
         return self.node.get_namespace()
 
     def attach(self, node: ComposedLifecycleNode) -> None:
@@ -134,7 +137,11 @@ class LifecycleComponent(ManagedEntity, ABC):
             )
         self._node = node
 
-    @lifecycle_guard_component()
+    def _detach(self) -> None:
+        """Reset the node reference (internal rollback for failed registration)."""
+        self._node = None
+
+    @_lifecycle_guard_component()
     def on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
         return self._on_configure(state)
 
@@ -143,7 +150,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         self.get_logger().debug(f"[{self.name}] component configure")
         return TransitionCallbackReturn.SUCCESS
 
-    @lifecycle_guard_component()
+    @_lifecycle_guard_component()
     def on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
         return self._on_activate(state)
 
@@ -152,7 +159,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         self.get_logger().debug(f"[{self.name}] component activate")
         return TransitionCallbackReturn.SUCCESS
 
-    @lifecycle_guard_component()
+    @_lifecycle_guard_component()
     def on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
         return self._on_deactivate(state)
 
@@ -161,7 +168,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         self.get_logger().debug(f"[{self.name}] component deactivate")
         return TransitionCallbackReturn.SUCCESS
 
-    @lifecycle_guard_component()
+    @_lifecycle_guard_component()
     def on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
         return self._on_cleanup(state)
 
@@ -170,18 +177,27 @@ class LifecycleComponent(ManagedEntity, ABC):
         self.get_logger().debug(f"[{self.name}] component cleanup")
         return TransitionCallbackReturn.SUCCESS
 
-    @lifecycle_guard_component()
+    def _release_resources(self) -> None:
+        """Release resources managed by this component.
+
+        Called automatically during shutdown, error, and cleanup.
+        Override in subclasses that allocate ROS resources.
+        """
+
+    @_lifecycle_guard_component()
     def on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
         return self._on_shutdown(state)
 
     def _on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
+        self._release_resources()
         self.get_logger().debug(f"[{self.name}] component shutdown")
         return TransitionCallbackReturn.SUCCESS
 
-    @lifecycle_guard_component()
+    @_lifecycle_guard_component()
     def on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
         return self._on_error(state)
 
     def _on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
+        self._release_resources()
         self.get_logger().error(f"[{self.name}] component error")
         return TransitionCallbackReturn.SUCCESS
