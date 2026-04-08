@@ -21,3 +21,12 @@ repos:
     entry: pyright
     language: python
     types: [ python ]
+
+- repo: local
+  hooks:
+  - id: validate-customization-frontmatter
+    name: Validate customization frontmatter
+    entry: python scripts/validate_customization_frontmatter.py
+    language: python
+    additional_dependencies: [ pyyaml ]
+    files: ^\.github\/(agents|prompts|instructions)\/.*\.(agent|prompt|instructions)\.md$

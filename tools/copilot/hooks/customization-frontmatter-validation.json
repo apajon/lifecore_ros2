@@ -1,0 +1,11 @@
+{
+    "hooks": {
+        "UserPromptSubmit": [
+            {
+                "type": "command",
+                "command": "uv run scripts/validate_customization_frontmatter.py --hook-json",
+                "timeout": 20
+            }
+        ]
+    }
+}
