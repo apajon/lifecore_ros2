@@ -310,13 +310,15 @@ dev = [
     { name = "pre-commit" },
     { name = "pyright" },
     { name = "pytest" },
-    { name = "python-semantic-release" },
     { name = "ruff" },
 ]
 
 [package.dev-dependencies]
 docs = [
     { name = "sphinx" },
+]
+release = [
+    { name = "python-semantic-release" },
 ]
 
 [package.metadata]
@@ -327,13 +329,13 @@ requires-dist = [
     { name = "pydantic", specifier = ">=2.0" },
     { name = "pyright", marker = "extra == 'dev'", specifier = ">=1.1.408" },
     { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.0" },
-    { name = "python-semantic-release", marker = "extra == 'dev'", specifier = ">=10.5" },
     { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.11.8" },
 ]
 provides-extras = ["dev"]
 
 [package.metadata.requires-dev]
 docs = [{ name = "sphinx", specifier = ">=8.0" }]
+release = [{ name = "python-semantic-release", specifier = ">=10.5" }]
 
 [[package]]
 name = "markdown-it-py"
