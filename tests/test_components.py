@@ -7,6 +7,7 @@ from unittest.mock import MagicMock
 
 import pytest
 from rclpy.lifecycle.node import LifecycleState
+from rclpy.qos import QoSProfile
 
 from lifecore_ros2.components import PublisherComponent, SubscriberComponent
 from lifecore_ros2.core import ComposedLifecycleNode
@@ -139,3 +140,71 @@ class TestPublisherComponent:
 
         assert not pub.is_active
         assert pub._publisher is None
+
+
+# ---------------------------------------------------------------------------
+# Fix 3 — qos_profile typing coherence
+# ---------------------------------------------------------------------------
+
+
+class TestRegressionQoSTyping:
+    """QoS profile parameter must accept both int and QoSProfile objects."""
+
+    def test_subscriber_accepts_int_qos(self) -> None:
+        # Regression: qos_profile was typed as int only in subclass __init__,
+        # despite TopicComponent accepting QoSProfile | int.
+        # Expected: int value is accepted without error.
+        sub = StubSubscriber()
+        assert sub.qos_profile == 10
+
+    def test_subscriber_accepts_qos_profile_object(self) -> None:
+        # Regression: passing a QoSProfile object raised or was mistyped.
+        # Expected: QoSProfile object is stored correctly.
+        qos = QoSProfile(depth=10)
+        sub = _QoSSubscriber(qos_profile=qos)
+        assert sub.qos_profile is qos
+
+    def test_publisher_accepts_int_qos(self) -> None:
+        # Regression: qos_profile was typed as int only in subclass __init__.
+        # Expected: int value is accepted without error.
+        pub = StubPublisher()
+        assert pub.qos_profile == 10
+
+    def test_publisher_accepts_qos_profile_object(self) -> None:
+        # Regression: passing a QoSProfile object raised or was mistyped.
+        # Expected: QoSProfile object is stored correctly.
+        qos = QoSProfile(depth=10)
+        pub = _QoSPublisher(qos_profile=qos)
+        assert pub.qos_profile is qos
+
+
+# ---------------------------------------------------------------------------
+# Helpers for QoS typing tests
+# ---------------------------------------------------------------------------
+
+
+class _QoSSubscriber(SubscriberComponent):
+    """Subscriber stub that accepts a custom qos_profile."""
+
+    def __init__(self, qos_profile: QoSProfile | int = 10) -> None:
+        super().__init__(
+            name="qos_sub",
+            topic_name="/qos_test",
+            msg_type=MagicMock,
+            qos_profile=qos_profile,
+        )
+
+    def on_message(self, msg: Any) -> None:
+        pass
+
+
+class _QoSPublisher(PublisherComponent):
+    """Publisher stub that accepts a custom qos_profile."""
+
+    def __init__(self, qos_profile: QoSProfile | int = 10) -> None:
+        super().__init__(
+            name="qos_pub",
+            topic_name="/qos_test",
+            msg_type=MagicMock,
+            qos_profile=qos_profile,
+        )
