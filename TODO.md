@@ -263,6 +263,7 @@ Note:
 * [ ] `TimerComponent`
 * [ ] `ServiceComponent`
 * [ ] `ActionComponent`
+* [ ] `ParameterComponent`
 
 ### Binding plus avancé
 

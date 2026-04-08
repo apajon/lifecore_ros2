@@ -170,7 +170,7 @@ The Sphinx documentation lives under docs/ and currently includes:
 The project is in early development, with a working V0 baseline:
 - core lifecycle primitives and topic-oriented components are implemented
 - minimal node, subscriber, and publisher examples are available
-- a focused pytest suite validates core behavior (19 passing tests)
+- a growing pytest suite validates core behavior
 
 ## Roadmap
 

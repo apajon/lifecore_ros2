@@ -28,6 +28,17 @@ It demonstrates:
 - handling incoming messages through on_message
 - using the lifecycle-aware component model instead of embedding subscriber logic directly into the node
 
+Minimal Publisher Component
+---------------------------
+
+examples/minimal_publisher.py defines a PublisherComponent subclass attached to a composed node.
+
+It demonstrates:
+
+- creating a periodic publisher on a topic using a timer
+- gating publication with activation state
+- releasing the timer and publisher during deactivate and cleanup
+
 Reading Examples Safely
 -----------------------
 
