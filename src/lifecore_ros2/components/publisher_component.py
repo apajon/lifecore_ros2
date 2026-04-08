@@ -4,6 +4,7 @@ from typing import Any
 
 from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
 from rclpy.publisher import Publisher
+from rclpy.qos import QoSProfile
 
 from .topic_component import TopicComponent
 
@@ -16,7 +17,7 @@ class PublisherComponent(TopicComponent):
         name: str,
         topic_name: str,
         msg_type: type[Any],
-        qos_profile: int = 10,
+        qos_profile: QoSProfile | int = 10,
     ) -> None:
         super().__init__(
             name=name,
@@ -54,12 +55,7 @@ class PublisherComponent(TopicComponent):
 
     def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
         super()._on_cleanup(state)
-
-        if self._publisher is not None:
-            self.node.destroy_publisher(self._publisher)
-            self._publisher = None
-
-        self._is_active = False
+        self._release_resources()
         return TransitionCallbackReturn.SUCCESS
 
     def publish(self, msg: Any) -> None:
@@ -70,3 +66,9 @@ class PublisherComponent(TopicComponent):
             raise RuntimeError(f"Publisher '{self.name}' is not active")
 
         self._publisher.publish(msg)
+
+    def _release_resources(self) -> None:
+        if self._publisher is not None:
+            self.node.destroy_publisher(self._publisher)
+            self._publisher = None
+        self._is_active = False

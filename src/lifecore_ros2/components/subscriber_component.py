@@ -4,6 +4,7 @@ from abc import abstractmethod
 from typing import Any
 
 from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
+from rclpy.qos import QoSProfile
 from rclpy.subscription import Subscription
 
 from .topic_component import TopicComponent
@@ -21,7 +22,7 @@ class SubscriberComponent(TopicComponent):
         name: str,
         topic_name: str,
         msg_type: type[Any],
-        qos_profile: int = 10,
+        qos_profile: QoSProfile | int = 10,
     ) -> None:
         super().__init__(
             name=name,
@@ -60,12 +61,7 @@ class SubscriberComponent(TopicComponent):
 
     def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
         super()._on_cleanup(state)
-
-        if self._subscription is not None:
-            self.node.destroy_subscription(self._subscription)
-            self._subscription = None
-
-        self._is_active = False
+        self._release_resources()
         return TransitionCallbackReturn.SUCCESS
 
     def _on_message_wrapper(self, msg: Any) -> None:
@@ -77,3 +73,9 @@ class SubscriberComponent(TopicComponent):
     def on_message(self, msg: Any) -> None:
         """Handle an incoming message while the component is active."""
         raise NotImplementedError("on_message must be implemented by SubscriberComponent subclasses")
+
+    def _release_resources(self) -> None:
+        if self._subscription is not None:
+            self.node.destroy_subscription(self._subscription)
+            self._subscription = None
+        self._is_active = False
