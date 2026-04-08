@@ -27,7 +27,7 @@ CUSTOMIZATION_PATTERNS = (
     "tools/copilot/agents/*.agent.md",
     "tools/copilot/orchestrators/*.agent.md",
     "tools/copilot/prompts/*.prompt.md",
-    ".github/instructions/*.instructions.md",
+    "tools/copilot/instructions/*.instructions.md",
 )
 
 
@@ -43,7 +43,7 @@ def _is_customization_file(path: Path) -> bool:
         (normalized.startswith("tools/copilot/agents/") and normalized.endswith(".agent.md"))
         or (normalized.startswith("tools/copilot/orchestrators/") and normalized.endswith(".agent.md"))
         or (normalized.startswith("tools/copilot/prompts/") and normalized.endswith(".prompt.md"))
-        or (normalized.startswith(".github/instructions/") and normalized.endswith(".instructions.md"))
+        or (normalized.startswith("tools/copilot/instructions/") and normalized.endswith(".instructions.md"))
     )
 
 
