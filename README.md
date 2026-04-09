@@ -65,6 +65,43 @@ Build the documentation:
 uv run --group docs python -m sphinx -b html docs docs/_build/html
 ```
 
+## Automatic Versioning Flow
+
+Versioning is automatic and based on Conventional Commits:
+- `fix:` increments patch
+- `feat:` increments minor
+- breaking changes increment major
+
+This repository uses semantic-release with `tag_format = v{version}`.
+
+Preview the next computed version:
+
+```bash
+uv run --group release semantic-release version --print
+```
+
+Run the automatic release flow (version commit + tag):
+
+```bash
+uv run --group release semantic-release version
+```
+
+If VCS release API access is not available (for example missing token), keep versioning and tagging while skipping hosted release creation:
+
+```bash
+uv run --group release semantic-release version --no-vcs-release
+```
+
+Push branch updates and tags:
+
+```bash
+git push origin main --follow-tags
+```
+
+Important:
+- do not create release tags manually when using this flow
+- if a manual tag was created by mistake, delete it and rerun semantic-release
+
 ## Examples
 
 The repository currently includes:
