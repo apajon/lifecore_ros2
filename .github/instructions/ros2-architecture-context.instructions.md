@@ -56,7 +56,12 @@ After any significant architecture decision (new rule, new pattern, contract cha
 - **Project-specific decisions** (lifecore_ros2 patterns, component contracts, orchestration rules): store in wing `lifecore_ros2`.
 - **General ROS 2 knowledge** (lifecycle semantics, ros-control patterns, moveit conventions, etc.): store in wing `ros2`.
 - Use `mcp_mempalace_mempalace_add_drawer` with the appropriate wing and a room from the standard categories (see `ros2/conventions` room for the full list).
-- Before adding, search the target wing + room for semantically similar content. If an existing entry covers 80%+ of the information, enrich it rather than creating a duplicate.
+- Before adding, search the **target wing + room** for semantically similar content. Always scope similarity checks to the target wing + room — never compare globally across all wings. Global comparison leads to false positives and semantic conflicts; scoped search preserves meaning and intent.
+- Use these similarity thresholds as guidance (not strict enforcement):
+  - **≥ 0.86** — near-duplicate. Enrich or merge the existing entry. Do not create a new one.
+  - **≥ 0.55 and < 0.86** — related content. Review manually. Create a new entry only if it represents a distinct rule, contract, or anti-pattern.
+  - **< 0.55** — likely distinct. Creation is acceptable if it meets persistence criteria.
+- Prefer enriching existing entries over creating parallel phrasings. Writing discipline remains the primary deduplication mechanism; thresholds are supportive guidance.
 - Use `mcp_mempalace_mempalace_check_duplicate` as a secondary guard.
 - When the entry type is not obvious from context, tag it: `[type: architecture-rule]`, `[type: component-contract]`, `[type: anti-pattern]`, etc.
 - For entries that may evolve, include freshness metadata: `STATUS: active`, `CREATED: YYYY-MM-DD`.
