@@ -13,5 +13,6 @@ It is intended to grow incrementally as the core lifecycle model and reusable co
    getting_started
    contributing
    architecture
+   mempalace_strategy
    examples
    api

@@ -7,12 +7,14 @@ applyTo: src/lifecore_ros2/**/*.py, examples/**/*.py, tests/**/*.py
 
 ## Context Gathering — Priority Order
 
-Collect architecture context in this order. Stop at the first source that succeeds:
+Collect architecture context in this order. Use all available mempalace sources before falling back to local docs:
 
 1. **mempalace** (if tools are available in the current session):
    - Wing `lifecore_ros2`: project-specific architecture decisions, component contracts, orchestration patterns.
-   - Wing `ROS2`: shared general ROS 2 knowledge (lifecycle, topics, ros_control, MoveIt, nav2, tf2, etc.).
+   - Wing `ros2`: shared general ROS 2 knowledge (lifecycle, topics, ros-control, moveit, nav2, tf2, etc.).
    - Query both wings via `mcp_mempalace_mempalace_search` or `mcp_mempalace_mempalace_kg_query`.
+   - Query the project wing first, then the transverse wing. Merge results.
+   - If a project rule conflicts with a transverse rule, project wins only if explicitly documented as a local override.
 2. **`docs/architecture.rst`**: read the file for layer descriptions and lifecycle design rules.
 3. **`README.md`**, section *Design Principles* or *Architecture*: read for high-level intent.
 4. **Workspace search**: search for `lifecycle`, `managed entity`, `topic component`, `ComposedLifecycleNode`, `LifecycleComponent` to reconstruct context from code.
@@ -52,10 +54,27 @@ After any change that touches lifecycle or component code:
 After any significant architecture decision (new rule, new pattern, contract change, component addition), persist it in mempalace if tools are available:
 
 - **Project-specific decisions** (lifecore_ros2 patterns, component contracts, orchestration rules): store in wing `lifecore_ros2`.
-- **General ROS 2 knowledge** (lifecycle semantics, ros_control patterns, MoveIt conventions, etc.): store in wing `ROS2`.
-- Use `mcp_mempalace_mempalace_add_drawer` with the appropriate wing and a room matching the topic.
-- Before adding, use `mcp_mempalace_mempalace_check_duplicate` to avoid redundant entries.
+- **General ROS 2 knowledge** (lifecycle semantics, ros-control patterns, moveit conventions, etc.): store in wing `ros2`.
+- Use `mcp_mempalace_mempalace_add_drawer` with the appropriate wing and a room from the standard categories (see `ros2/conventions` room for the full list).
+- Before adding, search the target wing + room for semantically similar content. If an existing entry covers 80%+ of the information, enrich it rather than creating a duplicate.
+- Use `mcp_mempalace_mempalace_check_duplicate` as a secondary guard.
+- When the entry type is not obvious from context, tag it: `[type: architecture-rule]`, `[type: component-contract]`, `[type: anti-pattern]`, etc.
+- For entries that may evolve, include freshness metadata: `STATUS: active`, `CREATED: YYYY-MM-DD`.
+- Do not duplicate transverse knowledge in project wings. Reference it: `[see: ros2/lifecycle]`.
 - If mempalace tools are unavailable, skip silently. Do not block the task.
+
+### What to persist
+- Durable architecture decisions
+- Repeatable conventions
+- Important inter-component contracts
+- Confirmed anti-patterns
+- Rules that prevent future regressions
+
+### What NOT to persist
+- Trivial fixes or one-time details
+- Temporary session results
+- Debugging steps
+- Information already in source code docstrings
 
 ## Response Format
 
