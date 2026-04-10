@@ -3,7 +3,7 @@
         "UserPromptSubmit": [
             {
                 "type": "command",
-                "command": "uv run scripts/validate_customization_frontmatter.py --hook-json",
+                "command": "/home/adrienpagon/.local/bin/uv run scripts/validate_customization_frontmatter.py --hook-json",
                 "timeout": 20
             }
         ]
