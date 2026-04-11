@@ -1,0 +1,638 @@
+# TODO for first public release of `lifecore_ros2`
+
+This document defines the concrete work needed before the first public release of `lifecore_ros2`.
+
+The project is intentionally a small, abstract ROS 2 lifecycle composition library. The goal is not to ship a full application framework. The goal is to publish a reliable, understandable, well-positioned core library with a clean public surface and enough examples to make its value obvious.
+
+---
+
+## Release goal
+
+Ship a first public version that clearly communicates:
+
+- this is a serious ROS 2 Jazzy library
+- it solves a real lifecycle composition problem
+- it stays close to native ROS 2 lifecycle semantics
+- it is small, explicit, and predictable
+- it is ready to be adopted experimentally without guessing how it works
+
+---
+
+## Guiding constraints
+
+- keep the core library abstract
+- avoid adding hidden state machines or framework magic
+- keep examples focused and pedagogical
+- include at least one more concrete example, even if it is still small
+- optimize for clarity, stability, and trust over feature count
+
+---
+
+# 1. Release scope and versioning
+
+## 1.1 Freeze the first public scope
+- [ ] Write down exactly what is part of the first public release
+- [ ] Write down what is intentionally excluded for now
+- [ ] Mark any unstable idea as postponed instead of "maybe"
+
+### Why
+Without a hard boundary, the release will drift. Small libraries often get delayed by endless polishing. A clear release scope prevents that and forces a real version to happen.
+
+### Deliverable
+A short section in `README.md` or `ROADMAP.md` with:
+- included in first release
+- intentionally deferred
+- out of scope for the core library
+
+---
+
+## 1.2 Decide the initial version number honestly
+- [ ] Choose between `0.1.0` and `1.0.0`
+- [ ] Document the expected stability level of the public API
+- [ ] Align semantic-release usage with that choice
+
+### Why
+If the abstractions may still move, `0.1.0` is the right signal. If the public classes and extension model are already effectively fixed, then `1.0.0` can make sense. The version must reflect reality, not ambition.
+
+### Recommendation
+Default to `0.1.0` unless you are confident the public API is already stable enough to defend.
+
+---
+
+## 1.3 Define public API stability expectations
+- [ ] Explicitly list which classes are public API
+- [ ] Explicitly mark internal helpers as non-public
+- [ ] State whether subclassing hooks are stable or still evolving
+
+### Why
+For an abstract library, the real API is not just function names. It is also the extension model. If users start relying on internal behavior, future cleanup becomes painful.
+
+---
+
+# 2. Core lifecycle correctness
+
+## 2.1 Formalize lifecycle invariants
+- [ ] Document what `configure` is allowed to allocate
+- [ ] Document what `activate` is allowed to enable
+- [ ] Document what `deactivate` must disable
+- [ ] Document what `cleanup` must release
+- [ ] State clearly that no parallel hidden lifecycle exists
+
+### Why
+This is the heart of the project. The whole value of `lifecore_ros2` depends on being predictable and faithful to native lifecycle semantics.
+
+### Invariants to lock down
+- resources are created during configure
+- runtime behavior is gated by activation
+- deactivation stops runtime behavior without pretending cleanup happened
+- cleanup releases resources cleanly
+- no component introduces a second lifecycle model on the side
+
+---
+
+## 2.2 Test the happy path for each component type
+- [ ] Test `ComposedLifecycleNode` nominal transitions
+- [ ] Test `LifecycleComponent` nominal transition behavior
+- [ ] Test `TopicComponent` resource setup and teardown
+- [ ] Test `PublisherComponent` publish behavior across transitions
+- [ ] Test `SubscriberComponent` callback behavior across transitions
+
+### Why
+The basic paths must be mechanically trustworthy before any public release.
+
+---
+
+## 2.3 Test invalid and edge transitions
+- [ ] Activation before configure is rejected or handled explicitly
+- [ ] Cleanup before configure is handled explicitly
+- [ ] Repeated configure or activate transitions behave predictably
+- [ ] Deactivate without active runtime state behaves predictably
+- [ ] Cleanup after partial initialization behaves safely
+
+### Why
+Infrastructure libraries fail at the edges, not in the README example.
+
+---
+
+## 2.4 Test failure propagation and recovery behavior
+- [ ] Exception in `on_configure`
+- [ ] Exception in `on_activate`
+- [ ] Exception in `on_deactivate`
+- [ ] Exception in `on_cleanup`
+- [ ] One component failing inside a composed node
+- [ ] Partial resource allocation followed by failure
+
+### Why
+Users need confidence that a failing component will not leave the node in a confusing or inconsistent state.
+
+---
+
+## 2.5 Validate publisher and subscriber gating strictly
+- [ ] Confirm publish attempts outside activation are rejected or ignored intentionally
+- [ ] Confirm subscriber callbacks do not process messages while inactive
+- [ ] Confirm behavior resumes correctly after reactivation
+
+### Why
+This is one of the most visible and easiest-to-understand promises of the library. It must be airtight.
+
+---
+
+# 3. Public API and extension model
+
+## 3.1 Review every public class name
+- [ ] Re-evaluate `ComposedLifecycleNode`
+- [ ] Re-evaluate `LifecycleComponent`
+- [ ] Re-evaluate `TopicComponent`
+- [ ] Re-evaluate `PublisherComponent`
+- [ ] Re-evaluate `SubscriberComponent`
+
+### Why
+Names are sticky. Once public, they become part of how people think about the library. This is the best time to challenge them.
+
+### Review criteria
+- precise
+- easy to understand in isolation
+- aligned with long-term design
+- not misleading outside author context
+
+---
+
+## 3.2 Define the responsibility of each public class
+- [ ] Add a short responsibility statement to each class docstring
+- [ ] Clarify what each class owns
+- [ ] Clarify what each class does not own
+- [ ] Clarify expected override points
+
+### Why
+An abstract library becomes usable when its concepts are sharply bounded. Users should not need to reverse-engineer your architecture from source code.
+
+---
+
+## 3.3 Separate public hooks from internal machinery
+- [ ] Mark intended subclass hooks clearly
+- [ ] Mark internal helper methods clearly
+- [ ] Avoid leaking implementation details through accidental public methods
+- [ ] Decide whether protected naming is needed for extension points
+
+### Why
+Users will depend on anything that looks available. If you do not draw the line, they will draw it for you.
+
+---
+
+## 3.4 Tighten type hints and static guarantees
+- [ ] Remove unnecessary `Any`
+- [ ] Check all public signatures
+- [ ] Validate optional values and nullability
+- [ ] Ensure pyright reflects intended contracts
+
+### Why
+For a Python infrastructure library, type hints are part of the API. Good type information lowers adoption friction and catches architectural drift early.
+
+---
+
+## 3.5 Define a coherent error policy
+- [ ] Decide when to raise exceptions
+- [ ] Decide when to log and ignore
+- [ ] Decide when to signal lifecycle failure explicitly
+- [ ] Make error behavior consistent across components
+
+### Why
+Users can tolerate strict behavior. They cannot tolerate inconsistent behavior.
+
+---
+
+# 4. Documentation quality
+
+## 4.1 Rewrite the README as a landing page
+- [ ] Open with a one-sentence positioning statement
+- [ ] Add a short "why this exists" section
+- [ ] Explain the problem before listing the classes
+- [ ] Show the value before the architecture
+- [ ] Keep quickstart short and frictionless
+
+### Why
+A good README does not just document the project. It sells the mental model in under a minute.
+
+### Target structure
+1. title
+2. one-sentence positioning
+3. why this exists
+4. what the library provides
+5. design principles
+6. quickstart
+7. minimal example
+8. public API overview
+9. current limitations
+10. documentation links
+11. companion example repo link later
+
+---
+
+## 4.2 Add a strong "why this exists" section
+- [ ] State the lifecycle pain points this library addresses
+- [ ] Explain what boilerplate or ambiguity it removes
+- [ ] Explain what it does not try to abstract away
+
+### Why
+People adopt libraries to solve pains, not to admire architecture.
+
+### Pain points worth naming
+- lifecycle logic gets scattered
+- ROS resource setup and teardown are easy to make inconsistent
+- runtime gating is often hand-rolled badly
+- reusable lifecycle-aware building blocks are awkward in raw rclpy
+
+---
+
+## 4.3 Add a clear "non-goals" section
+- [ ] No hidden parallel lifecycle model
+- [ ] No full application framework
+- [ ] No replacement of native ROS 2 lifecycle semantics
+- [ ] No magic orchestration outside explicit component composition
+
+### Why
+This protects the project from misinterpretation and sets the tone immediately.
+
+---
+
+## 4.4 Strengthen architecture documentation
+- [ ] Document node-component relationships clearly
+- [ ] Document the transition sequence clearly
+- [ ] Document topic resource lifecycle clearly
+- [ ] Add simple diagrams if useful
+
+### Why
+A conceptual library needs lower cognitive load, not more prose.
+
+---
+
+## 4.5 Add recommended patterns and anti-patterns
+- [ ] Recommended: allocate ROS resources during configure
+- [ ] Recommended: gate behavior through activation
+- [ ] Recommended: keep hooks deterministic
+- [ ] Anti-pattern: create hidden runtime states disconnected from lifecycle
+- [ ] Anti-pattern: treat deactivate like cleanup
+- [ ] Anti-pattern: put heavy business logic inside lifecycle transition hooks
+
+### Why
+This is where the project starts teaching good ROS 2 lifecycle design, not just exposing helpers.
+
+---
+
+## 4.6 Add a "mental migration from raw rclpy" section
+- [ ] Show a small before/after comparison
+- [ ] Explain how composition improves structure
+- [ ] Explain what remains unchanged from native lifecycle semantics
+
+### Why
+It lowers the adoption barrier and makes the benefit concrete.
+
+---
+
+# 5. Examples
+
+## 5.1 Clean up the existing minimal examples
+- [ ] Make each example short
+- [ ] Ensure each example demonstrates one idea only
+- [ ] Add a short explanation at the top of each example
+- [ ] Keep the expected behavior obvious
+
+### Why
+If examples are abstract, they must be extremely legible. Otherwise they feel like internal tests, not teaching tools.
+
+---
+
+## 5.2 Add one more concrete example
+- [ ] Create a small but recognizably real example
+- [ ] Keep it generic enough to stay inside the library repo
+- [ ] Make the value visible through lifecycle transitions
+- [ ] Avoid turning it into a domain-heavy application demo
+
+### Why
+You were right to keep the library abstract. But the repo still needs one example that feels closer to a real use case.
+
+### Good example candidates
+- a lifecycle-aware command processing node
+- a lifecycle-gated telemetry publisher
+- a small controller loop that only runs while active
+- a node that subscribes to input only when activated and ignores messages otherwise
+
+### Recommendation
+Use a simple example that shows:
+- setup on configure
+- behavior enabled on activate
+- behavior stopped on deactivate
+- resources released on cleanup
+
+That is enough. It does not need to be a big demo.
+
+---
+
+## 5.3 Add one multi-component example
+- [ ] Compose at least two or three components together
+- [ ] Show how composition is better than isolated examples
+- [ ] Keep the behavior easy to observe
+
+### Why
+This is likely closer to the real value of the library than separate minimal publisher/subscriber snippets.
+
+---
+
+## 5.4 Make expected outputs explicit
+- [ ] Document what users should observe in logs
+- [ ] Document what should happen before activation
+- [ ] Document what should happen after deactivation
+- [ ] Document what should disappear after cleanup
+
+### Why
+Examples become much easier to trust when the expected outcome is precise.
+
+---
+
+## 5.5 Prepare companion examples repository structure
+- [ ] Decide on the name, for example `lifecore_ros2_examples`
+- [ ] Outline future example categories
+- [ ] Add a placeholder reference in docs if useful
+- [ ] Plan at least one concrete follow-up repository example
+
+### Why
+Even if not published on day one, the ecosystem should already have a direction.
+
+---
+
+# 6. Developer experience and project structure
+
+## 6.1 Validate installation from scratch
+- [ ] Test clone on a clean machine or clean environment
+- [ ] Source ROS 2 Jazzy
+- [ ] Run `uv sync --extra dev`
+- [ ] Run `uv run --extra dev pytest`
+- [ ] Run `uv run --extra dev python examples/...`
+- [ ] Build docs from scratch
+
+### Why
+A library that only works on the author's machine is dead on arrival.
+
+---
+
+## 6.2 Review `pyproject.toml`
+- [ ] Check project metadata
+- [ ] Check extras and dependency groups
+- [ ] Check package description
+- [ ] Check version exposure
+- [ ] Check tooling sections
+- [ ] Check Python version declaration
+
+### Why
+This file is part of the public face of the project.
+
+---
+
+## 6.3 Add an explicit license
+- [ ] Choose license
+- [ ] Add `LICENSE`
+- [ ] Mention it in `README.md`
+- [ ] Ensure it matches intended adoption goals
+
+### Why
+Without a license, many serious users and companies will not touch the code.
+
+### Recommended options
+- BSD-3-Clause
+- Apache-2.0
+
+---
+
+## 6.4 Add `CONTRIBUTING.md`
+- [ ] Document setup steps
+- [ ] Document validation commands
+- [ ] Document style expectations
+- [ ] Document commit conventions
+- [ ] Document how to report bugs or discuss design
+
+### Why
+It signals maturity and reduces friction the first time someone wants to interact seriously with the repo.
+
+---
+
+## 6.5 Add issue templates
+- [ ] Bug report template
+- [ ] Feature request template
+- [ ] Question or design discussion template
+
+### Why
+The first external feedback should be structured, not chaotic.
+
+---
+
+## 6.6 Add or finalize CI
+- [ ] Run ruff check
+- [ ] Run ruff format check
+- [ ] Run pyright
+- [ ] Run pytest
+- [ ] Optionally build docs
+- [ ] Ensure badges or status are visible if desired
+
+### Why
+For a small infrastructure library, CI is a trust multiplier.
+
+---
+
+## 6.7 Validate semantic-release flow end to end
+- [ ] Verify computed version behavior
+- [ ] Verify tag generation
+- [ ] Verify `--no-vcs-release` path
+- [ ] Verify conventional commit assumptions
+- [ ] Avoid first release surprises
+
+### Why
+Release automation is only useful if it has been proven before launch day.
+
+---
+
+# 7. Release assets and public positioning
+
+## 7.1 Prepare the first changelog entry
+- [ ] State what the first release provides
+- [ ] State what it intentionally does not provide yet
+- [ ] State the supported ROS and Python baseline
+- [ ] State known limitations if any
+
+### Why
+The first release note sets expectations for everyone who sees the project.
+
+---
+
+## 7.2 Define one canonical positioning sentence
+- [ ] Write one short sentence that can be reused everywhere
+- [ ] Put it in the README
+- [ ] Reuse it in docs and release notes
+
+### Why
+You need one stable line that explains the project immediately.
+
+### Example direction
+`lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy that helps build reusable lifecycle-aware nodes without adding a hidden state machine on top of ROS 2.`
+
+---
+
+## 7.3 Prepare one visual asset
+- [ ] Record a short terminal session or GIF
+- [ ] Show lifecycle transitions and observable behavior
+- [ ] Keep it short and clean
+- [ ] Use it in the README or release post if it looks good
+
+### Why
+Even a small abstract library benefits massively from one compact proof of behavior.
+
+---
+
+## 7.4 Draft launch messages before release
+- [ ] GitHub release text
+- [ ] LinkedIn post
+- [ ] ROS discourse or Reddit post if you choose to do that
+- [ ] A short direct message for relevant contacts if needed
+
+### Why
+The worst time to write launch messaging is after a long stabilization push.
+
+---
+
+## 7.5 Add a short FAQ
+- [ ] Why not just use raw ROS 2 lifecycle directly?
+- [ ] How is this different from introducing a custom state machine?
+- [ ] Why components?
+- [ ] What stays in this repo versus an application repo?
+- [ ] Is the API stable yet?
+
+### Why
+A small FAQ absorbs predictable objections fast.
+
+---
+
+# 8. Post-release planning
+
+## 8.1 Decide what feedback to watch first
+- [ ] Installation friction
+- [ ] Example clarity
+- [ ] Misunderstood API boundaries
+- [ ] Missing docs
+- [ ] Real lifecycle edge-case bugs
+
+### Why
+The first public users will show whether the library is confusing, not just whether it is correct.
+
+---
+
+## 8.2 Define early non-expansion rules
+- [ ] Refuse feature creep into a full app framework
+- [ ] Refuse unrelated abstractions too early
+- [ ] Refuse support claims beyond what is actually tested
+- [ ] Refuse adding complexity just because it seems general
+
+### Why
+A clean library can get ruined quickly by premature generalization.
+
+---
+
+## 8.3 Plan the first companion examples repo
+- [ ] Create a first outline
+- [ ] Add one realistic example later
+- [ ] Keep the main repo abstract and clean
+- [ ] Let companion repos carry more applied patterns
+
+### Why
+That gives you the right separation between core library and application-oriented demonstrations.
+
+---
+
+# 9. Priority order
+
+## Must be done before public release
+- [ ] freeze first release scope
+- [ ] decide versioning strategy
+- [ ] lock lifecycle invariants
+- [ ] cover nominal and edge-case tests
+- [ ] clean public API boundaries
+- [ ] rewrite README around the problem solved
+- [ ] add at least one more concrete example
+- [ ] validate installation from scratch
+- [ ] add license
+- [ ] finalize CI
+- [ ] validate release flow
+
+## Should be done before or very soon after release
+- [ ] add anti-patterns and recommended patterns docs
+- [ ] add FAQ
+- [ ] add changelog and launch assets
+- [ ] prepare companion examples repo
+- [ ] add visual demo asset
+
+## Can happen shortly after first release
+- [ ] richer diagrams
+- [ ] broader example ecosystem
+- [ ] more advanced docs
+- [ ] more polished outreach
+
+---
+
+# 10. Recommended execution over the next 2 weeks
+
+## Phase 1: lock the core
+- [ ] freeze release scope
+- [ ] choose `0.1.0` or `1.0.0`
+- [ ] finalize public class names
+- [ ] finalize extension points
+- [ ] define lifecycle invariants
+- [ ] finish edge-case tests
+- [ ] confirm error policy
+- [ ] clean type hints
+
+## Phase 2: make the project understandable
+- [ ] rewrite README
+- [ ] improve architecture docs
+- [ ] add non-goals
+- [ ] add patterns and anti-patterns
+- [ ] clean minimal examples
+- [ ] add one more concrete example
+- [ ] add one multi-component example
+
+## Phase 3: make the project publishable
+- [ ] validate install from scratch
+- [ ] review `pyproject.toml`
+- [ ] add license
+- [ ] add contributing and issue templates
+- [ ] finalize CI
+- [ ] validate semantic-release
+- [ ] prepare first changelog
+- [ ] prepare launch text
+
+---
+
+# 11. Short version
+
+If time gets tight, the highest-value work is this:
+
+- [ ] freeze the public API
+- [ ] harden lifecycle tests
+- [ ] add one more concrete example
+- [ ] rewrite the README around the problem solved
+- [ ] validate clean installation
+- [ ] add license and CI
+- [ ] release honestly as `0.1.0` if stability is still settling
+
+---
+
+# 12. Final release check
+
+Do not publish until all of the following are true:
+
+- [ ] the public API is clearly defined
+- [ ] lifecycle behavior is tested beyond the happy path
+- [ ] one new example makes the value more concrete
+- [ ] README explains why the library exists in under a minute
+- [ ] install and examples work from a clean environment
+- [ ] the project has a license
+- [ ] CI passes reliably
+- [ ] the release process has been rehearsed
+- [ ] the published version number matches the real stability level
