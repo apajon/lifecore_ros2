@@ -60,9 +60,9 @@ Default to `0.1.0` unless you are confident the public API is already stable eno
 ---
 
 ## 1.3 Define public API stability expectations
-- [ ] Explicitly list which classes are public API
-- [ ] Explicitly mark internal helpers as non-public
-- [ ] State whether subclassing hooks are stable or still evolving
+- [x] Explicitly list which classes are public API
+- [x] Explicitly mark internal helpers as non-public
+- [x] State whether subclassing hooks are stable or still evolving
 
 ### Why
 For an abstract library, the real API is not just function names. It is also the extension model. If users start relying on internal behavior, future cleanup becomes painful.

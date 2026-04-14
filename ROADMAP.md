@@ -56,6 +56,58 @@
 
 ---
 
+## Public API and extension model
+
+### Public API — exported symbols
+
+The following symbols are exported from `lifecore_ros2` and form the public API:
+
+| Symbol | Kind | Role |
+|---|---|---|
+| `ComposedLifecycleNode` | class | Orchestrates components as native managed entities |
+| `LifecycleComponent` | abstract class | Base for all lifecycle-aware components |
+| `TopicComponent` | abstract class | Base for topic-oriented components |
+| `PublisherComponent` | concrete class | Lifecycle-gated ROS publisher |
+| `SubscriberComponent` | abstract class | Lifecycle-gated ROS subscriber |
+| `when_active` | decorator | Guards a method to the active state |
+
+### Intended subclassing hooks
+
+These `_on_*` methods are the intended extension points. They are `abstractmethod` where enforcement is required; otherwise they have a safe default:
+
+| Hook | Where | Abstract | Notes |
+|---|---|---|---|
+| `_on_configure(state)` | `LifecycleComponent` and subclasses | yes | Allocate ROS resources here |
+| `_on_activate(state)` | `LifecycleComponent` and subclasses | yes | Enable runtime behavior |
+| `_on_deactivate(state)` | `LifecycleComponent` and subclasses | yes | Disable runtime behavior |
+| `_on_cleanup(state)` | `LifecycleComponent` and subclasses | yes | Release resources (calls `_release_resources`) |
+| `_on_shutdown(state)` | `LifecycleComponent` | no | Calls `_release_resources`; override if needed |
+| `_on_error(state)` | `LifecycleComponent` | no | Calls `_release_resources`; override if needed |
+| `_release_resources()` | `LifecycleComponent` and subclasses | yes | Release all allocated ROS resources |
+| `on_message(msg)` | `SubscriberComponent` | yes | Handle incoming messages while active |
+
+**Do not override** the native `on_configure`, `on_activate`, `on_deactivate`, `on_cleanup`, `on_shutdown`, `on_error` methods directly. These are owned by ROS 2 `ManagedEntity` and delegate to the `_on_*` hooks after applying the lifecycle guard.
+
+### Internal helpers — not part of the public API
+
+The following are internal and subject to change without notice:
+
+- `_lifecycle_guard_component` — internal decorator wrapping lifecycle hooks with error handling
+- `_LoggerLike` — internal protocol for logger duck-typing
+- `_LifecycleHook` — internal type alias
+- `_SENTINEL` — internal sentinel value for `when_active`
+- `_detach()` on `LifecycleComponent` — internal rollback used by `add_component` on registration failure
+- `attach()` on `LifecycleComponent` — called by `ComposedLifecycleNode.add_component()`; users should not call it directly
+
+### Stability statement
+
+All public API symbols are in the `0.x` series and carry an **experimental** stability level:
+- The class hierarchy and hook names are considered stable in intent and will not change without a minor version bump and a changelog entry.
+- The `_on_*` hook signatures (`state: LifecycleState`) are stable and will not change before `1.0.0` without a `BREAKING CHANGE` commit.
+- Internal helpers (`_`-prefixed or not exported) may change in any release.
+
+---
+
 ## Versioning strategy
 
 The project uses [Conventional Commits](https://www.conventionalcommits.org/) and [python-semantic-release](https://python-semantic-release.readthedocs.io/).
