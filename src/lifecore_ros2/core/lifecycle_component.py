@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from collections.abc import Callable
 from functools import wraps
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Protocol, cast
+from typing import TYPE_CHECKING, Any, Protocol, cast, overload
 
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.managed_entity import ManagedEntity
@@ -89,6 +89,61 @@ def _lifecycle_guard_component(strict: bool = True) -> Callable[[_LifecycleHook]
     return decorator
 
 
+_SENTINEL = object()
+
+
+@overload
+def when_active[F: Callable[..., Any]](wrapped: F, /) -> F: ...
+
+
+@overload
+def when_active[F: Callable[..., Any]](*, when_not_active: Callable[[], Any] | None = ...) -> Callable[[F], F]: ...
+
+
+def when_active[F: Callable[..., Any]](
+    wrapped: F | None = None,
+    /,
+    *,
+    when_not_active: Callable[[], Any] | object = _SENTINEL,
+) -> F | Callable[[F], F]:
+    """Gate a method so it only executes when the component is active.
+
+    Default behavior raises ``RuntimeError``.  Pass a callable to
+    ``when_not_active`` to customise, or ``None`` for a silent no-op.
+
+    Usage::
+
+        @when_active
+        def publish(self, msg): ...
+
+        @when_active(when_not_active=None)
+        def _on_message_wrapper(self, msg): ...
+
+        @when_active(when_not_active=lambda: logger.warning("dropped"))
+        def do_something(self): ...
+    """
+
+    def _default_raise(self: LifecycleComponent) -> None:
+        raise RuntimeError(f"Component '{self.name}' is not active")
+
+    def decorator(fn: F) -> F:
+        @wraps(fn)
+        def wrapper(self: LifecycleComponent, *args: Any, **kwargs: Any) -> Any:
+            if not self._is_active:
+                if when_not_active is _SENTINEL:
+                    _default_raise(self)
+                elif when_not_active is not None:
+                    cast(Callable[[], Any], when_not_active)()
+                return None
+            return fn(self, *args, **kwargs)
+
+        return cast(F, wrapper)
+
+    if wrapped is not None:
+        return decorator(wrapped)
+    return decorator
+
+
 class LifecycleComponent(ManagedEntity, ABC):
     """Base class for lifecycle-aware components attached to a composed node.
 
@@ -102,10 +157,16 @@ class LifecycleComponent(ManagedEntity, ABC):
         super().__init__()
         self._name: str = name
         self._node: ComposedLifecycleNode | None = None
+        self._is_active: bool = False
 
     @property
     def name(self) -> str:
         return self._name
+
+    @property
+    def is_active(self) -> bool:
+        """Whether the component is in the active state."""
+        return self._is_active
 
     @property
     def node(self) -> ComposedLifecycleNode:
@@ -156,6 +217,7 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     @abstractmethod
     def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        self._is_active = True
         self.get_logger().debug(f"[{self.name}] component activate")
         return TransitionCallbackReturn.SUCCESS
 
@@ -165,6 +227,7 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     @abstractmethod
     def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        self._is_active = False
         self.get_logger().debug(f"[{self.name}] component deactivate")
         return TransitionCallbackReturn.SUCCESS
 
@@ -177,12 +240,14 @@ class LifecycleComponent(ManagedEntity, ABC):
         self.get_logger().debug(f"[{self.name}] component cleanup")
         return TransitionCallbackReturn.SUCCESS
 
+    @abstractmethod
     def _release_resources(self) -> None:
         """Release resources managed by this component.
 
         Called automatically during shutdown, error, and cleanup.
         Override in subclasses that allocate ROS resources.
         """
+        self._is_active = False
 
     @_lifecycle_guard_component()
     def on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
