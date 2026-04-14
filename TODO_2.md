@@ -47,9 +47,9 @@ A short section in `README.md` or `ROADMAP.md` with:
 ---
 
 ## 1.2 Decide the initial version number honestly
-- [ ] Choose between `0.1.0` and `1.0.0`
-- [ ] Document the expected stability level of the public API
-- [ ] Align semantic-release usage with that choice
+- [x] Choose between `0.1.0` and `1.0.0`
+- [x] Document the expected stability level of the public API
+- [x] Align semantic-release usage with that choice
 
 ### Why
 If the abstractions may still move, `0.1.0` is the right signal. If the public classes and extension model are already effectively fixed, then `1.0.0` can make sense. The version must reflect reality, not ambition.

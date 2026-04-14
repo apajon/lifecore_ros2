@@ -1,6 +1,6 @@
 # Roadmap
 
-## First public release — v0.1.0
+## First public release — 0.x series
 
 ### Included
 
@@ -47,9 +47,24 @@
 
 ---
 
-## After v0.1.0
+## After first public release
 
 - Multi-component and concrete real-world examples
 - Companion examples repository
 - Richer architecture diagrams and migration guide
 - Extended edge-case test coverage
+
+---
+
+## Versioning strategy
+
+The project uses [Conventional Commits](https://www.conventionalcommits.org/) and [python-semantic-release](https://python-semantic-release.readthedocs.io/).
+
+**Current status:** version is in the `0.x` series. This signals that the public API is not yet considered stable. Experimental adoption is welcome; breaking changes may still occur on minor bumps.
+
+**Rules in effect:**
+- `allow_zero_version = true` — semantic-release stays in `0.x` and does not force a `1.0.0` bump automatically
+- `major_on_zero = false` — breaking changes (BREAKING CHANGE commits) increment the minor version while in `0.x`, not the major
+- `tag_format = "v{version}"` — tags are prefixed with `v`
+
+**Promotion to `1.0.0`:** will happen only when the public API (`ComposedLifecycleNode`, `LifecycleComponent`, `TopicComponent`, `PublisherComponent`, `SubscriberComponent`, `when_active`) is considered stable enough to defend. This requires a deliberate decision and a `BREAKING CHANGE` or manual bump — it will not happen automatically.
