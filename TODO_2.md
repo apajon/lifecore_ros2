@@ -31,9 +31,9 @@ Ship a first public version that clearly communicates:
 # 1. Release scope and versioning
 
 ## 1.1 Freeze the first public scope
-- [ ] Write down exactly what is part of the first public release
-- [ ] Write down what is intentionally excluded for now
-- [ ] Mark any unstable idea as postponed instead of "maybe"
+- [x] Write down exactly what is part of the first public release
+- [x] Write down what is intentionally excluded for now
+- [x] Mark any unstable idea as postponed instead of "maybe"
 
 ### Why
 Without a hard boundary, the release will drift. Small libraries often get delayed by endless polishing. A clear release scope prevents that and forces a real version to happen.
