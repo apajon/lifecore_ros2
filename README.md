@@ -2,6 +2,17 @@
 
 A composable lifecycle framework for ROS 2.
 
+## Overview
+
+lifecore_ros2 is a composable lifecycle framework for ROS 2 designed to structure complex robotic systems using clear and deterministic component boundaries.
+
+It focuses on enforcing correct lifecycle semantics, reducing hidden state, and improving system-level behavior in real-world robotic applications.
+
+The goal is to make ROS 2 systems:
+- more predictable
+- easier to reason about
+- easier to scale
+
 ## What It Is
 
 lifecore_ros2 provides a small set of lifecycle-aware building blocks for composing ROS 2 Jazzy nodes from reusable components.
