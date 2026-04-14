@@ -38,9 +38,14 @@ lifecycle             Lifecycle state machine, transitions, hooks
 components            Component contracts, interfaces, extension points
 managers              Orchestrators, controller managers, lifecycle managers
 communication         Topics, services, actions patterns
+debugging             Debug patterns and diagnostic commands/tooling tips
+observability         Logging, metrics, tracing, and runtime signals
 configuration         URDF, SRDF, xacro, YAML, parameters
 contracts             Inter-component agreements, API guarantees
 anti-patterns         Confirmed mistakes to avoid
+incident-log          Production/integration incidents: diagnosis, root cause,
+                      fix applied, and prevention rule
+failure-modes         Known failure modes with trigger conditions and recovery
 validation            Testing rules, CI gates, quality checks
 migration-notes       Breaking changes, version upgrades, deprecations
 conventions           Naming, style, tooling conventions
