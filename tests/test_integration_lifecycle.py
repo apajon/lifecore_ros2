@@ -55,6 +55,9 @@ class RecordingComponent(LifecycleComponent):
             return TransitionCallbackReturn.FAILURE
         return TransitionCallbackReturn.SUCCESS
 
+    def _release_resources(self) -> None:
+        super()._release_resources()
+
 
 # ---------------------------------------------------------------------------
 # Fixtures

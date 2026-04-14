@@ -26,6 +26,9 @@ class DummyComponent(LifecycleComponent):
     def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
         return TransitionCallbackReturn.SUCCESS
 
+    def _release_resources(self) -> None:
+        super()._release_resources()
+
 
 # ---------------------------------------------------------------------------
 # Fixtures

@@ -43,6 +43,9 @@ class RecordingComponent(LifecycleComponent):
             return TransitionCallbackReturn.FAILURE
         return TransitionCallbackReturn.SUCCESS
 
+    def _release_resources(self) -> None:
+        super()._release_resources()
+
 
 class CrashingComponent(LifecycleComponent):
     """Component that raises during _on_configure to test the guard."""
@@ -58,6 +61,9 @@ class CrashingComponent(LifecycleComponent):
 
     def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
         return TransitionCallbackReturn.SUCCESS
+
+    def _release_resources(self) -> None:
+        super()._release_resources()
 
 
 # ---------------------------------------------------------------------------

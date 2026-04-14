@@ -103,8 +103,8 @@ class TestSubscriberComponent:
 class TestPublisherComponent:
     def test_publish_before_configure_raises(self) -> None:
         pub = StubPublisher()
-        # not attached to any node, not configured
-        with pytest.raises(RuntimeError, match="not configured"):
+        # not attached to any node, not configured, not active
+        with pytest.raises(RuntimeError, match="not active"):
             pub.publish(MagicMock())
 
     def test_publish_when_inactive_raises(self, node: ComposedLifecycleNode) -> None:
