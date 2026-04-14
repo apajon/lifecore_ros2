@@ -1,7 +1,7 @@
 ---
 name: "Pytest Focused Runner"
 description: "Use when running focused pytest commands for touched ROS 2 Python code and summarizing behavior-level failures. Use for targeted test execution by package, file, symbol, or lifecycle behavior — not for designing new tests."
-tools: [read, search, execute, todo]
+tools: [read, search, execute, todo, mempalace/*]
 user-invocable: false
 agents: []
 argument-hint: "Provide the package, file, symbol, or behavior to test."

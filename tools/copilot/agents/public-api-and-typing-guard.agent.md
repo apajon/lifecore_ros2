@@ -1,7 +1,7 @@
 ---
 name: "Public API and Typing Guard"
 description: "Use when reviewing __init__.py exports, __all__, public imports, API breakage risk, and public typing consistency for this Python ROS 2 package before release, refactors, module moves, or public surface changes."
-tools: [read, search, execute, todo]
+tools: [read, search, execute, todo, mempalace/*]
 user-invocable: false
 agents: []
 argument-hint: "Describe the module or public API surface to inspect."

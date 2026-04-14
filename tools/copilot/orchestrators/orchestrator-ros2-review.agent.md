@@ -1,7 +1,7 @@
 ---
 name: "Orchestrator | ROS 2 Review Commander"
 description: "Use when you want a serious, review-only audit of ROS 2 Jazzy Python lifecycle code by coordinating lifecycle behavior review, API/typing review, quality-gate validation, and optional README onboarding checks."
-tools: [read, search, todo, agent]
+tools: [read, search, todo, agent, mempalace/*]
 user-invocable: true
 agents:
   [

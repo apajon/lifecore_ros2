@@ -1,7 +1,7 @@
 ---
 name: "Lifecycle Test Designer"
 description: "Use when designing focused pytest coverage for ROS 2 lifecycle transitions, managed entities, and activation gating."
-tools: [read, search, edit, execute, todo]
+tools: [read, search, edit, execute, todo, mempalace/*]
 user-invocable: false
 agents: []
 argument-hint: "Describe the lifecycle class, transition, or regression risk to cover."

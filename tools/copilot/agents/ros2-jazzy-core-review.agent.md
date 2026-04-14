@@ -1,7 +1,7 @@
 ---
 name: "ROS 2 Jazzy Core Review"
 description: "Use when reviewing ROS 2 Jazzy core or component code, auditing lifecycle transitions, checking ComposedLifecycleNode, LifecycleComponent, publisher/subscriber/topic components, or doing review-only analysis without editing files."
-tools: [read, search, execute, todo]
+tools: [read, search, execute, todo, mempalace/*]
 user-invocable: true
 agents: []
 argument-hint: "Describe the code to review, the expected lifecycle behavior, and whether tests or lint should be run."

@@ -1,7 +1,7 @@
 ---
 name: "ROS 2 Jazzy Core Components"
 description: "Use when working on ROS 2 Jazzy, rclpy lifecycle nodes, ComposedLifecycleNode, LifecycleComponent, publisher/subscriber/topic components, lifecycle transitions, managed entities, or component-based ROS 2 architecture in this repository."
-tools: [read, search, edit, execute, todo]
+tools: [read, search, edit, execute, todo, mempalace/*]
 user-invocable: true
 agents: []
 argument-hint: "Describe the ROS 2 Jazzy core/components task, expected lifecycle behavior, and any validation you want."

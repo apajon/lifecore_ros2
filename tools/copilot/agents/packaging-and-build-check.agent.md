@@ -1,7 +1,7 @@
 ---
 name: "Packaging and Build Check"
 description: "Use when validating pyproject metadata, setuptools-scm version generation, wheel/sdist buildability, packaging regressions, or semantic-release auto-versioning flow for this Python ROS 2 package."
-tools: [read, search, execute, todo, gitkraken/*]
+tools: [read, search, execute, todo, gitkraken/*, mempalace/*]
 user-invocable: true
 agents: []
 argument-hint: "Describe the packaging or build concern to validate."

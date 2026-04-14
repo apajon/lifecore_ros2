@@ -1,7 +1,7 @@
 ---
 name: "Python Sphinx Documentation"
 description: "Use when creating or improving project documentation for this Python repository with Sphinx, autodoc, autosummary, and Napoleon. Prefer this over Doxygen for package docs, API docs, guides, examples, and architecture notes unless the user explicitly asks for Doxygen."
-tools: [read, search, edit, execute, todo]
+tools: [read, search, edit, execute, todo, mempalace/*]
 user-invocable: true
 agents: []
 argument-hint: "Describe the documentation goal: API reference, getting started guide, architecture docs, examples, or Sphinx setup."

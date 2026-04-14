@@ -1,7 +1,7 @@
 ---
 name: "ROS 2 Docstrings Google Napoleon"
 description: "Use when completing or normalizing Python docstrings in Google style for Napoleon, especially for ROS 2 Jazzy core, lifecycle classes, components, public APIs, methods, properties, examples, and type-annotated Python modules."
-tools: [read, search, edit, execute, todo]
+tools: [read, search, edit, execute, todo, mempalace/*]
 user-invocable: true
 agents: []
 argument-hint: "Describe which files or APIs need docstrings, and whether to document only public surfaces or also internal hooks."

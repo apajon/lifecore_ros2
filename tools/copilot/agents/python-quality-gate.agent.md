@@ -1,7 +1,7 @@
 ---
 name: "Python Quality Gate"
 description: "Use when running Ruff, Pyright, or pytest for this repository, validating code quality, checking lint failures, type errors, or test failures, or summarizing CI gate results. Use for full-repo checks, touched-file checks, or targeted package validation."
-tools: [read, search, execute, todo]
+tools: [read, search, execute, todo, mempalace/*]
 user-invocable: true
 agents: []
 argument-hint: "Describe the scope to validate: full repo, touched files, or a specific package."
