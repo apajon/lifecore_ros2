@@ -7,6 +7,8 @@ from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
 from rclpy.qos import QoSProfile
 from rclpy.subscription import Subscription
 
+from lifecore_ros2.core.lifecycle_component import when_active
+
 from .topic_component import TopicComponent
 
 
@@ -31,11 +33,6 @@ class SubscriberComponent(TopicComponent):
             qos_profile=qos_profile,
         )
         self._subscription: Subscription | None = None
-        self._is_active = False
-
-    @property
-    def is_active(self) -> bool:
-        return self._is_active
 
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
         super()._on_configure(state)
@@ -50,23 +47,18 @@ class SubscriberComponent(TopicComponent):
         return TransitionCallbackReturn.SUCCESS
 
     def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_activate(state)
-        self._is_active = True
-        return TransitionCallbackReturn.SUCCESS
+        return super()._on_activate(state)
 
     def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_deactivate(state)
-        self._is_active = False
-        return TransitionCallbackReturn.SUCCESS
+        return super()._on_deactivate(state)
 
     def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
         super()._on_cleanup(state)
         self._release_resources()
         return TransitionCallbackReturn.SUCCESS
 
+    @when_active(when_not_active=None)
     def _on_message_wrapper(self, msg: Any) -> None:
-        if not self._is_active:
-            return
         self.on_message(msg)
 
     @abstractmethod
@@ -78,4 +70,4 @@ class SubscriberComponent(TopicComponent):
         if self._subscription is not None:
             self.node.destroy_subscription(self._subscription)
             self._subscription = None
-        self._is_active = False
+        super()._release_resources()
