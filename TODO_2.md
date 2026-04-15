@@ -72,11 +72,11 @@ For an abstract library, the real API is not just function names. It is also the
 # 2. Core lifecycle correctness
 
 ## 2.1 Formalize lifecycle invariants
-- [ ] Document what `configure` is allowed to allocate
-- [ ] Document what `activate` is allowed to enable
-- [ ] Document what `deactivate` must disable
-- [ ] Document what `cleanup` must release
-- [ ] State clearly that no parallel hidden lifecycle exists
+- [x] Document what `configure` is allowed to allocate
+- [x] Document what `activate` is allowed to enable
+- [x] Document what `deactivate` must disable
+- [x] Document what `cleanup` must release
+- [x] State clearly that no parallel hidden lifecycle exists
 
 ### Why
 This is the heart of the project. The whole value of `lifecore_ros2` depends on being predictable and faithful to native lifecycle semantics.
@@ -91,11 +91,11 @@ This is the heart of the project. The whole value of `lifecore_ros2` depends on 
 ---
 
 ## 2.2 Test the happy path for each component type
-- [ ] Test `ComposedLifecycleNode` nominal transitions
-- [ ] Test `LifecycleComponent` nominal transition behavior
-- [ ] Test `TopicComponent` resource setup and teardown
-- [ ] Test `PublisherComponent` publish behavior across transitions
-- [ ] Test `SubscriberComponent` callback behavior across transitions
+- [x] Test `ComposedLifecycleNode` nominal transitions
+- [x] Test `LifecycleComponent` nominal transition behavior
+- [x] Test `TopicComponent` resource setup and teardown
+- [x] Test `PublisherComponent` publish behavior across transitions
+- [x] Test `SubscriberComponent` callback behavior across transitions
 
 ### Why
 The basic paths must be mechanically trustworthy before any public release.
@@ -103,11 +103,11 @@ The basic paths must be mechanically trustworthy before any public release.
 ---
 
 ## 2.3 Test invalid and edge transitions
-- [ ] Activation before configure is rejected or handled explicitly
-- [ ] Cleanup before configure is handled explicitly
-- [ ] Repeated configure or activate transitions behave predictably
-- [ ] Deactivate without active runtime state behaves predictably
-- [ ] Cleanup after partial initialization behaves safely
+- [x] Activation before configure is rejected or handled explicitly
+- [x] Cleanup before configure is handled explicitly
+- [x] Repeated configure or activate transitions behave predictably
+- [x] Deactivate without active runtime state behaves predictably
+- [x] Cleanup after partial initialization behaves safely
 
 ### Why
 Infrastructure libraries fail at the edges, not in the README example.
@@ -115,12 +115,12 @@ Infrastructure libraries fail at the edges, not in the README example.
 ---
 
 ## 2.4 Test failure propagation and recovery behavior
-- [ ] Exception in `on_configure`
-- [ ] Exception in `on_activate`
-- [ ] Exception in `on_deactivate`
-- [ ] Exception in `on_cleanup`
-- [ ] One component failing inside a composed node
-- [ ] Partial resource allocation followed by failure
+- [x] Exception in `on_configure`
+- [x] Exception in `on_activate`
+- [x] Exception in `on_deactivate`
+- [x] Exception in `on_cleanup`
+- [x] One component failing inside a composed node
+- [x] Partial resource allocation followed by failure
 
 ### Why
 Users need confidence that a failing component will not leave the node in a confusing or inconsistent state.
@@ -128,9 +128,9 @@ Users need confidence that a failing component will not leave the node in a conf
 ---
 
 ## 2.5 Validate publisher and subscriber gating strictly
-- [ ] Confirm publish attempts outside activation are rejected or ignored intentionally
-- [ ] Confirm subscriber callbacks do not process messages while inactive
-- [ ] Confirm behavior resumes correctly after reactivation
+- [x] Confirm publish attempts outside activation are rejected or ignored intentionally
+- [x] Confirm subscriber callbacks do not process messages while inactive
+- [x] Confirm behavior resumes correctly after reactivation
 
 ### Why
 This is one of the most visible and easiest-to-understand promises of the library. It must be airtight.
