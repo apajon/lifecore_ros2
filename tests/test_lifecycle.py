@@ -124,3 +124,79 @@ class TestLifecycleHooks:
         comp.on_cleanup(DUMMY_STATE)
 
         assert comp.calls == ["configure", "activate", "deactivate", "activate", "deactivate", "cleanup"]
+
+
+# ---------------------------------------------------------------------------
+# Instrumented component that delegates to super() for _is_active tracking
+# ---------------------------------------------------------------------------
+
+
+class ActivationTrackingComponent(LifecycleComponent):
+    """Component that calls super() on all hooks to properly toggle _is_active."""
+
+    def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+        return super()._on_configure(state)
+
+    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        return super()._on_activate(state)
+
+    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        return super()._on_deactivate(state)
+
+    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
+        return super()._on_cleanup(state)
+
+    def _release_resources(self) -> None:
+        super()._release_resources()
+
+
+# ---------------------------------------------------------------------------
+# 5.2b  _is_active flag at each transition step
+# ---------------------------------------------------------------------------
+
+
+class TestLifecycleComponentActivation:
+    def test_is_active_false_after_configure(self, node: ComposedLifecycleNode) -> None:
+        comp = ActivationTrackingComponent("track")
+        node.add_component(comp)
+
+        comp.on_configure(DUMMY_STATE)
+        assert comp.is_active is False
+
+    def test_is_active_true_after_activate(self, node: ComposedLifecycleNode) -> None:
+        comp = ActivationTrackingComponent("track")
+        node.add_component(comp)
+
+        comp.on_configure(DUMMY_STATE)
+        comp.on_activate(DUMMY_STATE)
+        assert comp.is_active is True
+
+    def test_is_active_false_after_deactivate(self, node: ComposedLifecycleNode) -> None:
+        comp = ActivationTrackingComponent("track")
+        node.add_component(comp)
+
+        comp.on_configure(DUMMY_STATE)
+        comp.on_activate(DUMMY_STATE)
+        comp.on_deactivate(DUMMY_STATE)
+        assert comp.is_active is False
+
+    def test_is_active_false_after_cleanup(self, node: ComposedLifecycleNode) -> None:
+        comp = ActivationTrackingComponent("track")
+        node.add_component(comp)
+
+        comp.on_configure(DUMMY_STATE)
+        comp.on_activate(DUMMY_STATE)
+        comp.on_deactivate(DUMMY_STATE)
+        comp.on_cleanup(DUMMY_STATE)
+        assert comp.is_active is False
+
+    def test_release_resources_clears_is_active(self, node: ComposedLifecycleNode) -> None:
+        comp = ActivationTrackingComponent("track")
+        node.add_component(comp)
+
+        comp.on_configure(DUMMY_STATE)
+        comp.on_activate(DUMMY_STATE)
+        assert comp.is_active is True
+
+        comp._release_resources()
+        assert comp.is_active is False

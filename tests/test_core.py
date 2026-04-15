@@ -34,6 +34,8 @@ class DummyComponent(LifecycleComponent):
 # Fixtures
 # ---------------------------------------------------------------------------
 
+DUMMY_STATE = LifecycleState(state_id=0, label="test")
+
 
 @pytest.fixture()
 def node():
@@ -90,3 +92,29 @@ class TestComponentAttach:
 
         with pytest.raises(RuntimeError, match="already attached"):
             comp.attach(node)
+
+
+# ---------------------------------------------------------------------------
+# 5.1b  Nominal ComposedLifecycleNode behavior
+# ---------------------------------------------------------------------------
+
+
+class TestComposedNodeNominal:
+    def test_components_property_returns_registered(self, node: ComposedLifecycleNode) -> None:
+        comp_a = DummyComponent("alpha")
+        comp_b = DummyComponent("beta")
+        node.add_component(comp_a)
+        node.add_component(comp_b)
+
+        result = node.components
+        assert len(result) == 2
+        assert comp_a in result
+        assert comp_b in result
+
+    def test_registration_open_initially(self, node: ComposedLifecycleNode) -> None:
+        assert node._registration_open is True
+
+    def test_registration_closed_after_configure(self, node: ComposedLifecycleNode) -> None:
+        node.add_component(DummyComponent("pre"))
+        node.on_configure(DUMMY_STATE)
+        assert node._registration_open is False
