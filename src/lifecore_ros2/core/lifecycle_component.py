@@ -148,9 +148,24 @@ class LifecycleComponent(ManagedEntity, ABC):
     """Base class for lifecycle-aware components attached to a composed node.
 
     This class intentionally stays small:
-    - it is a ManagedEntity, so ROS 2 lifecycle callbacks are native
-    - it knows its parent node
-    - it does not introduce any parallel state machine
+
+    - it is a ``ManagedEntity``, so ROS 2 lifecycle callbacks are driven natively by the parent node.
+    - it knows its parent node via ``node``.
+    - it exposes explicit lifecycle hooks (``_on_configure``, ``_on_activate``, etc.).
+    - it does **not** introduce any parallel hidden state machine.
+
+    Lifecycle invariants:
+
+    - **configure**: allocate ROS resources (publishers, subscriptions). Do not enable runtime behavior.
+    - **activate**: enable runtime behavior. Must call ``super()._on_activate(state)`` to set ``_is_active``.
+    - **deactivate**: disable runtime behavior. Must call ``super()._on_deactivate(state)`` to clear ``_is_active``. Does not release resources.
+    - **cleanup**: release all ROS resources. Must call ``_release_resources()``. Does not affect activation state directly.
+    - **shutdown / error**: automatic call to ``_release_resources()``. No override needed for most subclasses.
+
+    Note:
+        ``_is_active`` is managed exclusively in the abstract bodies of ``_on_activate`` and
+        ``_on_deactivate``. Subclasses must call ``super()`` in both hooks for gating to work
+        correctly. Methods decorated with ``@when_active`` rely on this flag.
     """
 
     def __init__(self, name: str) -> None:
@@ -208,6 +223,16 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     @abstractmethod
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Configure the component.
+
+        Allowed: allocate ROS resources (create publishers, subscriptions, timers).
+        Not allowed: enable runtime behavior or set ``_is_active``.
+
+        Subclasses must call ``super()._on_configure(state)`` first.
+
+        Returns:
+            TransitionCallbackReturn: SUCCESS, FAILURE, or ERROR.
+        """
         self.get_logger().debug(f"[{self.name}] component configure")
         return TransitionCallbackReturn.SUCCESS
 
@@ -217,6 +242,17 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     @abstractmethod
     def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Activate the component.
+
+        Allowed: enable runtime behavior (start publishing, accept messages).
+        Not allowed: allocate new ROS resources.
+
+        Subclasses must call ``super()._on_activate(state)`` to set ``_is_active = True``.
+        Methods decorated with ``@when_active`` will not execute until this flag is set.
+
+        Returns:
+            TransitionCallbackReturn: SUCCESS, FAILURE, or ERROR.
+        """
         self._is_active = True
         self.get_logger().debug(f"[{self.name}] component activate")
         return TransitionCallbackReturn.SUCCESS
@@ -227,6 +263,17 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     @abstractmethod
     def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Deactivate the component.
+
+        Required: disable runtime behavior.
+        Not allowed: release ROS resources (that is cleanup's responsibility).
+
+        Subclasses must call ``super()._on_deactivate(state)`` to clear ``_is_active = False``.
+        After this call, all ``@when_active``-gated methods stop executing.
+
+        Returns:
+            TransitionCallbackReturn: SUCCESS, FAILURE, or ERROR.
+        """
         self._is_active = False
         self.get_logger().debug(f"[{self.name}] component deactivate")
         return TransitionCallbackReturn.SUCCESS
@@ -237,15 +284,28 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     @abstractmethod
     def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Clean up the component.
+
+        Required: release all ROS resources allocated during configure.
+        Subclasses must call ``_release_resources()`` explicitly — the base body does not do it.
+
+        Subclasses should call ``super()._on_cleanup(state)`` first, then ``_release_resources()``.
+
+        Returns:
+            TransitionCallbackReturn: SUCCESS, FAILURE, or ERROR.
+        """
         self.get_logger().debug(f"[{self.name}] component cleanup")
         return TransitionCallbackReturn.SUCCESS
 
     @abstractmethod
     def _release_resources(self) -> None:
-        """Release resources managed by this component.
+        """Release all ROS resources allocated by this component.
 
-        Called automatically during shutdown, error, and cleanup.
-        Override in subclasses that allocate ROS resources.
+        Called automatically by ``_on_shutdown`` and ``_on_error``.
+        Must be called explicitly by subclasses inside ``_on_cleanup``.
+
+        Subclasses must call ``super()._release_resources()`` last to ensure
+        ``_is_active`` is cleared.
         """
         self._is_active = False
 

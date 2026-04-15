@@ -34,3 +34,41 @@ Topic-oriented components should follow these rules:
 - release ROS resources during cleanup
 
 This keeps runtime behavior explicit and consistent with ROS 2 lifecycle expectations.
+
+Lifecycle Invariants
+--------------------
+
+The following invariants are binding for all ``LifecycleComponent`` subclasses.
+
+**configure**
+  Allocate ROS resources: create publishers, subscriptions, timers.
+  Do not enable runtime behavior. Do not set ``_is_active``.
+
+**activate**
+  Enable runtime behavior. Start publishing, accept message callbacks.
+  Must call ``super()._on_activate(state)`` to set ``_is_active = True``.
+  Methods decorated with ``@when_active`` will not execute until this flag is set.
+  Do not allocate new ROS resources here.
+
+**deactivate**
+  Disable runtime behavior. Stop publishing, ignore incoming messages.
+  Must call ``super()._on_deactivate(state)`` to clear ``_is_active``.
+  Do not release ROS resources here — that is cleanup's responsibility.
+
+**cleanup**
+  Release all ROS resources allocated during configure.
+  ``_release_resources()`` is not called automatically by the base class.
+  Subclasses must call it explicitly inside their ``_on_cleanup`` override.
+
+**shutdown / error**
+  ``_release_resources()`` is called automatically. No override needed for most subclasses.
+
+**No parallel lifecycle**
+  No component may introduce an internal state machine that diverges from or shadows
+  the node lifecycle. ``_is_active`` is the only lifecycle-adjacent flag. It is
+  managed exclusively through ``_on_activate`` and ``_on_deactivate`` super() calls.
+
+**Activation gating**
+  ``PublisherComponent.publish()`` raises ``RuntimeError`` when inactive.
+  ``SubscriberComponent`` silently drops incoming messages when inactive.
+  Both behaviors are intentional and consistent with explicit activation semantics.
