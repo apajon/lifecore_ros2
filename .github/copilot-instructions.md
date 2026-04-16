@@ -38,6 +38,24 @@ Use these commands for validation after changes that touch code or configuration
 - Keep lifecycle behavior explicit and minimal; avoid hidden state machines.
 - Avoid broad architectural refactors unless explicitly requested.
 
+## Engineering Principles
+
+- Write code for humans first; optimize readability and maintainability over terseness.
+- Prefer clarity over cleverness.
+- Keep functions small and focused on one responsibility.
+- Name things with intent; avoid vague or overloaded names.
+- Avoid duplication where it improves maintainability, but do not force abstraction too early.
+- Follow this order of priorities: make it work -> make it right -> make it fast.
+- Comments should explain why a decision exists, not restate what the code does.
+- Delete dead code aggressively instead of leaving unused branches or legacy leftovers.
+- Keep configuration out of code when values vary by environment or deployment.
+
+## Reliability and Operations
+
+- Log what matters for diagnosis and operations; avoid noisy or redundant logging.
+- Build features with observability in mind (actionable logs, measurable behavior, debuggable flows).
+- Keep dependencies minimal and up to date; prefer fewer, well-maintained libraries.
+
 ## Architecture Map
 
 - Core lifecycle primitives: `src/lifecore_ros2/core/`
