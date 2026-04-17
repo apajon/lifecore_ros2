@@ -1,7 +1,7 @@
 """Core runtime primitives for lifecore_ros2."""
 
-from .composed_lifecycle_node import LifecycleComponentNode
 from .lifecycle_component import LifecycleComponent, when_active
+from .lifecycle_component_node import LifecycleComponentNode
 
 __all__ = [
     "LifecycleComponentNode",

@@ -12,7 +12,7 @@ from rclpy.lifecycle.managed_entity import ManagedEntity
 from rclpy.lifecycle.node import LifecycleState
 
 if TYPE_CHECKING:
-    from .composed_lifecycle_node import LifecycleComponentNode
+    from .lifecycle_component_node import LifecycleComponentNode
 
 _LifecycleHook = Callable[["LifecycleComponent", LifecycleState], TransitionCallbackReturn]
 
