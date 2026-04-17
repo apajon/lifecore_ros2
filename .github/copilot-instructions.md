@@ -64,6 +64,14 @@ Use these commands for validation after changes that touch code or configuration
 - Examples: `examples/`
 - Roadmap and validation checklist: `TODO.md`
 
+## Naming Conventions
+
+- `LifecycleComponent` is the core managed-entity abstraction. Do not rename it to `LifecycleCoreComponent`, `LifecycleAbstractComponent`, or similar variants.
+- `LifecycleComponentNode` is the framework base node. Do not use `ComposedLifecycleNode`, `ComponentLifecycleNode`, or compound variants.
+- Application nodes must use business/domain names: `class CameraNode(LifecycleComponentNode)`, not `class LifecycleCameraNode`.
+- Framework-provided components follow the pattern `Lifecycle<Capability>Component` (e.g. `LifecyclePublisherComponent`).
+- See `.github/instructions/naming-conventions.instructions.md` for the full rule set.
+
 ## Lifecycle Design Rules
 
 - `LifecycleComponentNode` owns and drives registered `LifecycleComponent` instances as managed entities.
