@@ -15,18 +15,17 @@ class LifecyclePublisherComponent(TopicComponent):
     """Publisher component that creates and gates a ROS publisher through the lifecycle.
 
     Owns:
-        - The ROS ``Publisher`` instance (created on configure, released on cleanup).
+        - The ROS ``Publisher`` instance (created on configure, released automatically on cleanup).
         - ``publish``: the activation-gated publication method.
 
     Does not own:
         - The topic name, message type, or QoS profile (inherited from ``TopicComponent``).
         - The node or lifecycle state transitions.
+        - Activation state management (handled by the framework).
 
     Override points:
         - This class is usable directly without subclassing.
         - Override ``_on_configure`` for additional setup; call ``super()._on_configure(state)`` first.
-        - Override ``_on_cleanup`` for additional teardown; call ``super()._on_cleanup(state)``
-          and ``_release_resources()`` explicitly.
         - Do not override ``publish``.
     """
 
@@ -46,25 +45,12 @@ class LifecyclePublisherComponent(TopicComponent):
         self._publisher: Publisher | None = None
 
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_configure(state)
-
         self._publisher = self.node.create_publisher(
             self.msg_type,
             self.topic_name,
             self.qos_profile,
         )
         self.node.get_logger().info(f"[{self.name}] publisher created on '{self.topic_name}'")
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_activate(state)
-
-    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_deactivate(state)
-
-    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_cleanup(state)
-        self._release_resources()
         return TransitionCallbackReturn.SUCCESS
 
     @when_active

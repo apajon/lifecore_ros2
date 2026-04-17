@@ -15,22 +15,22 @@ from .topic_component import TopicComponent
 class LifecycleSubscriberComponent(TopicComponent):
     """Subscriber component that creates a ROS subscription and gates message delivery through the lifecycle.
 
-    The subscription is created on configure and destroyed on cleanup. Incoming messages are
-    silently dropped while the component is inactive, and routed to ``on_message`` when active.
+    The subscription is created on configure and destroyed automatically on cleanup.
+    Incoming messages are silently dropped while the component is inactive,
+    and routed to ``on_message`` when active.
 
     Owns:
-        - The ROS ``Subscription`` instance (created on configure, released on cleanup).
+        - The ROS ``Subscription`` instance (created on configure, released automatically on cleanup).
         - ``_on_message_wrapper``: the ``@when_active``-gated internal callback.
 
     Does not own:
         - The topic name, message type, or QoS profile (inherited from ``TopicComponent``).
         - The node or lifecycle state transitions.
+        - Activation state management (handled by the framework).
 
     Override points:
         - ``on_message``: implement to handle incoming messages. Called only while active.
         - Override ``_on_configure`` only for additional setup; call ``super()._on_configure(state)`` first.
-        - Override ``_on_cleanup`` only for additional teardown; call ``super()._on_cleanup(state)``
-          and ``_release_resources()`` explicitly.
         - Do not override ``_on_message_wrapper``.
     """
 
@@ -50,8 +50,6 @@ class LifecycleSubscriberComponent(TopicComponent):
         self._subscription: Subscription | None = None
 
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_configure(state)
-
         self._subscription = self.node.create_subscription(
             self.msg_type,
             self.topic_name,
@@ -59,17 +57,6 @@ class LifecycleSubscriberComponent(TopicComponent):
             self.qos_profile,
         )
         self.node.get_logger().info(f"[{self.name}] subscription created on '{self.topic_name}'")
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_activate(state)
-
-    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_deactivate(state)
-
-    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_cleanup(state)
-        self._release_resources()
         return TransitionCallbackReturn.SUCCESS
 
     @when_active(when_not_active=None)
