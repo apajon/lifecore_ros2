@@ -41,7 +41,7 @@ Fill each cell with ✓ (covered), ✗ (missing), or ≈ (partial). Use this mat
 ## Working Rules
 - Use the coverage matrix to identify the highest-risk gaps first.
 - For each uncovered transition, write a unit test (single component hook → expected return value) before an integration test.
-- Integration tests verify that `ComposedLifecycleNode` propagates a transition to all registered `LifecycleComponent` instances and aggregates the result correctly.
+- Integration tests verify that `LifecycleComponentNode` propagates a transition to all registered `LifecycleComponent` instances and aggregates the result correctly.
 - Failure path tests: assert `FAILURE` is returned and no side effects leak to other components.
 - Exception guard tests: assert that an unhandled exception inside a hook returns `ERROR` without crashing the node.
 - Activation gating tests: assert that runtime behavior (message processing, publication) is blocked while the component is inactive and allowed when active.

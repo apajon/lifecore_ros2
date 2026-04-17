@@ -1,6 +1,6 @@
 ---
 name: "ROS 2 Examples Keeper"
-description: "Use when maintaining, adding, updating, or reviewing minimal runnable examples for lifecycle transitions, component patterns, publisher/subscriber behavior, or ComposedLifecycleNode usage in examples/. Use for demonstrating LifecycleComponent hooks, activation gating, configure/cleanup patterns, or any new core behavior that needs an example."
+description: "Use when maintaining, adding, updating, or reviewing minimal runnable examples for lifecycle transitions, component patterns, publisher/subscriber behavior, or LifecycleComponentNode usage in examples/. Use for demonstrating LifecycleComponent hooks, activation gating, configure/cleanup patterns, or any new core behavior that needs an example."
 tools: [read, search, edit, execute, todo, mempalace/*]
 user-invocable: false
 agents: []

@@ -66,7 +66,7 @@ Use these commands for validation after changes that touch code or configuration
 
 ## Lifecycle Design Rules
 
-- `ComposedLifecycleNode` orchestrates components and registers them as managed entities.
+- `LifecycleComponentNode` owns and drives registered `LifecycleComponent` instances as managed entities.
 - `LifecycleComponent` subclasses should keep `_on_*` hooks focused and deterministic.
 - For topic components:
   - create ROS pub/sub resources in `_on_configure`

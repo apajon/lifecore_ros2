@@ -1,6 +1,6 @@
 ---
 name: "ROS 2 Jazzy Core Components"
-description: "Use when working on ROS 2 Jazzy, rclpy lifecycle nodes, ComposedLifecycleNode, LifecycleComponent, publisher/subscriber/topic components, lifecycle transitions, managed entities, or component-based ROS 2 architecture in this repository."
+description: "Use when working on ROS 2 Jazzy, rclpy lifecycle nodes, LifecycleComponentNode, LifecycleComponent, publisher/subscriber/topic components, lifecycle transitions, managed entities, or component-based ROS 2 architecture in this repository."
 tools: [read, search, edit, execute, todo, mempalace/*]
 user-invocable: true
 agents: []
@@ -24,9 +24,9 @@ You are responsible for these areas:
 
 ## Working Rules
 - Start by reading the relevant files in core and components before proposing changes.
-- Treat ComposedLifecycleNode as the orchestrator that registers components as managed entities.
+- Treat LifecycleComponentNode as the orchestrator that owns and drives registered LifecycleComponent instances.
 - Keep LifecycleComponent hooks explicit, deterministic, and focused.
-- For PublisherComponent and SubscriberComponent, ensure configured resources, activation gating, and cleanup behavior stay coherent.
+- For LifecyclePublisherComponent and LifecycleSubscriberComponent, ensure configured resources, activation gating, and cleanup behavior stay coherent.
 - If lifecycle semantics change, update or add a minimal example under examples/.
 - Prefer focused pytest coverage when behavior changes are testable.
 

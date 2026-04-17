@@ -17,7 +17,7 @@ Collect architecture context in this order. Use all available mempalace sources 
    - If a project rule conflicts with a transverse rule, project wins only if explicitly documented as a local override.
 2. **`docs/architecture.rst`**: read the file for layer descriptions and lifecycle design rules.
 3. **`README.md`**, section *Design Principles* or *Architecture*: read for high-level intent.
-4. **Workspace search**: search for `lifecycle`, `managed entity`, `topic component`, `ComposedLifecycleNode`, `LifecycleComponent` to reconstruct context from code.
+4. **Workspace search**: search for `lifecycle`, `managed entity`, `topic component`, `LifecycleComponentNode`, `LifecycleComponent` to reconstruct context from code.
 
 ## Robustness Rules
 
@@ -32,7 +32,7 @@ These rules are mandatory for any change touching lifecycle or component code:
 1. **Preserve native ROS 2 lifecycle semantics.** Do not override, bypass, or reinterpret the standard lifecycle state machine from `rclpy`.
 2. **No hidden parallel state machines.** Components must not introduce internal states that diverge from or shadow the node lifecycle.
 3. **Two-layer architecture.** Maintain the separation between:
-   - `core/` — lifecycle primitives (`ComposedLifecycleNode`, `LifecycleComponent`, managed entity registration).
+   - `core/` — lifecycle primitives (`LifecycleComponentNode`, `LifecycleComponent`, managed entity registration).
    - `components/` — topic-oriented components (publishers, subscribers) built on the core.
 4. **Topic component lifecycle pattern:**
    - **Configure** — create ROS publishers/subscriptions.
