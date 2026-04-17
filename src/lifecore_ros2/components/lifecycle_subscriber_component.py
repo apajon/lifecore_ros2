@@ -13,10 +13,25 @@ from .topic_component import TopicComponent
 
 
 class LifecycleSubscriberComponent(TopicComponent):
-    """Lifecycle-aware subscriber component.
+    """Subscriber component that creates a ROS subscription and gates message delivery through the lifecycle.
 
-    The ROS subscription is created during configure.
-    Incoming messages are ignored while the component is inactive.
+    The subscription is created on configure and destroyed on cleanup. Incoming messages are
+    silently dropped while the component is inactive, and routed to ``on_message`` when active.
+
+    Owns:
+        - The ROS ``Subscription`` instance (created on configure, released on cleanup).
+        - ``_on_message_wrapper``: the ``@when_active``-gated internal callback.
+
+    Does not own:
+        - The topic name, message type, or QoS profile (inherited from ``TopicComponent``).
+        - The node or lifecycle state transitions.
+
+    Override points:
+        - ``on_message``: implement to handle incoming messages. Called only while active.
+        - Override ``_on_configure`` only for additional setup; call ``super()._on_configure(state)`` first.
+        - Override ``_on_cleanup`` only for additional teardown; call ``super()._on_cleanup(state)``
+          and ``_release_resources()`` explicitly.
+        - Do not override ``_on_message_wrapper``.
     """
 
     def __init__(

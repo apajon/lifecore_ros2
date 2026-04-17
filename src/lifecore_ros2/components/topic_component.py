@@ -9,7 +9,20 @@ from lifecore_ros2.core.lifecycle_component import LifecycleComponent
 
 
 class TopicComponent(LifecycleComponent, ABC):
-    """Base class for lifecycle-aware topic components."""
+    """Intermediate base class for lifecycle-aware topic publisher and subscriber components.
+
+    Owns:
+        - The topic name, message type, and QoS profile shared by publisher and subscriber subclasses.
+
+    Does not own:
+        - The ROS publisher or subscription objects — those belong to concrete subclasses.
+        - Any lifecycle hook logic — concrete subclasses provide ``_on_configure``,
+          ``_on_cleanup``, and ``_release_resources`` implementations.
+
+    Override points:
+        - Not intended to be subclassed directly outside the framework.
+        - Subclass ``LifecyclePublisherComponent`` or ``LifecycleSubscriberComponent`` instead.
+    """
 
     def __init__(
         self,

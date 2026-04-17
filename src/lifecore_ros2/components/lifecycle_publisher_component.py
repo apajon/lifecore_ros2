@@ -12,7 +12,23 @@ from .topic_component import TopicComponent
 
 
 class LifecyclePublisherComponent(TopicComponent):
-    """Lifecycle-aware publisher component."""
+    """Publisher component that creates and gates a ROS publisher through the lifecycle.
+
+    Owns:
+        - The ROS ``Publisher`` instance (created on configure, released on cleanup).
+        - ``publish``: the activation-gated publication method.
+
+    Does not own:
+        - The topic name, message type, or QoS profile (inherited from ``TopicComponent``).
+        - The node or lifecycle state transitions.
+
+    Override points:
+        - This class is usable directly without subclassing.
+        - Override ``_on_configure`` for additional setup; call ``super()._on_configure(state)`` first.
+        - Override ``_on_cleanup`` for additional teardown; call ``super()._on_cleanup(state)``
+          and ``_release_resources()`` explicitly.
+        - Do not override ``publish``.
+    """
 
     def __init__(
         self,
