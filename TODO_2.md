@@ -164,10 +164,10 @@ Names are sticky. Once public, they become part of how people think about the li
 ---
 
 ## 3.2 Define the responsibility of each public class
-- [ ] Add a short responsibility statement to each class docstring
-- [ ] Clarify what each class owns
-- [ ] Clarify what each class does not own
-- [ ] Clarify expected override points
+- [x] Add a short responsibility statement to each class docstring
+- [x] Clarify what each class owns
+- [x] Clarify what each class does not own
+- [x] Clarify expected override points
 
 ### Why
 An abstract library becomes usable when its concepts are sharply bounded. Users should not need to reverse-engineer your architecture from source code.
