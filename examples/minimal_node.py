@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
 
-from lifecore_ros2.core import ComposedLifecycleNode, LifecycleComponent
+from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
 
 
 class LoggingComponent(LifecycleComponent):
@@ -19,7 +19,7 @@ class LoggingComponent(LifecycleComponent):
         return super()._on_cleanup(state)
 
 
-class MinimalNode(ComposedLifecycleNode):
+class MinimalNode(LifecycleComponentNode):
     def __init__(self) -> None:
         super().__init__("minimal_lifecore_node")
         self.add_component(LoggingComponent("logger_component"))

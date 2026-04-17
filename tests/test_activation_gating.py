@@ -14,8 +14,8 @@ import pytest
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleState
 
-from lifecore_ros2.components import PublisherComponent, SubscriberComponent
-from lifecore_ros2.core import ComposedLifecycleNode
+from lifecore_ros2.components import LifecyclePublisherComponent, LifecycleSubscriberComponent
+from lifecore_ros2.core import LifecycleComponentNode
 from lifecore_ros2.core.lifecycle_component import LifecycleComponent, when_active
 
 # ---------------------------------------------------------------------------
@@ -29,7 +29,7 @@ DUMMY_STATE = LifecycleState(state_id=0, label="test")
 # ---------------------------------------------------------------------------
 
 
-class GatedPublisher(PublisherComponent):
+class GatedPublisher(LifecyclePublisherComponent):
     """Publisher that bypasses real ROS transport in configure."""
 
     def __init__(self, name: str = "gated_pub") -> None:
@@ -57,7 +57,7 @@ class GatedPublisher(PublisherComponent):
         super()._release_resources()
 
 
-class GatedSubscriber(SubscriberComponent):
+class GatedSubscriber(LifecycleSubscriberComponent):
     """Subscriber that records received messages without real ROS transport."""
 
     def __init__(self, name: str = "gated_sub") -> None:
@@ -130,28 +130,28 @@ class DecoratorTestComponent(LifecycleComponent):
 
 
 @pytest.fixture()
-def node() -> ComposedLifecycleNode:
-    n = ComposedLifecycleNode("gating_test_node")
+def node() -> LifecycleComponentNode:
+    n = LifecycleComponentNode("gating_test_node")
     yield n  # type: ignore[misc]
     n.destroy_node()
 
 
 @pytest.fixture()
-def pub(node: ComposedLifecycleNode) -> GatedPublisher:
+def pub(node: LifecycleComponentNode) -> GatedPublisher:
     p = GatedPublisher()
     node.add_component(p)
     return p
 
 
 @pytest.fixture()
-def sub(node: ComposedLifecycleNode) -> GatedSubscriber:
+def sub(node: LifecycleComponentNode) -> GatedSubscriber:
     s = GatedSubscriber()
     node.add_component(s)
     return s
 
 
 @pytest.fixture()
-def decorator_comp(node: ComposedLifecycleNode) -> DecoratorTestComponent:
+def decorator_comp(node: LifecycleComponentNode) -> DecoratorTestComponent:
     c = DecoratorTestComponent(name="decorator_test")
     node.add_component(c)
     return c
@@ -414,7 +414,7 @@ class TestWhenActiveDecorator:
 
     # -- verifying the custom callable is actually called ----------------
 
-    def test_callable_side_effect_observed(self, node: ComposedLifecycleNode) -> None:
+    def test_callable_side_effect_observed(self, node: LifecycleComponentNode) -> None:
         # Guard: prove the custom callable is actually executed, not just discarded.
         side_effects: list[str] = []
 

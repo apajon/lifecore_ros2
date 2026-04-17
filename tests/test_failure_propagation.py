@@ -20,7 +20,7 @@ from rclpy.executors import SingleThreadedExecutor
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleState
 
-from lifecore_ros2.core import ComposedLifecycleNode, LifecycleComponent
+from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
 
 # ---------------------------------------------------------------------------
 # Instrumented components
@@ -163,14 +163,14 @@ class ResourceTrackingComponent(LifecycleComponent):
 
 @pytest.fixture()
 def node():
-    n = ComposedLifecycleNode("failure_test_node")
+    n = LifecycleComponentNode("failure_test_node")
     yield n
     n.destroy_node()
 
 
 @pytest.fixture()
 def spinning_node():
-    node = ComposedLifecycleNode("failure_integration_node")
+    node = LifecycleComponentNode("failure_integration_node")
     executor = SingleThreadedExecutor()
     executor.add_node(node)
     spin_thread = threading.Thread(target=executor.spin, daemon=True)
@@ -193,7 +193,7 @@ class TestGuardCatchesExceptions:
     for activate, deactivate, cleanup, shutdown, and error hooks.
     """
 
-    def test_activate_exception_returns_error(self, node: ComposedLifecycleNode) -> None:
+    def test_activate_exception_returns_error(self, node: LifecycleComponentNode) -> None:
         # Regression: unhandled exception in _on_activate must not crash the node.
         # Expected: guard catches it, returns ERROR.
         comp = CrashingComponent("crash_act", crash_on="activate")
@@ -204,7 +204,7 @@ class TestGuardCatchesExceptions:
 
         assert result == TransitionCallbackReturn.ERROR
 
-    def test_deactivate_exception_returns_error(self, node: ComposedLifecycleNode) -> None:
+    def test_deactivate_exception_returns_error(self, node: LifecycleComponentNode) -> None:
         # Regression: unhandled exception in _on_deactivate must not crash the node.
         # Expected: guard catches it, returns ERROR.
         comp = CrashingComponent("crash_deact", crash_on="deactivate")
@@ -216,7 +216,7 @@ class TestGuardCatchesExceptions:
 
         assert result == TransitionCallbackReturn.ERROR
 
-    def test_cleanup_exception_returns_error(self, node: ComposedLifecycleNode) -> None:
+    def test_cleanup_exception_returns_error(self, node: LifecycleComponentNode) -> None:
         # Regression: unhandled exception in _on_cleanup must not crash the node.
         # Expected: guard catches it, returns ERROR.
         comp = CrashingComponent("crash_clean", crash_on="cleanup")
@@ -227,7 +227,7 @@ class TestGuardCatchesExceptions:
 
         assert result == TransitionCallbackReturn.ERROR
 
-    def test_shutdown_exception_returns_error(self, node: ComposedLifecycleNode) -> None:
+    def test_shutdown_exception_returns_error(self, node: LifecycleComponentNode) -> None:
         # Regression: unhandled exception in _on_shutdown must not crash the node.
         # Expected: guard catches it, returns ERROR.
         comp = CrashingComponent("crash_shut", crash_on="shutdown")
@@ -237,7 +237,7 @@ class TestGuardCatchesExceptions:
 
         assert result == TransitionCallbackReturn.ERROR
 
-    def test_error_hook_exception_returns_error(self, node: ComposedLifecycleNode) -> None:
+    def test_error_hook_exception_returns_error(self, node: LifecycleComponentNode) -> None:
         # Regression: unhandled exception in _on_error itself must not crash.
         # Expected: guard catches it, returns ERROR.
         comp = CrashingComponent("crash_err", crash_on="error")
@@ -260,7 +260,7 @@ class TestGuardRejectsInvalidReturn:
     SUCCESS / FAILURE / ERROR triggers ERROR.
     """
 
-    def test_configure_invalid_return_yields_error(self, node: ComposedLifecycleNode) -> None:
+    def test_configure_invalid_return_yields_error(self, node: LifecycleComponentNode) -> None:
         # Regression: returning an int instead of TransitionCallbackReturn must not pass silently.
         # Expected: guard detects invalid return, returns ERROR (strict mode).
         comp = BadReturnComponent("bad_cfg", bad_on="configure")
@@ -270,7 +270,7 @@ class TestGuardRejectsInvalidReturn:
 
         assert result == TransitionCallbackReturn.ERROR
 
-    def test_activate_invalid_return_yields_error(self, node: ComposedLifecycleNode) -> None:
+    def test_activate_invalid_return_yields_error(self, node: LifecycleComponentNode) -> None:
         # Regression: returning a string from _on_activate must be caught.
         # Expected: guard returns ERROR.
         comp = BadReturnComponent("bad_act", bad_on="activate")
@@ -281,7 +281,7 @@ class TestGuardRejectsInvalidReturn:
 
         assert result == TransitionCallbackReturn.ERROR
 
-    def test_deactivate_invalid_return_yields_error(self, node: ComposedLifecycleNode) -> None:
+    def test_deactivate_invalid_return_yields_error(self, node: LifecycleComponentNode) -> None:
         # Regression: returning None from _on_deactivate must be caught.
         # Expected: guard returns ERROR.
         comp = BadReturnComponent("bad_deact", bad_on="deactivate")
@@ -293,7 +293,7 @@ class TestGuardRejectsInvalidReturn:
 
         assert result == TransitionCallbackReturn.ERROR
 
-    def test_cleanup_invalid_return_yields_error(self, node: ComposedLifecycleNode) -> None:
+    def test_cleanup_invalid_return_yields_error(self, node: LifecycleComponentNode) -> None:
         # Regression: returning False from _on_cleanup must be caught.
         # Expected: guard returns ERROR.
         comp = BadReturnComponent("bad_clean", bad_on="cleanup")
@@ -317,7 +317,7 @@ class TestComponentFailureInComposedNode:
     coverage to activate and verify component state consistency.
     """
 
-    def test_activate_failure_blocks_transition(self, spinning_node: ComposedLifecycleNode) -> None:
+    def test_activate_failure_blocks_transition(self, spinning_node: LifecycleComponentNode) -> None:
         # Regression: a component returning FAILURE from activate must block
         # the overall activate transition on the node.
         # Expected: trigger_activate returns FAILURE.
@@ -333,7 +333,7 @@ class TestComponentFailureInComposedNode:
 
         assert act_result == TransitionCallbackReturn.FAILURE
 
-    def test_configure_failure_leaves_resources_on_good_component(self, spinning_node: ComposedLifecycleNode) -> None:
+    def test_configure_failure_leaves_resources_on_good_component(self, spinning_node: LifecycleComponentNode) -> None:
         # Regression: when one component fails configure, the other component's
         # already-allocated resources must NOT be automatically released.
         # Expected: overall FAILURE, no automatic rollback/cleanup on any component.
@@ -363,7 +363,7 @@ class TestPartialResourceAllocation:
     Demonstrates that manual cleanup after partial failure works correctly.
     """
 
-    def test_partial_configure_leaves_resources_allocated(self, spinning_node: ComposedLifecycleNode) -> None:
+    def test_partial_configure_leaves_resources_allocated(self, spinning_node: LifecycleComponentNode) -> None:
         # Regression: partial configure must leave the successful component's
         # resources intact — no automatic rollback.
         # Expected: overall FAILURE, and any component that DID configure keeps its resources.
@@ -382,7 +382,7 @@ class TestPartialResourceAllocation:
         assert first.resource_released is False
         assert second.resource_released is False
 
-    def test_manual_cleanup_after_partial_failure(self, node: ComposedLifecycleNode) -> None:
+    def test_manual_cleanup_after_partial_failure(self, node: LifecycleComponentNode) -> None:
         # Regression: after a partial configure failure, the consumer must be
         # able to manually call on_cleanup on individual components.
         # Expected: _release_resources runs and flips tracking flags.
@@ -407,7 +407,9 @@ class TestPartialResourceAllocation:
         assert second.resource_allocated is False
         assert second.resource_released is True
 
-    def test_exception_during_configure_preserves_other_component_resources(self, node: ComposedLifecycleNode) -> None:
+    def test_exception_during_configure_preserves_other_component_resources(
+        self, node: LifecycleComponentNode
+    ) -> None:
         # Regression: when a component crashes (exception) during configure,
         # the other component's resources remain allocated.
         # Expected: good component's resource intact, crashing component raised.
@@ -424,7 +426,7 @@ class TestPartialResourceAllocation:
         assert good.resource_allocated is True
         assert good.resource_released is False
 
-    def test_cleanup_after_crash_releases_good_resources(self, node: ComposedLifecycleNode) -> None:
+    def test_cleanup_after_crash_releases_good_resources(self, node: LifecycleComponentNode) -> None:
         # Regression: after one component crashes, manual cleanup on the good
         # component must properly release its resources.
         # Expected: cleanup succeeds, resource flags flipped.

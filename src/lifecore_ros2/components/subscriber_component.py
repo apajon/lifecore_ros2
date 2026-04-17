@@ -12,7 +12,7 @@ from lifecore_ros2.core.lifecycle_component import when_active
 from .topic_component import TopicComponent
 
 
-class SubscriberComponent(TopicComponent):
+class LifecycleSubscriberComponent(TopicComponent):
     """Lifecycle-aware subscriber component.
 
     The ROS subscription is created during configure.
@@ -64,7 +64,7 @@ class SubscriberComponent(TopicComponent):
     @abstractmethod
     def on_message(self, msg: Any) -> None:
         """Handle an incoming message while the component is active."""
-        raise NotImplementedError("on_message must be implemented by SubscriberComponent subclasses")
+        raise NotImplementedError("on_message must be implemented by LifecycleSubscriberComponent subclasses")
 
     def _release_resources(self) -> None:
         if self._subscription is not None:

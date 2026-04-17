@@ -4,10 +4,10 @@ from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
 from rclpy.timer import Timer
 from std_msgs.msg import String
 
-from lifecore_ros2 import ComposedLifecycleNode, PublisherComponent
+from lifecore_ros2 import LifecycleComponentNode, LifecyclePublisherComponent
 
 
-class PeriodicPublisher(PublisherComponent):
+class PeriodicPublisher(LifecyclePublisherComponent):
     """Publishes a String message on /chatter every second while active."""
 
     def __init__(self) -> None:
@@ -42,7 +42,7 @@ class PeriodicPublisher(PublisherComponent):
         self._counter += 1
 
 
-class PublisherDemoNode(ComposedLifecycleNode):
+class PublisherDemoNode(LifecycleComponentNode):
     def __init__(self) -> None:
         super().__init__("publisher_demo_node")
         self.add_component(PeriodicPublisher())

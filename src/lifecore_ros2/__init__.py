@@ -1,13 +1,13 @@
 """lifecore_ros2."""
 
-from .components import PublisherComponent, SubscriberComponent, TopicComponent
-from .core import ComposedLifecycleNode, LifecycleComponent, when_active
+from .components import LifecyclePublisherComponent, LifecycleSubscriberComponent, TopicComponent
+from .core import LifecycleComponent, LifecycleComponentNode, when_active
 
 __all__ = [
-    "ComposedLifecycleNode",
+    "LifecycleComponentNode",
     "LifecycleComponent",
     "TopicComponent",
-    "PublisherComponent",
-    "SubscriberComponent",
+    "LifecyclePublisherComponent",
+    "LifecycleSubscriberComponent",
     "when_active",
 ]

@@ -8,7 +8,7 @@ import pytest
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleState
 
-from lifecore_ros2.core import ComposedLifecycleNode, LifecycleComponent
+from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
 
 # ---------------------------------------------------------------------------
 # Concrete test component
@@ -41,7 +41,7 @@ DUMMY_STATE = LifecycleState(state_id=0, label="test")
 
 @pytest.fixture()
 def node():
-    n = ComposedLifecycleNode("regression_add_node")
+    n = LifecycleComponentNode("regression_add_node")
     yield n
     n.destroy_node()
 
@@ -54,7 +54,7 @@ def node():
 class TestRegressionRegistrationGuard:
     """Registration must be rejected after the first lifecycle transition."""
 
-    def test_configure_closes_registration(self, node: ComposedLifecycleNode) -> None:
+    def test_configure_closes_registration(self, node: LifecycleComponentNode) -> None:
         # Regression: add_component was silently accepted after on_configure,
         # leading to components that never received configure propagation.
         # Expected: RuntimeError prevents late registration.
@@ -71,7 +71,7 @@ class TestRegressionRegistrationGuard:
         with pytest.raises(RuntimeError, match="lifecycle transitions have already started"):
             node.add_component(DummyComponent("after_configure"))
 
-    def test_shutdown_closes_registration(self, node: ComposedLifecycleNode) -> None:
+    def test_shutdown_closes_registration(self, node: LifecycleComponentNode) -> None:
         # Regression: add_component was accepted after on_shutdown,
         # leaving orphan components on a shutting-down node.
         # Expected: RuntimeError prevents registration after shutdown.
@@ -88,7 +88,7 @@ class TestRegressionRegistrationGuard:
         with pytest.raises(RuntimeError, match="lifecycle transitions have already started"):
             node.add_component(DummyComponent("after_shutdown"))
 
-    def test_registration_open_flag_initially_true(self, node: ComposedLifecycleNode) -> None:
+    def test_registration_open_flag_initially_true(self, node: LifecycleComponentNode) -> None:
         # Guard: the flag must default to True for fresh nodes.
         assert node._registration_open is True
 
@@ -101,7 +101,7 @@ class TestRegressionRegistrationGuard:
 class TestRegressionAtomicAddComponent:
     """add_component must roll back attach on add_managed_entity failure."""
 
-    def test_rollback_detaches_component_on_failure(self, node: ComposedLifecycleNode) -> None:
+    def test_rollback_detaches_component_on_failure(self, node: LifecycleComponentNode) -> None:
         # Regression: if add_managed_entity raised, the component stayed
         # attached (_node set) but was never registered in _components,
         # leaving it in a broken state that prevented re-attachment.
@@ -116,7 +116,7 @@ class TestRegressionAtomicAddComponent:
         # After rollback: component must be fully detached
         assert comp._node is None
 
-    def test_rollback_component_not_in_registry(self, node: ComposedLifecycleNode) -> None:
+    def test_rollback_component_not_in_registry(self, node: LifecycleComponentNode) -> None:
         # Regression: partial registration left ghost entries in _components.
         # Expected: failed component must not appear in the registry.
 
@@ -129,7 +129,7 @@ class TestRegressionAtomicAddComponent:
         assert "ghost_check" not in [c.name for c in node.components]
         assert comp.name not in node._components
 
-    def test_rollback_allows_reattach(self, node: ComposedLifecycleNode) -> None:
+    def test_rollback_allows_reattach(self, node: LifecycleComponentNode) -> None:
         # Regression: after a failed add_component, the component was stuck
         # in "already attached" state and could not be registered elsewhere.
         # Expected: component can be re-added after rollback.

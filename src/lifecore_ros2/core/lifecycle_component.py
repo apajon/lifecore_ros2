@@ -12,7 +12,7 @@ from rclpy.lifecycle.managed_entity import ManagedEntity
 from rclpy.lifecycle.node import LifecycleState
 
 if TYPE_CHECKING:
-    from .composed_lifecycle_node import ComposedLifecycleNode
+    from .composed_lifecycle_node import LifecycleComponentNode
 
 _LifecycleHook = Callable[["LifecycleComponent", LifecycleState], TransitionCallbackReturn]
 
@@ -171,7 +171,7 @@ class LifecycleComponent(ManagedEntity, ABC):
     def __init__(self, name: str) -> None:
         super().__init__()
         self._name: str = name
-        self._node: ComposedLifecycleNode | None = None
+        self._node: LifecycleComponentNode | None = None
         self._is_active: bool = False
 
     @property
@@ -184,7 +184,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         return self._is_active
 
     @property
-    def node(self) -> ComposedLifecycleNode:
+    def node(self) -> LifecycleComponentNode:
         if self._node is None:
             raise RuntimeError(f"Component '{self._name}' is not attached to a node")
         return self._node
@@ -198,11 +198,11 @@ class LifecycleComponent(ManagedEntity, ABC):
     def get_parent_namespace(self) -> str:
         return self.node.get_namespace()
 
-    def attach(self, node: ComposedLifecycleNode) -> None:
+    def attach(self, node: LifecycleComponentNode) -> None:
         """Attach the component to a node.
 
         Args:
-            node (ComposedLifecycleNode): The node to attach the component to.
+            node (LifecycleComponentNode): The node to attach the component to.
 
         Raises:
             RuntimeError: If the component is already attached to a node.

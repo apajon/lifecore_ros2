@@ -24,7 +24,7 @@ from rclpy.executors import SingleThreadedExecutor
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleState
 
-from lifecore_ros2.core import ComposedLifecycleNode, LifecycleComponent
+from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
 
 # ---------------------------------------------------------------------------
 # Instrumented components
@@ -95,15 +95,15 @@ class RecordingComponent(LifecycleComponent):
 
 @pytest.fixture()
 def node():
-    n = ComposedLifecycleNode("edge_test_node")
+    n = LifecycleComponentNode("edge_test_node")
     yield n
     n.destroy_node()
 
 
 @pytest.fixture()
 def spinning_node():
-    """ComposedLifecycleNode with a background SingleThreadedExecutor."""
-    node = ComposedLifecycleNode("edge_integration_node")
+    """LifecycleComponentNode with a background SingleThreadedExecutor."""
+    node = LifecycleComponentNode("edge_integration_node")
     executor = SingleThreadedExecutor()
     executor.add_node(node)
 
@@ -131,7 +131,7 @@ class TestEdgeTransitionsDirect:
 
     # -- 1. Activate before configure (direct) ----------------------------
 
-    def test_activate_before_configure_direct(self, node: ComposedLifecycleNode) -> None:
+    def test_activate_before_configure_direct(self, node: LifecycleComponentNode) -> None:
         # Observed behavior: _on_activate sets _is_active regardless of prior
         # configure state because the component has no resource precondition.
         comp = ActivationTrackingComponent("act_no_cfg")
@@ -145,7 +145,7 @@ class TestEdgeTransitionsDirect:
 
     # -- 2. Cleanup before configure (direct) ------------------------------
 
-    def test_cleanup_before_configure_direct(self, node: ComposedLifecycleNode) -> None:
+    def test_cleanup_before_configure_direct(self, node: LifecycleComponentNode) -> None:
         # Observed behavior: _on_cleanup succeeds on a fresh component because
         # there are no resources to release.
         comp = ActivationTrackingComponent("cleanup_no_cfg")
@@ -156,7 +156,7 @@ class TestEdgeTransitionsDirect:
 
     # -- 3. Repeated configure (direct) ------------------------------------
 
-    def test_configure_twice_direct(self, node: ComposedLifecycleNode) -> None:
+    def test_configure_twice_direct(self, node: LifecycleComponentNode) -> None:
         # Observed behavior: calling configure twice succeeds both times;
         # the component hooks are idempotent at the direct-call level.
         comp = RecordingComponent("cfg_twice")
@@ -171,7 +171,7 @@ class TestEdgeTransitionsDirect:
 
     # -- 4. Deactivate without prior activate (direct) ---------------------
 
-    def test_deactivate_without_activate_direct(self, node: ComposedLifecycleNode) -> None:
+    def test_deactivate_without_activate_direct(self, node: LifecycleComponentNode) -> None:
         # Observed behavior: _on_deactivate clears _is_active, which is
         # already False after configure.  No crash; the call is safe.
         comp = ActivationTrackingComponent("deact_no_act")
@@ -186,7 +186,7 @@ class TestEdgeTransitionsDirect:
 
     # -- 5. Activate → activate without deactivate (direct) ----------------
 
-    def test_activate_twice_without_deactivate_direct(self, node: ComposedLifecycleNode) -> None:
+    def test_activate_twice_without_deactivate_direct(self, node: LifecycleComponentNode) -> None:
         # Observed behavior: second activate succeeds at component level
         # because _on_activate simply sets _is_active = True again.
         comp = ActivationTrackingComponent("act_twice")
@@ -202,7 +202,7 @@ class TestEdgeTransitionsDirect:
 
     # -- 6. Cleanup resets activation flag ---------------------------------
 
-    def test_cleanup_resets_is_active_via_release(self, node: ComposedLifecycleNode) -> None:
+    def test_cleanup_resets_is_active_via_release(self, node: LifecycleComponentNode) -> None:
         # After configure → activate, calling cleanup should leave is_active
         # as-is because cleanup's base body does not touch _is_active.
         # However, _release_resources clears _is_active.  Direct cleanup + release:
@@ -236,7 +236,7 @@ class TestEdgeTransitionsIntegration:
 
     # -- 1. Activate before configure (integration) ------------------------
 
-    def test_activate_before_configure_integration(self, spinning_node: ComposedLifecycleNode) -> None:
+    def test_activate_before_configure_integration(self, spinning_node: LifecycleComponentNode) -> None:
         # rclpy state machine raises RCLError for activate from unconfigured state.
         comp = RecordingComponent("act_before_cfg")
         spinning_node.add_component(comp)
@@ -248,7 +248,7 @@ class TestEdgeTransitionsIntegration:
 
     # -- 2. Cleanup before configure (integration) -------------------------
 
-    def test_cleanup_before_configure_integration(self, spinning_node: ComposedLifecycleNode) -> None:
+    def test_cleanup_before_configure_integration(self, spinning_node: LifecycleComponentNode) -> None:
         # rclpy state machine raises RCLError for cleanup from unconfigured state.
         comp = RecordingComponent("cleanup_before_cfg")
         spinning_node.add_component(comp)
@@ -259,7 +259,7 @@ class TestEdgeTransitionsIntegration:
 
     # -- 3a. Repeated configure without cleanup (integration) ---------------
 
-    def test_configure_twice_without_cleanup_integration(self, spinning_node: ComposedLifecycleNode) -> None:
+    def test_configure_twice_without_cleanup_integration(self, spinning_node: LifecycleComponentNode) -> None:
         # After configure, the node is in inactive state.  A second configure
         # without cleanup is not a valid rclpy transition.
         comp = RecordingComponent("cfg_twice_no_clean")
@@ -276,7 +276,7 @@ class TestEdgeTransitionsIntegration:
 
     # -- 3b. Valid re-configure via cleanup (integration) -------------------
 
-    def test_reconfigure_via_cleanup_integration(self, spinning_node: ComposedLifecycleNode) -> None:
+    def test_reconfigure_via_cleanup_integration(self, spinning_node: LifecycleComponentNode) -> None:
         # The valid re-configure path: configure → cleanup → configure.
         comp = RecordingComponent("reconfigure")
         spinning_node.add_component(comp)
@@ -289,7 +289,7 @@ class TestEdgeTransitionsIntegration:
 
     # -- 4. Repeated activate (integration) ---------------------------------
 
-    def test_activate_twice_integration(self, spinning_node: ComposedLifecycleNode) -> None:
+    def test_activate_twice_integration(self, spinning_node: LifecycleComponentNode) -> None:
         # rclpy raises RCLError for the second activate when node is already active.
         comp = RecordingComponent("act_twice")
         spinning_node.add_component(comp)
@@ -305,7 +305,7 @@ class TestEdgeTransitionsIntegration:
 
     # -- 5. Deactivate without active state (integration) -------------------
 
-    def test_deactivate_from_inactive_integration(self, spinning_node: ComposedLifecycleNode) -> None:
+    def test_deactivate_from_inactive_integration(self, spinning_node: LifecycleComponentNode) -> None:
         # rclpy raises RCLError for deactivate when the node is inactive (after configure).
         comp = RecordingComponent("deact_inact")
         spinning_node.add_component(comp)
@@ -318,7 +318,7 @@ class TestEdgeTransitionsIntegration:
 
     # -- 6. Cleanup after partial initialization failure --------------------
 
-    def test_cleanup_after_partial_configure_failure(self, spinning_node: ComposedLifecycleNode) -> None:
+    def test_cleanup_after_partial_configure_failure(self, spinning_node: LifecycleComponentNode) -> None:
         # One component is set to fail configure.  The overall transition
         # returns FAILURE and the node stays in unconfigured state.
         # rclpy may or may not propagate to all entities before aggregating;
@@ -342,7 +342,7 @@ class TestEdgeTransitionsIntegration:
 
     # -- 7. Deactivate from unconfigured (integration) ---------------------
 
-    def test_deactivate_from_unconfigured_integration(self, spinning_node: ComposedLifecycleNode) -> None:
+    def test_deactivate_from_unconfigured_integration(self, spinning_node: LifecycleComponentNode) -> None:
         # rclpy raises RCLError for deactivate from unconfigured state.
         comp = RecordingComponent("deact_uncfg")
         spinning_node.add_component(comp)
@@ -353,7 +353,7 @@ class TestEdgeTransitionsIntegration:
 
     # -- 8. Full invalid sequence: activate → cleanup (integration) --------
 
-    def test_cleanup_from_active_state_integration(self, spinning_node: ComposedLifecycleNode) -> None:
+    def test_cleanup_from_active_state_integration(self, spinning_node: LifecycleComponentNode) -> None:
         # rclpy raises RCLError for cleanup from active state; must deactivate first.
         comp = RecordingComponent("cleanup_active")
         spinning_node.add_component(comp)

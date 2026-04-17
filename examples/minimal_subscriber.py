@@ -2,10 +2,10 @@ from __future__ import annotations
 
 from std_msgs.msg import String
 
-from lifecore_ros2 import ComposedLifecycleNode, SubscriberComponent
+from lifecore_ros2 import LifecycleComponentNode, LifecycleSubscriberComponent
 
 
-class EchoSubscriber(SubscriberComponent):
+class EchoSubscriber(LifecycleSubscriberComponent):
     def __init__(self) -> None:
         super().__init__(
             name="echo_sub",
@@ -18,7 +18,7 @@ class EchoSubscriber(SubscriberComponent):
         self.node.get_logger().info(f"Received: {msg.data}")
 
 
-class DemoNode(ComposedLifecycleNode):
+class DemoNode(LifecycleComponentNode):
     def __init__(self) -> None:
         super().__init__("demo_node")
         self.add_component(EchoSubscriber())

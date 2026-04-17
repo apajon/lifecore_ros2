@@ -9,8 +9,8 @@ from rclpy.lifecycle.node import LifecycleNode, LifecycleState
 from .lifecycle_component import LifecycleComponent
 
 
-class ComposedLifecycleNode(LifecycleNode):
-    """LifecycleNode composed of lifecycle-aware components.
+class LifecycleComponentNode(LifecycleNode):
+    """Lifecycle node that owns and drives registered LifecycleComponent instances.
 
     Key design choice:
     we register each component as a ManagedEntity, then rely on the native

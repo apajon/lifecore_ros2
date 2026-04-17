@@ -11,7 +11,7 @@ from lifecore_ros2.core.lifecycle_component import when_active
 from .topic_component import TopicComponent
 
 
-class PublisherComponent(TopicComponent):
+class LifecyclePublisherComponent(TopicComponent):
     """Lifecycle-aware publisher component."""
 
     def __init__(

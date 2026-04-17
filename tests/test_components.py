@@ -1,4 +1,4 @@
-"""Tests for SubscriberComponent and PublisherComponent behavior."""
+"""Tests for LifecycleSubscriberComponent and LifecyclePublisherComponent behavior."""
 
 from __future__ import annotations
 
@@ -10,15 +10,15 @@ from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleState
 from rclpy.qos import QoSProfile
 
-from lifecore_ros2.components import PublisherComponent, SubscriberComponent
-from lifecore_ros2.core import ComposedLifecycleNode
+from lifecore_ros2.components import LifecyclePublisherComponent, LifecycleSubscriberComponent
+from lifecore_ros2.core import LifecycleComponentNode
 
 # ---------------------------------------------------------------------------
 # Concrete subclasses for testing
 # ---------------------------------------------------------------------------
 
 
-class StubSubscriber(SubscriberComponent):
+class StubSubscriber(LifecycleSubscriberComponent):
     def __init__(self, name: str = "test_sub") -> None:
         super().__init__(name=name, topic_name="/test_topic", msg_type=MagicMock, qos_profile=10)
         self.received: list[Any] = []
@@ -27,7 +27,7 @@ class StubSubscriber(SubscriberComponent):
         self.received.append(msg)
 
 
-class StubPublisher(PublisherComponent):
+class StubPublisher(LifecyclePublisherComponent):
     def __init__(self, name: str = "test_pub") -> None:
         super().__init__(name=name, topic_name="/test_topic", msg_type=MagicMock, qos_profile=10)
 
@@ -42,18 +42,18 @@ DUMMY_STATE = LifecycleState(state_id=0, label="test")
 
 @pytest.fixture()
 def node():
-    n = ComposedLifecycleNode("topic_test_node")
+    n = LifecycleComponentNode("topic_test_node")
     yield n
     n.destroy_node()
 
 
 # ---------------------------------------------------------------------------
-# 5.3  SubscriberComponent
+# 5.3  LifecycleSubscriberComponent
 # ---------------------------------------------------------------------------
 
 
 class TestSubscriberComponent:
-    def test_inactive_messages_ignored(self, node: ComposedLifecycleNode) -> None:
+    def test_inactive_messages_ignored(self, node: LifecycleComponentNode) -> None:
         sub = StubSubscriber()
         node.add_component(sub)
 
@@ -63,7 +63,7 @@ class TestSubscriberComponent:
 
         assert sub.received == []
 
-    def test_active_messages_received(self, node: ComposedLifecycleNode) -> None:
+    def test_active_messages_received(self, node: LifecycleComponentNode) -> None:
         sub = StubSubscriber()
         node.add_component(sub)
 
@@ -73,7 +73,7 @@ class TestSubscriberComponent:
         sub._on_message_wrapper("hello")
         assert sub.received == ["hello"]
 
-    def test_deactivate_stops_processing(self, node: ComposedLifecycleNode) -> None:
+    def test_deactivate_stops_processing(self, node: LifecycleComponentNode) -> None:
         sub = StubSubscriber()
         node.add_component(sub)
 
@@ -84,7 +84,7 @@ class TestSubscriberComponent:
         sub._on_message_wrapper("dropped")
         assert sub.received == []
 
-    def test_cleanup_resets_active(self, node: ComposedLifecycleNode) -> None:
+    def test_cleanup_resets_active(self, node: LifecycleComponentNode) -> None:
         sub = StubSubscriber()
         node.add_component(sub)
 
@@ -97,7 +97,7 @@ class TestSubscriberComponent:
 
 
 # ---------------------------------------------------------------------------
-# 5.3  PublisherComponent
+# 5.3  LifecyclePublisherComponent
 # ---------------------------------------------------------------------------
 
 
@@ -108,7 +108,7 @@ class TestPublisherComponent:
         with pytest.raises(RuntimeError, match="not active"):
             pub.publish(MagicMock())
 
-    def test_publish_when_inactive_raises(self, node: ComposedLifecycleNode) -> None:
+    def test_publish_when_inactive_raises(self, node: LifecycleComponentNode) -> None:
         pub = StubPublisher()
         node.add_component(pub)
 
@@ -119,7 +119,7 @@ class TestPublisherComponent:
         with pytest.raises(RuntimeError, match="not active"):
             pub.publish(MagicMock())
 
-    def test_publish_when_active_succeeds(self, node: ComposedLifecycleNode) -> None:
+    def test_publish_when_active_succeeds(self, node: LifecycleComponentNode) -> None:
         pub = StubPublisher()
         node.add_component(pub)
 
@@ -131,7 +131,7 @@ class TestPublisherComponent:
         pub.publish(MagicMock())
         pub._publisher.publish.assert_called_once()
 
-    def test_cleanup_resets_publisher(self, node: ComposedLifecycleNode) -> None:
+    def test_cleanup_resets_publisher(self, node: LifecycleComponentNode) -> None:
         pub = StubPublisher()
         node.add_component(pub)
 
@@ -184,7 +184,7 @@ class TestRegressionQoSTyping:
 # ---------------------------------------------------------------------------
 
 
-class _QoSSubscriber(SubscriberComponent):
+class _QoSSubscriber(LifecycleSubscriberComponent):
     """Subscriber stub that accepts a custom qos_profile."""
 
     def __init__(self, qos_profile: QoSProfile | int = 10) -> None:
@@ -199,7 +199,7 @@ class _QoSSubscriber(SubscriberComponent):
         pass
 
 
-class _QoSPublisher(PublisherComponent):
+class _QoSPublisher(LifecyclePublisherComponent):
     """Publisher stub that accepts a custom qos_profile."""
 
     def __init__(self, qos_profile: QoSProfile | int = 10) -> None:
@@ -217,7 +217,7 @@ class _QoSPublisher(PublisherComponent):
 
 
 class TestTopicComponentProperties:
-    def test_properties_stable_across_full_lifecycle(self, node: ComposedLifecycleNode) -> None:
+    def test_properties_stable_across_full_lifecycle(self, node: LifecycleComponentNode) -> None:
         pub = StubPublisher("prop_pub")
         node.add_component(pub)
 
@@ -256,7 +256,7 @@ class TestTopicComponentProperties:
 
 
 class TestPublisherNominalCycle:
-    def test_configure_creates_publisher(self, node: ComposedLifecycleNode) -> None:
+    def test_configure_creates_publisher(self, node: LifecycleComponentNode) -> None:
         pub = StubPublisher("nom_pub")
         node.add_component(pub)
 
@@ -266,7 +266,7 @@ class TestPublisherNominalCycle:
             assert pub._publisher is not None
             mock_create.assert_called_once()
 
-    def test_activate_enables_publish(self, node: ComposedLifecycleNode) -> None:
+    def test_activate_enables_publish(self, node: LifecycleComponentNode) -> None:
         pub = StubPublisher("nom_pub")
         node.add_component(pub)
 
@@ -281,7 +281,7 @@ class TestPublisherNominalCycle:
         pub.publish(msg)
         pub._publisher.publish.assert_called_once_with(msg)
 
-    def test_deactivate_blocks_publish(self, node: ComposedLifecycleNode) -> None:
+    def test_deactivate_blocks_publish(self, node: LifecycleComponentNode) -> None:
         pub = StubPublisher("nom_pub")
         node.add_component(pub)
 
@@ -291,7 +291,7 @@ class TestPublisherNominalCycle:
         assert result == TransitionCallbackReturn.SUCCESS
         assert pub.is_active is False
 
-    def test_cleanup_releases_publisher(self, node: ComposedLifecycleNode) -> None:
+    def test_cleanup_releases_publisher(self, node: LifecycleComponentNode) -> None:
         pub = StubPublisher("nom_pub")
         node.add_component(pub)
 
@@ -309,7 +309,7 @@ class TestPublisherNominalCycle:
 
 
 class TestSubscriberNominalCycle:
-    def test_configure_creates_subscription(self, node: ComposedLifecycleNode) -> None:
+    def test_configure_creates_subscription(self, node: LifecycleComponentNode) -> None:
         sub = StubSubscriber("nom_sub")
         node.add_component(sub)
 
@@ -319,7 +319,7 @@ class TestSubscriberNominalCycle:
             assert sub._subscription is not None
             mock_create.assert_called_once()
 
-    def test_activate_enables_message_processing(self, node: ComposedLifecycleNode) -> None:
+    def test_activate_enables_message_processing(self, node: LifecycleComponentNode) -> None:
         sub = StubSubscriber("nom_sub")
         node.add_component(sub)
 
@@ -331,7 +331,7 @@ class TestSubscriberNominalCycle:
         sub._on_message_wrapper("test_msg")
         assert sub.received == ["test_msg"]
 
-    def test_deactivate_blocks_message_processing(self, node: ComposedLifecycleNode) -> None:
+    def test_deactivate_blocks_message_processing(self, node: LifecycleComponentNode) -> None:
         sub = StubSubscriber("nom_sub")
         node.add_component(sub)
 
@@ -346,7 +346,7 @@ class TestSubscriberNominalCycle:
         sub._on_message_wrapper("after")
         assert sub.received == ["before"]
 
-    def test_cleanup_releases_subscription(self, node: ComposedLifecycleNode) -> None:
+    def test_cleanup_releases_subscription(self, node: LifecycleComponentNode) -> None:
         sub = StubSubscriber("nom_sub")
         node.add_component(sub)
 

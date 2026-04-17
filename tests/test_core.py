@@ -1,4 +1,4 @@
-"""Tests for ComposedLifecycleNode and LifecycleComponent core behavior."""
+"""Tests for LifecycleComponentNode and LifecycleComponent core behavior."""
 
 from __future__ import annotations
 
@@ -6,7 +6,7 @@ import pytest
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleState
 
-from lifecore_ros2.core import ComposedLifecycleNode, LifecycleComponent
+from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
 
 # ---------------------------------------------------------------------------
 # Concrete test component (satisfies @abstractmethod contract)
@@ -39,7 +39,7 @@ DUMMY_STATE = LifecycleState(state_id=0, label="test")
 
 @pytest.fixture()
 def node():
-    n = ComposedLifecycleNode("test_node")
+    n = LifecycleComponentNode("test_node")
     yield n
     n.destroy_node()
 
@@ -50,32 +50,32 @@ def node():
 
 
 class TestAddComponent:
-    def test_add_component_registers_managed_entity(self, node: ComposedLifecycleNode) -> None:
+    def test_add_component_registers_managed_entity(self, node: LifecycleComponentNode) -> None:
         comp = DummyComponent("comp_a")
         node.add_component(comp)
 
         assert comp.name in [c.name for c in node.components]
         assert comp._node is node
 
-    def test_add_component_duplicate_name_raises(self, node: ComposedLifecycleNode) -> None:
+    def test_add_component_duplicate_name_raises(self, node: LifecycleComponentNode) -> None:
         node.add_component(DummyComponent("dup"))
 
         with pytest.raises(ValueError, match="already registered"):
             node.add_component(DummyComponent("dup"))
 
-    def test_add_components_bulk(self, node: ComposedLifecycleNode) -> None:
+    def test_add_components_bulk(self, node: LifecycleComponentNode) -> None:
         comps = [DummyComponent("a"), DummyComponent("b"), DummyComponent("c")]
         node.add_components(comps)
         assert len(node.components) == 3
 
 
 class TestGetComponent:
-    def test_get_existing_component(self, node: ComposedLifecycleNode) -> None:
+    def test_get_existing_component(self, node: LifecycleComponentNode) -> None:
         comp = DummyComponent("findme")
         node.add_component(comp)
         assert node.get_component("findme") is comp
 
-    def test_get_missing_component_raises(self, node: ComposedLifecycleNode) -> None:
+    def test_get_missing_component_raises(self, node: LifecycleComponentNode) -> None:
         with pytest.raises(KeyError, match="Unknown component"):
             node.get_component("nope")
 
@@ -86,7 +86,7 @@ class TestComponentAttach:
         with pytest.raises(RuntimeError, match="not attached"):
             _ = comp.node
 
-    def test_double_attach_raises(self, node: ComposedLifecycleNode) -> None:
+    def test_double_attach_raises(self, node: LifecycleComponentNode) -> None:
         comp = DummyComponent("once")
         comp.attach(node)
 
@@ -95,12 +95,12 @@ class TestComponentAttach:
 
 
 # ---------------------------------------------------------------------------
-# 5.1b  Nominal ComposedLifecycleNode behavior
+# 5.1b  Nominal LifecycleComponentNode behavior
 # ---------------------------------------------------------------------------
 
 
-class TestComposedNodeNominal:
-    def test_components_property_returns_registered(self, node: ComposedLifecycleNode) -> None:
+class TestManagedNodeNominal:
+    def test_components_property_returns_registered(self, node: LifecycleComponentNode) -> None:
         comp_a = DummyComponent("alpha")
         comp_b = DummyComponent("beta")
         node.add_component(comp_a)
@@ -111,10 +111,10 @@ class TestComposedNodeNominal:
         assert comp_a in result
         assert comp_b in result
 
-    def test_registration_open_initially(self, node: ComposedLifecycleNode) -> None:
+    def test_registration_open_initially(self, node: LifecycleComponentNode) -> None:
         assert node._registration_open is True
 
-    def test_registration_closed_after_configure(self, node: ComposedLifecycleNode) -> None:
+    def test_registration_closed_after_configure(self, node: LifecycleComponentNode) -> None:
         node.add_component(DummyComponent("pre"))
         node.on_configure(DUMMY_STATE)
         assert node._registration_open is False

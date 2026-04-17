@@ -6,7 +6,7 @@ import pytest
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleState
 
-from lifecore_ros2.core import ComposedLifecycleNode, LifecycleComponent
+from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
 
 # ---------------------------------------------------------------------------
 # Instrumented component that records which hooks were called
@@ -73,7 +73,7 @@ class CrashingComponent(LifecycleComponent):
 
 @pytest.fixture()
 def node():
-    n = ComposedLifecycleNode("lifecycle_test_node")
+    n = LifecycleComponentNode("lifecycle_test_node")
     yield n
     n.destroy_node()
 
@@ -87,7 +87,7 @@ DUMMY_STATE = LifecycleState(state_id=0, label="test")
 
 
 class TestLifecycleHooks:
-    def test_hooks_called_in_order(self, node: ComposedLifecycleNode) -> None:
+    def test_hooks_called_in_order(self, node: LifecycleComponentNode) -> None:
         comp = RecordingComponent("rec")
         node.add_component(comp)
 
@@ -98,21 +98,21 @@ class TestLifecycleHooks:
 
         assert comp.calls == ["configure", "activate", "deactivate", "cleanup"]
 
-    def test_configure_failure_returns_failure(self, node: ComposedLifecycleNode) -> None:
+    def test_configure_failure_returns_failure(self, node: LifecycleComponentNode) -> None:
         comp = RecordingComponent("fail_cfg", fail_on="configure")
         node.add_component(comp)
 
         result = comp.on_configure(DUMMY_STATE)
         assert result == TransitionCallbackReturn.FAILURE
 
-    def test_guard_catches_exception_returns_error(self, node: ComposedLifecycleNode) -> None:
+    def test_guard_catches_exception_returns_error(self, node: LifecycleComponentNode) -> None:
         comp = CrashingComponent("crasher")
         node.add_component(comp)
 
         result = comp.on_configure(DUMMY_STATE)
         assert result == TransitionCallbackReturn.ERROR
 
-    def test_activate_deactivate_cycle(self, node: ComposedLifecycleNode) -> None:
+    def test_activate_deactivate_cycle(self, node: LifecycleComponentNode) -> None:
         comp = RecordingComponent("cycle")
         node.add_component(comp)
 
@@ -156,14 +156,14 @@ class ActivationTrackingComponent(LifecycleComponent):
 
 
 class TestLifecycleComponentActivation:
-    def test_is_active_false_after_configure(self, node: ComposedLifecycleNode) -> None:
+    def test_is_active_false_after_configure(self, node: LifecycleComponentNode) -> None:
         comp = ActivationTrackingComponent("track")
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
         assert comp.is_active is False
 
-    def test_is_active_true_after_activate(self, node: ComposedLifecycleNode) -> None:
+    def test_is_active_true_after_activate(self, node: LifecycleComponentNode) -> None:
         comp = ActivationTrackingComponent("track")
         node.add_component(comp)
 
@@ -171,7 +171,7 @@ class TestLifecycleComponentActivation:
         comp.on_activate(DUMMY_STATE)
         assert comp.is_active is True
 
-    def test_is_active_false_after_deactivate(self, node: ComposedLifecycleNode) -> None:
+    def test_is_active_false_after_deactivate(self, node: LifecycleComponentNode) -> None:
         comp = ActivationTrackingComponent("track")
         node.add_component(comp)
 
@@ -180,7 +180,7 @@ class TestLifecycleComponentActivation:
         comp.on_deactivate(DUMMY_STATE)
         assert comp.is_active is False
 
-    def test_is_active_false_after_cleanup(self, node: ComposedLifecycleNode) -> None:
+    def test_is_active_false_after_cleanup(self, node: LifecycleComponentNode) -> None:
         comp = ActivationTrackingComponent("track")
         node.add_component(comp)
 
@@ -190,7 +190,7 @@ class TestLifecycleComponentActivation:
         comp.on_cleanup(DUMMY_STATE)
         assert comp.is_active is False
 
-    def test_release_resources_clears_is_active(self, node: ComposedLifecycleNode) -> None:
+    def test_release_resources_clears_is_active(self, node: LifecycleComponentNode) -> None:
         comp = ActivationTrackingComponent("track")
         node.add_component(comp)
 
