@@ -10,15 +10,29 @@ from .lifecycle_component import LifecycleComponent
 
 
 class LifecycleComponentNode(LifecycleNode):
-    """Lifecycle node that owns and drives registered LifecycleComponent instances.
+    """Base node for composing ``LifecycleComponent`` instances as managed entities.
 
-    Key design choice:
-    we register each component as a ManagedEntity, then rely on the native
-    LifecycleNode behavior to propagate lifecycle transitions.
+    Owns:
+        - The registry of attached ``LifecycleComponent`` instances.
+        - Component registration gate: open before first transition, closed after.
+        - Propagation of ROS 2 lifecycle transitions to registered components via the
+          native ``ManagedEntity`` mechanism.
 
-    Component registration is only allowed before the first lifecycle
-    transition.  Once ``on_configure`` or ``on_shutdown`` runs,
-    ``add_component`` raises ``RuntimeError``.
+    Does not own:
+        - Component-level resource allocation or release.
+        - Component activation state.
+        - Application-level business logic.
+
+    Override points:
+        - Override ``on_configure``, ``on_activate``, ``on_deactivate``, ``on_cleanup``,
+          or ``on_shutdown`` to add node-level behavior. Always call ``super()`` to
+          preserve component propagation and the registration gate.
+        - Do not override ``add_component``, ``add_components``, or ``_close_registration``.
+
+    Note:
+        Each component is registered as a ``ManagedEntity`` so the native ``LifecycleNode``
+        propagates transitions automatically. ``add_component`` raises ``RuntimeError``
+        once the first lifecycle transition has started.
     """
 
     def __init__(self, node_name: str, *, namespace: str | None = None, **kwargs: Any) -> None:

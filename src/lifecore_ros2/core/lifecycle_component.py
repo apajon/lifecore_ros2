@@ -145,22 +145,37 @@ def when_active[F: Callable[..., Any]](
 
 
 class LifecycleComponent(ManagedEntity, ABC):
-    """Base class for lifecycle-aware components attached to a composed node.
+    """Base managed entity for composable lifecycle behavior inside a ``LifecycleComponentNode``.
 
-    This class intentionally stays small:
+    Each subclass encapsulates a single concern (e.g. a publisher, subscriber, or timer)
+    and integrates natively into the ROS 2 lifecycle via the ``ManagedEntity`` protocol.
 
-    - it is a ``ManagedEntity``, so ROS 2 lifecycle callbacks are driven natively by the parent node.
-    - it knows its parent node via ``node``.
-    - it exposes explicit lifecycle hooks (``_on_configure``, ``_on_activate``, etc.).
-    - it does **not** introduce any parallel hidden state machine.
+    Owns:
+        - Its name and ``_is_active`` flag.
+        - A reference to the parent node (set by ``attach``).
+        - Lifecycle hook implementations: ``_on_configure``, ``_on_activate``,
+          ``_on_deactivate``, ``_on_cleanup``, and ``_on_shutdown``.
+
+    Does not own:
+        - Lifecycle state transitions — driven entirely by the parent ``LifecycleComponentNode``.
+        - The node object itself or any ROS resource created outside its own hooks.
+        - Any hidden parallel state machine beyond ``_is_active``.
+
+    Override points:
+        - ``_on_configure``: allocate ROS resources. Call ``super()`` first.
+        - ``_on_activate``: enable runtime behavior. Call ``super()`` to set ``_is_active``.
+        - ``_on_deactivate``: disable runtime behavior. Call ``super()`` to clear ``_is_active``.
+        - ``_on_cleanup``: release ROS resources. Call ``_release_resources()`` explicitly.
+        - ``_release_resources``: destroy ROS objects. Call ``super()._release_resources()`` last.
+        - Do not override the public ``on_configure``, ``on_activate``, etc. variants — those
+          apply ``_lifecycle_guard_component`` and delegate to the ``_on_*`` hooks.
 
     Lifecycle invariants:
-
-    - **configure**: allocate ROS resources (publishers, subscriptions). Do not enable runtime behavior.
-    - **activate**: enable runtime behavior. Must call ``super()._on_activate(state)`` to set ``_is_active``.
-    - **deactivate**: disable runtime behavior. Must call ``super()._on_deactivate(state)`` to clear ``_is_active``. Does not release resources.
-    - **cleanup**: release all ROS resources. Must call ``_release_resources()``. Does not affect activation state directly.
-    - **shutdown / error**: automatic call to ``_release_resources()``. No override needed for most subclasses.
+        - **configure**: allocate ROS resources (publishers, subscriptions). Do not enable runtime behavior.
+        - **activate**: enable runtime behavior. Must call ``super()._on_activate(state)`` to set ``_is_active``.
+        - **deactivate**: disable runtime behavior. Must call ``super()._on_deactivate(state)`` to clear ``_is_active``. Does not release resources.
+        - **cleanup**: release all ROS resources. Must call ``_release_resources()``. Does not affect activation state directly.
+        - **shutdown / error**: automatic call to ``_release_resources()``. No override needed for most subclasses.
 
     Note:
         ``_is_active`` is managed exclusively in the abstract bodies of ``_on_activate`` and
