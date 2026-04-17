@@ -34,22 +34,9 @@ DUMMY_STATE = LifecycleState(state_id=0, label="test")
 
 
 class ActivationTrackingComponent(LifecycleComponent):
-    """Calls super() on all hooks for proper _is_active tracking."""
+    """Minimal component for tracking _is_active through transitions."""
 
-    def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_configure(state)
-
-    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_activate(state)
-
-    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_deactivate(state)
-
-    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_cleanup(state)
-
-    def _release_resources(self) -> None:
-        super()._release_resources()
+    pass
 
 
 class RecordingComponent(LifecycleComponent):
@@ -83,9 +70,6 @@ class RecordingComponent(LifecycleComponent):
         if self._fail_on == "cleanup":
             return TransitionCallbackReturn.FAILURE
         return TransitionCallbackReturn.SUCCESS
-
-    def _release_resources(self) -> None:
-        super()._release_resources()
 
 
 # ---------------------------------------------------------------------------
@@ -202,10 +186,9 @@ class TestEdgeTransitionsDirect:
 
     # -- 6. Cleanup resets activation flag ---------------------------------
 
-    def test_cleanup_resets_is_active_via_release(self, node: LifecycleComponentNode) -> None:
-        # After configure → activate, calling cleanup should leave is_active
-        # as-is because cleanup's base body does not touch _is_active.
-        # However, _release_resources clears _is_active.  Direct cleanup + release:
+    def test_cleanup_clears_is_active(self, node: LifecycleComponentNode) -> None:
+        # The framework clears _is_active before calling _on_cleanup
+        # and calls _release_resources automatically after.
         comp = ActivationTrackingComponent("cleanup_active")
         node.add_component(comp)
 
@@ -214,11 +197,6 @@ class TestEdgeTransitionsDirect:
         assert comp.is_active is True
 
         comp.on_cleanup(DUMMY_STATE)
-        # _on_cleanup base does NOT clear _is_active...
-        assert comp.is_active is True
-
-        # ...but _release_resources() does:
-        comp._release_resources()
         assert comp.is_active is False
 
 

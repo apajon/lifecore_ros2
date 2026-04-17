@@ -30,35 +30,28 @@ DUMMY_STATE = LifecycleState(state_id=0, label="test")
 
 
 class CrashingComponent(LifecycleComponent):
-    """Component that raises RuntimeError on a configurable hook.
-
-    All other hooks delegate to super() and return SUCCESS.
-    """
+    """Component that raises RuntimeError on a configurable hook."""
 
     def __init__(self, name: str, *, crash_on: str = "configure") -> None:
         super().__init__(name)
         self._crash_on = crash_on
 
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_configure(state)
         if self._crash_on == "configure":
             raise RuntimeError("boom")
         return TransitionCallbackReturn.SUCCESS
 
     def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_activate(state)
         if self._crash_on == "activate":
             raise RuntimeError("boom")
         return TransitionCallbackReturn.SUCCESS
 
     def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_deactivate(state)
         if self._crash_on == "deactivate":
             raise RuntimeError("boom")
         return TransitionCallbackReturn.SUCCESS
 
     def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_cleanup(state)
         if self._crash_on == "cleanup":
             raise RuntimeError("boom")
         return TransitionCallbackReturn.SUCCESS
@@ -66,60 +59,44 @@ class CrashingComponent(LifecycleComponent):
     def _on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
         if self._crash_on == "shutdown":
             raise RuntimeError("boom")
-        return super()._on_shutdown(state)
+        return TransitionCallbackReturn.SUCCESS
 
     def _on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
         if self._crash_on == "error":
             raise RuntimeError("boom")
-        return super()._on_error(state)
-
-    def _release_resources(self) -> None:
-        super()._release_resources()
+        return TransitionCallbackReturn.SUCCESS
 
 
 class BadReturnComponent(LifecycleComponent):
-    """Component that returns an invalid value from a configurable hook.
-
-    Used to verify the guard's strict/non-strict invalid-return handling.
-    """
+    """Component that returns an invalid value from a configurable hook."""
 
     def __init__(self, name: str, *, bad_on: str = "configure") -> None:
         super().__init__(name)
         self._bad_on = bad_on
 
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_configure(state)
         if self._bad_on == "configure":
             return 42  # type: ignore[return-value]
         return TransitionCallbackReturn.SUCCESS
 
     def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_activate(state)
         if self._bad_on == "activate":
             return "oops"  # type: ignore[return-value]
         return TransitionCallbackReturn.SUCCESS
 
     def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_deactivate(state)
         if self._bad_on == "deactivate":
             return None  # type: ignore[return-value]
         return TransitionCallbackReturn.SUCCESS
 
     def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_cleanup(state)
         if self._bad_on == "cleanup":
             return False  # type: ignore[return-value]
         return TransitionCallbackReturn.SUCCESS
 
-    def _release_resources(self) -> None:
-        super()._release_resources()
-
 
 class ResourceTrackingComponent(LifecycleComponent):
-    """Component that tracks resource allocation/release explicitly.
-
-    Can inject FAILURE on a configurable hook via ``fail_on``.
-    """
+    """Component that tracks resource allocation/release explicitly."""
 
     def __init__(self, name: str, *, fail_on: str | None = None) -> None:
         super().__init__(name)
@@ -128,25 +105,14 @@ class ResourceTrackingComponent(LifecycleComponent):
         self._fail_on = fail_on
 
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_configure(state)
         self.resource_allocated = True
         if self._fail_on == "configure":
             return TransitionCallbackReturn.FAILURE
         return TransitionCallbackReturn.SUCCESS
 
     def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_activate(state)
         if self._fail_on == "activate":
             return TransitionCallbackReturn.FAILURE
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_deactivate(state)
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        super()._on_cleanup(state)
-        self._release_resources()
         return TransitionCallbackReturn.SUCCESS
 
     def _release_resources(self) -> None:
@@ -187,7 +153,7 @@ def spinning_node():
 
 
 class TestGuardCatchesExceptions:
-    """_lifecycle_guard_component catches exceptions and returns ERROR.
+    """_guarded_call catches exceptions and returns ERROR.
 
     test_lifecycle.py covers configure only; these tests close the gap
     for activate, deactivate, cleanup, shutdown, and error hooks.
@@ -254,10 +220,9 @@ class TestGuardCatchesExceptions:
 
 
 class TestGuardRejectsInvalidReturn:
-    """_lifecycle_guard_component in strict mode returns ERROR for invalid values.
+    """_guarded_call returns ERROR for invalid return values.
 
-    The default strict=True means any return value that is not
-    SUCCESS / FAILURE / ERROR triggers ERROR.
+    Any return value that is not SUCCESS / FAILURE / ERROR triggers ERROR.
     """
 
     def test_configure_invalid_return_yields_error(self, node: LifecycleComponentNode) -> None:

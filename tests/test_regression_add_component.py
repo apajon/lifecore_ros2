@@ -5,7 +5,6 @@ from __future__ import annotations
 from unittest.mock import patch
 
 import pytest
-from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleState
 
 from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
@@ -16,20 +15,7 @@ from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
 
 
 class DummyComponent(LifecycleComponent):
-    def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return TransitionCallbackReturn.SUCCESS
-
-    def _release_resources(self) -> None:
-        super()._release_resources()
+    pass
 
 
 # ---------------------------------------------------------------------------

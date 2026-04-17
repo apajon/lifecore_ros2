@@ -41,17 +41,6 @@ class GatedPublisher(LifecyclePublisherComponent):
         self._publisher = MagicMock()
         return TransitionCallbackReturn.SUCCESS
 
-    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_activate(state)
-
-    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_deactivate(state)
-
-    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self._publisher = None
-        self._is_active = False
-        return TransitionCallbackReturn.SUCCESS
-
     def _release_resources(self) -> None:
         self._publisher = None
         super()._release_resources()
@@ -67,17 +56,6 @@ class GatedSubscriber(LifecycleSubscriberComponent):
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
         # Skip real create_subscription — no transport needed.
         self._subscription = MagicMock()
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_activate(state)
-
-    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_deactivate(state)
-
-    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self._subscription = None
-        self._is_active = False
         return TransitionCallbackReturn.SUCCESS
 
     def on_message(self, msg: Any) -> None:
@@ -107,21 +85,6 @@ class DecoratorTestComponent(LifecycleComponent):
     @when_active(when_not_active=lambda: "fallback")
     def gated_callable(self) -> str:
         return "executed"
-
-    def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_configure(state)
-
-    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_activate(state)
-
-    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_deactivate(state)
-
-    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_cleanup(state)
-
-    def _release_resources(self) -> None:
-        super()._release_resources()
 
 
 # ---------------------------------------------------------------------------

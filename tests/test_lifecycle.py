@@ -43,27 +43,12 @@ class RecordingComponent(LifecycleComponent):
             return TransitionCallbackReturn.FAILURE
         return TransitionCallbackReturn.SUCCESS
 
-    def _release_resources(self) -> None:
-        super()._release_resources()
-
 
 class CrashingComponent(LifecycleComponent):
     """Component that raises during _on_configure to test the guard."""
 
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
         raise RuntimeError("boom")
-
-    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return TransitionCallbackReturn.SUCCESS
-
-    def _release_resources(self) -> None:
-        super()._release_resources()
 
 
 # ---------------------------------------------------------------------------
@@ -132,22 +117,9 @@ class TestLifecycleHooks:
 
 
 class ActivationTrackingComponent(LifecycleComponent):
-    """Component that calls super() on all hooks to properly toggle _is_active."""
+    """Minimal component for tracking _is_active through transitions."""
 
-    def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_configure(state)
-
-    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_activate(state)
-
-    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_deactivate(state)
-
-    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_cleanup(state)
-
-    def _release_resources(self) -> None:
-        super()._release_resources()
+    pass
 
 
 # ---------------------------------------------------------------------------
