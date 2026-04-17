@@ -21,10 +21,9 @@ class PeriodicPublisher(LifecyclePublisherComponent):
         self._counter: int = 0
 
     def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        result = super()._on_activate(state)
         self._timer = self.node.create_timer(1.0, self._tick)
         self.node.get_logger().info(f"[{self.name}] timer started")
-        return result
+        return TransitionCallbackReturn.SUCCESS
 
     def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
         if self._timer is not None:
@@ -32,7 +31,7 @@ class PeriodicPublisher(LifecyclePublisherComponent):
             self.node.destroy_timer(self._timer)
             self._timer = None
         self.node.get_logger().info(f"[{self.name}] timer stopped")
-        return super()._on_deactivate(state)
+        return TransitionCallbackReturn.SUCCESS
 
     def _tick(self) -> None:
         msg = String()

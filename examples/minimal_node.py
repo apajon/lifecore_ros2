@@ -1,22 +1,10 @@
 from __future__ import annotations
 
-from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
-
 from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
 
 
 class LoggingComponent(LifecycleComponent):
-    def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_configure(state)
-
-    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_activate(state)
-
-    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_deactivate(state)
-
-    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return super()._on_cleanup(state)
+    pass
 
 
 class MinimalNode(LifecycleComponentNode):
