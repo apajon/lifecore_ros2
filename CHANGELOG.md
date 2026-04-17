@@ -74,7 +74,7 @@
 
 ### Features
 
-- **components**: Add SubscriberComponent and PublisherComponent with correct _on_* overrides
+- **components**: Add LifecycleSubscriberComponent and LifecyclePublisherComponent with correct _on_* overrides
   ([`ed2a907`](https://github.com/apajon/lifecore_ros2/commit/ed2a907ac72e0d5a9f60fbbdafddfd61c677eda7))
 
 - **components**: Add TopicComponent base class for topic-aware lifecycle components

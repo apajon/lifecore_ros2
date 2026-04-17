@@ -91,11 +91,11 @@ This is the heart of the project. The whole value of `lifecore_ros2` depends on 
 ---
 
 ## 2.2 Test the happy path for each component type
-- [x] Test `ComposedLifecycleNode` nominal transitions
+- [x] Test `LifecycleComponentNode` nominal transitions
 - [x] Test `LifecycleComponent` nominal transition behavior
 - [x] Test `TopicComponent` resource setup and teardown
-- [x] Test `PublisherComponent` publish behavior across transitions
-- [x] Test `SubscriberComponent` callback behavior across transitions
+- [x] Test `LifecyclePublisherComponent` publish behavior across transitions
+- [x] Test `LifecycleSubscriberComponent` callback behavior across transitions
 
 ### Why
 The basic paths must be mechanically trustworthy before any public release.
@@ -140,11 +140,11 @@ This is one of the most visible and easiest-to-understand promises of the librar
 # 3. Public API and extension model
 
 ## 3.1 Review every public class name
-- [ ] Re-evaluate `ComposedLifecycleNode`
-- [ ] Re-evaluate `LifecycleComponent`
-- [ ] Re-evaluate `TopicComponent`
-- [ ] Re-evaluate `PublisherComponent`
-- [ ] Re-evaluate `SubscriberComponent`
+- [x] Re-evaluate `ComposedLifecycleNode` -> `LifecycleComponentNode`
+- [x] Re-evaluate `LifecycleComponent` (kept)
+- [x] Re-evaluate `TopicComponent` (kept)
+- [x] Re-evaluate `PublisherComponent` -> `LifecyclePublisherComponent`
+- [x] Re-evaluate `SubscriberComponent` -> `LifecycleSubscriberComponent`
 
 ### Why
 Names are sticky. Once public, they become part of how people think about the library. This is the best time to challenge them.
@@ -154,6 +154,12 @@ Names are sticky. Once public, they become part of how people think about the li
 - easy to understand in isolation
 - aligned with long-term design
 - not misleading outside author context
+
+### 3.1 Decision record
+- `ComposedLifecycleNode` renamed to `LifecycleComponentNode`.
+- `PublisherComponent` renamed to `LifecyclePublisherComponent`.
+- `SubscriberComponent` renamed to `LifecycleSubscriberComponent`.
+- `LifecycleComponent` and `TopicComponent` remain unchanged.
 
 ---
 

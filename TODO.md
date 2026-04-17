@@ -15,11 +15,11 @@ Oui. Voici une **todo list structurée** et exploitable par des agents de code, 
 * [x] workflow GitHub Actions de release/versionning défini
 * [x] stratégie lifecycle-native fixée
 * [x] pas de machine à états parallèle globale
-* [x] `SubscriberComponent`, `PublisherComponent`, `TopicComponent` déplacés dans `components/`
+* [x] `LifecycleSubscriberComponent`, `LifecyclePublisherComponent`, `TopicComponent` déplacés dans `components/`
 
 ### Core runtime
 
-* [x] `ComposedLifecycleNode` créé
+* [x] `LifecycleComponentNode` créé (anciennement `ComposedLifecycleNode`)
 * [x] `LifecycleComponent` créé
 * [x] usage de `ManagedEntity` retenu comme base lifecycle native ROS2
 
@@ -59,7 +59,7 @@ src/lifecore_ros2/
 
 # 2. Rendre le noyau minimal réellement exécutable
 
-## 2.1 Valider `ComposedLifecycleNode`
+## 2.1 Valider `LifecycleComponentNode`
 
 ### À faire
 
@@ -81,7 +81,7 @@ src/lifecore_ros2/
 
 ### À faire
 
-* [x] `SubscriberComponent` et `PublisherComponent` overrident `_on_*` (points d'extension) au lieu de `on_*` (méthodes gardées)
+* [x] `LifecycleSubscriberComponent` et `LifecyclePublisherComponent` overrident `_on_*` (points d'extension) au lieu de `on_*` (méthodes gardées)
 * [x] les appels `super()` pointent vers `_on_*` parents
 * [x] le décorateur `lifecycle_guard_component` n'est plus bypassé
 * [x] renommer `publisher_componenet.py` → `publisher_component.py` (typo corrigée)
@@ -99,7 +99,7 @@ src/lifecore_ros2/
 * [x] vérifier que la classe reste légère et abstraite conceptuellement
 * [x] éviter toute logique ROS active dedans
 
-## 3.2 `SubscriberComponent`
+## 3.2 `LifecycleSubscriberComponent`
 
 ### À faire
 
@@ -110,7 +110,7 @@ src/lifecore_ros2/
 * [x] vérifier que la méthode abstraite `on_message()` est bien le point d’entrée métier
 * [x] vérifier qu’aucun message n’est traité hors activation
 
-## 3.3 `PublisherComponent`
+## 3.3 `LifecyclePublisherComponent`
 
 ### À faire
 
@@ -131,7 +131,7 @@ But: prouver que l’architecture marche réellement.
 ### À faire
 
 * [x] créer `examples/minimal_node.py`
-* [x] y définir un `ComposedLifecycleNode`
+* [x] y définir un `LifecycleComponentNode`
 * [x] y enregistrer au moins un `LifecycleComponent`
 * [x] loguer les transitions `configure`, `activate`, `deactivate`, `cleanup`
 
@@ -139,7 +139,7 @@ But: prouver que l’architecture marche réellement.
 
 ### À faire
 
-* [x] créer un exemple `SubscriberComponent` avec `std_msgs/msg/String`
+* [x] créer un exemple `LifecycleSubscriberComponent` avec `std_msgs/msg/String`
 * [x] loguer les messages reçus
 * [x] démontrer que les messages sont ignorés hors activation
 
@@ -147,7 +147,7 @@ But: prouver que l’architecture marche réellement.
 
 ### À faire
 
-* [x] créer un exemple `PublisherComponent`
+* [x] créer un exemple `LifecyclePublisherComponent`
 * [x] publier périodiquement ou via méthode explicite
 * [x] démontrer l’échec contrôlé si publication hors activation
 
@@ -177,10 +177,10 @@ But: prouver que l’architecture marche réellement.
 
 ### À faire
 
-* [x] tester que `SubscriberComponent` n’appelle pas `on_message()` si inactif
-* [x] tester que `SubscriberComponent` appelle `on_message()` si actif
-* [x] tester que `PublisherComponent.publish()` échoue si non configuré
-* [x] tester que `PublisherComponent.publish()` échoue si inactif
+* [x] tester que `LifecycleSubscriberComponent` n'appelle pas `on_message()` si inactif
+* [x] tester que `LifecycleSubscriberComponent` appelle `on_message()` si actif
+* [x] tester que `LifecyclePublisherComponent.publish()` échoue si non configuré
+* [x] tester que `LifecyclePublisherComponent.publish()` échoue si inactif
 
 Note:
 
@@ -196,11 +196,11 @@ Note:
 * [x] décider ce qui est public depuis `lifecore_ros2`
 * [x] réexporter seulement les classes utiles:
 
-  * [x] `ComposedLifecycleNode`
+  * [x] `LifecycleComponentNode`
   * [x] `LifecycleComponent`
   * [x] `TopicComponent`
-  * [x] `SubscriberComponent`
-  * [x] `PublisherComponent`
+  * [x] `LifecycleSubscriberComponent`
+  * [x] `LifecyclePublisherComponent`
 * [x] éviter d'exposer des symboles internes inutiles
 
 ---

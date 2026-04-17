@@ -18,17 +18,17 @@ The goal is to make ROS 2 systems:
 lifecore_ros2 provides a small set of lifecycle-aware building blocks for composing ROS 2 Jazzy nodes from reusable components.
 
 The current public surface exposes:
-- ComposedLifecycleNode
+- LifecycleComponentNode
 - LifecycleComponent
 - TopicComponent
-- PublisherComponent
-- SubscriberComponent
+- LifecyclePublisherComponent
+- LifecycleSubscriberComponent
 
 ## Design Principles
 
 The repository is built around a few explicit rules:
 - native ROS 2 lifecycle semantics stay in control
-- ComposedLifecycleNode orchestrates components and registers them as managed entities
+- LifecycleComponentNode owns and drives registered LifecycleComponent instances
 - components keep their _on_* hooks focused and deterministic
 - topic-oriented components create ROS resources during configure, gate behavior with activation, and release resources during cleanup
 - no parallel hidden state machine is introduced on top of ROS 2 lifecycle
@@ -174,7 +174,7 @@ ros2 lifecycle set /publisher_demo_node deactivate
 What to expect:
 - messages are published only while the node is active
 - deactivation stops publication immediately
-- publication outside activation is guarded by `PublisherComponent.publish()`
+- publication outside activation is guarded by `LifecyclePublisherComponent.publish()`
 
 ### Subscriber Walkthrough
 

@@ -9,7 +9,7 @@ The repository currently contains a small set of examples intended to validate t
 Minimal Composed Node
 ---------------------
 
-examples/minimal_node.py defines a small lifecycle-aware node based on ComposedLifecycleNode.
+examples/minimal_node.py defines a small lifecycle-aware node based on LifecycleComponentNode.
 
 It demonstrates:
 
@@ -20,7 +20,7 @@ It demonstrates:
 Minimal Subscriber Component
 ----------------------------
 
-examples/minimal_subscriber.py defines a SubscriberComponent subclass attached to a composed node.
+examples/minimal_subscriber.py defines a LifecycleSubscriberComponent subclass attached to a managed node.
 
 It demonstrates:
 
@@ -31,7 +31,7 @@ It demonstrates:
 Minimal Publisher Component
 ---------------------------
 
-examples/minimal_publisher.py defines a PublisherComponent subclass attached to a composed node.
+examples/minimal_publisher.py defines a LifecyclePublisherComponent subclass attached to a managed node.
 
 It demonstrates:
 

@@ -62,7 +62,7 @@ Repository Concepts
 
 The architecture is organized around:
 
-- ComposedLifecycleNode as the lifecycle-aware orchestrator
+- LifecycleComponentNode as the lifecycle-aware orchestrator
 - LifecycleComponent as the base managed entity for reusable logic
 - topic-oriented components for publishers and subscribers
 

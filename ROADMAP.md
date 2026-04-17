@@ -5,11 +5,11 @@
 ### Included
 
 **Core API**
-- `ComposedLifecycleNode` — lifecycle node that orchestrates registered components as native ROS 2 managed entities
+- `LifecycleComponentNode` — lifecycle node that owns and drives registered `LifecycleComponent` instances as native ROS 2 managed entities
 - `LifecycleComponent` — abstract base class for lifecycle-aware components, propagates transitions through `_on_configure`, `_on_activate`, `_on_deactivate`, `_on_cleanup`, `_on_shutdown`
 - `TopicComponent` — abstract base class for topic-oriented components; allocates ROS pub/sub during configure, releases during cleanup
-- `PublisherComponent` — publishes messages gated by activation state
-- `SubscriberComponent` — processes incoming messages gated by activation state
+- `LifecyclePublisherComponent` — publishes messages gated by activation state
+- `LifecycleSubscriberComponent` — processes incoming messages gated by activation state
 - `when_active` — decorator that guards component methods to the active state
 
 **Examples**
@@ -64,12 +64,19 @@ The following symbols are exported from `lifecore_ros2` and form the public API:
 
 | Symbol | Kind | Role |
 |---|---|---|
-| `ComposedLifecycleNode` | class | Orchestrates components as native managed entities |
+| `LifecycleComponentNode` | class | Owns and drives registered LifecycleComponent instances |
 | `LifecycleComponent` | abstract class | Base for all lifecycle-aware components |
 | `TopicComponent` | abstract class | Base for topic-oriented components |
-| `PublisherComponent` | concrete class | Lifecycle-gated ROS publisher |
-| `SubscriberComponent` | abstract class | Lifecycle-gated ROS subscriber |
+| `LifecyclePublisherComponent` | concrete class | Lifecycle-gated ROS publisher |
+| `LifecycleSubscriberComponent` | abstract class | Lifecycle-gated ROS subscriber |
 | `when_active` | decorator | Guards a method to the active state |
+
+### Naming decision record (3.1)
+
+- `ComposedLifecycleNode` renamed to `LifecycleComponentNode` to name the class after what it owns and drives.
+- `PublisherComponent` renamed to `LifecyclePublisherComponent` for explicit lifecycle intent at call sites.
+- `SubscriberComponent` renamed to `LifecycleSubscriberComponent` for naming consistency with publisher.
+- `LifecycleComponent` and `TopicComponent` kept unchanged.
 
 ### Intended subclassing hooks
 
@@ -84,7 +91,7 @@ These `_on_*` methods are the intended extension points. They are `abstractmetho
 | `_on_shutdown(state)` | `LifecycleComponent` | no | Calls `_release_resources`; override if needed |
 | `_on_error(state)` | `LifecycleComponent` | no | Calls `_release_resources`; override if needed |
 | `_release_resources()` | `LifecycleComponent` and subclasses | yes | Release all allocated ROS resources |
-| `on_message(msg)` | `SubscriberComponent` | yes | Handle incoming messages while active |
+| `on_message(msg)` | `LifecycleSubscriberComponent` | yes | Handle incoming messages while active |
 
 **Do not override** the native `on_configure`, `on_activate`, `on_deactivate`, `on_cleanup`, `on_shutdown`, `on_error` methods directly. These are owned by ROS 2 `ManagedEntity` and delegate to the `_on_*` hooks after applying the lifecycle guard.
 
@@ -97,7 +104,7 @@ The following are internal and subject to change without notice:
 - `_LifecycleHook` — internal type alias
 - `_SENTINEL` — internal sentinel value for `when_active`
 - `_detach()` on `LifecycleComponent` — internal rollback used by `add_component` on registration failure
-- `attach()` on `LifecycleComponent` — called by `ComposedLifecycleNode.add_component()`; users should not call it directly
+- `attach()` on `LifecycleComponent` — called by `LifecycleComponentNode.add_component()`; users should not call it directly
 
 ### Stability statement
 
@@ -119,4 +126,4 @@ The project uses [Conventional Commits](https://www.conventionalcommits.org/) an
 - `major_on_zero = false` — breaking changes (BREAKING CHANGE commits) increment the minor version while in `0.x`, not the major
 - `tag_format = "v{version}"` — tags are prefixed with `v`
 
-**Promotion to `1.0.0`:** will happen only when the public API (`ComposedLifecycleNode`, `LifecycleComponent`, `TopicComponent`, `PublisherComponent`, `SubscriberComponent`, `when_active`) is considered stable enough to defend. This requires a deliberate decision and a `BREAKING CHANGE` or manual bump — it will not happen automatically.
+**Promotion to `1.0.0`:** will happen only when the public API (`LifecycleComponentNode`, `LifecycleComponent`, `TopicComponent`, `LifecyclePublisherComponent`, `LifecycleSubscriberComponent`, `when_active`) is considered stable enough to defend. This requires a deliberate decision and a `BREAKING CHANGE` or manual bump — it will not happen automatically.

@@ -15,7 +15,7 @@ Lifecycle Design
 ----------------
 
 The repository follows native ROS 2 lifecycle semantics.
-ComposedLifecycleNode registers each component as a managed entity and relies on the underlying lifecycle node behavior to propagate transitions.
+LifecycleComponentNode registers each component as a managed entity and relies on the underlying lifecycle node behavior to propagate transitions.
 
 LifecycleComponent remains intentionally small:
 
@@ -69,6 +69,6 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
   managed exclusively through ``_on_activate`` and ``_on_deactivate`` super() calls.
 
 **Activation gating**
-  ``PublisherComponent.publish()`` raises ``RuntimeError`` when inactive.
-  ``SubscriberComponent`` silently drops incoming messages when inactive.
+  ``LifecyclePublisherComponent.publish()`` raises ``RuntimeError`` when inactive.
+  ``LifecycleSubscriberComponent`` silently drops incoming messages when inactive.
   Both behaviors are intentional and consistent with explicit activation semantics.
