@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import threading
 from collections.abc import Iterable
 from typing import Any
 
@@ -15,6 +16,7 @@ class LifecycleComponentNode(LifecycleNode):
     Owns:
         - The registry of attached ``LifecycleComponent`` instances.
         - Component registration gate: open before first transition, closed after.
+        - Thread-safe access to the component registry and registration gate.
         - Propagation of ROS 2 lifecycle transitions to registered components via the
           native ``ManagedEntity`` mechanism.
 
@@ -39,31 +41,41 @@ class LifecycleComponentNode(LifecycleNode):
         super().__init__(node_name, namespace=namespace, **kwargs)
         self._components: dict[str, LifecycleComponent] = {}
         self._registration_open: bool = True
+        self._lock: threading.RLock = threading.RLock()
 
     @property
     def components(self) -> tuple[LifecycleComponent, ...]:
-        return tuple(self._components.values())
+        with self._lock:
+            return tuple(self._components.values())
 
     def add_component(self, component: LifecycleComponent) -> None:
         """Register a component as a managed entity.
+
+        This is the sole supported registration path. It performs attachment,
+        managed entity registration, and registry insertion atomically under
+        the node lock. If managed entity registration fails, the attachment
+        is rolled back.
 
         Raises:
             RuntimeError: If lifecycle transitions have already started.
             ValueError: If a component with the same name is already registered.
         """
-        if not self._registration_open:
-            raise RuntimeError(f"Cannot add component '{component.name}': lifecycle transitions have already started")
+        with self._lock:
+            if not self._registration_open:
+                raise RuntimeError(
+                    f"Cannot add component '{component.name}': lifecycle transitions have already started"
+                )
 
-        if component.name in self._components:
-            raise ValueError(f"Component name already registered: {component.name}")
+            if component.name in self._components:
+                raise ValueError(f"Component name already registered: {component.name}")
 
-        component.attach(self)
-        try:
-            self.add_managed_entity(component)
-        except Exception:
-            component._detach()
-            raise
-        self._components[component.name] = component
+            component._attach(self)
+            try:
+                self.add_managed_entity(component)
+            except Exception:
+                component._detach()
+                raise
+            self._components[component.name] = component
 
         self.get_logger().info(f"Registered component '{component.name}'")
 
@@ -72,15 +84,17 @@ class LifecycleComponentNode(LifecycleNode):
             self.add_component(component)
 
     def get_component(self, name: str) -> LifecycleComponent:
-        try:
-            return self._components[name]
-        except KeyError as exc:
-            raise KeyError(f"Unknown component: {name}") from exc
+        with self._lock:
+            try:
+                return self._components[name]
+            except KeyError as exc:
+                raise KeyError(f"Unknown component: {name}") from exc
 
     # -- lifecycle gate -------------------------------------------------------
 
     def _close_registration(self) -> None:
-        self._registration_open = False
+        with self._lock:
+            self._registration_open = False
 
     def on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
         self._close_registration()

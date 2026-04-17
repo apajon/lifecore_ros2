@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import traceback
-from abc import ABC, abstractmethod
+from abc import ABC
 from collections.abc import Callable
 from functools import wraps
 from logging import getLogger
@@ -14,7 +14,13 @@ from rclpy.lifecycle.node import LifecycleState
 if TYPE_CHECKING:
     from .lifecycle_component_node import LifecycleComponentNode
 
-_LifecycleHook = Callable[["LifecycleComponent", LifecycleState], TransitionCallbackReturn]
+_VALID_RETURNS = frozenset(
+    {
+        TransitionCallbackReturn.SUCCESS,
+        TransitionCallbackReturn.FAILURE,
+        TransitionCallbackReturn.ERROR,
+    }
+)
 
 
 class _LoggerLike(Protocol):
@@ -23,70 +29,6 @@ class _LoggerLike(Protocol):
     def warning(self, msg: str) -> None: ...
 
     def error(self, msg: str) -> None: ...
-
-
-def _lifecycle_guard_component(strict: bool = True) -> Callable[[_LifecycleHook], _LifecycleHook]:
-    """Decorator to guard lifecycle component methods.
-
-    Args:
-        strict: If ``True``, invalid return values will result in ERROR.
-    """
-
-    def decorator(method: _LifecycleHook) -> _LifecycleHook:
-        @wraps(method)
-        def wrapper(self: LifecycleComponent, state: LifecycleState) -> TransitionCallbackReturn:
-            log: _LoggerLike = getLogger(__name__)
-
-            if hasattr(self, "get_logger") and callable(self.get_logger):
-                log = cast(_LoggerLike, self.get_logger())
-            else:
-                node = getattr(self, "_node", None)
-                if node is not None and hasattr(node, "get_logger") and callable(node.get_logger):
-                    log = cast(_LoggerLike, node.get_logger())
-
-            if not isinstance(self, LifecycleComponent):
-                msg = (
-                    f"{method.__qualname__} is decorated with _lifecycle_guard_component "
-                    f"but self is {type(self).__name__}, expected LifecycleComponent"
-                )
-
-                log.error(msg)
-                log.error("Decorator misuse detected, forcing lifecycle ERROR return")
-                return TransitionCallbackReturn.ERROR
-
-            method_name = method.__name__
-            component_name = self.name
-
-            try:
-                log.debug(f"[{component_name}.{method_name}] start")
-
-                result = method(self, state)
-
-                valid_returns = (
-                    TransitionCallbackReturn.SUCCESS,
-                    TransitionCallbackReturn.FAILURE,
-                    TransitionCallbackReturn.ERROR,
-                )
-
-                if result not in valid_returns:
-                    msg = f"[{component_name}.{method_name}] invalid return value: {result!r}"
-                    if strict:
-                        log.error(msg)
-                        return TransitionCallbackReturn.ERROR
-                    log.warning(msg)
-                    return TransitionCallbackReturn.FAILURE
-
-                log.debug(f"[{component_name}.{method_name}] result={result}")
-                return result
-
-            except Exception as exc:
-                log.error(f"[{component_name}.{method_name}] crashed with {type(exc).__name__}: {exc}")
-                log.error(traceback.format_exc())
-                return TransitionCallbackReturn.ERROR
-
-        return wrapper
-
-    return decorator
 
 
 _SENTINEL = object()
@@ -134,6 +76,9 @@ def when_active[F: Callable[..., Any]](
                     _default_raise(self)
                 elif when_not_active is not None:
                     cast(Callable[[], Any], when_not_active)()
+                else:
+                    # Silent no-op — trace at debug level for diagnosis.
+                    self._resolve_logger().debug(f"[{self._name}] {fn.__name__} dropped: component not active")
                 return None
             return fn(self, *args, **kwargs)
 
@@ -150,37 +95,30 @@ class LifecycleComponent(ManagedEntity, ABC):
     Each subclass encapsulates a single concern (e.g. a publisher, subscriber, or timer)
     and integrates natively into the ROS 2 lifecycle via the ``ManagedEntity`` protocol.
 
-    Owns:
-        - Its name and ``_is_active`` flag.
-        - A reference to the parent node (set by ``attach``).
-        - Lifecycle hook implementations: ``_on_configure``, ``_on_activate``,
-          ``_on_deactivate``, ``_on_cleanup``, and ``_on_shutdown``.
+    Framework guarantees:
+        - ``_is_active`` is set to ``True`` after a successful ``_on_activate`` hook
+          and cleared to ``False`` after a successful ``_on_deactivate`` hook.
+          For ``_on_cleanup``, ``_on_shutdown``, and ``_on_error``, ``_is_active`` is
+          cleared unconditionally before the hook runs. Subclasses never manage this flag.
+        - ``_release_resources()`` is called automatically after ``_on_cleanup``,
+          ``_on_shutdown``, and ``_on_error``. Subclasses do not need to call it.
+        - Exceptions in hooks are caught and converted to ``TransitionCallbackReturn.ERROR``.
+        - Invalid return values from hooks are caught and converted to ERROR.
 
-    Does not own:
-        - Lifecycle state transitions — driven entirely by the parent ``LifecycleComponentNode``.
-        - The node object itself or any ROS resource created outside its own hooks.
-        - Any hidden parallel state machine beyond ``_is_active``.
+    Subclass extension points (override these):
+        - ``_on_configure``: allocate ROS resources. Default returns SUCCESS.
+        - ``_on_activate``: enable runtime behavior. Default returns SUCCESS.
+        - ``_on_deactivate``: disable runtime behavior. Default returns SUCCESS.
+        - ``_on_cleanup``: custom cleanup before automatic resource release. Default returns SUCCESS.
+        - ``_on_shutdown``: custom shutdown logic. Default returns SUCCESS.
+        - ``_on_error``: custom error handling. Default returns SUCCESS.
+        - ``_release_resources``: destroy ROS objects (publishers, subscriptions, timers).
+          Must be idempotent. Call ``super()._release_resources()`` last when overriding.
 
-    Override points:
-        - ``_on_configure``: allocate ROS resources. Call ``super()`` first.
-        - ``_on_activate``: enable runtime behavior. Call ``super()`` to set ``_is_active``.
-        - ``_on_deactivate``: disable runtime behavior. Call ``super()`` to clear ``_is_active``.
-        - ``_on_cleanup``: release ROS resources. Call ``_release_resources()`` explicitly.
-        - ``_release_resources``: destroy ROS objects. Call ``super()._release_resources()`` last.
-        - Do not override the public ``on_configure``, ``on_activate``, etc. variants — those
-          apply ``_lifecycle_guard_component`` and delegate to the ``_on_*`` hooks.
-
-    Lifecycle invariants:
-        - **configure**: allocate ROS resources (publishers, subscriptions). Do not enable runtime behavior.
-        - **activate**: enable runtime behavior. Must call ``super()._on_activate(state)`` to set ``_is_active``.
-        - **deactivate**: disable runtime behavior. Must call ``super()._on_deactivate(state)`` to clear ``_is_active``. Does not release resources.
-        - **cleanup**: release all ROS resources. Must call ``_release_resources()``. Does not affect activation state directly.
-        - **shutdown / error**: automatic call to ``_release_resources()``. No override needed for most subclasses.
-
-    Note:
-        ``_is_active`` is managed exclusively in the abstract bodies of ``_on_activate`` and
-        ``_on_deactivate``. Subclasses must call ``super()`` in both hooks for gating to work
-        correctly. Methods decorated with ``@when_active`` rely on this flag.
+    Do not override:
+        - ``on_configure``, ``on_activate``, ``on_deactivate``, ``on_cleanup``,
+          ``on_shutdown``, ``on_error`` — framework-controlled entry points that
+          manage lifecycle invariants and delegate to the ``_on_*`` hooks.
     """
 
     def __init__(self, name: str) -> None:
@@ -213,131 +151,185 @@ class LifecycleComponent(ManagedEntity, ABC):
     def get_parent_namespace(self) -> str:
         return self.node.get_namespace()
 
-    def attach(self, node: LifecycleComponentNode) -> None:
-        """Attach the component to a node.
+    # -- framework-internal attachment ------------------------------------
 
-        Args:
-            node (LifecycleComponentNode): The node to attach the component to.
+    def _attach(self, node: LifecycleComponentNode) -> None:
+        """Attach the component to a node. Framework-internal.
+
+        Do not call directly. Use ``LifecycleComponentNode.add_component()`` instead,
+        which performs gate checks, duplicate detection, managed entity registration,
+        and rollback on failure.
 
         Raises:
-            RuntimeError: If the component is already attached to a node.
+            RuntimeError: If the component is already attached.
         """
         if self._node is not None:
             raise RuntimeError(
-                f"Component '{self._name}' is already attached to Node '{self.node.get_namespace() + self.get_parent_name()}'"
+                f"Component '{self._name}' is already attached to "
+                f"Node '{self._node.get_namespace()}{self._node.get_name()}'"
             )
         self._node = node
 
     def _detach(self) -> None:
-        """Reset the node reference (internal rollback for failed registration)."""
+        """Reset the node reference. Framework-internal rollback for failed registration.
+
+        Called by ``LifecycleComponentNode.add_component()`` when managed entity
+        registration fails after attachment.
+        """
         self._node = None
 
-    @_lifecycle_guard_component()
+    # -- logger resolution ------------------------------------------------
+
+    def _resolve_logger(self) -> _LoggerLike:
+        """Return the best available logger for lifecycle diagnostics."""
+        if self._node is not None:
+            return cast(_LoggerLike, self._node.get_logger())
+        return cast(_LoggerLike, getLogger(__name__))
+
+    # -- guarded hook dispatch --------------------------------------------
+
+    def _guarded_call(
+        self,
+        hook_name: str,
+        hook: Callable[[LifecycleState], TransitionCallbackReturn],
+        state: LifecycleState,
+    ) -> TransitionCallbackReturn:
+        """Call a lifecycle hook with exception catching and return-value validation."""
+        log = self._resolve_logger()
+        try:
+            result = hook(state)
+            if result not in _VALID_RETURNS:
+                log.error(f"[{self._name}.{hook_name}] invalid return value: {result!r}")
+                return TransitionCallbackReturn.ERROR
+            return result
+        except Exception as exc:
+            log.error(f"[{self._name}.{hook_name}] {type(exc).__name__}: {exc}")
+            log.error(traceback.format_exc())
+            return TransitionCallbackReturn.ERROR
+
+    def _safe_release_resources(self) -> TransitionCallbackReturn:
+        """Call ``_release_resources`` with exception safety."""
+        try:
+            self._release_resources()
+            return TransitionCallbackReturn.SUCCESS
+        except Exception as exc:
+            log = self._resolve_logger()
+            log.error(f"[{self._name}._release_resources] {type(exc).__name__}: {exc}")
+            log.error(traceback.format_exc())
+            return TransitionCallbackReturn.ERROR
+
+    # -- public lifecycle entry points (do not override) ------------------
+
     def on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return self._on_configure(state)
+        return self._guarded_call("on_configure", self._on_configure, state)
 
-    @abstractmethod
-    def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        """Configure the component.
-
-        Allowed: allocate ROS resources (create publishers, subscriptions, timers).
-        Not allowed: enable runtime behavior or set ``_is_active``.
-
-        Subclasses must call ``super()._on_configure(state)`` first.
-
-        Returns:
-            TransitionCallbackReturn: SUCCESS, FAILURE, or ERROR.
-        """
-        self.get_logger().debug(f"[{self.name}] component configure")
-        return TransitionCallbackReturn.SUCCESS
-
-    @_lifecycle_guard_component()
     def on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return self._on_activate(state)
+        result = self._guarded_call("on_activate", self._on_activate, state)
+        if result == TransitionCallbackReturn.SUCCESS:
+            self._is_active = True
+        return result
 
-    @abstractmethod
-    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        """Activate the component.
-
-        Allowed: enable runtime behavior (start publishing, accept messages).
-        Not allowed: allocate new ROS resources.
-
-        Subclasses must call ``super()._on_activate(state)`` to set ``_is_active = True``.
-        Methods decorated with ``@when_active`` will not execute until this flag is set.
-
-        Returns:
-            TransitionCallbackReturn: SUCCESS, FAILURE, or ERROR.
-        """
-        self._is_active = True
-        self.get_logger().debug(f"[{self.name}] component activate")
-        return TransitionCallbackReturn.SUCCESS
-
-    @_lifecycle_guard_component()
     def on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return self._on_deactivate(state)
+        result = self._guarded_call("on_deactivate", self._on_deactivate, state)
+        if result == TransitionCallbackReturn.SUCCESS:
+            self._is_active = False
+        return result
 
-    @abstractmethod
-    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        """Deactivate the component.
-
-        Required: disable runtime behavior.
-        Not allowed: release ROS resources (that is cleanup's responsibility).
-
-        Subclasses must call ``super()._on_deactivate(state)`` to clear ``_is_active = False``.
-        After this call, all ``@when_active``-gated methods stop executing.
-
-        Returns:
-            TransitionCallbackReturn: SUCCESS, FAILURE, or ERROR.
-        """
-        self._is_active = False
-        self.get_logger().debug(f"[{self.name}] component deactivate")
-        return TransitionCallbackReturn.SUCCESS
-
-    @_lifecycle_guard_component()
     def on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return self._on_cleanup(state)
+        self._is_active = False
+        result = self._guarded_call("on_cleanup", self._on_cleanup, state)
+        release_result = self._safe_release_resources()
+        if release_result != TransitionCallbackReturn.SUCCESS:
+            return release_result
+        return result
 
-    @abstractmethod
-    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        """Clean up the component.
+    def on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
+        self._is_active = False
+        result = self._guarded_call("on_shutdown", self._on_shutdown, state)
+        release_result = self._safe_release_resources()
+        if release_result != TransitionCallbackReturn.SUCCESS:
+            return release_result
+        return result
 
-        Required: release all ROS resources allocated during configure.
-        Subclasses must call ``_release_resources()`` explicitly — the base body does not do it.
+    def on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
+        self._is_active = False
+        result = self._guarded_call("on_error", self._on_error, state)
+        release_result = self._safe_release_resources()
+        if release_result != TransitionCallbackReturn.SUCCESS:
+            return release_result
+        return result
 
-        Subclasses should call ``super()._on_cleanup(state)`` first, then ``_release_resources()``.
+    # -- subclass extension points ----------------------------------------
+
+    def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Configure the component. Override to allocate ROS resources.
+
+        Called during the configure transition. Do not enable runtime behavior here.
 
         Returns:
             TransitionCallbackReturn: SUCCESS, FAILURE, or ERROR.
         """
-        self.get_logger().debug(f"[{self.name}] component cleanup")
         return TransitionCallbackReturn.SUCCESS
 
-    @abstractmethod
-    def _release_resources(self) -> None:
-        """Release all ROS resources allocated by this component.
+    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Activate the component. Override to enable runtime behavior.
 
-        Called automatically by ``_on_shutdown`` and ``_on_error``.
-        Must be called explicitly by subclasses inside ``_on_cleanup``.
+        The framework sets ``_is_active = True`` after this hook returns SUCCESS.
+        Do not set ``_is_active`` manually.
 
-        Subclasses must call ``super()._release_resources()`` last to ensure
-        ``_is_active`` is cleared.
+        Returns:
+            TransitionCallbackReturn: SUCCESS, FAILURE, or ERROR.
         """
-        self._is_active = False
+        return TransitionCallbackReturn.SUCCESS
 
-    @_lifecycle_guard_component()
-    def on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return self._on_shutdown(state)
+    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Deactivate the component. Override to disable runtime behavior.
+
+        The framework clears ``_is_active`` after this hook returns SUCCESS.
+        If the hook returns FAILURE or ERROR, ``_is_active`` remains True.
+
+        Returns:
+            TransitionCallbackReturn: SUCCESS, FAILURE, or ERROR.
+        """
+        return TransitionCallbackReturn.SUCCESS
+
+    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Clean up the component. Override for custom cleanup before resource release.
+
+        The framework calls ``_release_resources()`` automatically after this hook.
+
+        Returns:
+            TransitionCallbackReturn: SUCCESS, FAILURE, or ERROR.
+        """
+        return TransitionCallbackReturn.SUCCESS
 
     def _on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self._release_resources()
-        self.get_logger().debug(f"[{self.name}] component shutdown")
-        return TransitionCallbackReturn.SUCCESS
+        """Handle shutdown. Override for custom shutdown logic.
 
-    @_lifecycle_guard_component()
-    def on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return self._on_error(state)
+        The framework calls ``_release_resources()`` automatically after this hook.
+
+        Returns:
+            TransitionCallbackReturn: SUCCESS, FAILURE, or ERROR.
+        """
+        return TransitionCallbackReturn.SUCCESS
 
     def _on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self._release_resources()
-        self.get_logger().error(f"[{self.name}] component error")
+        """Handle error. Override for custom error handling.
+
+        The framework calls ``_release_resources()`` automatically after this hook.
+
+        Returns:
+            TransitionCallbackReturn: SUCCESS, FAILURE, or ERROR.
+        """
         return TransitionCallbackReturn.SUCCESS
+
+    def _release_resources(self) -> None:
+        """Release ROS resources owned by this component.
+
+        Called automatically by the framework during cleanup, shutdown, and error
+        transitions. Override to destroy publishers, subscriptions, timers, etc.
+
+        Implementations must be idempotent. Call ``super()._release_resources()`` last
+        when overriding in a subclass chain.
+        """
+        self._is_active = False
