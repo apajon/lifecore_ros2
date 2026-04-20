@@ -175,13 +175,30 @@ An abstract library becomes usable when its concepts are sharply bounded. Users 
 ---
 
 ## 3.3 Separate public hooks from internal machinery
-- [ ] Mark intended subclass hooks clearly
-- [ ] Mark internal helper methods clearly
-- [ ] Avoid leaking implementation details through accidental public methods
-- [ ] Decide whether protected naming is needed for extension points
+- [x] Mark intended subclass hooks clearly
+- [x] Mark internal helper methods clearly
+- [x] Avoid leaking implementation details through accidental public methods
+- [x] Decide whether protected naming is needed for extension points
 
 ### Why
 Users will depend on anything that looks available. If you do not draw the line, they will draw it for you.
+
+### 3.3 Decision record
+
+**Four-bucket taxonomy** applied uniformly across `core/` and `components/`:
+
+- **Bucket 1 — Public API**: no underscore; included in `__all__`. No changes needed.
+- **Bucket 2 — Protected extension points**: `_on_*` / `_release_resources`. Docstring starts with `Extension point.` Rendered in Sphinx autodoc via `autodoc-skip-member` hook.
+- **Bucket 3 — Framework-controlled entry points**: the six `on_*` methods on `LifecycleComponent`. Decorated with `@typing.final` so pyright catches accidental overrides. `LifecycleComponentNode.on_configure` and `on_shutdown` are **not** sealed — they carry an explicit "override with super" contract.
+- **Bucket 4 — Framework-internal**: `_attach`, `_detach`, `_resolve_logger`, `_guarded_call`, `_safe_release_resources`, `_close_registration`, `_on_message_wrapper`. Docstring starts with `Framework-internal. Do not call from user code.` Excluded from Sphinx autodoc.
+
+**`on_message` resolution — R2 (keep public)**: `on_message` defines *application* behavior (the subscriber callback contract), not framework behavior. It is intentionally public. This distinguishes it from `_on_configure` etc. which customize framework transitions. Documented in the `LifecycleSubscriberComponent` docstring and in `docs/architecture.rst`.
+
+**`_on_message_wrapper` sealed**: decorated `@final` — it is a framework dispatch method that must never be overridden.
+
+**`docs/conf.py`**: added `autodoc-skip-member` hook that includes Bucket 2 extension points (`_on_*`, `_release_resources`) and excludes all other `_*` members from generated API docs.
+
+**`docs/architecture.rst`**: added "Member Convention" section documenting the four buckets and their markers; fixed two stale lifecycle invariant statements (`on_deactivate` clears `_is_active` only on SUCCESS; `_release_resources` is called automatically).
 
 ---
 
