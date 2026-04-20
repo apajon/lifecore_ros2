@@ -648,10 +648,10 @@ Release automation is only useful if it has been proven before launch day.
 # 7. Release assets and public positioning
 
 ## 7.1 Prepare the first changelog entry
-- [ ] State what the first release provides
-- [ ] State what it intentionally does not provide yet
-- [ ] State the supported ROS and Python baseline
-- [ ] State known limitations if any
+- [x] State what the first release provides
+- [x] State what it intentionally does not provide yet
+- [x] State the supported ROS and Python baseline
+- [x] State known limitations if any
 
 ### Why
 The first release note sets expectations for everyone who sees the project.
