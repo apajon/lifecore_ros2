@@ -46,19 +46,20 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
 
 **activate**
   Enable runtime behavior. Start publishing, accept message callbacks.
-  Must call ``super()._on_activate(state)`` to set ``_is_active = True``.
-  Methods decorated with ``@when_active`` will not execute until this flag is set.
+  Do not call ``super()._on_activate(state)`` — the framework sets ``_is_active = True``
+  automatically after the hook returns SUCCESS.
   Do not allocate new ROS resources here.
 
 **deactivate**
   Disable runtime behavior. Stop publishing, ignore incoming messages.
-  Must call ``super()._on_deactivate(state)`` to clear ``_is_active``.
+  ``_is_active`` is cleared to ``False`` only after ``_on_deactivate`` returns SUCCESS.
+  A FAILURE or ERROR result leaves ``_is_active`` unchanged — the component stays active.
   Do not release ROS resources here — that is cleanup's responsibility.
 
 **cleanup**
   Release all ROS resources allocated during configure.
-  ``_release_resources()`` is not called automatically by the base class.
-  Subclasses must call it explicitly inside their ``_on_cleanup`` override.
+  ``_release_resources()`` is called automatically by the framework after ``_on_cleanup`` returns.
+  No explicit call is needed in the override.
 
 **shutdown / error**
   ``_release_resources()`` is called automatically. No override needed for most subclasses.
@@ -72,3 +73,36 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
   ``LifecyclePublisherComponent.publish()`` raises ``RuntimeError`` when inactive.
   ``LifecycleSubscriberComponent`` silently drops incoming messages when inactive.
   Both behaviors are intentional and consistent with explicit activation semantics.
+
+Member Convention
+-----------------
+
+Every class in ``lifecore_ros2`` assigns each method and attribute to exactly one
+of four buckets. This is the authoritative guide for contributors and subclassers.
+
+**Bucket 1 — Public API**
+  Stable surface for direct use by application code. No leading underscore.
+  Included in ``__all__`` at module level. Examples: ``name``, ``is_active``,
+  ``add_component``, ``publish``, ``on_message``.
+
+**Bucket 2 — Protected extension points**
+  Override in subclasses; never call directly from application code. Single leading
+  underscore. Docstring starts with ``Extension point.`` Examples: ``_on_configure``,
+  ``_on_activate``, ``_on_deactivate``, ``_on_cleanup``, ``_on_shutdown``, ``_on_error``,
+  ``_release_resources``. Rendered in API docs.
+
+**Bucket 3 — Framework-controlled entry points**
+  Implement the ``rclpy`` ``ManagedEntity`` / ``LifecycleNode`` protocol. Decorated with
+  ``@typing.final`` on ``LifecycleComponent`` so pyright catches accidental overrides.
+  On ``LifecycleComponentNode``, ``on_configure`` and ``on_shutdown`` are not sealed because
+  application nodes legitimately call ``super()`` inside them; those carry an explicit
+  "override with super" contract in their docstring. Examples: ``LifecycleComponent.on_configure``,
+  ``on_activate``, ``on_deactivate``, ``on_cleanup``, ``on_shutdown``, ``on_error``.
+
+**Bucket 4 — Framework-internal**
+  Implementation details with no user contract. Single leading underscore. Docstring starts
+  with ``Framework-internal. Do not call from user code.`` Excluded from API docs.
+  Examples: ``_attach``, ``_detach``, ``_guarded_call``, ``_safe_release_resources``,
+  ``_resolve_logger``, ``_close_registration``, ``_on_message_wrapper``.
+
+When adding a new method, assign it to one bucket before writing the docstring.
