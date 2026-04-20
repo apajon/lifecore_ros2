@@ -622,11 +622,11 @@ Three parallel jobs:
 ---
 
 ## 6.7 Validate semantic-release flow end to end
-- [ ] Verify computed version behavior
-- [ ] Verify tag generation
-- [ ] Verify `--no-vcs-release` path
-- [ ] Verify conventional commit assumptions
-- [ ] Avoid first release surprises
+- [x] Verify computed version behavior
+- [x] Verify tag generation
+- [x] Verify `--no-vcs-release` path
+- [x] Verify conventional commit assumptions
+- [x] Avoid first release surprises
 
 ### Why
 Release automation is only useful if it has been proven before launch day.
@@ -639,7 +639,7 @@ Release automation is only useful if it has been proven before launch day.
 - `build_command` already uses `pip install build && python -m build` (PSR Docker env does not have `uv`).
 
 **Remaining execution gates before checking these boxes**:
-1. Run `uv run --group release semantic-release version --noop --print` on `main` and confirm it computes `0.1.0` without errors.
+1. Run `uv run --group release semantic-release version --print --no-push` on `main` and confirm it computes `0.1.0` without errors.
 2. Decide CHANGELOG handling: freeze current content as-is, or let semantic-release overwrite from `v0.1.0` forward.
 3. Dispatch Release workflow once on a test branch to confirm tag creation and GitHub Release publication.
 
