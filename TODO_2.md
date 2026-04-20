@@ -397,12 +397,26 @@ You were right to keep the library abstract. But the repo still needs one exampl
 ---
 
 ## 5.3 Add one multi-component example
-- [ ] Compose at least two or three components together
-- [ ] Show how composition is better than isolated examples
-- [ ] Keep the behavior easy to observe
+- [x] Compose at least two or three components together
+- [x] Show how composition is better than isolated examples
+- [x] Keep the behavior easy to observe
 
 ### Why
 This is likely closer to the real value of the library than separate minimal publisher/subscriber snippets.
+
+### 5.3 Decision record
+
+**Deliverable**: `examples/composed_pipeline.py` — three sibling components compose inside one `LifecycleComponentNode`:
+
+- `SineSource(LifecyclePublisherComponent[Float64])`: emits sine-wave samples on `/pipeline/raw` while active; timer created on activate (runtime behavior, not ROS resource).
+- `MovingAverageRelay(LifecycleComponent)`: extends `LifecycleComponent` directly, owning both a raw rclpy subscription and raw rclpy publisher. Demonstrates the pure extension model: any pair of ROS resources belongs in one component. Buffer cleared on deactivate to prevent stale-state bias after reactivation.
+- `LoggingSink(LifecycleSubscriberComponent[Float64])`: logs averaged values from `/pipeline/avg` while active.
+
+**Teaching value**: composition is the unit of value — no single component shows the observable behavior; all three must activate together. Activation gating across a multi-hop pipeline is visible: while inactive, `ros2 topic list` shows both topics but no data flows.
+
+**Architecture principle taught**: `MovingAverageRelay` as a direct `LifecycleComponent` subclass makes explicit what pre-built topic components do internally — allowing users to understand and extend the pattern for custom multi-resource scenarios.
+
+**Expected output** documented in module docstring; all four lifecycle transitions explicitly logged per component.
 
 ---
 
