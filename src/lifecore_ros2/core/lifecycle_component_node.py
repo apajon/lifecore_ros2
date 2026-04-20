@@ -51,11 +51,6 @@ class LifecycleComponentNode(LifecycleNode):
     def add_component(self, component: LifecycleComponent) -> None:
         """Register a component as a managed entity.
 
-        This is the sole supported registration path. It performs attachment,
-        managed entity registration, and registry insertion atomically under
-        the node lock. If managed entity registration fails, the attachment
-        is rolled back.
-
         Raises:
             RuntimeError: If lifecycle transitions have already started.
             ValueError: If a component with the same name is already registered.
@@ -90,16 +85,31 @@ class LifecycleComponentNode(LifecycleNode):
             except KeyError as exc:
                 raise KeyError(f"Unknown component: {name}") from exc
 
-    # -- lifecycle gate -------------------------------------------------------
+    # -- registration gate -------------------------------------------------------
 
     def _close_registration(self) -> None:
+        """Framework-internal. Do not call from user code."""
         with self._lock:
             self._registration_open = False
 
+    # -- override-with-super hooks -----------------------------------------------
+    # Application nodes may override these. Always call super() to preserve
+    # component propagation and the registration gate.
+
     def on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Close the registration gate and propagate configure to all components.
+
+        Override in application nodes to add node-level configure behavior.
+        Always call ``super().on_configure(state)`` first.
+        """
         self._close_registration()
         return super().on_configure(state)
 
     def on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Close the registration gate and propagate shutdown to all components.
+
+        Override in application nodes to add node-level shutdown behavior.
+        Always call ``super().on_shutdown(state)``.
+        """
         self._close_registration()
         return super().on_shutdown(state)

@@ -5,7 +5,7 @@ from abc import ABC
 from collections.abc import Callable
 from functools import wraps
 from logging import getLogger
-from typing import TYPE_CHECKING, Any, Protocol, cast, overload
+from typing import TYPE_CHECKING, Any, Protocol, cast, final, overload
 
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.managed_entity import ManagedEntity
@@ -154,11 +154,7 @@ class LifecycleComponent(ManagedEntity, ABC):
     # -- framework-internal attachment ------------------------------------
 
     def _attach(self, node: LifecycleComponentNode) -> None:
-        """Attach the component to a node. Framework-internal.
-
-        Do not call directly. Use ``LifecycleComponentNode.add_component()`` instead,
-        which performs gate checks, duplicate detection, managed entity registration,
-        and rollback on failure.
+        """Framework-internal. Do not call from user code.
 
         Raises:
             RuntimeError: If the component is already attached.
@@ -171,17 +167,13 @@ class LifecycleComponent(ManagedEntity, ABC):
         self._node = node
 
     def _detach(self) -> None:
-        """Reset the node reference. Framework-internal rollback for failed registration.
-
-        Called by ``LifecycleComponentNode.add_component()`` when managed entity
-        registration fails after attachment.
-        """
+        """Framework-internal. Do not call from user code."""
         self._node = None
 
     # -- logger resolution ------------------------------------------------
 
     def _resolve_logger(self) -> _LoggerLike:
-        """Return the best available logger for lifecycle diagnostics."""
+        """Framework-internal. Do not call from user code."""
         if self._node is not None:
             return cast(_LoggerLike, self._node.get_logger())
         return cast(_LoggerLike, getLogger(__name__))
@@ -194,7 +186,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         hook: Callable[[LifecycleState], TransitionCallbackReturn],
         state: LifecycleState,
     ) -> TransitionCallbackReturn:
-        """Call a lifecycle hook with exception catching and return-value validation."""
+        """Framework-internal. Do not call from user code."""
         log = self._resolve_logger()
         try:
             result = hook(state)
@@ -208,7 +200,7 @@ class LifecycleComponent(ManagedEntity, ABC):
             return TransitionCallbackReturn.ERROR
 
     def _safe_release_resources(self) -> TransitionCallbackReturn:
-        """Call ``_release_resources`` with exception safety."""
+        """Framework-internal. Do not call from user code."""
         try:
             self._release_resources()
             return TransitionCallbackReturn.SUCCESS
@@ -218,23 +210,30 @@ class LifecycleComponent(ManagedEntity, ABC):
             log.error(traceback.format_exc())
             return TransitionCallbackReturn.ERROR
 
-    # -- public lifecycle entry points (do not override) ------------------
+    # -- framework-controlled entry points (do not override) ----------------
+    # These implement the rclpy ManagedEntity protocol. Sealed with @final so
+    # pyright catches accidental overrides in application code. Extend behavior
+    # via the _on_* extension points below.
 
+    @final
     def on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
         return self._guarded_call("on_configure", self._on_configure, state)
 
+    @final
     def on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
         result = self._guarded_call("on_activate", self._on_activate, state)
         if result == TransitionCallbackReturn.SUCCESS:
             self._is_active = True
         return result
 
+    @final
     def on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
         result = self._guarded_call("on_deactivate", self._on_deactivate, state)
         if result == TransitionCallbackReturn.SUCCESS:
             self._is_active = False
         return result
 
+    @final
     def on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
         self._is_active = False
         result = self._guarded_call("on_cleanup", self._on_cleanup, state)
@@ -243,6 +242,7 @@ class LifecycleComponent(ManagedEntity, ABC):
             return release_result
         return result
 
+    @final
     def on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
         self._is_active = False
         result = self._guarded_call("on_shutdown", self._on_shutdown, state)
@@ -251,6 +251,7 @@ class LifecycleComponent(ManagedEntity, ABC):
             return release_result
         return result
 
+    @final
     def on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
         self._is_active = False
         result = self._guarded_call("on_error", self._on_error, state)
@@ -259,10 +260,10 @@ class LifecycleComponent(ManagedEntity, ABC):
             return release_result
         return result
 
-    # -- subclass extension points ----------------------------------------
+    # -- protected extension points (override these in subclasses) -----------
 
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        """Configure the component. Override to allocate ROS resources.
+        """Extension point. Override to allocate ROS resources.
 
         Called during the configure transition. Do not enable runtime behavior here.
 
@@ -272,7 +273,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         return TransitionCallbackReturn.SUCCESS
 
     def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        """Activate the component. Override to enable runtime behavior.
+        """Extension point. Override to enable runtime behavior.
 
         The framework sets ``_is_active = True`` after this hook returns SUCCESS.
         Do not set ``_is_active`` manually.
@@ -283,10 +284,10 @@ class LifecycleComponent(ManagedEntity, ABC):
         return TransitionCallbackReturn.SUCCESS
 
     def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        """Deactivate the component. Override to disable runtime behavior.
+        """Extension point. Override to disable runtime behavior.
 
-        The framework clears ``_is_active`` after this hook returns SUCCESS.
-        If the hook returns FAILURE or ERROR, ``_is_active`` remains True.
+        The framework clears ``_is_active`` only after this hook returns SUCCESS.
+        All ``@when_active``-gated methods stop executing after SUCCESS is returned.
 
         Returns:
             TransitionCallbackReturn: SUCCESS, FAILURE, or ERROR.
@@ -294,7 +295,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         return TransitionCallbackReturn.SUCCESS
 
     def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        """Clean up the component. Override for custom cleanup before resource release.
+        """Extension point. Override for custom cleanup before resource release.
 
         The framework calls ``_release_resources()`` automatically after this hook.
 
@@ -304,7 +305,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         return TransitionCallbackReturn.SUCCESS
 
     def _on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
-        """Handle shutdown. Override for custom shutdown logic.
+        """Extension point. Override for custom shutdown logic.
 
         The framework calls ``_release_resources()`` automatically after this hook.
 
@@ -314,7 +315,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         return TransitionCallbackReturn.SUCCESS
 
     def _on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
-        """Handle error. Override for custom error handling.
+        """Extension point. Override for custom error handling.
 
         The framework calls ``_release_resources()`` automatically after this hook.
 
@@ -324,10 +325,10 @@ class LifecycleComponent(ManagedEntity, ABC):
         return TransitionCallbackReturn.SUCCESS
 
     def _release_resources(self) -> None:
-        """Release ROS resources owned by this component.
+        """Extension point. Override to release ROS resources owned by this component.
 
         Called automatically by the framework during cleanup, shutdown, and error
-        transitions. Override to destroy publishers, subscriptions, timers, etc.
+        transitions. Destroy publishers, subscriptions, timers, etc. here.
 
         Implementations must be idempotent. Call ``super()._release_resources()`` last
         when overriding in a subclass chain.
