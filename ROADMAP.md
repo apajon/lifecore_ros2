@@ -70,6 +70,11 @@ The following symbols are exported from `lifecore_ros2` and form the public API:
 | `LifecyclePublisherComponent` | concrete class | Lifecycle-gated ROS publisher |
 | `LifecycleSubscriberComponent` | abstract class | Lifecycle-gated ROS subscriber |
 | `when_active` | decorator | Guards a method to the active state |
+| `LifecoreError` | exception | Base class for all framework boundary violations |
+| `RegistrationClosedError` | exception | Raised by `add_component` after first lifecycle transition |
+| `DuplicateComponentError` | exception | Raised by `add_component` when a name is already registered |
+| `ComponentNotAttachedError` | exception | Raised when `.node` is accessed on a detached component |
+| `ComponentNotConfiguredError` | exception | Raised by `publish()` before `_on_configure` has run |
 
 ### Naming decision record (3.1)
 
@@ -84,13 +89,13 @@ These `_on_*` methods are the intended extension points. They are `abstractmetho
 
 | Hook | Where | Abstract | Notes |
 |---|---|---|---|
-| `_on_configure(state)` | `LifecycleComponent` and subclasses | yes | Allocate ROS resources here |
-| `_on_activate(state)` | `LifecycleComponent` and subclasses | yes | Enable runtime behavior |
-| `_on_deactivate(state)` | `LifecycleComponent` and subclasses | yes | Disable runtime behavior |
-| `_on_cleanup(state)` | `LifecycleComponent` and subclasses | yes | Release resources (calls `_release_resources`) |
-| `_on_shutdown(state)` | `LifecycleComponent` | no | Calls `_release_resources`; override if needed |
-| `_on_error(state)` | `LifecycleComponent` | no | Calls `_release_resources`; override if needed |
-| `_release_resources()` | `LifecycleComponent` and subclasses | yes | Release all allocated ROS resources |
+| `_on_configure(state)` | `LifecycleComponent` and subclasses | no (default: SUCCESS) | Allocate ROS resources here |
+| `_on_activate(state)` | `LifecycleComponent` and subclasses | no (default: SUCCESS) | Enable runtime behavior |
+| `_on_deactivate(state)` | `LifecycleComponent` and subclasses | no (default: SUCCESS) | Disable runtime behavior |
+| `_on_cleanup(state)` | `LifecycleComponent` and subclasses | no (default: SUCCESS) | Release resources; override to call `_release_resources` in subclasses |
+| `_on_shutdown(state)` | `LifecycleComponent` | no (default: SUCCESS) | Calls `_release_resources`; override if needed |
+| `_on_error(state)` | `LifecycleComponent` | no (default: SUCCESS) | Calls `_release_resources`; override if needed |
+| `_release_resources()` | `LifecycleComponent` and subclasses | no (default: no-op) | Release all allocated ROS resources; override in each subclass |
 | `on_message(msg)` | `LifecycleSubscriberComponent` | yes | Handle incoming messages while active |
 
 **Do not override** the native `on_configure`, `on_activate`, `on_deactivate`, `on_cleanup`, `on_shutdown`, `on_error` methods directly. These are owned by ROS 2 `ManagedEntity` and delegate to the `_on_*` hooks after applying the lifecycle guard.
@@ -99,12 +104,14 @@ These `_on_*` methods are the intended extension points. They are `abstractmetho
 
 The following are internal and subject to change without notice:
 
-- `_lifecycle_guard_component` — internal decorator wrapping lifecycle hooks with error handling
 - `_LoggerLike` — internal protocol for logger duck-typing
 - `_LifecycleHook` — internal type alias
 - `_SENTINEL` — internal sentinel value for `when_active`
-- `_detach()` on `LifecycleComponent` — internal rollback used by `add_component` on registration failure
-- `attach()` on `LifecycleComponent` — called by `LifecycleComponentNode.add_component()`; users should not call it directly
+- `_attach()` / `_detach()` on `LifecycleComponent` — registration lifecycle managed by `LifecycleComponentNode.add_component()`; do not call directly
+- `_guarded_call` — wraps `_on_*` hooks with error handling and return-value normalisation
+- `_safe_release_resources` — exception-safe wrapper around `_release_resources`
+- `_close_registration` on `LifecycleComponentNode` — closes `add_component` gate on first transition
+- `_on_message_wrapper` on `LifecycleSubscriberComponent` — framework dispatch method; sealed with `@final`
 
 ### Stability statement
 
