@@ -262,11 +262,11 @@ Both defaults are customisable via `@when_active(when_not_active=...)`.
 # 4. Documentation quality
 
 ## 4.1 Rewrite the README as a landing page
-- [ ] Open with a one-sentence positioning statement
-- [ ] Add a short "why this exists" section
-- [ ] Explain the problem before listing the classes
-- [ ] Show the value before the architecture
-- [ ] Keep quickstart short and frictionless
+- [x] Open with a one-sentence positioning statement
+- [x] Add a short "why this exists" section
+- [x] Explain the problem before listing the classes
+- [x] Show the value before the architecture
+- [x] Keep quickstart short and frictionless
 
 ### Why
 A good README does not just document the project. It sells the mental model in under a minute.
@@ -287,9 +287,9 @@ A good README does not just document the project. It sells the mental model in u
 ---
 
 ## 4.2 Add a strong "why this exists" section
-- [ ] State the lifecycle pain points this library addresses
-- [ ] Explain what boilerplate or ambiguity it removes
-- [ ] Explain what it does not try to abstract away
+- [x] State the lifecycle pain points this library addresses
+- [x] Explain what boilerplate or ambiguity it removes
+- [x] Explain what it does not try to abstract away
 
 ### Why
 People adopt libraries to solve pains, not to admire architecture.
@@ -303,10 +303,10 @@ People adopt libraries to solve pains, not to admire architecture.
 ---
 
 ## 4.3 Add a clear "non-goals" section
-- [ ] No hidden parallel lifecycle model
-- [ ] No full application framework
-- [ ] No replacement of native ROS 2 lifecycle semantics
-- [ ] No magic orchestration outside explicit component composition
+- [x] No hidden parallel lifecycle model
+- [x] No full application framework
+- [x] No replacement of native ROS 2 lifecycle semantics
+- [x] No magic orchestration outside explicit component composition
 
 ### Why
 This protects the project from misinterpretation and sets the tone immediately.
@@ -314,10 +314,10 @@ This protects the project from misinterpretation and sets the tone immediately.
 ---
 
 ## 4.4 Strengthen architecture documentation
-- [ ] Document node-component relationships clearly
-- [ ] Document the transition sequence clearly
-- [ ] Document topic resource lifecycle clearly
-- [ ] Add simple diagrams if useful
+- [x] Document node-component relationships clearly
+- [x] Document the transition sequence clearly
+- [x] Document topic resource lifecycle clearly
+- [x] Add simple diagrams if useful
 
 ### Why
 A conceptual library needs lower cognitive load, not more prose.
@@ -325,12 +325,12 @@ A conceptual library needs lower cognitive load, not more prose.
 ---
 
 ## 4.5 Add recommended patterns and anti-patterns
-- [ ] Recommended: allocate ROS resources during configure
-- [ ] Recommended: gate behavior through activation
-- [ ] Recommended: keep hooks deterministic
-- [ ] Anti-pattern: create hidden runtime states disconnected from lifecycle
-- [ ] Anti-pattern: treat deactivate like cleanup
-- [ ] Anti-pattern: put heavy business logic inside lifecycle transition hooks
+- [x] Recommended: allocate ROS resources during configure
+- [x] Recommended: gate behavior through activation
+- [x] Recommended: keep hooks deterministic
+- [x] Anti-pattern: create hidden runtime states disconnected from lifecycle
+- [x] Anti-pattern: treat deactivate like cleanup
+- [x] Anti-pattern: put heavy business logic inside lifecycle transition hooks
 
 ### Why
 This is where the project starts teaching good ROS 2 lifecycle design, not just exposing helpers.
@@ -338,9 +338,9 @@ This is where the project starts teaching good ROS 2 lifecycle design, not just 
 ---
 
 ## 4.6 Add a "mental migration from raw rclpy" section
-- [ ] Show a small before/after comparison
-- [ ] Explain how composition improves structure
-- [ ] Explain what remains unchanged from native lifecycle semantics
+- [x] Show a small before/after comparison
+- [x] Explain how composition improves structure
+- [x] Explain what remains unchanged from native lifecycle semantics
 
 ### Why
 It lowers the adoption barrier and makes the benefit concrete.
