@@ -1,10 +1,8 @@
 lifecore_ros2
 =============
 
-A composable lifecycle framework for ROS 2.
-
-This documentation starts with a minimal Sphinx structure suitable for a Python-first repository.
-It is intended to grow incrementally as the core lifecycle model and reusable components stabilize.
+lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy that helps build
+reusable lifecycle-aware nodes without adding a hidden state machine on top of ROS 2.
 
 .. toctree::
    :maxdepth: 2
@@ -13,6 +11,8 @@ It is intended to grow incrementally as the core lifecycle model and reusable co
    getting_started
    contributing
    architecture
+   patterns
+   migration_from_rclpy
    mempalace_strategy
    examples
    api

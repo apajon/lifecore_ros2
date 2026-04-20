@@ -8,8 +8,93 @@ lifecore_ros2 provides a structured way to build ROS 2 lifecycle nodes using com
 
 The current architecture is centered on two layers:
 
-- a lifecycle-aware core in src/lifecore_ros2/core
-- reusable topic-oriented components in src/lifecore_ros2/components
+- a lifecycle-aware core in ``src/lifecore_ros2/core``
+- reusable topic-oriented components in ``src/lifecore_ros2/components``
+
+Node–Component Ownership
+------------------------
+
+``LifecycleComponentNode`` owns and drives every registered ``LifecycleComponent``.
+The relationship is one-to-many: one node, any number of named components.
+
+.. code-block:: text
+
+    LifecycleComponentNode
+    │
+    ├── owns: List[LifecycleComponent]
+    │         (registered via add_component() before first transition)
+    │
+    └── drives: propagates on_configure / on_activate / on_deactivate
+                         / on_cleanup / on_shutdown / on_error
+                to each component in registration order
+
+Key ownership rules:
+
+- Components are registered by name via ``add_component(component)``. Names must be unique.
+- Registration is closed after the first lifecycle transition. Any subsequent call to
+  ``add_component()`` raises ``RegistrationClosedError``.
+- Each component holds a back-reference to its parent node (``component.node``).
+  Accessing ``node`` before attachment raises ``ComponentNotAttachedError``.
+- The node calls each component's lifecycle hooks in registration order.
+  If one component returns ``FAILURE`` or ``ERROR``, the node's transition result reflects
+  the worst outcome across all components.
+
+Transition Sequence
+-------------------
+
+The following sequence applies to every managed transition. The node is the single entry point
+into the transition; component hooks are called inside it.
+
+.. code-block:: text
+
+    ROS 2 executor
+        │
+        ▼
+    LifecycleComponentNode.on_configure(state)          ← rclpy calls this
+        │
+        ├── closes registration (no more add_component after this)
+        │
+        ├── for each component in registration order:
+        │       component.on_configure(state)           ← @final; calls _guarded_call
+        │           └── _guarded_call(component._on_configure, state)
+        │                   catches exceptions → TransitionCallbackReturn.ERROR
+        │                   returns SUCCESS / FAILURE / ERROR
+        │
+        └── returns worst(results) to rclpy
+
+The same pattern repeats for ``on_activate``, ``on_deactivate``, ``on_cleanup``,
+``on_shutdown``, and ``on_error``. Each uses ``_guarded_call`` so exceptions from hook
+code never escape to the rclpy executor.
+
+``on_activate`` additionally sets ``component._is_active = True`` on each component
+whose hook returned ``SUCCESS``. ``on_deactivate`` clears it only on ``SUCCESS``.
+``on_cleanup``, ``on_shutdown``, and ``on_error`` each call ``_release_resources``
+after the hook, regardless of the hook's return value, and propagate the worst of the
+two results.
+
+Topic-Resource Lifecycle
+------------------------
+
+``TopicComponent`` (and its subclasses ``LifecyclePublisherComponent`` and
+``LifecycleSubscriberComponent``) follow a strict three-phase resource lifecycle:
+
+.. code-block:: text
+
+    configure                     activate                     deactivate
+    ─────────                     ────────                     ──────────
+    create publisher              _is_active = True            _is_active = False
+    create subscription           start timers (app hook)      stop timers (app hook)
+    store references              enable message dispatch       drop inbound messages
+
+    cleanup / shutdown / error
+    ──────────────────────────
+    destroy publisher
+    destroy subscription
+    _release_resources() called automatically
+
+The only state the framework tracks is ``_is_active``. There is no secondary resource-ready
+flag. Whether a resource exists at runtime is determined entirely by whether ``_on_configure``
+has run and ``_on_cleanup`` / ``_release_resources`` has not yet been called.
 
 Lifecycle Design
 ----------------
