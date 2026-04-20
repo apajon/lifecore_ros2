@@ -1,7 +1,16 @@
 """lifecore_ros2."""
 
 from .components import LifecyclePublisherComponent, LifecycleSubscriberComponent, TopicComponent
-from .core import LifecycleComponent, LifecycleComponentNode, when_active
+from .core import (
+    ComponentNotAttachedError,
+    ComponentNotConfiguredError,
+    DuplicateComponentError,
+    LifecoreError,
+    LifecycleComponent,
+    LifecycleComponentNode,
+    RegistrationClosedError,
+    when_active,
+)
 
 __all__ = [
     "LifecycleComponentNode",
@@ -10,4 +19,9 @@ __all__ = [
     "LifecyclePublisherComponent",
     "LifecycleSubscriberComponent",
     "when_active",
+    "LifecoreError",
+    "RegistrationClosedError",
+    "DuplicateComponentError",
+    "ComponentNotAttachedError",
+    "ComponentNotConfiguredError",
 ]
