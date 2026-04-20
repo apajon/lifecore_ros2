@@ -8,7 +8,9 @@ agents:
     "ROS 2 Jazzy Core Review",
     "Public API and Typing Guard",
     "Python Quality Gate",
-    "README Review"
+    "README Review",
+    "MemPalace Reader",
+    "MemPalace Auditor"
   ]
 argument-hint: "Describe the code or package to review, expected lifecycle behavior, and whether validation should be run."
 ---
@@ -28,10 +30,12 @@ You are the review orchestrator for this ROS 2 Jazzy Python repository.
 
 ## Orchestration Process
 1. Restate the review scope and expected lifecycle behavior from the user prompt.
-2. Build a compact delegation plan across lifecycle review, API/typing, quality validation, and README review if requested.
-3. Run specialist reviews and consolidate findings without duplicating evidence.
-4. Classify results into confirmed issues, potential risks, and test coverage gaps.
-5. Report residual risk and any validation limits.
+2. **Context** — delegate to MemPalace Reader to retrieve rules, contracts, and anti-patterns applicable to the review scope. Use findings as reference during lifecycle correctness review.
+3. Build a compact delegation plan across lifecycle review, API/typing, quality validation, and README review if requested.
+4. Run specialist reviews and consolidate findings without duplicating evidence.
+5. Classify results into confirmed issues, potential risks, and test coverage gaps.
+6. If a full memory quality audit was explicitly requested: delegate to MemPalace Auditor for the `lifecore_ros2` wing (or scoped room).
+7. Report residual risk and any validation limits.
 
 ## Output Format
 - Scope

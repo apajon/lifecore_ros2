@@ -8,7 +8,8 @@ agents:
     "ROS 2 Docstrings Google Napoleon",
     "Python Sphinx Documentation",
     "README Author",
-    "README Review"
+    "README Review",
+    "MemPalace Reader"
   ]
 argument-hint: "Describe the code changes or public APIs that require documentation updates."
 ---
@@ -39,6 +40,7 @@ You are the documentation orchestration agent for this repository.
 - Do not duplicate long technical explanations across all three surfaces.
 
 ## Delegation Defaults
+- **Pre-authoring context** — if the change touches lifecycle semantics, component contracts, or architectural conventions: delegate to MemPalace Reader to surface documented rules before writing documentation. Use findings to keep wording aligned with stored decisions.
 - Python docstrings normalization -> ROS 2 Docstrings Google Napoleon
 - Sphinx architecture, API, and examples pages -> Python Sphinx Documentation
 - README authoring and restructuring -> README Author
