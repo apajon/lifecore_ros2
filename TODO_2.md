@@ -432,13 +432,51 @@ Examples become much easier to trust when the expected outcome is precise.
 ---
 
 ## 5.5 Prepare companion examples repository structure
-- [ ] Decide on the name, for example `lifecore_ros2_examples`
-- [ ] Outline future example categories
-- [ ] Add a placeholder reference in docs if useful
-- [ ] Plan at least one concrete follow-up repository example
+- [x] Decide on the name, for example `lifecore_ros2_examples`
+- [x] Outline future example categories
+- [x] Add a placeholder reference in docs if useful
+- [x] Plan at least one concrete follow-up repository example
 
 ### Why
 Even if not published on day one, the ecosystem should already have a direction.
+
+### 5.5 Decision record
+
+**Name**: `lifecore_ros2_examples`, owner `apajon`. Rejected alternatives:
+`lifecore_ros2_demos` (reads as throwaway), `lifecore_examples` (drops ROS qualifier),
+`lifecore_ros2_recipes` (constrains structure prematurely).
+
+**Scope boundary**: an example belongs in the companion repo if it depends on third-party
+ROS packages beyond `rclpy` / `std_msgs`, uses domain-specific message types, spans more
+than one ROS node, or teaches an applied pattern rather than a single core abstraction.
+Otherwise it stays in `examples/` in this repo. This is the contributor-facing exclusion
+test.
+
+**Categories** (initial outline):
+- sensor-pipeline composition (multi-publisher / fan-in topologies)
+- lifecycle-aware diagnostics (`/diagnostics` integration, inter-component health)
+- multi-node orchestration patterns (supervisor and launch-coordinated lifecycle nodes)
+
+**First concrete example**: sensor-fusion pipeline — two heterogeneous simulated sensors,
+one fusion `LifecycleComponent` owning two subscriptions and one publisher, one logging
+`LifecycleSubscriberComponent`. Teaches activation gating across a fan-in topology,
+configure-time sensor-handle acquisition, the warm-up window with inbound-drop
+semantics, and state reset on deactivate.
+
+**Coupling to core releases**: the companion repo follows core cadence but does not pin
+a coupled version. Core releases never block on companion-repo state.
+
+**Deliverables in this repo (planning artifacts, no source/test/example changes)**:
+- `ROADMAP.md` — new "Companion examples repository" section
+- `README.md` — "current limitations" line updated to a forward pointer marked
+  *planned — not yet published*
+- `docs/examples.rst` — new "Companion examples repository (planned)" subsection
+- `ROADMAP_lifecore_ros2_examples.md` — full roadmap for the companion repo
+- `TODO_lifecore_ros2_examples.md` — phased TODO for the companion repo
+
+The two `*_lifecore_ros2_examples.md` files live in this repo until the companion
+repository is created, then move into it (tracked in Phase 3 of
+`TODO_lifecore_ros2_examples.md`).
 
 ---
 

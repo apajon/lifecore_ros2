@@ -148,7 +148,7 @@ The extension model uses four buckets defined in the architecture docs:
 
 - the public API is in the `0.x` series — experimental stability level; minor bumps may include breaking changes
 - no multi-component composed example yet (deferred to post-first-release)
-- no companion examples repository yet
+- companion examples repository `lifecore_ros2_examples` is *planned — not yet published*; see `ROADMAP.md` for scope and the first applied example (sensor-fusion pipeline)
 
 ## License
 

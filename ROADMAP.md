@@ -56,6 +56,42 @@
 
 ---
 
+## Companion examples repository
+
+**Name**: `lifecore_ros2_examples` — owner `apajon`, Apache-2.0, tracks Python 3.12+ /
+ROS 2 Jazzy, follows core release cadence without coupling its version number.
+
+**Why a separate repo**: keeps the core library abstract and dependency-light. Applied,
+domain-flavored, or multi-node examples have a clearly-signposted home that does not
+dilute the core API surface.
+
+**Scope boundary** (contributor exclusion test): an example belongs in the companion
+repo if it depends on third-party ROS packages beyond `rclpy` and `std_msgs`, uses
+domain-specific message types, spans more than one ROS node, or teaches an applied
+pattern rather than a single core abstraction. Otherwise it belongs in `examples/`
+in this repo.
+
+**Initial categories**:
+- *Sensor-pipeline composition* — multi-publisher / fan-in topologies
+- *Lifecycle-aware diagnostics* — `/diagnostics` integration and inter-component health
+- *Multi-node orchestration patterns* — supervisor and launch-coordinated lifecycle nodes
+
+**First concrete example**: a sensor-fusion pipeline (two heterogeneous simulated sensors,
+one fusion component owning two subscriptions and one publisher, one logging subscriber).
+Teaches activation gating across a fan-in topology, configure-time sensor-handle
+acquisition, the warm-up window with inbound-drop semantics, and state reset on
+deactivate.
+
+**Rejected name alternatives**: `lifecore_ros2_demos` (reads as throwaway),
+`lifecore_examples` (drops the ROS qualifier), `lifecore_ros2_recipes` (constrains
+structure prematurely).
+
+Full plan: see `ROADMAP_lifecore_ros2_examples.md` and
+`TODO_lifecore_ros2_examples.md` (planning artifacts in this repo until the companion
+repository is created, then moved into it).
+
+---
+
 ## Public API and extension model
 
 ### Public API — exported symbols

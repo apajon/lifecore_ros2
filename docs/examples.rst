@@ -59,6 +59,26 @@ examples/composed_pipeline.py composes three sibling components inside one ``Lif
 a ``SineSource`` publisher, a ``MovingAverageRelay``, and a ``LoggingSink`` subscriber.  All three
 transition together via the standard ROS 2 lifecycle.
 
+Companion examples repository (planned)
+---------------------------------------
+
+Applied, domain-flavored, or multi-node scenarios are intentionally kept out of the core
+repository. They will live in a separate companion repository, ``lifecore_ros2_examples``
+(*planned — not yet published*).
+
+An example belongs in the companion repository if it depends on third-party ROS packages
+beyond ``rclpy`` and ``std_msgs``, uses domain-specific message types, spans more than one
+ROS node, or teaches an applied pattern rather than a single core abstraction.
+
+Initial categories planned:
+
+- *Sensor-pipeline composition* — multi-publisher / fan-in topologies
+- *Lifecycle-aware diagnostics* — ``/diagnostics`` integration and inter-component health
+- *Multi-node orchestration patterns* — supervisor and launch-coordinated lifecycle nodes
+
+The first applied example will be a sensor-fusion pipeline. See ``ROADMAP.md`` and
+``ROADMAP_lifecore_ros2_examples.md`` in the core repository for the full plan.
+
 It demonstrates what the minimal and telemetry examples cannot show individually:
 
 - composition as the unit of value: no single component delivers the observable pipeline behavior;
