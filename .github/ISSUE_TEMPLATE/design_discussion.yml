@@ -1,0 +1,35 @@
+name: Design Discussion
+description: Open a discussion about lifecycle semantics, architecture decisions, or API design.
+labels: [ "design" ]
+body:
+  - type: markdown
+    attributes:
+        value: |
+            Use this form to discuss lifecycle semantics, naming, extension model, or
+            architectural trade-offs.
+            See [docs/architecture.rst](../blob/main/docs/architecture.rst) for the current
+            design rules and member-convention taxonomy.
+
+  - type: textarea
+    id: context
+    attributes:
+        label: What design question or concern do you want to discuss?
+        description: Be specific about the lifecycle transition, class, or contract in question.
+    validations:
+        required: true
+
+  - type: textarea
+    id: tradeoffs
+    attributes:
+        label: Trade-offs you see
+        description: What are the costs and benefits of the options you are considering?
+    validations:
+        required: false
+
+  - type: textarea
+    id: alternatives
+    attributes:
+        label: Alternatives considered
+        description: What other approaches did you evaluate and why did you set them aside?
+    validations:
+        required: false

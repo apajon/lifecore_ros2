@@ -1,0 +1,58 @@
+name: Bug Report
+description: Report a defect in lifecycle behavior, component contracts, or the public API.
+labels: [ "bug" ]
+body:
+  - type: markdown
+    attributes:
+        value: |
+            Thank you for reporting a bug. Please fill in the sections below.
+            Check [docs/architecture.rst](../blob/main/docs/architecture.rst) first — some
+            edge-case behaviors are intentional (e.g. inbound callbacks drop silently while inactive).
+
+  - type: textarea
+    id: description
+    attributes:
+        label: What happened?
+        description: Concise description of the defect.
+    validations:
+        required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+        label: What did you expect?
+    validations:
+        required: true
+
+  - type: textarea
+    id: reproduction
+    attributes:
+        label: Minimal reproduction
+        description: Paste the smallest code snippet that shows the problem.
+        render: python
+    validations:
+        required: true
+
+  - type: input
+    id: ros_version
+    attributes:
+        label: ROS 2 distribution
+        placeholder: "e.g. Jazzy"
+    validations:
+        required: true
+
+  - type: input
+    id: python_version
+    attributes:
+        label: Python version
+        placeholder: "e.g. 3.12"
+    validations:
+        required: true
+
+  - type: input
+    id: lifecore_version
+    attributes:
+        label: lifecore_ros2 version
+        placeholder: "e.g. 0.1.0"
+    validations:
+        required: true
