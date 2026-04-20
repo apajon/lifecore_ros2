@@ -421,10 +421,10 @@ This is likely closer to the real value of the library than separate minimal pub
 ---
 
 ## 5.4 Make expected outputs explicit
-- [ ] Document what users should observe in logs
-- [ ] Document what should happen before activation
-- [ ] Document what should happen after deactivation
-- [ ] Document what should disappear after cleanup
+- [x] Document what users should observe in logs
+- [x] Document what should happen before activation
+- [x] Document what should happen after deactivation
+- [x] Document what should disappear after cleanup
 
 ### Why
 Examples become much easier to trust when the expected outcome is precise.
