@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Any
+from typing import Any, final
 
 from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
 from rclpy.qos import QoSProfile
@@ -50,6 +50,10 @@ class LifecycleSubscriberComponent(TopicComponent):
         self._subscription: Subscription | None = None
 
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Extension point. Creates the ROS subscription.
+
+        Override in subclasses for additional setup. Call ``super()._on_configure(state)`` first.
+        """
         self._subscription = self.node.create_subscription(
             self.msg_type,
             self.topic_name,
@@ -59,16 +63,24 @@ class LifecycleSubscriberComponent(TopicComponent):
         self.node.get_logger().info(f"[{self.name}] subscription created on '{self.topic_name}'")
         return TransitionCallbackReturn.SUCCESS
 
+    @final
     @when_active(when_not_active=None)
     def _on_message_wrapper(self, msg: Any) -> None:
+        """Framework-internal. Do not call from user code."""
         self.on_message(msg)
 
     @abstractmethod
     def on_message(self, msg: Any) -> None:
-        """Handle an incoming message while the component is active."""
+        """Extension point. Implement to handle incoming messages while active.
+
+        This is the subscriber callback contract. Unlike the ``_on_*`` lifecycle hooks,
+        ``on_message`` is intentionally public because it defines application behavior,
+        not framework behavior. It is only called while the component is active.
+        """
         raise NotImplementedError("on_message must be implemented by LifecycleSubscriberComponent subclasses")
 
     def _release_resources(self) -> None:
+        """Extension point. Override to release additional resources; call ``super()._release_resources()`` last."""
         if self._subscription is not None:
             self.node.destroy_subscription(self._subscription)
             self._subscription = None

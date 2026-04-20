@@ -45,6 +45,10 @@ class LifecyclePublisherComponent(TopicComponent):
         self._publisher: Publisher | None = None
 
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Extension point. Calls super if overridden; creates the ROS publisher.
+
+        Override in subclasses for additional setup. Call ``super()._on_configure(state)`` first.
+        """
         self._publisher = self.node.create_publisher(
             self.msg_type,
             self.topic_name,
@@ -61,6 +65,7 @@ class LifecyclePublisherComponent(TopicComponent):
         self._publisher.publish(msg)
 
     def _release_resources(self) -> None:
+        """Extension point. Override to release additional resources; call ``super()._release_resources()`` last."""
         if self._publisher is not None:
             self.node.destroy_publisher(self._publisher)
             self._publisher = None
