@@ -39,6 +39,38 @@ It demonstrates:
 - gating publication with activation state
 - releasing the timer and publisher during deactivate and cleanup
 
+Telemetry Publisher
+-------------------
+
+examples/telemetry_publisher.py defines a ``LifecyclePublisherComponent`` subclass with all four
+lifecycle hooks overridden.
+
+It demonstrates:
+
+- the split between configure-time resource acquisition and activate-time sampling behavior
+- a timer created on activate and destroyed on deactivate (runtime resource vs ROS resource)
+- that deactivate suspends behavior without releasing the sensor handle, while cleanup does
+- how ``@when_active`` gating on ``publish()`` makes explicit activation guards unnecessary in ``_emit``
+
+Composed Pipeline
+-----------------
+
+examples/composed_pipeline.py composes three sibling components inside one ``LifecycleComponentNode``:
+a ``SineSource`` publisher, a ``MovingAverageRelay``, and a ``LoggingSink`` subscriber.  All three
+transition together via the standard ROS 2 lifecycle.
+
+It demonstrates what the minimal and telemetry examples cannot show individually:
+
+- composition as the unit of value: no single component delivers the observable pipeline behavior;
+  the value only appears when all three activate together
+- ``MovingAverageRelay`` extends ``LifecycleComponent`` directly, owning both a raw ROS subscription
+  and a raw ROS publisher; this makes explicit what the pre-built topic components do internally and
+  shows that any pair of ROS resources belongs together in one component
+- activation gating across a multi-hop pipeline: while inactive, no data flows even though both
+  topics remain visible in ``ros2 topic list``
+- buffer reset on deactivate: the relay clears its moving-average window so that reactivation
+  always starts from a known empty state rather than from stale samples
+
 Reading Examples Safely
 -----------------------
 
