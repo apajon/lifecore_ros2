@@ -11,14 +11,26 @@ requires-python = ">=3.12"
 authors = [
   { name = "Adrien Pajon", email = "7260230+apajon@users.noreply.github.com" }
 ]
-license = {file = "LICENSE"}
-dependencies = [
-  "numpy>=2.4.4",
-  "pydantic>=2.0",
+# PEP 639 SPDX expression; setuptools >= 77 required (pinned to >= 80 above).
+license = "Apache-2.0"
+license-files = ["LICENSE"]
+keywords = ["ros2", "ros", "lifecycle", "rclpy", "robotics", "component"]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Software Development :: Libraries",
+  "Topic :: Scientific/Engineering",
+  "Intended Audience :: Developers",
 ]
+# rclpy is intentionally absent — it comes from the system ROS installation.
+dependencies = []
 
 [project.urls]
 Repository = "https://github.com/apajon/lifecore_ros2"
+Documentation = "https://github.com/apajon/lifecore_ros2/tree/main/docs"
+Changelog = "https://github.com/apajon/lifecore_ros2/blob/main/CHANGELOG.md"
+Issues = "https://github.com/apajon/lifecore_ros2/issues"
 
 [project.optional-dependencies]
 dev = [
