@@ -2,6 +2,140 @@
 
 <!-- version list -->
 
+## v0.3.0 (2026-04-20)
+
+### Bug Fixes
+
+- **release**: Replace uv build_command with pip-based fallback for PSR Docker env\n\nuv is not
+  available in the python-semantic-release Docker container.\nReplace `uv run --extra dev python -m
+  build` with\n`python -m pip install build && python -m build`, which works in any\nstandard Python
+  environment. The build frontend still uses PEP 517\nisolated builds, so no dev extras are needed.
+  ([`9f7670f`](https://github.com/apajon/lifecore_ros2/commit/9f7670f9c49f9bb327201fdc003061c0c63001e7))
+
+### Chores
+
+- Mark TODO 2.2–2.5 as complete
+  ([`d88fcb5`](https://github.com/apajon/lifecore_ros2/commit/d88fcb548dd1c624e867bc812443db0bc213e11c))
+
+- **copilot**: Add naming conventions section to copilot-instructions and naming-conventions
+  instruction file
+  ([`d58981d`](https://github.com/apajon/lifecore_ros2/commit/d58981d05672130ff53ca14d868fb8ab98f0cd84))
+
+- **copilot**: Relocate ROS2 architecture instruction and add historize prompt
+  ([`b4e8cf0`](https://github.com/apajon/lifecore_ros2/commit/b4e8cf0856404c8fa728b0a6b92e8dc986ea4272))
+
+- **examples**: Align with framework-managed lifecycle
+  ([`763e7e1`](https://github.com/apajon/lifecore_ros2/commit/763e7e118b0e13444b68e2224c72daaffd88fbf0))
+
+- **mempalace**: Add similarity threshold
+  ([`994cd2e`](https://github.com/apajon/lifecore_ros2/commit/994cd2e3e11fce617a25f7e68d4e61f69157f6a2))
+
+- **todo**: Mark §3.2 complete in TODO_2.md
+  ([`3cca5e1`](https://github.com/apajon/lifecore_ros2/commit/3cca5e14659f89dcd99a3b54ee0d884c49be5c30))
+
+### Documentation
+
+- Add ROADMAP.md and close TODO_2.md 1.1
+  ([`5ec22cc`](https://github.com/apajon/lifecore_ros2/commit/5ec22ccb2f054f9ec14a5cd51a86f59b7c2d887f))
+
+- Align guides and planning docs with renamed lifecycle API
+  ([`e7f5687`](https://github.com/apajon/lifecore_ros2/commit/e7f5687404c504bfa702da9618718ac0b61f5ede))
+
+- Document automatic semantic-release versioning flow
+  ([`3622206`](https://github.com/apajon/lifecore_ros2/commit/362220602604aaa0ed7ec83f559b5e1019b2ad68))
+
+- Document public API, extension hooks, and internal helpers in ROADMAP.md
+  ([`dee4b9a`](https://github.com/apajon/lifecore_ros2/commit/dee4b9a68a50b527c568ee6bef3372b68e258c4d))
+
+- Document versioning strategy and close TODO_2.md 1.2
+  ([`3008bc4`](https://github.com/apajon/lifecore_ros2/commit/3008bc4371c439f11435adfeee65e55adf422ba9))
+
+- Formalize lifecycle invariants in docstrings and architecture docs\n\nDocument
+  configure/activate/deactivate/cleanup/shutdown/error contracts\nin LifecycleComponent class
+  docstring and hook docstrings.\nAdd Lifecycle Invariants section to docs/architecture.rst.\nCovers
+  TODO 2.1.
+  ([`71e0251`](https://github.com/apajon/lifecore_ros2/commit/71e02513247a13d1f4460f35417631590a147f0a))
+
+- Update copilot instructions for lifecycle renames
+  ([`d72ca8d`](https://github.com/apajon/lifecore_ros2/commit/d72ca8d4ec1dcad8f185ca1246f162aeac07efe8))
+
+- **components**: Add Owns/Does not own/Override points to TopicComponent, Publisher, and Subscriber
+  docstrings
+  ([`04f7877`](https://github.com/apajon/lifecore_ros2/commit/04f7877e11d2d31beba6a83898eb4155082bd24d))
+
+- **core**: Add Owns/Does not own/Override points to LifecycleComponent and LifecycleComponentNode
+  docstrings
+  ([`5382beb`](https://github.com/apajon/lifecore_ros2/commit/5382beb059f1e3a23413af9bd3e4bc092539c272))
+
+- **instructions**: Strengthen engineering and ops guidance
+  ([`5dc70a3`](https://github.com/apajon/lifecore_ros2/commit/5dc70a32354c2b9c499c70e9eff70b04635291cf))
+
+- **mempalace**: Extend standard room taxonomy
+  ([`ecb2488`](https://github.com/apajon/lifecore_ros2/commit/ecb2488ae5c44ccd057e93560d9eac11640b4f23))
+
+### Features
+
+- Add ROS 2 architecture context instructions with mempalace fallback
+  ([`625f2d0`](https://github.com/apajon/lifecore_ros2/commit/625f2d02589c395db418ca404652c3e8ee4e1f34))
+
+- Consolidate mempalace strategy — unified naming, taxonomy, dedup, and persistence policies
+  ([`4ba4c63`](https://github.com/apajon/lifecore_ros2/commit/4ba4c63c2afa8752ff532526718f53be0bc84f60))
+
+- Rename lifecycle core and component public classes
+  ([`8e6128b`](https://github.com/apajon/lifecore_ros2/commit/8e6128b1e3289999f1ddd16ceb0a07d1414cd20d))
+
+- **core**: Add when_active decorator and activation state to LifecycleComponent\n\nInspired by
+  rclpy SimpleManagedEntity.when_enabled, add a when_active\ndecorator that gates methods on
+  component activation state:\n- @when_active → raises RuntimeError (default)\n-
+  @when_active(when_not_active=None) → silent no-op\n- @when_active(when_not_active=fn) → calls fn
+  instead of raising\n\nAlso centralizes _is_active flag and is_active property in the base\nclass,
+  with _on_activate/_on_deactivate managing the flag via super().\nMakes _release_resources abstract
+  to enforce override in subclasses."
+  ([`30ee3c4`](https://github.com/apajon/lifecore_ros2/commit/30ee3c48b22c5b49c69cbb565cee9abe26e9c579))
+
+### Refactoring
+
+- Rename module files to match class names
+  ([`a5efcbb`](https://github.com/apajon/lifecore_ros2/commit/a5efcbb48c042529089547da4a2b420562db5ac1))
+
+- **components**: Simplify to framework-managed lifecycle
+  ([`4f49e2c`](https://github.com/apajon/lifecore_ros2/commit/4f49e2c9f05fb60320edf0853fba41828d5230bd))
+
+- **components**: Use when_active decorator and delegate state to base\n\nRemove duplicated
+  _is_active flag, is_active property, and manual\nactivation gating from PublisherComponent and
+  SubscriberComponent.\n\n- publish() now uses @when_active (raises RuntimeError by default)\n-
+  _on_message_wrapper() uses @when_active(when_not_active=None) (no-op)\n-
+  _on_activate/_on_deactivate delegate to super() for flag management\n- _release_resources calls
+  super()._release_resources() for flag reset"
+  ([`c17380a`](https://github.com/apajon/lifecore_ros2/commit/c17380a3182b20e9717fdb269cbbee400d44e059))
+
+- **core**: Enforce framework-managed lifecycle invariants
+  ([`50307b5`](https://github.com/apajon/lifecore_ros2/commit/50307b50bd24433d7b1aa3e7a9c57d6cb617fe35))
+
+### Testing
+
+- Adapt stubs and assertions for abstractmethod and when_active changes
+  ([`9a81a0d`](https://github.com/apajon/lifecore_ros2/commit/9a81a0d59afe6d417c447e20b2b4eed7121767b2))
+
+- Add threaded registration and double-transition regression tests
+  ([`3201c14`](https://github.com/apajon/lifecore_ros2/commit/3201c1430140ddfc6fc1e2176d1be6ac13e6b1ff))
+
+- Update existing tests for framework-managed lifecycle
+  ([`22c5b5d`](https://github.com/apajon/lifecore_ros2/commit/22c5b5d35d8117b2e3c845626a5268767bc98203))
+
+- **2.2**: Add happy-path coverage for all component types
+  ([`3bb9da9`](https://github.com/apajon/lifecore_ros2/commit/3bb9da9ac4224774bf0d0274d6039218f3621bab))
+
+- **2.3**: Add edge and invalid lifecycle transition tests
+  ([`ec138bb`](https://github.com/apajon/lifecore_ros2/commit/ec138bbc92f7aef56fb7c66031399051b01de3f6))
+
+- **2.4**: Add failure propagation and exception guard tests
+  ([`4350e98`](https://github.com/apajon/lifecore_ros2/commit/4350e988f180e9757039fa70351a96464d5d24b0))
+
+- **2.5**: Add strict publisher and subscriber activation gating tests
+  ([`aa6fc88`](https://github.com/apajon/lifecore_ros2/commit/aa6fc88170f1b6581bae3e74a4e165613458b0e4))
+
+
 ## v0.2.0 (2026-04-08)
 
 ### Bug Fixes
