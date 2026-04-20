@@ -3,6 +3,10 @@
 <!-- Canonical positioning sentence — keep in sync with pyproject.toml project.description. See CONTRIBUTING.md. -->
 lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.
 
+![Composed pipeline lifecycle walk-through: configure creates topics, activate streams data, deactivate stops data flow while topics remain (deactivate ≠ cleanup), cleanup releases resources.](docs/_static/composed_pipeline_demo.gif)
+
+*The `examples/composed_pipeline.py` walk-through highlights the key distinction the library makes explicit: **deactivate ≠ cleanup** — `/pipeline/*` topics persist across deactivate and only disappear on cleanup.*
+
 ## Why this exists
 
 ROS 2 provides a powerful managed-node lifecycle (`configure → active → deactivate → cleanup`). In practice, using it for anything beyond a trivial node leads to recurring problems:
