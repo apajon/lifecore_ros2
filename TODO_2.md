@@ -350,39 +350,49 @@ It lowers the adoption barrier and makes the benefit concrete.
 # 5. Examples
 
 ## 5.1 Clean up the existing minimal examples
-- [ ] Make each example short
-- [ ] Ensure each example demonstrates one idea only
-- [ ] Add a short explanation at the top of each example
-- [ ] Keep the expected behavior obvious
+- [x] Make each example short
+- [x] Ensure each example demonstrates one idea only
+- [x] Add a short explanation at the top of each example
+- [x] Keep the expected behavior obvious
 
 ### Why
 If examples are abstract, they must be extremely legible. Otherwise they feel like internal tests, not teaching tools.
 
+### 5.1 Decision record
+
+- Module docstring added to each example: single idea stated, CLI commands listed, expected log lines per transition documented inline.
+- `minimal_node`: commented-out `_on_configure` promoted to a real override on `LoggingComponent`; dead code removed.
+- `minimal_publisher`: explicit `_on_cleanup` override added (logs framework-managed release); `# why:` comment added on timer allocation explaining configure-time resource vs activate-time behavior split.
+- `minimal_subscriber`: `on_message` docstring added confirming Bucket-1 public application-callback contract and activation-gated delivery semantics.
+- `main()` boilerplate kept structurally identical across all three files.
+
 ---
 
 ## 5.2 Add one more concrete example
-- [ ] Create a small but recognizably real example
-- [ ] Keep it generic enough to stay inside the library repo
-- [ ] Make the value visible through lifecycle transitions
-- [ ] Avoid turning it into a domain-heavy application demo
+- [x] Create a small but recognizably real example
+- [x] Keep it generic enough to stay inside the library repo
+- [x] Make the value visible through lifecycle transitions
+- [x] Avoid turning it into a domain-heavy application demo
 
 ### Why
 You were right to keep the library abstract. But the repo still needs one example that feels closer to a real use case.
 
-### Good example candidates
-- a lifecycle-aware command processing node
-- a lifecycle-gated telemetry publisher
-- a small controller loop that only runs while active
-- a node that subscribes to input only when activated and ignores messages otherwise
+### 5.2 Decision record
 
-### Recommendation
-Use a simple example that shows:
-- setup on configure
-- behavior enabled on activate
-- behavior stopped on deactivate
-- resources released on cleanup
+**File**: `examples/telemetry_publisher.py`
 
-That is enough. It does not need to be a big demo.
+**Teaching axis**: configure-time resource acquisition vs activate-time gated behavior — the distinction absent from the minimal examples.
+
+- `LifecycleTelemetryPublisher(LifecyclePublisherComponent[Float64])`: all four hooks overridden explicitly.
+  - `_on_configure`: calls `super()` (creates ROS publisher), then acquires simulated sensor handle (`_sensor_ready = True`, `_sequence = 0`).
+  - `_on_activate`: creates 1 s sampling timer (runtime behavior, not a ROS resource).
+  - `_on_deactivate`: cancels and destroys timer; sensor handle **deliberately kept open** to demonstrate that deactivate ≠ cleanup.
+  - `_on_cleanup`: releases sensor handle, resets state, calls `super()._on_cleanup(state)`.
+  - `_sample`: publishes `Float64(sin(seq * 0.1))`; `@when_active` gating on parent makes an extra guard unnecessary.
+- `TelemetryNode(LifecycleComponentNode)`: business-domain name per naming conventions.
+- BEST_EFFORT QoS `depth=5` defined as a module constant (`_TELEMETRY_QOS`).
+- No new dependencies; simulated sensor uses stdlib `math`.
+- Module docstring includes expected output per transition (covers 5.4 for this example).
 
 ---
 
