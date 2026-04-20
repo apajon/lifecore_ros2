@@ -1,49 +1,61 @@
 # lifecore_ros2
 
-A composable lifecycle framework for ROS 2.
+lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy that helps build reusable lifecycle-aware nodes without adding a hidden state machine on top of ROS 2.
 
-## Overview
+## Why this exists
 
-lifecore_ros2 is a composable lifecycle framework for ROS 2 designed to structure complex robotic systems using clear and deterministic component boundaries.
+ROS 2 provides a powerful managed-node lifecycle (`configure → active → deactivate → cleanup`). In practice, using it for anything beyond a trivial node leads to recurring problems:
 
-It focuses on enforcing correct lifecycle semantics, reducing hidden state, and improving system-level behavior in real-world robotic applications.
+- lifecycle logic gets scattered across monolithic node classes with no clear ownership
+- ROS resource setup and teardown (publishers, subscriptions, timers) are easy to make inconsistent — resources allocated in the wrong place or released too late
+- runtime gating ("only process messages when active") is hand-rolled differently each time, with no shared, tested pattern
+- reusable lifecycle-aware building blocks are awkward in raw `rclpy` because the lifecycle contract is on the node, not on reusable sub-units
 
-The goal is to make ROS 2 systems:
-- more predictable
-- easier to reason about
-- easier to scale
+lifecore_ros2 solves these four problems with a small, explicit composition layer. It does not replace or extend the ROS 2 lifecycle state machine — it makes the lifecycle contract expressible at the component level.
 
-## What It Is
+## What the library provides
 
-lifecore_ros2 provides a small set of lifecycle-aware building blocks for composing ROS 2 Jazzy nodes from reusable components.
+A small set of lifecycle-aware building blocks:
 
-The current public surface exposes:
-- LifecycleComponentNode
-- LifecycleComponent
-- TopicComponent
-- LifecyclePublisherComponent
-- LifecycleSubscriberComponent
+| Symbol | Role |
+|---|---|
+| `LifecycleComponentNode` | Lifecycle node that owns and drives registered `LifecycleComponent` instances |
+| `LifecycleComponent` | Abstract base for a lifecycle-aware managed entity |
+| `TopicComponent` | Abstract base for topic-oriented components (pub/sub) |
+| `LifecyclePublisherComponent` | Lifecycle-gated ROS publisher |
+| `LifecycleSubscriberComponent` | Lifecycle-gated ROS subscriber |
+| `when_active` | Decorator that guards any method to the active state |
+| `LifecoreError` and subclasses | Typed exceptions for boundary violations |
 
-## Design Principles
+## Design principles
 
-The repository is built around a few explicit rules:
-- native ROS 2 lifecycle semantics stay in control
-- LifecycleComponentNode owns and drives registered LifecycleComponent instances
-- components keep their _on_* hooks focused and deterministic
+- native ROS 2 lifecycle semantics stay in control — no parallel state machine is introduced
+- `LifecycleComponentNode` owns and drives registered `LifecycleComponent` instances as managed entities
+- components keep `_on_*` hooks focused and deterministic
 - topic-oriented components create ROS resources during configure, gate behavior with activation, and release resources during cleanup
-- no parallel hidden state machine is introduced on top of ROS 2 lifecycle
+- errors and misuse raise typed exceptions; inbound callbacks drop silently to protect the executor
+
+## Non-goals
+
+- no hidden state machine layered on top of ROS 2 lifecycle
+- no full application framework with service orchestration or task scheduling
+- no domain-specific components (sensors, actuators, controllers)
+- no plugin or dynamic component loading
+- no replacement of native ROS 2 lifecycle semantics
+
+See [ROADMAP.md](ROADMAP.md) for the full "out of scope" list and deferred features.
 
 ## Prerequisites
 
 - Python 3.12 or newer
 - ROS 2 Jazzy installed on the system
-- uv available in the workspace
+- `uv` available in the workspace
 
-The project expects rclpy to come from the system ROS installation. It is intentionally not declared as a normal PyPI dependency.
+`rclpy` is expected to come from the system ROS installation. It is intentionally not declared as a normal PyPI dependency.
 
 ## Quickstart
 
-Prepare a ROS 2 Jazzy shell first:
+Prepare a ROS 2 Jazzy shell:
 
 ```bash
 source /opt/ros/jazzy/setup.bash
@@ -55,13 +67,7 @@ Install development dependencies:
 uv sync --extra dev
 ```
 
-Install the documentation toolchain as well:
-
-```bash
-uv sync --extra dev --group docs
-```
-
-Common validation commands:
+Validate the installation:
 
 ```bash
 uv run --extra dev python -m ruff check .
@@ -70,161 +76,114 @@ uv run --extra dev pyright
 uv run --extra dev pytest
 ```
 
-Build the documentation:
+## Minimal example
 
-```bash
-uv run --group docs python -m sphinx -b html docs docs/_build/html
+```python
+from lifecore_ros2 import LifecycleComponent, LifecycleComponentNode
+
+
+class StatusComponent(LifecycleComponent):
+    pass  # override _on_configure, _on_activate, etc. as needed
+
+
+class StatusNode(LifecycleComponentNode):
+    def __init__(self) -> None:
+        super().__init__("status_node")
+        self.add_component(StatusComponent("status"))
 ```
 
-## Automatic Versioning Flow
-
-Versioning is automatic and based on Conventional Commits:
-- `fix:` increments patch
-- `feat:` increments minor
-- breaking changes increment major
-
-This repository uses semantic-release with `tag_format = v{version}`.
-
-Preview the next computed version:
-
-```bash
-uv run --group release semantic-release version --print
-```
-
-Run the automatic release flow (version commit + tag):
-
-```bash
-uv run --group release semantic-release version
-```
-
-If VCS release API access is not available (for example missing token), keep versioning and tagging while skipping hosted release creation:
-
-```bash
-uv run --group release semantic-release version --no-vcs-release
-```
-
-Push branch updates and tags:
-
-```bash
-git push origin main --follow-tags
-```
-
-Important:
-- do not create release tags manually when using this flow
-- if a manual tag was created by mistake, delete it and rerun semantic-release
-
-## Examples
-
-The repository currently includes:
-- examples/minimal_node.py for a minimal composed lifecycle node with a simple component
-- examples/minimal_subscriber.py for a lifecycle-aware subscriber component example
-- examples/minimal_publisher.py for a lifecycle-aware publisher component example
-
-## Minimal Example
-
-Run the minimal lifecycle node:
+Run it:
 
 ```bash
 source /opt/ros/jazzy/setup.bash
 uv run --extra dev python examples/minimal_node.py
 ```
 
-In another terminal, inspect and trigger lifecycle transitions:
+Then trigger lifecycle transitions from another terminal:
 
 ```bash
-source /opt/ros/jazzy/setup.bash
-ros2 lifecycle nodes
 ros2 lifecycle set /minimal_lifecore_node configure
 ros2 lifecycle set /minimal_lifecore_node activate
 ros2 lifecycle set /minimal_lifecore_node deactivate
 ros2 lifecycle set /minimal_lifecore_node cleanup
 ```
 
-What to expect:
-- the node appears in `ros2 lifecycle nodes`
-- configure allocates component resources
-- activate enables runtime behavior
-- deactivate gates runtime behavior
-- cleanup releases component resources
+## Publisher and subscriber examples
 
-### Publisher Walkthrough
-
-Run the publisher example:
+Run the publisher and observe activation gating:
 
 ```bash
-source /opt/ros/jazzy/setup.bash
 uv run --extra dev python examples/minimal_publisher.py
-```
-
-In another terminal, activate the node and observe published messages:
-
-```bash
-source /opt/ros/jazzy/setup.bash
+# in another terminal:
 ros2 lifecycle set /publisher_demo_node configure
 ros2 lifecycle set /publisher_demo_node activate
 ros2 topic echo /chatter
 ```
 
-Then deactivate to stop the flow:
+Messages appear only after `activate`. Deactivation stops them.
+
+Run the subscriber and observe that messages are dropped before activation:
 
 ```bash
-ros2 lifecycle set /publisher_demo_node deactivate
-```
-
-What to expect:
-- messages are published only while the node is active
-- deactivation stops publication immediately
-- publication outside activation is guarded by `LifecyclePublisherComponent.publish()`
-
-### Subscriber Walkthrough
-
-Run the subscriber example:
-
-```bash
-source /opt/ros/jazzy/setup.bash
 uv run --extra dev python examples/minimal_subscriber.py
-```
-
-In another terminal, publish before activation (message should be ignored):
-
-```bash
-source /opt/ros/jazzy/setup.bash
+# configure but do not yet activate:
 ros2 lifecycle set /demo_node configure
 ros2 topic pub --once /chatter std_msgs/msg/String "{data: 'before activate'}"
-```
-
-Then activate and publish again:
-
-```bash
+# no Received: log appears — then activate:
 ros2 lifecycle set /demo_node activate
 ros2 topic pub --once /chatter std_msgs/msg/String "{data: 'after activate'}"
 ```
 
-What to expect:
-- no `Received:` log appears for `before activate`
-- `Received: after activate` appears once active
-- deactivation stops message handling again
+## Public API overview
+
+All exported symbols and their stability levels are documented in [ROADMAP.md](ROADMAP.md#public-api-and-extension-model).
+
+The extension model uses four buckets defined in the architecture docs:
+- public API (direct use by application code)
+- protected extension points (`_on_*` hooks — override in subclasses)
+- framework-controlled entry points (`on_*` — sealed with `@final` on components)
+- framework-internal (`_attach`, `_guarded_call`, etc. — not for user code)
+
+## Current limitations
+
+- the public API is in the `0.x` series — experimental stability level; minor bumps may include breaking changes
+- no multi-component composed example yet (deferred to post-first-release)
+- no companion examples repository yet
+
+## License
+
+This project is licensed under the Apache-2.0 License — see [LICENSE](LICENSE).
 
 ## Documentation
 
-The Sphinx documentation lives under docs/ and currently includes:
-- docs/getting_started.rst for setup and validation commands
-- docs/architecture.rst for lifecycle and component design rules
-- docs/api.rst for generated API reference
-- docs/examples.rst for example-oriented entry points
+Full documentation lives under `docs/` and is built with Sphinx:
 
-## Current Status
+```bash
+uv sync --extra dev --group docs
+uv run --group docs python -m sphinx -b html docs docs/_build/html
+```
 
-The project is in early development, with a working V0 baseline:
-- core lifecycle primitives and topic-oriented components are implemented
-- minimal node, subscriber, and publisher examples are available
-- a growing pytest suite validates core behavior
+Key pages:
+- `docs/getting_started.rst` — setup and validation commands
+- `docs/architecture.rst` — lifecycle design rules, error policy, member conventions
+- `docs/patterns.rst` — recommended patterns and anti-patterns
+- `docs/migration_from_rclpy.rst` — before/after comparison with raw rclpy
+- `docs/api.rst` — generated API reference
+- `docs/examples.rst` — example walkthroughs
 
-## Roadmap
+## Versioning
 
-Near-term focus:
-- keep improving runnable examples and ergonomics
-- extend docs with richer usage patterns
-- prepare release/versioning validation tasks
+Versioning uses Conventional Commits and python-semantic-release. Preview the next version:
 
-See TODO.md for the full roadmap.
+```bash
+uv run --group release semantic-release version --print
+```
+
+Release (version commit + tag, skip hosted release if no token):
+
+```bash
+uv run --group release semantic-release version --no-vcs-release
+git push origin main --follow-tags
+```
+
+See [ROADMAP.md](ROADMAP.md#versioning-strategy) for promotion-to-1.0.0 criteria.
