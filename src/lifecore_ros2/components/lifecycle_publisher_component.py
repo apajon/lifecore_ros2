@@ -4,6 +4,7 @@ from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
 from rclpy.publisher import Publisher
 from rclpy.qos import QoSProfile
 
+from lifecore_ros2.core.exceptions import ComponentNotConfiguredError
 from lifecore_ros2.core.lifecycle_component import when_active
 
 from .topic_component import TopicComponent
@@ -59,7 +60,7 @@ class LifecyclePublisherComponent[MsgT](TopicComponent[MsgT]):
     def publish(self, msg: MsgT) -> None:
         """Publish a message. Raises ``RuntimeError`` if not active."""
         if self._publisher is None:
-            raise RuntimeError(f"Publisher '{self.name}' is not configured")
+            raise ComponentNotConfiguredError(f"Publisher '{self.name}' is not configured")
         self._publisher.publish(msg)  # type: ignore[arg-type]  # rclpy Publisher.publish accepts Any
 
     def _release_resources(self) -> None:

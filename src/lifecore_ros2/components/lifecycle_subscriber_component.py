@@ -67,7 +67,12 @@ class LifecycleSubscriberComponent[MsgT](TopicComponent[MsgT]):
     @when_active(when_not_active=None)
     def _on_message_wrapper(self, msg: MsgT) -> None:
         """Framework-internal. Do not call from user code."""
-        self.on_message(msg)
+        try:
+            self.on_message(msg)
+        except Exception as exc:
+            # Rule C (inbound): never propagate user exceptions into the rclpy executor.
+            # Log the error and drop the message silently.
+            self._resolve_logger().error(f"[{self._name}.on_message] {type(exc).__name__}: {exc}")
 
     @abstractmethod
     def on_message(self, msg: MsgT) -> None:

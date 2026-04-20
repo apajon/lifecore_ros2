@@ -7,6 +7,7 @@ from typing import Any
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleNode, LifecycleState
 
+from .exceptions import DuplicateComponentError, RegistrationClosedError
 from .lifecycle_component import LifecycleComponent
 
 
@@ -53,17 +54,17 @@ class LifecycleComponentNode(LifecycleNode):
         """Register a component as a managed entity.
 
         Raises:
-            RuntimeError: If lifecycle transitions have already started.
-            ValueError: If a component with the same name is already registered.
+            RegistrationClosedError: If lifecycle transitions have already started.
+            DuplicateComponentError: If a component with the same name is already registered.
         """
         with self._lock:
             if not self._registration_open:
-                raise RuntimeError(
+                raise RegistrationClosedError(
                     f"Cannot add component '{component.name}': lifecycle transitions have already started"
                 )
 
             if component.name in self._components:
-                raise ValueError(f"Component name already registered: {component.name}")
+                raise DuplicateComponentError(f"Component name already registered: {component.name}")
 
             component._attach(self)
             try:

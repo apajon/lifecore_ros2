@@ -11,6 +11,8 @@ from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.managed_entity import ManagedEntity
 from rclpy.lifecycle.node import LifecycleState
 
+from .exceptions import ComponentNotAttachedError
+
 if TYPE_CHECKING:
     from .lifecycle_component_node import LifecycleComponentNode
 
@@ -21,6 +23,26 @@ _VALID_RETURNS = frozenset(
         TransitionCallbackReturn.ERROR,
     }
 )
+
+# Ordering used by _worst_of: SUCCESS=0 < FAILURE=1 < ERROR=2
+_SEVERITY: dict[TransitionCallbackReturn, int] = {
+    TransitionCallbackReturn.SUCCESS: 0,
+    TransitionCallbackReturn.FAILURE: 1,
+    TransitionCallbackReturn.ERROR: 2,
+}
+
+
+def _worst_of(
+    a: TransitionCallbackReturn,
+    b: TransitionCallbackReturn,
+) -> TransitionCallbackReturn:
+    """Return the more severe of two TransitionCallbackReturn values.
+
+    Ordering: SUCCESS < FAILURE < ERROR.
+    Used to aggregate hook and resource-release results in cleanup/shutdown/error
+    entry points so the worst outcome is always propagated upward.
+    """
+    return a if _SEVERITY.get(a, 2) >= _SEVERITY.get(b, 2) else b
 
 
 class _LoggerLike(Protocol):
@@ -152,7 +174,7 @@ class LifecycleComponent(ManagedEntity, ABC):
     @property
     def node(self) -> LifecycleComponentNode:
         if self._node is None:
-            raise RuntimeError(f"Component '{self._name}' is not attached to a node")
+            raise ComponentNotAttachedError(f"Component '{self._name}' is not attached to a node")
         return self._node
 
     def get_logger(self) -> _LoggerLike:
@@ -251,27 +273,21 @@ class LifecycleComponent(ManagedEntity, ABC):
         self._is_active = False
         result = self._guarded_call("on_cleanup", self._on_cleanup, state)
         release_result = self._safe_release_resources()
-        if release_result != TransitionCallbackReturn.SUCCESS:
-            return release_result
-        return result
+        return _worst_of(result, release_result)
 
     @final
     def on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
         self._is_active = False
         result = self._guarded_call("on_shutdown", self._on_shutdown, state)
         release_result = self._safe_release_resources()
-        if release_result != TransitionCallbackReturn.SUCCESS:
-            return release_result
-        return result
+        return _worst_of(result, release_result)
 
     @final
     def on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
         self._is_active = False
         result = self._guarded_call("on_error", self._on_error, state)
         release_result = self._safe_release_resources()
-        if release_result != TransitionCallbackReturn.SUCCESS:
-            return release_result
-        return result
+        return _worst_of(result, release_result)
 
     # -- protected extension points (override these in subclasses) -----------
 
