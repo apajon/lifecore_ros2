@@ -80,6 +80,41 @@ def _check_msg_type_property(pub: LifecyclePublisherComponent[_MsgA]) -> None:
 
 
 # ---------------------------------------------------------------------------
+# Exception hierarchy contract
+# ---------------------------------------------------------------------------
+# Verify that all LifecoreError subclasses are statically assignable to both
+# LifecoreError and their stdlib parent. A regression that drops either parent
+# would be caught here by pyright reportUnnecessaryTypeIgnoreComment.
+
+
+from lifecore_ros2 import (  # noqa: E402
+    ComponentNotAttachedError,
+    ComponentNotConfiguredError,
+    DuplicateComponentError,
+    LifecoreError,
+    RegistrationClosedError,
+)
+
+
+def _check_exception_hierarchy() -> None:
+    reg: RegistrationClosedError = RegistrationClosedError("msg")
+    _lc: LifecoreError = reg  # narrowing to LifecoreError — must be silent
+    _rt: RuntimeError = reg  # narrowing to RuntimeError — must be silent
+
+    dup: DuplicateComponentError = DuplicateComponentError("msg")
+    _lc2: LifecoreError = dup  # must be silent
+    _ve: ValueError = dup  # must be silent
+
+    na: ComponentNotAttachedError = ComponentNotAttachedError("msg")
+    _lc3: LifecoreError = na  # must be silent
+    _rt2: RuntimeError = na  # must be silent
+
+    nc: ComponentNotConfiguredError = ComponentNotConfiguredError("msg")
+    _lc4: LifecoreError = nc  # must be silent
+    _rt3: RuntimeError = nc  # must be silent
+
+
+# ---------------------------------------------------------------------------
 # Node holds heterogeneous components — LifecycleComponentNode is NOT generic
 # ---------------------------------------------------------------------------
 
