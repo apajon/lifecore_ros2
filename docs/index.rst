@@ -16,3 +16,4 @@ reusable lifecycle-aware nodes without adding a hidden state machine on top of R
    mempalace_strategy
    examples
    api
+   changelog
