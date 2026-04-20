@@ -659,15 +659,45 @@ The first release note sets expectations for everyone who sees the project.
 ---
 
 ## 7.2 Define one canonical positioning sentence
-- [ ] Write one short sentence that can be reused everywhere
-- [ ] Put it in the README
-- [ ] Reuse it in docs and release notes
+- [x] Write one short sentence that can be reused everywhere
+- [x] Put it in the README
+- [x] Reuse it in docs and release notes
 
 ### Why
 You need one stable line that explains the project immediately.
 
 ### Example direction
 `lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy that helps build reusable lifecycle-aware nodes without adding a hidden state machine on top of ROS 2.`
+
+### 7.2 Decision record
+
+**Canonical sentence** (99 chars, fits PyPI rendering budget):
+
+> `lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.`
+
+**Canonical source**: `pyproject.toml` `project.description`. PyPI is the authoritative
+surface; every other location quotes it verbatim.
+
+**Surfaces carrying the sentence verbatim**:
+- `pyproject.toml` (`project.description`) — canonical
+- `README.md` (top-of-file positioning paragraph)
+- `docs/index.rst` (first paragraph under title)
+- `docs/architecture.rst` (Overview opening line)
+- `ROADMAP.md` (opening line)
+
+**Sync rule**: documented in `CONTRIBUTING.md` under "Canonical positioning sentence".
+Update `pyproject.toml` first, then propagate verbatim. Drift is detectable mechanically
+via `grep -F`.
+
+**Tone choices locked in**: present-tense, third-person, names ROS 2 Jazzy explicitly,
+names the lifecycle-composition problem, names the "no hidden state machine" non-goal
+(aligned with `README.md` non-goals and `0.1.0` stability framing — no "production-ready"
+or "complete" claims). Em-dash form preferred over the longer "*…that helps build
+reusable lifecycle-aware nodes without adding…*" wording originally drafted in §7.2,
+because the canonical sentence had to fit the PyPI single-line description budget.
+
+**Reuse for §7.4 (launch text) and §7.5 (FAQ)**: both will quote this sentence verbatim
+when those items are addressed.
 
 ---
 
