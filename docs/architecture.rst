@@ -74,6 +74,65 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
   ``LifecycleSubscriberComponent`` silently drops incoming messages when inactive.
   Both behaviors are intentional and consistent with explicit activation semantics.
 
+Error Policy
+------------
+
+The framework enforces one coherent error policy across four axes.
+
+**Rule A — Boundary violations raise**
+  Misuse of the public API by application code raises a typed subclass of
+  :class:`~lifecore_ros2.LifecoreError`. All concrete subclasses also inherit from
+  the matching standard Python exception for backward-compatibility.
+
+  .. list-table::
+     :header-rows: 1
+
+     * - Exception
+       - Standard parent
+       - When raised
+     * - ``RegistrationClosedError``
+       - ``RuntimeError``
+       - ``add_component`` called after the first lifecycle transition
+     * - ``DuplicateComponentError``
+       - ``ValueError``
+       - ``add_component`` called with a name that is already registered
+     * - ``ComponentNotAttachedError``
+       - ``RuntimeError``
+       - ``.node`` accessed on a component not attached to a node
+     * - ``ComponentNotConfiguredError``
+       - ``RuntimeError``
+       - ``publish()`` called before ``_on_configure`` created the publisher
+
+  Catch ``LifecoreError`` to handle any framework misuse in one place.
+
+**Rule B — Inside lifecycle hooks: never raise outward**
+  ``_guarded_call`` wraps every ``_on_*`` hook invocation. Uncaught exceptions and
+  invalid return values are both converted to ``TransitionCallbackReturn.ERROR`` with
+  a logged traceback. Hook authors choose:
+
+  - Return ``FAILURE`` — transition fails, node stays in its current state.
+  - Return ``ERROR`` or raise — transition fails, node enters ``ErrorProcessing``.
+  - Return ``SUCCESS`` — transition proceeds.
+
+  The framework never lets an exception escape from a lifecycle hook into rclpy.
+
+**Rule C — Activation gating: outbound raises, inbound drops**
+  - **Outbound calls** initiated by application code (e.g. ``publish()``) raise
+    ``RuntimeError`` by default via ``@when_active``. Application code can guard
+    before calling; raising surfaces lifecycle programming errors early.
+  - **Inbound callbacks** driven by the middleware (subscription callbacks, timer
+    callbacks) silently drop the message with a debug-level log entry. Raising into
+    the rclpy executor would crash the spin loop.
+  - Both defaults are configurable via ``@when_active(when_not_active=...)``.
+  - Exceptions raised inside ``on_message`` are caught by the framework, logged at
+    error level, and dropped. They never propagate to the executor.
+
+**Rule D — Errors during cleanup / shutdown / error: propagate the worst result**
+  ``_on_cleanup``, ``_on_shutdown``, and ``_on_error`` each run the hook and then
+  call ``_release_resources``. The returned ``TransitionCallbackReturn`` is the
+  *worst* of the two results, using the ordering ``SUCCESS < FAILURE < ERROR``.
+  A failing ``_on_cleanup`` hook does **not** skip ``_release_resources``.
+
 Member Convention
 -----------------
 
