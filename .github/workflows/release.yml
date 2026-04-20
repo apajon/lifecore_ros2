@@ -1,8 +1,8 @@
 name: Release
 
+# Manual dispatch only — do not restore the cron schedule until the release
+# flow has been rehearsed end-to-end at least once (see TODO_2.md §6.7).
 on:
-    schedule:
-        - cron: "0 3 * * 1"
     workflow_dispatch: {}
 
 permissions:
@@ -27,6 +27,17 @@ jobs:
 
             - name: Set up uv
               uses: astral-sh/setup-uv@v6
+
+            - name: Sync dev dependencies
+              run: uv sync --extra dev
+
+            # Lightweight gate: lint must pass on the release commit.
+            # Full pytest requires a ROS 2 environment; run CI manually on the
+            # branch before triggering this workflow (see CONTRIBUTING.md).
+            - name: Lint gate
+              run: |
+                  uv run ruff check .
+                  uv run ruff format --check .
 
             - name: Run Python Semantic Release
               uses: python-semantic-release/python-semantic-release@v10.5.3
