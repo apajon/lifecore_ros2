@@ -18,7 +18,7 @@ from lifecore_ros2.core import LifecycleComponentNode
 # ---------------------------------------------------------------------------
 
 
-class StubSubscriber(LifecycleSubscriberComponent):
+class StubSubscriber(LifecycleSubscriberComponent[Any]):
     def __init__(self, name: str = "test_sub") -> None:
         super().__init__(name=name, topic_name="/test_topic", msg_type=MagicMock, qos_profile=10)
         self.received: list[Any] = []
@@ -27,7 +27,7 @@ class StubSubscriber(LifecycleSubscriberComponent):
         self.received.append(msg)
 
 
-class StubPublisher(LifecyclePublisherComponent):
+class StubPublisher(LifecyclePublisherComponent[Any]):
     def __init__(self, name: str = "test_pub") -> None:
         super().__init__(name=name, topic_name="/test_topic", msg_type=MagicMock, qos_profile=10)
 
@@ -184,7 +184,7 @@ class TestRegressionQoSTyping:
 # ---------------------------------------------------------------------------
 
 
-class _QoSSubscriber(LifecycleSubscriberComponent):
+class _QoSSubscriber(LifecycleSubscriberComponent[Any]):
     """Subscriber stub that accepts a custom qos_profile."""
 
     def __init__(self, qos_profile: QoSProfile | int = 10) -> None:
@@ -199,7 +199,7 @@ class _QoSSubscriber(LifecycleSubscriberComponent):
         pass
 
 
-class _QoSPublisher(LifecyclePublisherComponent):
+class _QoSPublisher(LifecyclePublisherComponent[Any]):
     """Publisher stub that accepts a custom qos_profile."""
 
     def __init__(self, qos_profile: QoSProfile | int = 10) -> None:

@@ -82,6 +82,17 @@ quote-style = "double"
 indent-style = "space"
 line-ending = "lf"
 
+[tool.pyright]
+include = ["src", "tests", "examples"]
+pythonVersion = "3.12"
+typeCheckingMode = "strict"
+# rclpy ships partial stubs; downgrade Unknown* noise from error to warning so
+# pyright strict applies to our code without drowning in unactionable rclpy gaps.
+reportMissingTypeStubs = "warning"
+reportUnknownMemberType = "warning"
+reportUnknownArgumentType = "warning"
+reportUnknownVariableType = "warning"
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = [

@@ -29,7 +29,7 @@ DUMMY_STATE = LifecycleState(state_id=0, label="test")
 # ---------------------------------------------------------------------------
 
 
-class GatedPublisher(LifecyclePublisherComponent):
+class GatedPublisher(LifecyclePublisherComponent[Any]):
     """Publisher that bypasses real ROS transport in configure."""
 
     def __init__(self, name: str = "gated_pub") -> None:
@@ -46,7 +46,7 @@ class GatedPublisher(LifecyclePublisherComponent):
         super()._release_resources()
 
 
-class GatedSubscriber(LifecycleSubscriberComponent):
+class GatedSubscriber(LifecycleSubscriberComponent[Any]):
     """Subscriber that records received messages without real ROS transport."""
 
     def __init__(self, name: str = "gated_sub") -> None:

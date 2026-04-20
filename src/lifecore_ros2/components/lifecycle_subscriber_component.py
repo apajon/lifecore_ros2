@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
-from typing import Any, final
+from typing import final
 
 from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
 from rclpy.qos import QoSProfile
@@ -12,7 +12,7 @@ from lifecore_ros2.core.lifecycle_component import when_active
 from .topic_component import TopicComponent
 
 
-class LifecycleSubscriberComponent(TopicComponent):
+class LifecycleSubscriberComponent[MsgT](TopicComponent[MsgT]):
     """Subscriber component that creates a ROS subscription and gates message delivery through the lifecycle.
 
     The subscription is created on configure and destroyed automatically on cleanup.
@@ -38,7 +38,7 @@ class LifecycleSubscriberComponent(TopicComponent):
         self,
         name: str,
         topic_name: str,
-        msg_type: type[Any],
+        msg_type: type[MsgT],
         qos_profile: QoSProfile | int = 10,
     ) -> None:
         super().__init__(
@@ -47,7 +47,7 @@ class LifecycleSubscriberComponent(TopicComponent):
             msg_type=msg_type,
             qos_profile=qos_profile,
         )
-        self._subscription: Subscription | None = None
+        self._subscription: Subscription | None = None  # type: ignore[type-arg]  # rclpy Subscription is not generic
 
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
         """Extension point. Creates the ROS subscription.
@@ -65,12 +65,12 @@ class LifecycleSubscriberComponent(TopicComponent):
 
     @final
     @when_active(when_not_active=None)
-    def _on_message_wrapper(self, msg: Any) -> None:
+    def _on_message_wrapper(self, msg: MsgT) -> None:
         """Framework-internal. Do not call from user code."""
         self.on_message(msg)
 
     @abstractmethod
-    def on_message(self, msg: Any) -> None:
+    def on_message(self, msg: MsgT) -> None:
         """Extension point. Implement to handle incoming messages while active.
 
         This is the subscriber callback contract. Unlike the ``_on_*`` lifecycle hooks,

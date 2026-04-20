@@ -1,7 +1,5 @@
 from __future__ import annotations
 
-from typing import Any
-
 from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
 from rclpy.publisher import Publisher
 from rclpy.qos import QoSProfile
@@ -11,7 +9,7 @@ from lifecore_ros2.core.lifecycle_component import when_active
 from .topic_component import TopicComponent
 
 
-class LifecyclePublisherComponent(TopicComponent):
+class LifecyclePublisherComponent[MsgT](TopicComponent[MsgT]):
     """Publisher component that creates and gates a ROS publisher through the lifecycle.
 
     Owns:
@@ -33,7 +31,7 @@ class LifecyclePublisherComponent(TopicComponent):
         self,
         name: str,
         topic_name: str,
-        msg_type: type[Any],
+        msg_type: type[MsgT],
         qos_profile: QoSProfile | int = 10,
     ) -> None:
         super().__init__(
@@ -42,7 +40,7 @@ class LifecyclePublisherComponent(TopicComponent):
             msg_type=msg_type,
             qos_profile=qos_profile,
         )
-        self._publisher: Publisher | None = None
+        self._publisher: Publisher | None = None  # type: ignore[type-arg]  # rclpy Publisher is not generic
 
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
         """Extension point. Calls super if overridden; creates the ROS publisher.
@@ -58,11 +56,11 @@ class LifecyclePublisherComponent(TopicComponent):
         return TransitionCallbackReturn.SUCCESS
 
     @when_active
-    def publish(self, msg: Any) -> None:
+    def publish(self, msg: MsgT) -> None:
         """Publish a message. Raises ``RuntimeError`` if not active."""
         if self._publisher is None:
             raise RuntimeError(f"Publisher '{self.name}' is not configured")
-        self._publisher.publish(msg)
+        self._publisher.publish(msg)  # type: ignore[arg-type]  # rclpy Publisher.publish accepts Any
 
     def _release_resources(self) -> None:
         """Extension point. Override to release additional resources; call ``super()._release_resources()`` last."""

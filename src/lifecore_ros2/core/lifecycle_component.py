@@ -26,14 +26,26 @@ _VALID_RETURNS = frozenset(
 class _LoggerLike(Protocol):
     def debug(self, msg: str) -> None: ...
 
+    def info(self, msg: str) -> None: ...
+
     def warning(self, msg: str) -> None: ...
 
     def error(self, msg: str) -> None: ...
+
+    def fatal(self, msg: str) -> None: ...
 
 
 _SENTINEL = object()
 
 
+# Any in this decorator is justified at three points:
+#   1. TypeVar bound `F: Callable[..., Any]` — idiomatic way to express "any callable with any return";
+#      `Callable[..., Any]` is the canonical PEP 484 spelling; tightening it is not possible without
+#      introducing a second return TypeVar that would complicate every call site.
+#   2. `Callable[[], Any]` for `when_not_active` — the return value of the user-supplied fallback
+#      is intentionally discarded; `None` would be incorrect for callables that return a value.
+#   3. `cast(Callable[[], Any], ...)` inside the body — narrows the union to call the fallback;
+#      same justification as (2).
 @overload
 def when_active[F: Callable[..., Any]](wrapped: F, /) -> F: ...
 
@@ -70,6 +82,7 @@ def when_active[F: Callable[..., Any]](
 
     def decorator(fn: F) -> F:
         @wraps(fn)
+        # Any: standard callable-preserving decorator pattern; cast(F, wrapper) restores the wrapped signature for callers
         def wrapper(self: LifecycleComponent, *args: Any, **kwargs: Any) -> Any:
             if not self._is_active:
                 if when_not_active is _SENTINEL:
@@ -142,8 +155,8 @@ class LifecycleComponent(ManagedEntity, ABC):
             raise RuntimeError(f"Component '{self._name}' is not attached to a node")
         return self._node
 
-    def get_logger(self) -> Any:
-        return self.node.get_logger()
+    def get_logger(self) -> _LoggerLike:
+        return self.node.get_logger()  # type: ignore[return-value]  # rclpy RcutilsLogger is not typed against _LoggerLike but is structurally compatible
 
     def get_parent_name(self) -> str:
         return self.node.get_name()

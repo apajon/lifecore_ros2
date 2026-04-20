@@ -37,6 +37,7 @@ class LifecycleComponentNode(LifecycleNode):
         once the first lifecycle transition has started.
     """
 
+    # Any: passthrough to rclpy LifecycleNode.__init__; rclpy does not expose a typed kwargs signature
     def __init__(self, node_name: str, *, namespace: str | None = None, **kwargs: Any) -> None:
         super().__init__(node_name, namespace=namespace, **kwargs)
         self._components: dict[str, LifecycleComponent] = {}

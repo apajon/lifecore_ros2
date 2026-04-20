@@ -1,14 +1,13 @@
 from __future__ import annotations
 
 from abc import ABC
-from typing import Any
 
 from rclpy.qos import QoSProfile
 
 from lifecore_ros2.core.lifecycle_component import LifecycleComponent
 
 
-class TopicComponent(LifecycleComponent, ABC):
+class TopicComponent[MsgT](LifecycleComponent, ABC):
     """Intermediate base class for lifecycle-aware topic publisher and subscriber components.
 
     Owns:
@@ -28,7 +27,7 @@ class TopicComponent(LifecycleComponent, ABC):
         self,
         name: str,
         topic_name: str,
-        msg_type: type[Any],
+        msg_type: type[MsgT],
         qos_profile: QoSProfile | int = 10,
     ) -> None:
         super().__init__(name=name)
@@ -41,7 +40,7 @@ class TopicComponent(LifecycleComponent, ABC):
         return self._topic_name
 
     @property
-    def msg_type(self) -> type[Any]:
+    def msg_type(self) -> type[MsgT]:
         return self._msg_type
 
     @property
