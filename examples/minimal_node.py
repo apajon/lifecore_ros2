@@ -13,11 +13,21 @@ Drive it::
 
 Expected output::
 
+    [before configure]
+                 ros2 node info:  /minimal_lifecore_node visible; no publishers or subscribers
+
     [configure]  [INFO] [logger_component] on_configure called
+                 ros2 node info:  unchanged  (no ROS topic resources in this example)
+
     [activate]   (no component log — base _on_activate returns SUCCESS silently)
+
     [deactivate] (no component log — base _on_deactivate returns SUCCESS silently)
+
     [cleanup]    (no component log — base _on_cleanup returns SUCCESS silently)
+                 ros2 node info:  unchanged  (no ROS resources to release)
+
     [shutdown]   (no component log — base _on_shutdown returns SUCCESS silently)
+                 ros2 node list:  /minimal_lifecore_node disappears
 """
 
 from __future__ import annotations

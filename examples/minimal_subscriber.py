@@ -12,10 +12,25 @@ Drive it::
 
 Expected output::
 
+    [before configure]
+                 ros2 topic list:  /chatter not subscribed by this node
+
     [configure]  [INFO] [echo_sub] subscription created on '/chatter'
+                 ros2 topic list:  /chatter appears in subscriber list
+
     [activate]   (no component log — base _on_activate returns SUCCESS silently)
-    [message]    [INFO] Received: hi
-    [deactivate] (no component log — messages after this point are silently dropped)
+                 data flow:        messages on /chatter now delivered to on_message
+
+    [message]    [INFO] Received: hi  (once per message, while active)
+
+    [deactivate] (no component log — base _on_deactivate returns SUCCESS silently)
+                 data flow:        messages on /chatter are silently dropped by the framework
+                                   — no log line is emitted on drop, by design
+
+    [cleanup]    (no component log — base _on_cleanup returns SUCCESS silently)
+                 ros2 topic list:  /chatter disappears from subscriber list  (subscription released)
+
+    [shutdown]   same teardown as cleanup; node disappears from ros2 node list
 """
 
 from __future__ import annotations

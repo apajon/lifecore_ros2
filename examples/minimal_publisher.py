@@ -12,11 +12,27 @@ Drive it::
 
 Expected output::
 
+    [before configure]
+                 ros2 topic list:  /chatter not present
+
     [configure]  [INFO] [periodic_pub] publisher created on '/chatter'
+                 ros2 topic list:  /chatter appears  (publisher created by framework)
+                 data flow:        none  (timer not started yet)
+
     [activate]   [INFO] [periodic_pub] timer started
+                 data flow:        /chatter publishes at 1 Hz
+
+    [while active]
                  [INFO] [periodic_pub] published on [/chatter]: 'hello #0'  (repeats every second)
+
     [deactivate] [INFO] [periodic_pub] timer stopped
+                 ros2 topic list:  /chatter still present  (publisher retained by framework)
+                 data flow:        stopped
+
     [cleanup]    [INFO] [periodic_pub] no resources to release beyond publisher (handled by framework)
+                 ros2 topic list:  /chatter disappears  (publisher released by framework via _release_resources)
+
+    [shutdown]   same teardown as cleanup; node disappears from ros2 node list
 """
 
 from __future__ import annotations

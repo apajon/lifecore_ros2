@@ -19,13 +19,29 @@ Drive it::
 
 Expected output::
 
+    [before configure]
+                 ros2 topic list:  /telemetry not present
+
     [configure]  [INFO] [telemetry_pub] publisher created on '/telemetry'
                  [INFO] [telemetry_pub] sensor handle acquired
+                 ros2 topic list:  /telemetry appears  (publisher created by framework)
+                 data flow:        none  (sampling timer not started yet)
+
     [activate]   [INFO] [telemetry_pub] sampling started
-                 [INFO] [telemetry_pub] sample 0: 0.0000  (repeats every second)
+                 data flow:        /telemetry publishes at 1 Hz
+
+    [while active]
+                 [INFO] [telemetry_pub] sample 0: 0.0000  (value is sin(N * 0.1); repeats every second)
                  [INFO] [telemetry_pub] sample 1: 0.0998
+
     [deactivate] [INFO] [telemetry_pub] sampling paused — sensor handle retained
+                 ros2 topic list:  /telemetry still present  (publisher and sensor handle both retained)
+                 data flow:        stopped
+
     [cleanup]    [INFO] [telemetry_pub] sensor handle released
+                 ros2 topic list:  /telemetry disappears  (publisher released by framework via _release_resources)
+
+    [shutdown]   same teardown as cleanup; node disappears from ros2 node list
 """
 
 from __future__ import annotations

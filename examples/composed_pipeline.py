@@ -23,15 +23,35 @@ Drive it::
 
 Expected output per transition::
 
+    [before configure]
+                 ros2 topic list:  /pipeline/raw and /pipeline/avg not present
+
     [configure]  [INFO] [pipeline_node] [source] publisher created on '/pipeline/raw'
                  [INFO] [pipeline_node] [relay]  subscription on '/pipeline/raw', publisher on '/pipeline/avg'
                  [INFO] [pipeline_node] [sink]   subscription created on '/pipeline/avg'
+                 ros2 topic list:  /pipeline/raw and /pipeline/avg now present
+                 data flow:        none  (source timer not started; relay callback gated by @when_active)
+
     [activate]   [INFO] [pipeline_node] [source] sampling started
-                 [INFO] [pipeline_node] [sink]   avg=0.0000  (repeats as averages arrive at 1 Hz)
+                 (relay and sink have no activate log — base _on_activate returns SUCCESS silently)
+                 data flow:        /pipeline/raw at 1 Hz → relay 5-sample window → /pipeline/avg
+
+    [while active]
+                 [INFO] [pipeline_node] [sink]   avg=<value>  (once per sample at 1 Hz; builds toward steady state)
+
     [deactivate] [INFO] [pipeline_node] [source] sampling paused
                  [INFO] [pipeline_node] [relay]  moving-average buffer cleared
+                 ros2 topic list:  /pipeline/raw and /pipeline/avg still present  (resources retained)
+                 data flow:        stopped; any residual relay messages silently dropped
+
+    [reactivate] [INFO] [pipeline_node] [source] sampling started
+                 data flow:        resumes from an empty window; average builds from scratch
+
     [cleanup]    [INFO] [pipeline_node] [relay]  subscription and publisher released
+                 ros2 topic list:  /pipeline/raw and /pipeline/avg disappear
                  (source and sink ROS resources released automatically by the framework)
+
+    [shutdown]   same teardown as cleanup; node disappears from ros2 node list
 """
 
 from __future__ import annotations
