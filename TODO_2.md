@@ -702,10 +702,10 @@ when those items are addressed.
 ---
 
 ## 7.3 Prepare one visual asset
-- [ ] Record a short terminal session or GIF
-- [ ] Show lifecycle transitions and observable behavior
-- [ ] Keep it short and clean
-- [ ] Use it in the README or release post if it looks good
+- [x] Record a short terminal session or GIF
+- [x] Show lifecycle transitions and observable behavior
+- [x] Keep it short and clean
+- [x] Use it in the README or release post if it looks good
 
 ### Why
 Even a small abstract library benefits massively from one compact proof of behavior.
@@ -791,7 +791,7 @@ That gives you the right separation between core library and application-oriente
 - [ ] add FAQ
 - [ ] add changelog and launch assets
 - [x] prepare companion examples repo
-- [ ] add visual demo asset
+- [x] add visual demo asset
 
 ## Can happen shortly after first release
 - [ ] richer diagrams
