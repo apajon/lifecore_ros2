@@ -5,7 +5,10 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "lifecore_ros2"
 dynamic = ["version"]
-description = "A composable lifecycle framework for ROS 2"
+# Canonical positioning sentence — single source of truth.
+# Reused verbatim in README.md, docs/index.rst, docs/architecture.rst, ROADMAP.md.
+# When updating, see CONTRIBUTING.md "Canonical positioning sentence".
+description = "lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine."
 readme = "README.md"
 requires-python = ">=3.12"
 authors = [

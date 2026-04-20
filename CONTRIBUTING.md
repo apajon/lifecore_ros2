@@ -9,6 +9,22 @@ A change belongs here if it is **framework-level and message-type-agnostic**.
 Domain-specific patterns (sensors, actuators, multi-node orchestration) belong in
 the companion repository `lifecore_ros2_examples` instead.
 
+## Canonical positioning sentence
+
+The project's positioning sentence is the single source of truth for how
+`lifecore_ros2` is described to users. The canonical copy lives in
+`pyproject.toml` under `project.description`. It is reused **verbatim** in:
+
+- `README.md` (top of file)
+- `docs/index.rst` (first paragraph)
+- `docs/architecture.rst` (Overview)
+- `ROADMAP.md` (top of file)
+- future release notes, FAQ, and launch assets
+
+When updating the sentence, edit `pyproject.toml` first, then propagate the
+exact same string to every surface above. A `grep -F` of the sentence across
+the repository must return matches in all listed files.
+
 ## Prerequisites
 
 - Python 3.12+

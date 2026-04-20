@@ -1,8 +1,10 @@
 lifecore_ros2
 =============
 
-lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy that helps build
-reusable lifecycle-aware nodes without adding a hidden state machine on top of ROS 2.
+.. Canonical positioning sentence — keep in sync with pyproject.toml project.description.
+.. See CONTRIBUTING.md "Canonical positioning sentence".
+
+lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.
 
 .. toctree::
    :maxdepth: 2

@@ -1,5 +1,8 @@
 # Roadmap
 
+<!-- Canonical positioning sentence — keep in sync with pyproject.toml project.description. -->
+lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.
+
 ## First public release — 0.x series
 
 ### Included

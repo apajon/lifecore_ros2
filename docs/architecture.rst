@@ -4,9 +4,11 @@ Architecture
 Overview
 --------
 
-lifecore_ros2 provides a structured way to build ROS 2 lifecycle nodes using composable components.
+.. Canonical positioning sentence — keep in sync with pyproject.toml project.description.
 
-The current architecture is centered on two layers:
+lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.
+
+The architecture is centered on two layers:
 
 - a lifecycle-aware core in ``src/lifecore_ros2/core``
 - reusable topic-oriented components in ``src/lifecore_ros2/components``
