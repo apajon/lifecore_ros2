@@ -71,6 +71,28 @@ It demonstrates what the minimal and telemetry examples cannot show individually
 - buffer reset on deactivate: the relay clears its moving-average window so that reactivation
   always starts from a known empty state rather than from stale samples
 
+Observability Format
+--------------------
+
+Every example module docstring contains an ``Expected output`` section (or ``Expected output per
+transition`` for multi-component examples) that follows a consistent format.  Reading it before
+running an example tells you exactly what to expect:
+
+- ``[before configure]`` — baseline state before any lifecycle transition: which topics are absent,
+  which node info is visible.
+- ``[configure]`` — log lines emitted on configure plus the resulting ``ros2 topic list`` state and
+  initial data-flow gate.
+- ``[activate]`` / ``[while active]`` — log lines on activate and the periodic output while the node
+  is running.  Silent transitions are stated explicitly as ``(no component log — by design)``.
+- ``[deactivate]`` — what stops, what is retained (topics still visible; handles kept), and whether
+  any drops are silent.
+- ``[cleanup]`` — final log lines and which topics disappear from ``ros2 topic list``.
+- ``[shutdown]`` — terminal teardown note.
+
+The ``[before configure]`` and cleanup disappearance entries answer the four ``TODO 5.4``
+sub-questions directly: what to observe in logs, what happens before activation, what happens after
+deactivation, and what disappears after cleanup.
+
 Reading Examples Safely
 -----------------------
 
