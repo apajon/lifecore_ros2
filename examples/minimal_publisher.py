@@ -1,3 +1,24 @@
+"""Demonstrates a ``LifecyclePublisherComponent`` showing configure-time resource creation vs activate-time behavior.
+
+Single idea: the ROS publisher is created by the framework in ``_on_configure``; the timer that drives
+publication is runtime behavior created manually in ``_on_activate`` and destroyed in ``_on_deactivate``.
+
+Drive it::
+
+    ros2 lifecycle set /publisher_demo_node configure
+    ros2 lifecycle set /publisher_demo_node activate
+    ros2 lifecycle set /publisher_demo_node deactivate
+    ros2 lifecycle set /publisher_demo_node cleanup
+
+Expected output::
+
+    [configure]  [INFO] [periodic_pub] publisher created on '/chatter'
+    [activate]   [INFO] [periodic_pub] timer started
+                 [INFO] [periodic_pub] published on [/chatter]: 'hello #0'  (repeats every second)
+    [deactivate] [INFO] [periodic_pub] timer stopped
+    [cleanup]    [INFO] [periodic_pub] no resources to release beyond publisher (handled by framework)
+"""
+
 from __future__ import annotations
 
 from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
@@ -21,6 +42,7 @@ class PeriodicPublisher(LifecyclePublisherComponent[String]):
         self._counter: int = 0
 
     def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        # why: timer is runtime behavior — created here (not in _on_configure) so it only runs while active.
         self._timer = self.node.create_timer(1.0, self._tick)
         self.node.get_logger().info(f"[{self.name}] timer started")
         return TransitionCallbackReturn.SUCCESS
@@ -31,6 +53,11 @@ class PeriodicPublisher(LifecyclePublisherComponent[String]):
             self.node.destroy_timer(self._timer)
             self._timer = None
         self.node.get_logger().info(f"[{self.name}] timer stopped")
+        return TransitionCallbackReturn.SUCCESS
+
+    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
+        # The ROS publisher is released automatically by the framework via _release_resources.
+        self.node.get_logger().info(f"[{self.name}] no resources to release beyond publisher (handled by framework)")
         return TransitionCallbackReturn.SUCCESS
 
     def _tick(self) -> None:

@@ -1,3 +1,23 @@
+"""Demonstrates a ``LifecycleSubscriberComponent`` with activation-gated message delivery.
+
+Single idea: the ROS subscription is created on configure; messages are silently dropped by the
+framework when the component is inactive and delivered to ``on_message`` only when active.
+
+Drive it::
+
+    ros2 lifecycle set /demo_node configure
+    ros2 lifecycle set /demo_node activate
+    # In a separate terminal: ros2 topic pub /chatter std_msgs/msg/String "{data: 'hi'}"
+    ros2 lifecycle set /demo_node deactivate
+
+Expected output::
+
+    [configure]  [INFO] [echo_sub] subscription created on '/chatter'
+    [activate]   (no component log — base _on_activate returns SUCCESS silently)
+    [message]    [INFO] Received: hi
+    [deactivate] (no component log — messages after this point are silently dropped)
+"""
+
 from __future__ import annotations
 
 from std_msgs.msg import String
@@ -15,6 +35,12 @@ class EchoSubscriber(LifecycleSubscriberComponent[String]):
         )
 
     def on_message(self, msg: String) -> None:
+        """Handle an incoming message while the component is active.
+
+        This is the public application-callback contract (Bucket-1: intentionally public).
+        Called only while active; messages arriving before activate or after deactivate
+        are silently dropped by the framework.
+        """
         self.node.get_logger().info(f"Received: {msg.data}")
 
 
