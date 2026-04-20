@@ -308,3 +308,172 @@ Note:
 * [ ] ajouter d’autres types de components
 
 ---
+# 11. 0.1.0 Release messaging and assets (backlog)
+
+## 7.4 Draft GitHub release text (0.1.0)
+
+**Status**: Backlog. To be executed after CI validation (§6.6) and release flow rehearsal (§6.7) confirm green.
+
+**Context**: This is the public announcement vehicle for the first release. Messaging must be coherent, anchored to the canonical positioning, and immediately convey the value and scope of `lifecore_ros2 v0.1.0`.
+
+### Goal
+
+Draft a GitHub release page text (`.github/RELEASE_NOTES_v0.1.0.md` or equivalent) that:
+- Opens with the canonical positioning sentence (99 chars, quoted verbatim from `pyproject.toml`)
+- Explains what this 0.1.0 provides in clear, scannable sections
+- States supported Python and ROS 2 versions explicitly
+- Lists known limitations and what is intentionally deferred
+- Provides links to README, docs, and contributing guidelines
+- Sets tone as a **beta-ready, lifecycle-correct foundation**, not a "production-ready framework"
+
+### Messaging Architecture
+
+**Messaging layers** (top to bottom):
+1. **Headline** (1 line): Canonical sentence verbatim
+2. **Quick summary** (2–3 sentences): What problem this solves, what you can do now
+3. **Key features** (bullet list, 4–6 items): Concrete behaviors provided (node composition, component lifecycle, pub/sub gating, error handling, typing)
+4. **What's included** (section): Core library, minimal examples, full lifecycle tests, API stability promise
+5. **Supported platforms** (table or inline): Python 3.12+, ROS 2 Jazzy
+6. **Known limitations** (bullet list): No dynamic plugin loading, no app framework, no hidden state machine (not a limitation, a feature—rephrase as a promise)
+7. **Next steps** (section): Links to README, docs, contributing, companion examples roadmap
+8. **Acknowledgments** (optional): Any open-source or community inspiration (minimal for v0.1.0)
+
+**Tone rules**:
+- Technical, direct, no hyperbole ("reliable" not "revolutionary")
+- Honest about stability ("0.1.0 beta" implications)
+- Lifecycle-first language (configure, activate, deactivate, cleanup)
+- No marketing jargon; no "game-changer" or "powerful abstraction"
+
+### Lifecycle Behavior Contract
+
+**N/A** — release messaging is not lifecycle code. However, messaging itself must follow these rules:
+- **Consistency** (config phase): all links and version strings must be verified before publishing
+- **Gating** (activation phase): messaging review must be completed before semantic-release is triggered
+- **Cleanup** (post-release): any stale positioning statements in docs/README must be updated to reflect 0.1.0 publicly available
+
+### Impacted Modules
+
+| Module | Impact | Why |
+|--------|--------|-----|
+| `.github/RELEASE_NOTES_v0.1.0.md` (new) | **primary** | GitHub release text lives here or is rendered directly into release page |
+| `README.md` | read-only reference | release text links to README; must not contradict |
+| `docs/architecture.rst` | read-only reference | release text may link to architecture docs |
+| `CHANGELOG.md` | read-only reference | semantic-release generates changes from commits; release text summarizes |
+| `CONTRIBUTING.md` | read-only reference | release text links to contributing guide |
+| `.github/workflows/release.yml` | no change | release flow itself unchanged |
+| `pyproject.toml` | read-only reference | canonical sentence sourced here; version auto-incremented by semantic-release |
+
+**Validation surfaces**:
+- Local Markdown linting (`markdownlint` or similar, if available)
+- Link validation (README, docs links must resolve)
+- Tone review (human, not automated)
+- Cross-reference check (all version strings, supported versions, links must align)
+
+### Acceptance Criteria
+
+**Messaging criteria** (testable):
+1. [ ] Release text opens with canonical sentence **verbatim** from `pyproject.toml` `project.description`
+2. [ ] Supported Python version matches `pyproject.toml` `requires-python = ">=3.12"`
+3. [ ] Supported ROS 2 version explicitly states "ROS 2 Jazzy"
+4. [ ] All internal links (README, docs, CONTRIBUTING) resolve without broken anchors
+5. [ ] Tone is technical and honest (no hyperbole; β-version framing explicit)
+6. [ ] "What's included" section lists exactly: core library, 5 examples, full lifecycle tests, public API
+7. [ ] "Known limitations" section references the 3 explicit non-goals from README (no app framework, no dynamic plugins, no parallel state machine)
+8. [ ] No version numbers are hardcoded except "0.1.0" (all other versions sourced from `pyproject.toml` or docs)
+9. [ ] Text is 500–800 words (scannable, not overwhelming)
+10. [ ] Links to companion examples roadmap (with "planned — not yet published" marker)
+
+**Structural criteria** (testable):
+1. [ ] File location and naming follow GitHub conventions (e.g., release page auto-populated, or `RELEASE_NOTES_v0.1.0.md` in `.github/`)
+2. [ ] No local file paths; all links are to public URLs (GitHub, Read the Docs, etc.)
+3. [ ] Markdown renders cleanly on GitHub (no broken tables, code blocks, or emphasis)
+
+**No-contradiction criteria** (automated check possible):
+1. [ ] Canonical sentence matches exactly in README, docs, CHANGELOG, and release text
+2. [ ] Python version claim matches `requires-python`
+3. [ ] ROS 2 version claim matches docs (`docs/getting_started.rst`, `docs/requirements.txt`)
+4. [ ] Supported platforms list is consistent across all release-related files
+
+### Validation Plan
+
+**Exit gates before publishing**:
+1. **Gate 1 — CI green** (§6.6 prerequisite):
+   - `uv run ruff check .` and `uv run ruff format --check .` pass
+   - `uv run pyright` has zero errors
+   - `uv run pytest` passes 100%
+   - Docs build clean: `uv run --group docs python -m sphinx -b html docs docs/_build/html`
+
+2. **Gate 2 — Release flow dry-run** (§6.7 prerequisite):
+   - `uv run --group release semantic-release version --print --no-push` computes `0.1.0` without errors
+   - Tag naming verified: next release would be `v0.1.0`
+   - Build succeeds: `python -m build`
+   - Tarball valid: `twine check dist/*`
+
+3. **Gate 3 — Messaging consistency**:
+   - [ ] Run `grep -F "minimal lifecycle composition library for ROS 2 Jazzy" README.md docs/architecture.rst docs/index.rst CHANGELOG.md` — all occurrences must be identical (canonical sentence)
+   - [ ] Run `grep -F "Python 3.12" docs/getting_started.rst pyproject.toml` — version claims consistent
+   - [ ] Run `grep -F "ROS 2 Jazzy" docs/getting_started.rst CONTRIBUTING.md` — all references consistent
+   - [ ] Manual link check: click every URL in release text; verify no 404s or stale anchors
+
+4. **Gate 4 — Tone and readability review**:
+   - [ ] Read release text aloud or have someone else read it — verify tone is direct and honest, not overselling
+   - [ ] Verify no hyperbole ("powerful", "revolutionary", "game-changer")
+   - [ ] Verify β-version status explicit ("0.1.0 beta", "early release", "API may evolve")
+   - [ ] Verify acknowledgment of what is NOT included (no app framework, no magic)
+
+5. **Gate 5 — Word count and structure**:
+   - [ ] Release text is 500–800 words (use `wc -w` on the `.md` file)
+   - [ ] All sections present: headline, summary, features, what's included, supported platforms, limitations, next steps
+   - [ ] Bulleted lists are 4–6 items each (scannable, not overwhelming)
+
+### Failure Modes and Mitigations
+
+| Failure Mode | Impact | Mitigation |
+|--------------|--------|-----------|
+| **Inconsistent positioning** — canonical sentence differs in release vs README | High (confuses users) | Gate 3: automated grep validation |
+| **Broken links** — docs or examples links 404 | High (credibility loss) | Gate 3: manual link validation before publish |
+| **Unsupported version claims** — release says "Python 3.11 supported" but `pyproject.toml` says "3.12+" | High (setup failures, support chaos) | Gate 3: version consistency check |
+| **Overselling stability** — tone implies production-ready when 0.1.0 is beta | Medium (scope creep, broken promises) | Gate 4: tone review; add explicit "beta" marker |
+| **Too long** — release text >1000 words | Medium (users don't read, boring) | Gate 5: word-count check |
+| **Missing non-goals** — release doesn't clarify what is NOT included | Medium (expectations mismatch) | Acceptance criterion #7; gate 4 review |
+| **Stale companion-repo reference** — release links to `lifecore_ros2_examples` as if it's public when it's not | Medium (404 or confusion) | Acceptance criterion #10; explicit "planned" marker required |
+| **Version string hardcoded** — release says "v0.1.0" in multiple places, making it hard to copy-paste for v0.2.0 | Low (maintenance burden) | Acceptance criterion #8; use semantic-release template variables if available |
+
+### Non-Goals
+
+- **LinkedIn, Discourse, Reddit, or direct messages**: User explicitly deferred these. This brief covers GitHub release only.
+- **Video or animated demo**: Out of scope for this task.
+- **Detailed API reference**: Release text is a landing page, not API docs (docs and README handle that).
+- **Full changelog generation**: Semantic-release auto-generates commits-to-changelog; release text is a curated summary layer on top.
+- **External platform coordination**: No scheduling, no embargo coordination, no press releases.
+- **Localization**: Release text is English only for 0.1.0.
+
+### Clarifications / Decisions Locked
+
+1. **Release notes storage**: Compose directly in the GitHub release UI (simpler, no version history burden).
+   - **Decision**: Store text in GitHub release body directly; do not create `.github/RELEASE_NOTES_v0.1.0.md`.
+
+2. **Changelog and release notes relationship**: Semantic-release generates a CHANGELOG from commits. Release text is a curated summary layer.
+   - **Decision**: CHANGELOG.md is auto-generated (commits → features/fixes). Release text is human-curated (strategic messaging). Both coexist; release text may link to CHANGELOG.
+
+3. **Companion examples repo status in release text**: Include explicit "planned — not yet published" marker.
+   - **Decision**: Keep the marker. Users will ask; better to acknowledge than stay silent. Links to `ROADMAP_lifecore_ros2_examples.md` for clarity.
+
+4. **Tone calibration**: Use "beta" frame for 0.1.0.
+   - **Decision**: Explicitly frame as "0.1.0 beta". Avoids "experimental" (too tentative) and "production-ready" (false). Lifecycle tests are robust; API may evolve.
+
+5. **Code examples in release text**: No code snippets.
+   - **Decision**: Release text is messaging layer only. README has examples; release text is the landing page. Keep them separate.
+
+### Exit Gate Summary
+
+**Release text is ready to publish when**:
+- [ ] All 5 validation gates pass
+- [ ] All 10 acceptance criteria verified
+- [ ] No failure modes active
+- [ ] Clarifications #1–#5 resolved and documented (as a comment in the `.md` file or in a separate decision log)
+- [ ] Semantic-release dry-run confirms 0.1.0 will be applied
+- [ ] Human tone review completed (2+ reviewers if possible)
+- [ ] Backup plan ready: if release text is published and an error is found, can we fix it in a v0.1.1 correction release?
+
+---
