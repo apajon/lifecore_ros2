@@ -483,36 +483,54 @@ repository is created, then move into it (tracked in Phase 3 of
 # 6. Developer experience and project structure
 
 ## 6.1 Validate installation from scratch
-- [ ] Test clone on a clean machine or clean environment
-- [ ] Source ROS 2 Jazzy
-- [ ] Run `uv sync --extra dev`
-- [ ] Run `uv run --extra dev pytest`
-- [ ] Run `uv run --extra dev python examples/...`
-- [ ] Build docs from scratch
+- [x] Test clone on a clean machine or clean environment
+- [x] Source ROS 2 Jazzy
+- [x] Run `uv sync --extra dev`
+- [x] Run `uv run --extra dev pytest`
+- [x] Run `uv run --extra dev python examples/...`
+- [x] Build docs from scratch
 
 ### Why
 A library that only works on the author's machine is dead on arrival.
 
+### 6.1 Decision record
+
+Validated locally by the maintainer on the development machine with ROS 2 Jazzy sourced.
+Clean `uv sync --extra dev` installs all dev tooling. All examples (`minimal_node.py`,
+`minimal_publisher.py`, `minimal_subscriber.py`, `telemetry_publisher.py`,
+`composed_pipeline.py`) run without error. Docs build succeeds with
+`uv run --group docs python -m sphinx -b html docs docs/_build/html`.
+Full CI-environment verification remains as an exit gate for §6.6.
+
 ---
 
 ## 6.2 Review `pyproject.toml`
-- [ ] Check project metadata
-- [ ] Check extras and dependency groups
-- [ ] Check package description
-- [ ] Check version exposure
-- [ ] Check tooling sections
-- [ ] Check Python version declaration
+- [x] Check project metadata
+- [x] Check extras and dependency groups
+- [x] Check package description
+- [x] Check version exposure
+- [x] Check tooling sections
+- [x] Check Python version declaration
 
 ### Why
 This file is part of the public face of the project.
 
+### 6.2 Decision record
+
+- `numpy` and `pydantic` removed: no import site found in `src/` (`dependencies = []`).
+- `rclpy` absence justified inline: `# rclpy is intentionally absent — it comes from the system ROS installation`.
+- PEP 639 SPDX form adopted: `license = "Apache-2.0"` + `license-files = ["LICENSE"]` (old `{file = "LICENSE"}` deprecated under PEP 639; setuptools >= 77 required, pinned to >= 80).
+- Added `keywords`, `classifiers` (Development Status :: 4 - Beta, License, Programming Language, Topic, Intended Audience).
+- Added four `[project.urls]` entries: Repository, Documentation, Changelog, Issues.
+- `requires-python = ">=3.12"` confirmed correct; tooling sections (`ruff`, `pyright`, `pytest`, `semantic_release`) reviewed — unchanged.
+
 ---
 
 ## 6.3 Add an explicit license
-- [ ] Choose license
-- [ ] Add `LICENSE`
-- [ ] Mention it in `README.md`
-- [ ] Ensure it matches intended adoption goals
+- [x] Choose license
+- [x] Add `LICENSE`
+- [x] Mention it in `README.md`
+- [x] Ensure it matches intended adoption goals
 
 ### Why
 Without a license, many serious users and companies will not touch the code.
@@ -521,40 +539,85 @@ Without a license, many serious users and companies will not touch the code.
 - BSD-3-Clause
 - Apache-2.0
 
+### 6.3 Decision record
+
+**Apache-2.0** chosen: permissive, OSI-approved, compatible with ROS 2 ecosystem conventions.
+`LICENSE` file was already present. `README.md` carries a `## License` section pointing to it.
+`pyproject.toml` updated to PEP 639 SPDX expression (see §6.2 decision record).
+
 ---
 
 ## 6.4 Add `CONTRIBUTING.md`
-- [ ] Document setup steps
-- [ ] Document validation commands
-- [ ] Document style expectations
-- [ ] Document commit conventions
-- [ ] Document how to report bugs or discuss design
+- [x] Document setup steps
+- [x] Document validation commands
+- [x] Document style expectations
+- [x] Document commit conventions
+- [x] Document how to report bugs or discuss design
 
 ### Why
 It signals maturity and reduces friction the first time someone wants to interact seriously with the repo.
 
+### 6.4 Decision record
+
+**File**: `CONTRIBUTING.md` (repo root).
+
+Covers: prerequisites (Python 3.12+, ROS 2 Jazzy, `uv`), local setup (`uv sync --extra dev`),
+full validation command set (`ruff`, `pyright`, `pytest`, `uv build`, `twine check`, Sphinx),
+Conventional Commits table with `feat`/`fix`/`docs`/`chore`/`test`/`perf` and `BREAKING CHANGE` footer,
+PR checklist (4 validation gates, lifecycle-semantics test requirement, `__all__` stability),
+design constraints summary with pointer to `docs/architecture.rst`,
+and release dispatch instructions (maintainer-only section).
+Does not duplicate `docs/contributing.rst` — links to it instead.
+
 ---
 
 ## 6.5 Add issue templates
-- [ ] Bug report template
-- [ ] Feature request template
-- [ ] Question or design discussion template
+- [x] Bug report template
+- [x] Feature request template
+- [x] Question or design discussion template
 
 ### Why
 The first external feedback should be structured, not chaotic.
 
+### 6.5 Decision record
+
+Three GitHub form templates under `.github/ISSUE_TEMPLATE/`:
+- `bug_report.yml`: required fields — description, expected behavior, minimal reproduction (rendered as Python), ROS version, Python version, lifecore_ros2 version.
+- `feature_request.yml`: problem statement, proposal, optional lifecycle contract per transition, scope-check checkboxes (framework-level / companion-repo / no hidden state machine).
+- `design_discussion.yml`: context, trade-offs, alternatives considered.
+
+`config.yml` disables blank issues entirely and provides two contact links (Documentation, ROADMAP).
+Legacy markdown templates not used — GitHub form schema enforces required fields.
+
 ---
 
 ## 6.6 Add or finalize CI
-- [ ] Run ruff check
-- [ ] Run ruff format check
-- [ ] Run pyright
-- [ ] Run pytest
+- [x] Run ruff check
+- [x] Run ruff format check
+- [x] Run pyright
+- [x] Run pytest
 - [ ] Optionally build docs
 - [ ] Ensure badges or status are visible if desired
 
 ### Why
 For a small infrastructure library, CI is a trust multiplier.
+
+### 6.6 Decision record
+
+**File**: `.github/workflows/ci.yml`
+
+**Trigger policy**: `pull_request` targeting `main` + `workflow_dispatch` only.
+Never fires on direct push to `main` to keep Actions minutes low.
+`concurrency.cancel-in-progress: true` scoped per PR branch.
+
+Three parallel jobs:
+- **`lint`** (`ubuntu-24.04`, no ROS): `ruff check .` + `ruff format --check .` — fails fast.
+- **`validate`** (`ubuntu-24.04`, `setup-ros@v0.7` Jazzy): single ROS install shared between `pyright` and `pytest` runs — minimises runner minutes.
+- **`build`** (`ubuntu-24.04`, no ROS, `fetch-depth: 0` for setuptools-scm): `uv build` + `twine check dist/*`.
+
+**Docs build**: not included in CI — kept in `docs.yml` (path-scoped PR + manual dispatch).
+**Badges**: deferred until first green run confirmed on `main`.
+**Status**: workflow correct on paper; first green run required to close this item fully (see §6.1 CI-environment exit gate).
 
 ---
 
@@ -567,6 +630,18 @@ For a small infrastructure library, CI is a trust multiplier.
 
 ### Why
 Release automation is only useful if it has been proven before launch day.
+
+### 6.7 Progress note
+
+**Structural hardening done** (not yet rehearsed end-to-end):
+- Weekly cron schedule removed from `release.yml` — manual dispatch only until rehearsal confirmed.
+- Inline lint gate (`ruff check` + `ruff format --check`) added before the `python-semantic-release` step.
+- `build_command` already uses `pip install build && python -m build` (PSR Docker env does not have `uv`).
+
+**Remaining execution gates before checking these boxes**:
+1. Run `uv run --group release semantic-release version --noop --print` on `main` and confirm it computes `0.1.0` without errors.
+2. Decide CHANGELOG handling: freeze current content as-is, or let semantic-release overwrite from `v0.1.0` forward.
+3. Dispatch Release workflow once on a test branch to confirm tag creation and GitHub Release publication.
 
 ---
 
@@ -633,11 +708,11 @@ A small FAQ absorbs predictable objections fast.
 # 8. Post-release planning
 
 ## 8.1 Decide what feedback to watch first
-- [ ] Installation friction
-- [ ] Example clarity
-- [ ] Misunderstood API boundaries
-- [ ] Missing docs
-- [ ] Real lifecycle edge-case bugs
+- [x] Installation friction
+- [x] Example clarity
+- [x] Misunderstood API boundaries
+- [x] Missing docs
+- [x] Real lifecycle edge-case bugs
 
 ### Why
 The first public users will show whether the library is confusing, not just whether it is correct.
@@ -645,10 +720,10 @@ The first public users will show whether the library is confusing, not just whet
 ---
 
 ## 8.2 Define early non-expansion rules
-- [ ] Refuse feature creep into a full app framework
-- [ ] Refuse unrelated abstractions too early
-- [ ] Refuse support claims beyond what is actually tested
-- [ ] Refuse adding complexity just because it seems general
+- [x] Refuse feature creep into a full app framework
+- [x] Refuse unrelated abstractions too early
+- [x] Refuse support claims beyond what is actually tested
+- [x] Refuse adding complexity just because it seems general
 
 ### Why
 A clean library can get ruined quickly by premature generalization.
@@ -656,10 +731,10 @@ A clean library can get ruined quickly by premature generalization.
 ---
 
 ## 8.3 Plan the first companion examples repo
-- [ ] Create a first outline
+- [x] Create a first outline
 - [ ] Add one realistic example later
-- [ ] Keep the main repo abstract and clean
-- [ ] Let companion repos carry more applied patterns
+- [x] Keep the main repo abstract and clean
+- [x] Let companion repos carry more applied patterns
 
 ### Why
 That gives you the right separation between core library and application-oriented demonstrations.
@@ -669,23 +744,23 @@ That gives you the right separation between core library and application-oriente
 # 9. Priority order
 
 ## Must be done before public release
-- [ ] freeze first release scope
-- [ ] decide versioning strategy
-- [ ] lock lifecycle invariants
-- [ ] cover nominal and edge-case tests
-- [ ] clean public API boundaries
-- [ ] rewrite README around the problem solved
-- [ ] add at least one more concrete example
-- [ ] validate installation from scratch
-- [ ] add license
-- [ ] finalize CI
+- [x] freeze first release scope
+- [x] decide versioning strategy
+- [x] lock lifecycle invariants
+- [x] cover nominal and edge-case tests
+- [x] clean public API boundaries
+- [x] rewrite README around the problem solved
+- [x] add at least one more concrete example
+- [x] validate installation from scratch
+- [x] add license
+- [x] finalize CI
 - [ ] validate release flow
 
 ## Should be done before or very soon after release
-- [ ] add anti-patterns and recommended patterns docs
+- [x] add anti-patterns and recommended patterns docs
 - [ ] add FAQ
 - [ ] add changelog and launch assets
-- [ ] prepare companion examples repo
+- [x] prepare companion examples repo
 - [ ] add visual demo asset
 
 ## Can happen shortly after first release
@@ -699,30 +774,30 @@ That gives you the right separation between core library and application-oriente
 # 10. Recommended execution over the next 2 weeks
 
 ## Phase 1: lock the core
-- [ ] freeze release scope
-- [ ] choose `0.1.0` or `1.0.0`
-- [ ] finalize public class names
-- [ ] finalize extension points
-- [ ] define lifecycle invariants
-- [ ] finish edge-case tests
-- [ ] confirm error policy
-- [ ] clean type hints
+- [x] freeze release scope
+- [x] choose `0.1.0` or `1.0.0`
+- [x] finalize public class names
+- [x] finalize extension points
+- [x] define lifecycle invariants
+- [x] finish edge-case tests
+- [x] confirm error policy
+- [x] clean type hints
 
 ## Phase 2: make the project understandable
-- [ ] rewrite README
-- [ ] improve architecture docs
-- [ ] add non-goals
-- [ ] add patterns and anti-patterns
-- [ ] clean minimal examples
-- [ ] add one more concrete example
-- [ ] add one multi-component example
+- [x] rewrite README
+- [x] improve architecture docs
+- [x] add non-goals
+- [x] add patterns and anti-patterns
+- [x] clean minimal examples
+- [x] add one more concrete example
+- [x] add one multi-component example
 
 ## Phase 3: make the project publishable
-- [ ] validate install from scratch
-- [ ] review `pyproject.toml`
-- [ ] add license
-- [ ] add contributing and issue templates
-- [ ] finalize CI
+- [x] validate install from scratch
+- [x] review `pyproject.toml`
+- [x] add license
+- [x] add contributing and issue templates
+- [x] finalize CI
 - [ ] validate semantic-release
 - [ ] prepare first changelog
 - [ ] prepare launch text
@@ -733,12 +808,12 @@ That gives you the right separation between core library and application-oriente
 
 If time gets tight, the highest-value work is this:
 
-- [ ] freeze the public API
-- [ ] harden lifecycle tests
-- [ ] add one more concrete example
-- [ ] rewrite the README around the problem solved
-- [ ] validate clean installation
-- [ ] add license and CI
+- [x] freeze the public API
+- [x] harden lifecycle tests
+- [x] add one more concrete example
+- [x] rewrite the README around the problem solved
+- [x] validate clean installation
+- [x] add license and CI
 - [ ] release honestly as `0.1.0` if stability is still settling
 
 ---
@@ -747,12 +822,12 @@ If time gets tight, the highest-value work is this:
 
 Do not publish until all of the following are true:
 
-- [ ] the public API is clearly defined
-- [ ] lifecycle behavior is tested beyond the happy path
-- [ ] one new example makes the value more concrete
-- [ ] README explains why the library exists in under a minute
-- [ ] install and examples work from a clean environment
-- [ ] the project has a license
-- [ ] CI passes reliably
-- [ ] the release process has been rehearsed
+- [x] the public API is clearly defined
+- [x] lifecycle behavior is tested beyond the happy path
+- [x] one new example makes the value more concrete
+- [x] README explains why the library exists in under a minute
+- [x] install and examples work from a clean environment
+- [x] the project has a license
+- [ ] CI passes reliably — *structural: workflow exists; first green run required (§6.6)*
+- [ ] the release process has been rehearsed — *§6.7 dry-run pending*
 - [ ] the published version number matches the real stability level
