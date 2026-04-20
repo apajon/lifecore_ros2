@@ -2,6 +2,16 @@
 
 <!-- version list -->
 
+## [Unreleased]
+
+### Chores
+
+- **typing**: Topic components are now generic in the message type (`LifecyclePublisherComponent[MsgT]`,
+  `LifecycleSubscriberComponent[MsgT]`, `TopicComponent[MsgT]`); `publish` and `on_message` carry
+  concrete message-type constraints instead of `Any`. `LifecycleComponent.get_logger()` return type
+  narrowed from `Any` to the private `_LoggerLike` Protocol. Pyright strict mode enabled for the
+  core package via `[tool.pyright]` in `pyproject.toml`.
+
 ## v0.3.0 (2026-04-20)
 
 ### Bug Fixes

@@ -203,13 +203,27 @@ Users will depend on anything that looks available. If you do not draw the line,
 ---
 
 ## 3.4 Tighten type hints and static guarantees
-- [ ] Remove unnecessary `Any`
-- [ ] Check all public signatures
-- [ ] Validate optional values and nullability
-- [ ] Ensure pyright reflects intended contracts
+- [x] Remove unnecessary `Any`
+- [x] Check all public signatures
+- [x] Validate optional values and nullability
+- [x] Ensure pyright reflects intended contracts
 
 ### Why
 For a Python infrastructure library, type hints are part of the API. Good type information lowers adoption friction and catches architectural drift early.
+
+### 3.4 Decision record
+
+**D1 — Topic components are generic in `MsgT`**: `TopicComponent[MsgT]`, `LifecyclePublisherComponent[MsgT]`, and `LifecycleSubscriberComponent[MsgT]` use PEP 695 syntax (Python 3.12+). `publish(msg: MsgT)` and `on_message(msg: MsgT)` are now typed against the message type inferred at construction (`msg_type=String` → `MsgT = String`). Explicit parameterization (`LifecyclePublisherComponent[String](...)`) is supported. Examples updated to demonstrate explicit `[MsgT]` usage. `MsgT` is unbounded — no stable ROS 2 message base class is available without coupling to `rosidl` internals.
+
+**D2 — `get_logger()` narrowed to `_LoggerLike` Protocol**: `LifecycleComponent.get_logger()` now returns `_LoggerLike` (a private structural Protocol) instead of `Any`. `_LoggerLike` covers `debug`, `info`, `warning`, `error`, `fatal` — all methods the framework and typical subclass code use. `cast(_LoggerLike, ...)` in `_resolve_logger` bypasses structural verification, which is correct since rclpy's `RcutilsLogger` is not exported as a public typed interface.
+
+**D3 — Justified `Any` uses annotated explicitly**: two residual `Any` uses are documented inline with `# Any:` comments. Convention established: every `Any` in `src/` must carry a one-line justification.
+
+**D4 — Pyright strict mode added to `pyproject.toml`**: `[tool.pyright]` block added with `typeCheckingMode = "strict"`. `reportMissingTypeStubs`, `reportUnknownMemberType`, `reportUnknownArgumentType`, `reportUnknownVariableType` downgraded from error to warning to absorb unactionable noise from rclpy's partial stubs. Zero pyright errors for `src/lifecore_ros2/**`.
+
+**D5 — `MsgT` is not exported**: the TypeVar is local to each component module and not added to `__all__`. The generic surface is observable through class subscript; no new public symbol is introduced.
+
+**Validation at close**: `ruff check`, `ruff format --check`, `pyright` (0 errors, 0 warnings), `pytest` (130/130) all pass. Pyright smoke check in `tests/typing_smoke_check.py` mechanically confirms the generic contract: `# type: ignore[arg-type]` on a wrong-type `publish()` call is flagged as *necessary* by pyright strict, proving `MsgT` does not resolve to `Any`.
 
 ---
 

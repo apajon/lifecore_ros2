@@ -5,7 +5,7 @@ from std_msgs.msg import String
 from lifecore_ros2 import LifecycleComponentNode, LifecycleSubscriberComponent
 
 
-class EchoSubscriber(LifecycleSubscriberComponent):
+class EchoSubscriber(LifecycleSubscriberComponent[String]):
     def __init__(self) -> None:
         super().__init__(
             name="echo_sub",

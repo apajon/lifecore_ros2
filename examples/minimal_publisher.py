@@ -7,7 +7,7 @@ from std_msgs.msg import String
 from lifecore_ros2 import LifecycleComponentNode, LifecyclePublisherComponent
 
 
-class PeriodicPublisher(LifecyclePublisherComponent):
+class PeriodicPublisher(LifecyclePublisherComponent[String]):
     """Publishes a String message on /chatter every second while active."""
 
     def __init__(self) -> None:
