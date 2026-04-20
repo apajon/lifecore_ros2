@@ -25,3 +25,6 @@ src/lifecore_ros2/_version.py
 
 # Documentation build artifacts
 docs/_build/
+
+# Local ROS 2 Jazzy interface reference dumps (generated, not part of the repo)
+docs/ros2_jazzy_*.json
