@@ -14,17 +14,18 @@ Items still required before tagging the first public release.
 
 ### Release flow rehearsal
 
-* [ ] Run `uv run --group release semantic-release version --print --no-push` on `main`
-      and confirm it computes `0.1.0` without errors
-* [ ] Decide CHANGELOG handling: freeze current content as-is, or let semantic-release
-      overwrite from `v0.1.0` forward
+* [x] Run `uv run --group release semantic-release version --print --no-push` on `main`
+      and confirm it computes the expected next version without errors (v0.3.0 shipped;
+      next release will be `0.4.0` given the `feat:` commits on `main`)
+* [x] Decide CHANGELOG handling: preamble frozen as the permanent first-release statement,
+      semantic-release appends versioned entries below the `<!-- version list -->` marker
 * [x] Dispatch the release workflow once on a test branch to confirm tag creation and
       GitHub Release publication
 * [ ] Confirm first green CI run on `main` and add status badge to `README.md`
 
 ### Launch assets
 
-* [ ] Draft GitHub release text for `v0.1.0` (canonical sentence verbatim, supported
+* [ ] Draft GitHub release text for `v0.4.0` (canonical sentence verbatim, supported
       Python/ROS versions, included scope, known limitations, links to README and docs)
 * [ ] Add a short FAQ covering: why not raw ROS 2 lifecycle directly, how this differs
       from a custom state machine, why components, what stays in this repo vs an
@@ -32,8 +33,8 @@ Items still required before tagging the first public release.
 
 ### Final release gate
 
-* [ ] Confirm the published version number matches the real stability level (default:
-      `0.1.0` beta unless API is judged defensible as `1.0.0`)
+* [ ] Confirm the published version number matches the real stability level (currently
+      on the `0.x` beta track; promotion to `1.0.0` only when the API is judged stable)
 
 ---
 
