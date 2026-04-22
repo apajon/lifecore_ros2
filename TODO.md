@@ -21,7 +21,7 @@ Items still required before tagging the first public release.
       semantic-release appends versioned entries below the `<!-- version list -->` marker
 * [x] Dispatch the release workflow once on a test branch to confirm tag creation and
       GitHub Release publication
-* [ ] Confirm first green CI run on `main` and add status badge to `README.md`
+* [x] Confirm first green CI run on `main` and add status badge to `README.md`
 
 ### Launch assets
 
