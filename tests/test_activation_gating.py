@@ -175,7 +175,7 @@ class TestPublisherActivationGating:
 
         assert pub.is_active
         pub.publish(MagicMock())
-        pub._publisher.publish.assert_called_once()
+        pub._publisher.publish.assert_called_once()  # pyright: ignore[reportOptionalMemberAccess, reportAttributeAccessIssue]
 
 
 # ---------------------------------------------------------------------------
@@ -260,7 +260,7 @@ class TestReactivationResumption:
 
         # First activation: publish succeeds.
         pub.publish(MagicMock())
-        assert pub._publisher.publish.call_count == 1
+        assert pub._publisher.publish.call_count == 1  # pyright: ignore[reportOptionalMemberAccess, reportAttributeAccessIssue]
 
         # Deactivate: publish blocked.
         pub.on_deactivate(DUMMY_STATE)
@@ -272,7 +272,7 @@ class TestReactivationResumption:
         pub.on_activate(DUMMY_STATE)
         assert pub.is_active
         pub.publish(MagicMock())
-        assert pub._publisher.publish.call_count == 2
+        assert pub._publisher.publish.call_count == 2  # pyright: ignore[reportOptionalMemberAccess, reportAttributeAccessIssue]
 
     def test_reactivation_resumes_subscriber(self, sub: GatedSubscriber) -> None:
         # Regression: second activation must re-enable message processing.
@@ -310,7 +310,7 @@ class TestReactivationResumption:
             with pytest.raises(RuntimeError, match="not active"):
                 pub.publish(MagicMock())
 
-        assert pub._publisher.publish.call_count == 3
+        assert pub._publisher.publish.call_count == 3  # pyright: ignore[reportOptionalMemberAccess, reportAttributeAccessIssue]
 
 
 # ---------------------------------------------------------------------------
