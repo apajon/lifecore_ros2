@@ -54,14 +54,11 @@ jobs:
       - name: Mark workspace as safe for git
         run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
 
-      - name: Install numpy (ROS 2 transitive dependency missing from base image)
-        run: apt-get install -y python3-numpy
-
-      - name: Set up uv
-        uses: astral-sh/setup-uv@v8.1.0
-
       - name: Sync dev dependencies
         run: uv sync --extra dev
+
+      - name: Install numpy into venv (ROS 2 transitive dependency missing from ros:jazzy base image)
+        run: uv pip install numpy
 
       - name: Pyright type check
         shell: bash
