@@ -13,6 +13,7 @@ test_failure_propagation.py (guard catches exceptions), test_edge_transitions.py
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from typing import Any
 from unittest.mock import MagicMock, patch
 
@@ -111,9 +112,9 @@ class UnconfiguredPublisher(LifecyclePublisherComponent[Any]):
 
 
 @pytest.fixture()
-def node() -> LifecycleComponentNode:
+def node() -> Generator[LifecycleComponentNode, None, None]:
     n = LifecycleComponentNode("error_policy_node")
-    yield n  # type: ignore[misc]
+    yield n
     n.destroy_node()
 
 

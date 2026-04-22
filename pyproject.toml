@@ -107,6 +107,11 @@ reportMissingTypeStubs = "warning"
 reportUnknownMemberType = "warning"
 reportUnknownArgumentType = "warning"
 reportUnknownVariableType = "warning"
+# Tests legitimately access protected internals for white-box verification.
+reportPrivateUsage = "warning"
+# typing_smoke_check.py contains intentionally unreachable static-analysis helpers.
+reportUnusedFunction = "warning"
+reportUnusedClass = "warning"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]

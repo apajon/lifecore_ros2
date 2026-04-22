@@ -66,11 +66,11 @@ class LifecycleComponentNode(LifecycleNode):
             if component.name in self._components:
                 raise DuplicateComponentError(f"Component name already registered: {component.name}")
 
-            component._attach(self)
+            component._attach(self)  # pyright: ignore[reportPrivateUsage]
             try:
                 self.add_managed_entity(component)
             except Exception:
-                component._detach()
+                component._detach()  # pyright: ignore[reportPrivateUsage]
                 raise
             self._components[component.name] = component
 

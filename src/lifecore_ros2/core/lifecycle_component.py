@@ -106,14 +106,14 @@ def when_active[F: Callable[..., Any]](
         @wraps(fn)
         # Any: standard callable-preserving decorator pattern; cast(F, wrapper) restores the wrapped signature for callers
         def wrapper(self: LifecycleComponent, *args: Any, **kwargs: Any) -> Any:
-            if not self._is_active:
+            if not self._is_active:  # pyright: ignore[reportPrivateUsage]
                 if when_not_active is _SENTINEL:
                     _default_raise(self)
                 elif when_not_active is not None:
                     cast(Callable[[], Any], when_not_active)()
                 else:
                     # Silent no-op — trace at debug level for diagnosis.
-                    self._resolve_logger().debug(f"[{self._name}] {fn.__name__} dropped: component not active")
+                    self._resolve_logger().debug(f"[{self._name}] {fn.__name__} dropped: component not active")  # pyright: ignore[reportPrivateUsage]
                 return None
             return fn(self, *args, **kwargs)
 

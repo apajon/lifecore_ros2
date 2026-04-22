@@ -7,6 +7,7 @@ correct semantics in all lifecycle phases.
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from typing import Any
 from unittest.mock import MagicMock
 
@@ -93,9 +94,9 @@ class DecoratorTestComponent(LifecycleComponent):
 
 
 @pytest.fixture()
-def node() -> LifecycleComponentNode:
+def node() -> Generator[LifecycleComponentNode, None, None]:
     n = LifecycleComponentNode("gating_test_node")
-    yield n  # type: ignore[misc]
+    yield n
     n.destroy_node()
 
 
