@@ -31,10 +31,10 @@ Run the standard checks before proposing changes:
 
 .. code-block:: bash
 
-   uv run --extra dev python -m ruff check .
-   uv run --extra dev python -m ruff format --check .
-   uv run --extra dev pyright
-   uv run --extra dev pytest
+   uv run ruff check .
+   uv run ruff format --check .
+   uv run pyright
+   uv run pytest
 
 If you touch documentation pages or docstrings, also build the docs:
 

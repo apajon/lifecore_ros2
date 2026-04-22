@@ -41,10 +41,10 @@ The repository currently uses these commands:
 
 .. code-block:: bash
 
-   uv run --extra dev python -m ruff check .
-   uv run --extra dev python -m ruff format --check .
-   uv run --extra dev pyright
-   uv run --extra dev pytest
+   uv run ruff check .
+   uv run ruff format --check .
+   uv run pyright
+   uv run pytest
 
 Build the Documentation
 -----------------------
