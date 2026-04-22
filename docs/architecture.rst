@@ -41,6 +41,29 @@ Key ownership rules:
   If one component returns ``FAILURE`` or ``ERROR``, the node's transition result reflects
   the worst outcome across all components.
 
+Thread-safety of ``add_component``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+All accesses to the component registry and the registration gate are protected by an
+internal ``threading.RLock`` (``self._lock`` on the node). This means ``add_component``
+may be called safely from any thread, including threads that run before ``rclpy.spin``
+starts.
+
+The registration gate (``_registration_open``) is written and read inside the same lock,
+so a thread calling ``add_component`` concurrently with the first lifecycle transition
+will either succeed (if ``_close_registration`` has not yet acquired the lock) or raise
+``RegistrationClosedError`` (if it has). There is no window where a component can be
+partially registered.
+
+Components registered before ``on_configure`` runs will have their hooks called during
+the first transition. Components added after ``on_configure`` has been called raise
+``RegistrationClosedError`` regardless of which thread makes the call.
+
+.. note::
+
+   The lock is reentrant (``RLock``), so application code that calls ``add_component``
+   inside a node's own ``__init__`` or ``on_configure`` override is safe.
+
 Transition Sequence
 -------------------
 
@@ -70,7 +93,8 @@ code never escape to the rclpy executor.
 
 ``on_activate`` additionally sets ``component._is_active = True`` on each component
 whose hook returned ``SUCCESS``. ``on_deactivate`` clears it only on ``SUCCESS``.
-``on_cleanup``, ``on_shutdown``, and ``on_error`` each call ``_release_resources``
+``on_cleanup``, ``on_shutdown``, and ``on_error`` each clear ``_is_active = False``
+**unconditionally before the hook runs**, then call ``_release_resources``
 after the hook, regardless of the hook's return value, and propagate the worst of the
 two results.
 
@@ -97,6 +121,12 @@ Topic-Resource Lifecycle
 The only state the framework tracks is ``_is_active``. There is no secondary resource-ready
 flag. Whether a resource exists at runtime is determined entirely by whether ``_on_configure``
 has run and ``_on_cleanup`` / ``_release_resources`` has not yet been called.
+
+.. note::
+
+   The framework does not own or start timers. The ``start timers`` and ``stop timers``
+   entries above represent application code running inside ``_on_activate`` and
+   ``_on_deactivate``. The framework has no built-in timer management.
 
 Lifecycle Design
 ----------------
@@ -154,7 +184,16 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
 **No parallel lifecycle**
   No component may introduce an internal state machine that diverges from or shadows
   the node lifecycle. ``_is_active`` is the only lifecycle-adjacent flag. It is
-  managed exclusively through ``_on_activate`` and ``_on_deactivate`` super() calls.
+  managed exclusively by the ``@final`` framework entry points:
+
+  - ``on_activate`` sets ``_is_active = True`` after ``_on_activate`` returns ``SUCCESS``.
+  - ``on_deactivate`` clears ``_is_active = False`` after ``_on_deactivate`` returns ``SUCCESS``.
+  - ``on_cleanup``, ``on_shutdown``, and ``on_error`` each clear ``_is_active = False``
+    **unconditionally before** the ``_on_*`` hook runs, regardless of its return value.
+
+  Subclasses must not read or write ``_is_active`` directly. Do not call
+  ``super()._on_activate()`` or ``super()._on_deactivate()`` to manage the flag —
+  the framework handles it.
 
 **Activation gating**
   ``LifecyclePublisherComponent.publish()`` raises ``RuntimeError`` when inactive.
@@ -208,17 +247,50 @@ The framework enforces one coherent error policy across four axes.
     ``RuntimeError`` by default via ``@when_active``. Application code can guard
     before calling; raising surfaces lifecycle programming errors early.
   - **Inbound callbacks** driven by the middleware (subscription callbacks, timer
-    callbacks) silently drop the message with a debug-level log entry. Raising into
-    the rclpy executor would crash the spin loop.
+    callbacks) silently drop the message when the component is inactive.
+    The drop is logged at ``DEBUG`` level. Raising into the rclpy executor would
+    crash the spin loop.
   - Both defaults are configurable via ``@when_active(when_not_active=...)``.
-  - Exceptions raised inside ``on_message`` are caught by the framework, logged at
-    error level, and dropped. They never propagate to the executor.
+  - **Exceptions inside ``on_message``** are in a separate category: the message was
+    delivered (the component was active), but the user's ``on_message`` implementation
+    raised. These are caught by ``_on_message_wrapper``, logged at ``ERROR`` level
+    with the exception type and message, and dropped. They never propagate to the
+    executor. See the *Handle on_message exceptions inside the method* entry in
+    :doc:`patterns` for guidance.
 
-**Rule D — Errors during cleanup / shutdown / error: propagate the worst result**
+**Rule D — Error entry points and worst-result propagation**
+
+  *When does rclpy call ``on_error``?*
+  Any lifecycle transition that returns ``ERROR`` (or whose hook raises an uncaught
+  exception, which the framework converts to ``ERROR`` via ``_guarded_call``) moves
+  the node into the ``ErrorProcessing`` state. rclpy then calls ``on_error`` on the
+  node, which in turn calls each component's ``on_error`` entry point.
+
+  The return value of ``on_error`` determines the next node state:
+
+  - ``SUCCESS`` — node returns to ``Unconfigured`` (resources have been released;
+    the node can be reconfigured).
+  - ``FAILURE`` or ``ERROR`` — node transitions to ``Finalized`` (terminal state;
+    the process must be restarted to reuse the node).
+
+  *How the framework handles the error entry point:*
+  For each component, the framework's ``@final on_error`` entry point:
+
+  1. Clears ``_is_active = False`` **unconditionally** (before the hook runs).
+  2. Calls ``_on_error`` via ``_guarded_call`` (catches exceptions, converts to ``ERROR``).
+  3. Calls ``_release_resources`` regardless of the hook result.
+  4. Returns the *worst* of the two results (``SUCCESS < FAILURE < ERROR``).
+
+  The same worst-result rule applies to ``on_cleanup`` and ``on_shutdown``:
   ``_on_cleanup``, ``_on_shutdown``, and ``_on_error`` each run the hook and then
-  call ``_release_resources``. The returned ``TransitionCallbackReturn`` is the
-  *worst* of the two results, using the ordering ``SUCCESS < FAILURE < ERROR``.
-  A failing ``_on_cleanup`` hook does **not** skip ``_release_resources``.
+  call ``_release_resources``. A failing hook does **not** skip ``_release_resources``.
+
+  *Difference between returning ``ERROR`` from a hook and overriding ``_on_error``:*
+  Returning ``ERROR`` from any ``_on_*`` hook is how application code signals an
+  unrecoverable transition failure — rclpy handles the state transition. Overriding
+  ``_on_error`` is how a component performs cleanup work *after* the node has already
+  entered ``ErrorProcessing``. Most components do not need to override ``_on_error``;
+  the default returns ``SUCCESS``, and ``_release_resources`` is called automatically.
 
 Member Convention
 -----------------
