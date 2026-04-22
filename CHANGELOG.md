@@ -66,6 +66,225 @@ gating, failure propagation, and resource handling.
 
 <!-- version list -->
 
+## v0.4.0 (2026-04-22)
+
+### Bug Fixes
+
+- **docs**: Correct stale automodule paths in api.rst
+  ([`a2d9e51`](https://github.com/apajon/lifecore_ros2/commit/a2d9e5199cbdcb9dcce3499da1e18375d0a5e244))
+
+- **typing**: Resolve 82 pyright errors blocking CI
+  ([`0d49a82`](https://github.com/apajon/lifecore_ros2/commit/0d49a827e4858ba7719952e80341ab90dea25168))
+
+- **typing**: Suppress remaining 8 pyright errors on mock publisher attributes
+  ([`4ebb1a3`](https://github.com/apajon/lifecore_ros2/commit/4ebb1a36ba37ed2dacdbe1bcbda29245ef6b2211))
+
+### Chores
+
+- Mark release workflow rehearsal as done in TODO
+  ([`5d0f6dd`](https://github.com/apajon/lifecore_ros2/commit/5d0f6dd3e8edf11152b1b6c7b0e19ab676f0f4de))
+
+- Mark TODO_2 sections 5.1 and 5.2 as done with decision records
+  ([`4bb431d`](https://github.com/apajon/lifecore_ros2/commit/4bb431d772a1e91b6909359518ffd4734684fe14))
+
+- Mark §7.3 visual asset complete in TODO_2.md
+  ([`13e86c6`](https://github.com/apajon/lifecore_ros2/commit/13e86c6348f2b17ac2144b9671964d57cdd961e3))
+
+- **copilot**: Add MemPalace and architecture guard agents
+  ([`fe1c3cd`](https://github.com/apajon/lifecore_ros2/commit/fe1c3cde82a7699f784cad87418c2d54e49a183f))
+
+- **github**: Add structured issue templates
+  ([`96fb65c`](https://github.com/apajon/lifecore_ros2/commit/96fb65cf5f37a51b5ffb1d7a7a81b3fd94a0f74f))
+
+- **gitignore**: Ignore local ros2 jazzy interface dumps
+  ([`9884539`](https://github.com/apajon/lifecore_ros2/commit/9884539273db75909ad9a4abf29cfe6f6e2a7a7c))
+
+- **packaging**: Drop unused deps, PEP 639 license, add classifiers and URLs
+  ([`a6280fd`](https://github.com/apajon/lifecore_ros2/commit/a6280fd9b530ad370d7afd350cafca1781de4ad3))
+
+- **release**: Record 3.3 decision in TODO_2.md
+  ([`397c3e3`](https://github.com/apajon/lifecore_ros2/commit/397c3e327a9ca271dff6a6a3b2ca1d7eaba3354e))
+
+- **todo**: Align release flow notes with v0.3.0 shipped and v0.4.0 upcoming
+  ([`7a0b3fa`](https://github.com/apajon/lifecore_ros2/commit/7a0b3fa212f46f17d5e0479ba0a726b344501cee))
+
+- **todo**: Fix semantic-release dry-run command in §6.7
+  ([`58cf315`](https://github.com/apajon/lifecore_ros2/commit/58cf3159ea02f85a05519395bb3861631dd9ffc3))
+
+- **todo**: Mark first green CI run as done
+  ([`3ed89ca`](https://github.com/apajon/lifecore_ros2/commit/3ed89ca13317f53f3ed52756d7420d3c575d7775))
+
+- **todo**: Mark section 4 documentation tasks as completed
+  ([`0f0ec2c`](https://github.com/apajon/lifecore_ros2/commit/0f0ec2c19c7874cbf32ba0bff28666c0bd9fb633))
+
+- **todo**: Mark section 6 complete in TODO_2.md
+  ([`250b47a`](https://github.com/apajon/lifecore_ros2/commit/250b47a523295e7e376914d10aba80d79b0d76b1))
+
+- **todo**: Mark TODO 5.4 sub-items complete
+  ([`a3e2d64`](https://github.com/apajon/lifecore_ros2/commit/a3e2d648b4316b38777e8c6fdb2b1b68ad8b49da))
+
+- **todo**: Mark TODO 7.1 complete
+  ([`979a322`](https://github.com/apajon/lifecore_ros2/commit/979a3220647e98d4c612301932e8d96167fb5237))
+
+- **todo**: Mark TODO_2.md §5.3 complete with decision record
+  ([`aa6273d`](https://github.com/apajon/lifecore_ros2/commit/aa6273df45eaf10ac8ffdd312d45326a1d61881d))
+
+- **todo**: Note pydantic to add when spec_model is implemented
+  ([`c824555`](https://github.com/apajon/lifecore_ros2/commit/c8245552f63b3900547d6587c3e75c22166c20fe))
+
+- **todo**: Replace verbose planning notes with concise pre-release and backlog sections
+  ([`2dee894`](https://github.com/apajon/lifecore_ros2/commit/2dee89457126d2313ab1463547ab4b0388a720c1))
+
+- **todo**: Track post-release README badges in backlog
+  ([`5dd480f`](https://github.com/apajon/lifecore_ros2/commit/5dd480f6d025305c1af6895650c20d1056d7807b))
+
+### Continuous Integration
+
+- Add CI workflow (pull_request + dispatch only)
+  ([`ae87b0c`](https://github.com/apajon/lifecore_ros2/commit/ae87b0c784e52956d7ef127cbf50ba072b1ca87f))
+
+- Bump astral-sh/setup-uv from v6 to v8.1.0
+  ([`b3df510`](https://github.com/apajon/lifecore_ros2/commit/b3df510638366af0835c86f1b5c0bfb608cf2fab))
+
+- Fix git safe.directory for ros:jazzy container job
+  ([`12f20e2`](https://github.com/apajon/lifecore_ros2/commit/12f20e208305f2423c25401ee2480c8057ea1837))
+
+- Install numpy into uv venv instead of system apt
+  ([`e74b733`](https://github.com/apajon/lifecore_ros2/commit/e74b733708cd061d7e9f5ab4ef6b2fa8559f6f3b))
+
+- Install python3-numpy missing from ros:jazzy base image
+  ([`f17fda4`](https://github.com/apajon/lifecore_ros2/commit/f17fda43ddaec4126d0d79ee9fdbaab527be9a11))
+
+- Restore missing setup-uv step in validate job
+  ([`429841f`](https://github.com/apajon/lifecore_ros2/commit/429841f3185bd66f6b1aefc8c39d3530127af9a9))
+
+- Use ros:jazzy container image instead of setup-ros action
+  ([`4af6eba`](https://github.com/apajon/lifecore_ros2/commit/4af6eba886023fca98dc834547f8b250fe5f608c))
+
+- **release**: Remove cron schedule, add lint gate before semantic-release
+  ([`aaa8a66`](https://github.com/apajon/lifecore_ros2/commit/aaa8a666f5f8739f5aed9c4413b776f0fd20a258))
+
+### Documentation
+
+- Add CONTRIBUTING.md
+  ([`08f066d`](https://github.com/apajon/lifecore_ros2/commit/08f066d553689b1305921e0f8ea74aa7cc0821ed))
+
+- Add member convention and autodoc skip hook
+  ([`221f004`](https://github.com/apajon/lifecore_ros2/commit/221f0045c1feff5bbf05400b7de031a34601fea0))
+
+- Add patterns, anti-patterns, and migration-from-rclpy pages
+  ([`3a10935`](https://github.com/apajon/lifecore_ros2/commit/3a10935c4bde067ac19c17a8b999ded7d8ff62cb))
+
+- Add recording script and infrastructure for composed_pipeline demo
+  ([`7dbc11b`](https://github.com/apajon/lifecore_ros2/commit/7dbc11b28d8cde4277f1773b43f3e9684eb62f58))
+
+- Adopt canonical positioning sentence across public surfaces
+  ([`0fb2cb3`](https://github.com/apajon/lifecore_ros2/commit/0fb2cb3b19a610171b9d0496954a6038e9ec2019))
+
+- **5.5**: Wire companion repo signposts and mark TODO 5.5 complete
+  ([`e96000c`](https://github.com/apajon/lifecore_ros2/commit/e96000ce47b524aa1647bee4b92f2a004ab66bb9))
+
+- **architecture**: Add ownership, transition sequence, and resource lifecycle sections
+  ([`8a19898`](https://github.com/apajon/lifecore_ros2/commit/8a198984bc4c55b2f5d8f8535d5b6dac09b44d70))
+
+- **architecture**: Correct _is_active invariants and document three missing guarantees
+  ([`aa17a11`](https://github.com/apajon/lifecore_ros2/commit/aa17a1115b757e95e23084c812730734b37acf38))
+
+- **architecture**: Document the four error policy rules
+  ([`765d423`](https://github.com/apajon/lifecore_ros2/commit/765d423753cf29607d70696c1ae0f6875258ff9e))
+
+- **changelog**: Add curated first-release v0.4.0 entry
+  ([`c2625de`](https://github.com/apajon/lifecore_ros2/commit/c2625de7ca636d45e1c58189ff4e3b9df1307ba1))
+
+- **changelog**: Align preamble with version list; update shipped state and base class wording
+  ([`643e4af`](https://github.com/apajon/lifecore_ros2/commit/643e4af0824eb7bd48f66034adedf957dba995d6))
+
+- **examples**: Add full observability contracts to all example docstrings
+  ([`2f369d9`](https://github.com/apajon/lifecore_ros2/commit/2f369d969e0ca371133cc68f67a83fc096c238d0))
+
+- **examples**: Add telemetry_publisher and composed_pipeline sections
+  ([`3132e42`](https://github.com/apajon/lifecore_ros2/commit/3132e429e3a3170dc014decf9f4d75ed7a52455d))
+
+- **examples**: Fix Composed Pipeline structure and add Reactivation Cycles section
+  ([`382b82a`](https://github.com/apajon/lifecore_ros2/commit/382b82aee8372fafdbaf11004b3b1cee9d8b9b73))
+
+- **examples**: Update minimal examples with explicit MsgT parameterization
+  ([`ecb40f4`](https://github.com/apajon/lifecore_ros2/commit/ecb40f4d88ee7e7d0072167d70142f7dc9d02b2c))
+
+- **examples.rst**: Add Observability Format convention section
+  ([`629ed65`](https://github.com/apajon/lifecore_ros2/commit/629ed65c9f5826e85d146f559f00ab2a4b8dd160))
+
+- **faq**: Add FAQ page covering positioning and API stability
+  ([`f10a12c`](https://github.com/apajon/lifecore_ros2/commit/f10a12cf7d7c2ee0040910ba298b1cad25cb5887))
+
+- **guides**: Normalize validation commands to bare uv run form
+  ([`cbf6b24`](https://github.com/apajon/lifecore_ros2/commit/cbf6b240990eddf6756aee356acdffda6a1210b1))
+
+- **patterns**: Add super()._on_configure seealso and on_message exception anti-pattern
+  ([`c6853cf`](https://github.com/apajon/lifecore_ros2/commit/c6853cf38378af9db1cf1b8b14c14fc767ee5846))
+
+- **readme**: Add CI workflow status badge
+  ([`6169a70`](https://github.com/apajon/lifecore_ros2/commit/6169a7071ae773790ca68368450dcdda7045973d))
+
+- **readme**: Add Docs and Release workflow status badges
+  ([`71f1e47`](https://github.com/apajon/lifecore_ros2/commit/71f1e47b7949d10a3b51bb0d192ac114e19a468c))
+
+- **readme**: Add license badge and link to GitHub Releases
+  ([`9ad085a`](https://github.com/apajon/lifecore_ros2/commit/9ad085a0d1379141980d763a7b3bbe0dc685b562))
+
+- **README**: Align minimal example, normalize commands, remove stale claims
+  ([`33b9cee`](https://github.com/apajon/lifecore_ros2/commit/33b9cee50d070eb9bfdead19fcc7569937e98d08))
+
+- **readme**: Rewrite as problem-first landing page
+  ([`48679bb`](https://github.com/apajon/lifecore_ros2/commit/48679bb8148b366e7cc4229026b2a2ca9f870fc4))
+
+- **release**: Draft v0.4.0 GitHub release notes
+  ([`02ab28a`](https://github.com/apajon/lifecore_ros2/commit/02ab28afd6f2f4302eb6a1755a25bd87b37abbe9))
+
+- **roadmap**: Close TODO 3.5 and update public API surface
+  ([`9855776`](https://github.com/apajon/lifecore_ros2/commit/9855776629fd709255737d03457091fd731a57e6))
+
+- **sphinx**: Add changelog page and integrate into toctree
+  ([`ffddf7f`](https://github.com/apajon/lifecore_ros2/commit/ffddf7fb966cf92b5c87b4c46cd7e9592b1ed705))
+
+- **sphinx**: Move mempalace_strategy to Contributing toctree; document autodoc filter
+  ([`2b84552`](https://github.com/apajon/lifecore_ros2/commit/2b8455281870a50433eb8e54902b9945fd550e35))
+
+- **todo**: Add 7.4 GitHub release text implementation strategy
+  ([`e0f3102`](https://github.com/apajon/lifecore_ros2/commit/e0f31028d2869b9c7f86b4bb59b75b54955e8937))
+
+- **todo**: Mark §7.2 complete and record positioning-sentence decision
+  ([`588af60`](https://github.com/apajon/lifecore_ros2/commit/588af604f7c035c69a7fb9d5a103cff95b46989a))
+
+### Features
+
+- **5.5**: Add planning artifacts for lifecore_ros2_examples companion repo
+  ([`55a7227`](https://github.com/apajon/lifecore_ros2/commit/55a72271252e29e5ba75049e7ca672f792f1fc5f))
+
+- **components**: Tag extension points and seal _on_message_wrapper
+  ([`058260f`](https://github.com/apajon/lifecore_ros2/commit/058260fd219d2b5d29b8799423207792f36d2a49))
+
+- **core**: Add LifecoreError exception hierarchy
+  ([`222fe59`](https://github.com/apajon/lifecore_ros2/commit/222fe5949425e69ea00810b88d2ed20b8a456631))
+
+- **core**: Apply error policy to lifecycle components
+  ([`9155ce8`](https://github.com/apajon/lifecore_ros2/commit/9155ce853637903eeacb428877443a7d38b565ea))
+
+- **core**: Seal lifecycle entry points with @final
+  ([`69a5d1e`](https://github.com/apajon/lifecore_ros2/commit/69a5d1e1eeb9eccbcd11c17cef743c0cf4e81044))
+
+- **examples**: Add composed_pipeline.py multi-component example
+  ([`a360ada`](https://github.com/apajon/lifecore_ros2/commit/a360adab3d301f8eadc0ffb40c3a988e57e8f22c))
+
+### Testing
+
+- Add error policy regression matrix
+  ([`a69843c`](https://github.com/apajon/lifecore_ros2/commit/a69843c0caaa05eaebe7a5fa3760d133b9b89fa8))
+
+- **typing**: Pin LifecoreError MRO via static smoke check
+  ([`58381fe`](https://github.com/apajon/lifecore_ros2/commit/58381fe035c86eccc01f2b8900d3ccc94474e1a7))
+
+
 ## [Unreleased]
 
 ### Chores
