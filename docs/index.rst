@@ -11,11 +11,16 @@ lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no 
    :caption: Contents
 
    getting_started
-   contributing
    architecture
    patterns
    migration_from_rclpy
-   mempalace_strategy
    examples
    api
    changelog
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Contributing
+
+   contributing
+   mempalace_strategy

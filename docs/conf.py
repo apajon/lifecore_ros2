@@ -35,6 +35,12 @@ html_theme = "alabaster"
 # framework's naming convention, not "do not read this".
 # Framework-internal helpers (_attach, _detach, _guarded_call, etc.) are
 # excluded because they are implementation details with no user contract.
+#
+# NOTE: api.rst uses :undoc-members: so autodoc emits members that have no
+# docstring. This skip filter is the companion gate: it re-hides private
+# members that :undoc-members: would otherwise expose. Any new private helper
+# added to the codebase is automatically excluded unless its name is added to
+# _EXTENSION_POINTS below.
 _EXTENSION_POINTS = frozenset(
     {
         "_on_configure",
