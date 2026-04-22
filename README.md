@@ -1,6 +1,8 @@
 # lifecore_ros2
 
 [![CI](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml)
+[![Docs](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml)
+[![Release](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml)
 
 <!-- Canonical positioning sentence — keep in sync with pyproject.toml project.description. See CONTRIBUTING.md. -->
 lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.
