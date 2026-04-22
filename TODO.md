@@ -25,11 +25,13 @@ Items still required before tagging the first public release.
 
 ### Launch assets
 
-* [ ] Draft GitHub release text for `v0.4.0` (canonical sentence verbatim, supported
+* [x] Draft GitHub release text for `v0.4.0` (canonical sentence verbatim, supported
       Python/ROS versions, included scope, known limitations, links to README and docs)
-* [ ] Add a short FAQ covering: why not raw ROS 2 lifecycle directly, how this differs
+      — drafted in `docs/release_notes/v0.4.0.md`
+* [x] Add a short FAQ covering: why not raw ROS 2 lifecycle directly, how this differs
       from a custom state machine, why components, what stays in this repo vs an
-      application repo, current API stability level
+      application repo, current API stability level — `docs/faq.rst`, wired into
+      `docs/index.rst`
 
 ### Final release gate
 

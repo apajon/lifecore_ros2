@@ -16,6 +16,7 @@ lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no 
    migration_from_rclpy
    examples
    api
+   faq
    changelog
 
 .. toctree::
