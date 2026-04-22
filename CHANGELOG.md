@@ -1,8 +1,8 @@
 # CHANGELOG
 
-## First public release — v0.4.0
+## First public release — planned v0.4.0
 
-`lifecore_ros2` v0.4.0 is the first public release of the library. It establishes a small,
+`lifecore_ros2` v0.4.0 will be the first public release of the library. It establishes a small,
 predictable surface for composing lifecycle-aware ROS 2 nodes without layering a hidden state
 machine on top of native ROS 2 lifecycle semantics.
 
@@ -17,10 +17,10 @@ snapshot at the time of the first public release.
 
 - `LifecycleComponentNode` — lifecycle node that owns and drives registered components as
   native ROS 2 managed entities.
-- `LifecycleComponent` — abstract base for lifecycle-aware components; propagates transitions
-  through `_on_configure`, `_on_activate`, `_on_deactivate`, `_on_cleanup`, `_on_shutdown`,
-  `_on_error`.
-- `TopicComponent` — abstract base for topic-oriented components; allocates ROS pub/sub
+- `LifecycleComponent` — base class for lifecycle-aware components (abstract by convention);
+  propagates transitions through `_on_configure`, `_on_activate`, `_on_deactivate`,
+  `_on_cleanup`, `_on_shutdown`, `_on_error`.
+- `TopicComponent` — base class for topic-oriented components; allocates ROS pub/sub
   during configure, releases during cleanup.
 - `LifecyclePublisherComponent` — generic publisher (`[MsgT]`) gated by activation state.
 - `LifecycleSubscriberComponent` — generic subscriber (`[MsgT]`) whose `on_message` callback
@@ -42,7 +42,6 @@ gating, failure propagation, and resource handling.
 
 ### What this release does not provide yet
 
-- Multi-component composed example (two or more components in a single node).
 - Companion examples repository (`lifecore_ros2_examples`).
 - Visual demo asset (terminal recording or GIF).
 - Extended FAQ section.
@@ -57,8 +56,8 @@ gating, failure propagation, and resource handling.
 
 ### Known limitations
 
-- Examples cover single-component nodes only; multi-component composition is exercised by
-  the test suite but not yet by an example.
+- `composed_pipeline.py` demonstrates multi-component composition inside a single node;
+  multi-node or domain-specific examples live in the planned companion repository.
 - The `MsgT` type parameter on topic components is unbounded by design — no stable ROS 2
   message base class is exported by `rosidl` to constrain it without coupling.
 - No companion examples repository, visual asset, or FAQ ships with this release.
