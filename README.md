@@ -3,6 +3,7 @@
 [![CI](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml)
 [![Docs](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml)
 [![Release](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml)
+[![License: Apache 2.0](https://img.shields.io/github/license/apajon/lifecore_ros2)](LICENSE)
 
 <!-- Canonical positioning sentence — keep in sync with pyproject.toml project.description. See CONTRIBUTING.md. -->
 lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.
@@ -54,6 +55,7 @@ A small set of lifecycle-aware building blocks:
 
 See [ROADMAP.md](ROADMAP.md) for the full "out of scope" list and deferred features.
 See [ROADMAP_lifecore_ros2_examples.md](ROADMAP_lifecore_ros2_examples.md) for the companion examples repository plan.
+See [CHANGELOG.md](CHANGELOG.md) for shipped changes or the [GitHub Releases](https://github.com/apajon/lifecore_ros2/releases) page for tagged releases.
 
 ## Prerequisites
 
