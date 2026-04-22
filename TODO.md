@@ -18,7 +18,7 @@ Items still required before tagging the first public release.
       and confirm it computes `0.1.0` without errors
 * [ ] Decide CHANGELOG handling: freeze current content as-is, or let semantic-release
       overwrite from `v0.1.0` forward
-* [ ] Dispatch the release workflow once on a test branch to confirm tag creation and
+* [x] Dispatch the release workflow once on a test branch to confirm tag creation and
       GitHub Release publication
 * [ ] Confirm first green CI run on `main` and add status badge to `README.md`
 
