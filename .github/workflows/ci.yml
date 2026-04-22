@@ -40,20 +40,16 @@ jobs:
 
   # ------------------------------------------------------------------
   # Validate — ROS 2 Jazzy required for both pyright and pytest.
-  # pyright needs rclpy importable; tests need a live rclpy context.
-  # Both steps share a single ROS setup to minimise runner minutes.
+  # Uses the official ros:jazzy Docker image to skip apt installation
+  # and reuse the Docker layer cache on GitHub-hosted runners.
   # ------------------------------------------------------------------
   validate:
     runs-on: ubuntu-24.04
+    container: ros:jazzy
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
-
-      - name: Set up ROS 2 Jazzy
-        uses: ros-tooling/setup-ros@v0.7
-        with:
-          required-ros-distributions: jazzy
 
       - name: Set up uv
         uses: astral-sh/setup-uv@v8.1.0
