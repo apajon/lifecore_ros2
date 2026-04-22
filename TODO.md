@@ -72,6 +72,12 @@ Deliberately deferred. Do not implement until there is a concrete user need.
 * [ ] Add a first realistic applied example (see
       `ROADMAP_lifecore_ros2_examples.md` and `TODO_lifecore_ros2_examples.md`)
 
+### README badges (post-release)
+
+* [ ] Add PyPI version badge (`shields.io/pypi/v/lifecore-ros2`) once published on PyPI
+* [ ] Add Python versions badge (`shields.io/pypi/pyversions/lifecore-ros2`) once on PyPI
+* [ ] Add GitHub latest release badge (`shields.io/github/v/release/apajon/lifecore_ros2`) after first tagged release
+
 ---
 
 ## 3. Design constraints — do not violate
