@@ -32,6 +32,11 @@ Recommended Patterns
   Invariant upheld: **configure** (allocate in configure) and **cleanup** (release in
   ``_release_resources``, called automatically).
 
+  .. seealso::
+
+     :doc:`architecture` — Member Convention table for the ``super()._on_configure`` call
+     contract on ``LifecyclePublisherComponent``.
+
 **Gate runtime behavior with ``is_active`` or ``@when_active``**
 
   Any method that performs work driven by the node (timers, callbacks, periodic outputs) must
@@ -140,3 +145,35 @@ Anti-Patterns
           return TransitionCallbackReturn.SUCCESS
 
   Invariant violated: **cleanup** (``_release_resources`` is called automatically).
+
+.. _patterns:on_message-exceptions:
+
+**Letting exceptions propagate from ``on_message``**
+
+  Exceptions raised inside ``on_message`` are caught by the framework's
+  ``_on_message_wrapper`` and logged at ``ERROR`` level, but the message is silently
+  dropped and processing continues. Raising is therefore not a reliable error-signaling
+  channel — the node stays active, the error is logged, and the next message arrives
+  normally. Do not rely on raising to stop the component or trigger a state change.
+
+  If an error inside ``on_message`` should stop the component, use a flag and gate
+  future messages explicitly, or arrange for the node to transition out of the active
+  state through another mechanism.
+
+  .. code-block:: python
+
+      # WRONG: relying on raise to propagate the error
+      def on_message(self, msg: Float64) -> None:
+          if msg.data < 0:
+              raise ValueError(f"unexpected negative value: {msg.data}")
+          self._process(msg)
+
+      # CORRECT: handle the error locally and decide whether to continue
+      def on_message(self, msg: Float64) -> None:
+          if msg.data < 0:
+              self.node.get_logger().warning(f"[{self.name}] dropping negative value: {msg.data}")
+              return
+          self._process(msg)
+
+  Rule reference: **Rule C** in :doc:`architecture` (inbound exceptions are logged and
+  dropped; they never propagate to the executor).
