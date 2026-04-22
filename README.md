@@ -25,8 +25,8 @@ A small set of lifecycle-aware building blocks:
 | Symbol | Role |
 |---|---|
 | `LifecycleComponentNode` | Lifecycle node that owns and drives registered `LifecycleComponent` instances |
-| `LifecycleComponent` | Abstract base for a lifecycle-aware managed entity |
-| `TopicComponent` | Abstract base for topic-oriented components (pub/sub) |
+| `LifecycleComponent` | Base class for a lifecycle-aware managed entity (abstract by convention — override `_on_*` hooks) |
+| `TopicComponent` | Base class for topic-oriented components (pub/sub) |
 | `LifecyclePublisherComponent` | Lifecycle-gated ROS publisher |
 | `LifecycleSubscriberComponent` | Lifecycle-gated ROS subscriber |
 | `when_active` | Decorator that guards any method to the active state |
@@ -49,6 +49,7 @@ A small set of lifecycle-aware building blocks:
 - no replacement of native ROS 2 lifecycle semantics
 
 See [ROADMAP.md](ROADMAP.md) for the full "out of scope" list and deferred features.
+See [ROADMAP_lifecore_ros2_examples.md](ROADMAP_lifecore_ros2_examples.md) for the companion examples repository plan.
 
 ## Prerequisites
 
@@ -75,33 +76,36 @@ uv sync --extra dev
 Validate the installation:
 
 ```bash
-uv run --extra dev python -m ruff check .
-uv run --extra dev python -m ruff format --check .
-uv run --extra dev pyright
-uv run --extra dev pytest
+uv run ruff check .
+uv run ruff format --check .
+uv run pyright
+uv run pytest
 ```
 
 ## Minimal example
 
 ```python
+from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
 from lifecore_ros2 import LifecycleComponent, LifecycleComponentNode
 
 
-class StatusComponent(LifecycleComponent):
-    pass  # override _on_configure, _on_activate, etc. as needed
+class LoggingComponent(LifecycleComponent):
+    def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+        self.node.get_logger().info(f"[{self.name}] on_configure called")
+        return TransitionCallbackReturn.SUCCESS
 
 
-class StatusNode(LifecycleComponentNode):
+class MinimalNode(LifecycleComponentNode):
     def __init__(self) -> None:
-        super().__init__("status_node")
-        self.add_component(StatusComponent("status"))
+        super().__init__("minimal_lifecore_node")
+        self.add_component(LoggingComponent("logger_component"))
 ```
 
 Run it:
 
 ```bash
 source /opt/ros/jazzy/setup.bash
-uv run --extra dev python examples/minimal_node.py
+uv run python examples/minimal_node.py
 ```
 
 Then trigger lifecycle transitions from another terminal:
@@ -118,7 +122,7 @@ ros2 lifecycle set /minimal_lifecore_node cleanup
 Run the publisher and observe activation gating:
 
 ```bash
-uv run --extra dev python examples/minimal_publisher.py
+uv run python examples/minimal_publisher.py
 # in another terminal:
 ros2 lifecycle set /publisher_demo_node configure
 ros2 lifecycle set /publisher_demo_node activate
@@ -130,7 +134,7 @@ Messages appear only after `activate`. Deactivation stops them.
 Run the subscriber and observe that messages are dropped before activation:
 
 ```bash
-uv run --extra dev python examples/minimal_subscriber.py
+uv run python examples/minimal_subscriber.py
 # configure but do not yet activate:
 ros2 lifecycle set /demo_node configure
 ros2 topic pub --once /chatter std_msgs/msg/String "{data: 'before activate'}"
@@ -152,7 +156,6 @@ The extension model uses four buckets defined in the architecture docs:
 ## Current limitations
 
 - the public API is in the `0.x` series — experimental stability level; minor bumps may include breaking changes
-- no multi-component composed example yet (deferred to post-first-release)
 - companion examples repository `lifecore_ros2_examples` is *planned — not yet published*; see `ROADMAP.md` for scope and the first applied example (sensor-fusion pipeline)
 
 ## License

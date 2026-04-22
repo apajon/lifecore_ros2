@@ -9,8 +9,8 @@ lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no 
 
 **Core API**
 - `LifecycleComponentNode` — lifecycle node that owns and drives registered `LifecycleComponent` instances as native ROS 2 managed entities
-- `LifecycleComponent` — abstract base class for lifecycle-aware components, propagates transitions through `_on_configure`, `_on_activate`, `_on_deactivate`, `_on_cleanup`, `_on_shutdown`
-- `TopicComponent` — abstract base class for topic-oriented components; allocates ROS pub/sub during configure, releases during cleanup
+- `LifecycleComponent` — base class for lifecycle-aware components (abstract by convention); propagates transitions through `_on_configure`, `_on_activate`, `_on_deactivate`, `_on_cleanup`, `_on_shutdown`
+- `TopicComponent` — base class for topic-oriented components; allocates ROS pub/sub during configure, releases during cleanup
 - `LifecyclePublisherComponent` — publishes messages gated by activation state
 - `LifecycleSubscriberComponent` — processes incoming messages gated by activation state
 - `when_active` — decorator that guards component methods to the active state
@@ -19,6 +19,8 @@ lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no 
 - `examples/minimal_node.py` — minimal composed lifecycle node
 - `examples/minimal_publisher.py` — lifecycle-gated publisher
 - `examples/minimal_subscriber.py` — lifecycle-gated subscriber
+- `examples/telemetry_publisher.py` — lifecycle-gated publisher with timer split across configure/activate
+- `examples/composed_pipeline.py` — three sibling components (source, relay, sink) transitioning together
 
 **Documentation**
 - Getting started guide, architecture overview, API reference, examples walkthrough
@@ -31,7 +33,6 @@ lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no 
 
 ### Intentionally deferred
 
-- Multi-component composed example (two or more components in a single node)
 - Companion examples repository (`lifecore_ros2_examples`)
 - Visual demo assets (terminal recording or GIF)
 - `CONTRIBUTING.md` and GitHub issue templates
