@@ -59,6 +59,47 @@ examples/composed_pipeline.py composes three sibling components inside one ``Lif
 a ``SineSource`` publisher, a ``MovingAverageRelay``, and a ``LoggingSink`` subscriber.  All three
 transition together via the standard ROS 2 lifecycle.
 
+It demonstrates what the minimal and telemetry examples cannot show individually:
+
+- composition as the unit of value: no single component delivers the observable pipeline behavior;
+  the value only appears when all three activate together
+- ``MovingAverageRelay`` extends ``LifecycleComponent`` directly, owning both a raw ROS subscription
+  and a raw ROS publisher; this makes explicit what the pre-built topic components do internally and
+  shows that any pair of ROS resources belongs together in one component
+- activation gating across a multi-hop pipeline: while inactive, no data flows even though both
+  topics remain visible in ``ros2 topic list``
+- buffer reset on deactivate: the relay clears its moving-average window so that reactivation
+  always starts from a known empty state rather than from stale samples
+
+Reactivation Cycles
+-------------------
+
+The ``activate → deactivate → activate`` sequence is fully supported. No special handling is
+required in the framework — ``on_activate`` sets ``_is_active = True`` and ``on_deactivate``
+clears it on SUCCESS, so the second ``activate`` follows the same path as the first.
+
+``composed_pipeline.py`` exercises this explicitly: the pipeline's drive instructions include a
+second ``ros2 lifecycle set /pipeline_node activate`` after deactivation. The example output
+documents the ``[reactivate]`` state as:
+
+.. code-block:: text
+
+    [reactivate] [INFO] [pipeline_node] [source] sampling started
+                 data flow:  resumes from an empty window; average builds from scratch
+
+The key design responsibility during a reactivation cycle falls on the component, not the
+framework: **state accumulated during the first active period must be cleared in
+``_on_deactivate``**, or the second activation will start from stale data. The relay's
+``_on_deactivate`` clears its ``deque`` buffer for exactly this reason.
+
+Checklist for components that support reactivation:
+
+- Clear any in-memory buffers or counters in ``_on_deactivate``.
+- Do **not** destroy ROS resources in ``_on_deactivate`` — the subscription and publisher
+  must survive deactivation so they are available when ``activate`` is called again.
+- Verify that ``_release_resources`` is idempotent: it will be called at most once
+  (during cleanup or shutdown), but never between activate/deactivate cycles.
+
 Companion examples repository (planned)
 ---------------------------------------
 
@@ -78,18 +119,6 @@ Initial categories planned:
 
 The first applied example will be a sensor-fusion pipeline. See ``ROADMAP.md`` and
 ``ROADMAP_lifecore_ros2_examples.md`` in the core repository for the full plan.
-
-It demonstrates what the minimal and telemetry examples cannot show individually:
-
-- composition as the unit of value: no single component delivers the observable pipeline behavior;
-  the value only appears when all three activate together
-- ``MovingAverageRelay`` extends ``LifecycleComponent`` directly, owning both a raw ROS subscription
-  and a raw ROS publisher; this makes explicit what the pre-built topic components do internally and
-  shows that any pair of ROS resources belongs together in one component
-- activation gating across a multi-hop pipeline: while inactive, no data flows even though both
-  topics remain visible in ``ros2 topic list``
-- buffer reset on deactivate: the relay clears its moving-average window so that reactivation
-  always starts from a known empty state rather than from stale samples
 
 Observability Format
 --------------------
