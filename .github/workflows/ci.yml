@@ -3,94 +3,94 @@ name: CI
 # Runs on pull requests targeting main and on manual dispatch only.
 # Does NOT run on every direct push to main to keep minutes consumption low.
 "on":
-    pull_request:
-        branches: [main]
-    workflow_dispatch: {}
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch: {}
 
 permissions:
-    contents: read
+  contents: read
 
 # Cancel in-flight runs for the same PR branch when new commits arrive.
 concurrency:
-    group: ${{ github.workflow }}-${{ github.ref }}
-    cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-    # ------------------------------------------------------------------
-    # Lint — no ROS required; fails fast and cheaply.
-    # ------------------------------------------------------------------
-    lint:
-        runs-on: ubuntu-24.04
+  # ------------------------------------------------------------------
+  # Lint — no ROS required; fails fast and cheaply.
+  # ------------------------------------------------------------------
+  lint:
+    runs-on: ubuntu-24.04
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
 
-            - name: Set up uv
-              uses: astral-sh/setup-uv@v6
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v8.1.0
 
-            - name: Sync dev dependencies
-              run: uv sync --extra dev
+      - name: Sync dev dependencies
+        run: uv sync --extra dev
 
-            - name: Ruff lint
-              run: uv run ruff check .
+      - name: Ruff lint
+        run: uv run ruff check .
 
-            - name: Ruff format check
-              run: uv run ruff format --check .
+      - name: Ruff format check
+        run: uv run ruff format --check .
 
-    # ------------------------------------------------------------------
-    # Validate — ROS 2 Jazzy required for both pyright and pytest.
-    # pyright needs rclpy importable; tests need a live rclpy context.
-    # Both steps share a single ROS setup to minimise runner minutes.
-    # ------------------------------------------------------------------
-    validate:
-        runs-on: ubuntu-24.04
+  # ------------------------------------------------------------------
+  # Validate — ROS 2 Jazzy required for both pyright and pytest.
+  # pyright needs rclpy importable; tests need a live rclpy context.
+  # Both steps share a single ROS setup to minimise runner minutes.
+  # ------------------------------------------------------------------
+  validate:
+    runs-on: ubuntu-24.04
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
 
-            - name: Set up ROS 2 Jazzy
-              uses: ros-tooling/setup-ros@v0.7
-              with:
-                  required-ros-distributions: jazzy
+      - name: Set up ROS 2 Jazzy
+        uses: ros-tooling/setup-ros@v0.7
+        with:
+          required-ros-distributions: jazzy
 
-            - name: Set up uv
-              uses: astral-sh/setup-uv@v6
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v8.1.0
 
-            - name: Sync dev dependencies
-              run: uv sync --extra dev
+      - name: Sync dev dependencies
+        run: uv sync --extra dev
 
-            - name: Pyright type check
-              shell: bash
-              run: |
-                  source /opt/ros/jazzy/setup.bash
-                  uv run pyright
+      - name: Pyright type check
+        shell: bash
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          uv run pyright
 
-            - name: Pytest
-              shell: bash
-              run: |
-                  source /opt/ros/jazzy/setup.bash
-                  uv run pytest
+      - name: Pytest
+        shell: bash
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          uv run pytest
 
-    # ------------------------------------------------------------------
-    # Build — verifies packaging is not broken; no ROS required.
-    # setuptools-scm needs full git history to derive the version.
-    # ------------------------------------------------------------------
-    build:
-        runs-on: ubuntu-24.04
+  # ------------------------------------------------------------------
+  # Build — verifies packaging is not broken; no ROS required.
+  # setuptools-scm needs full git history to derive the version.
+  # ------------------------------------------------------------------
+  build:
+    runs-on: ubuntu-24.04
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v5
-              with:
-                  fetch-depth: 0
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
 
-            - name: Set up uv
-              uses: astral-sh/setup-uv@v6
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v8.1.0
 
-            - name: Build wheel and sdist
-              run: uv build
+      - name: Build wheel and sdist
+        run: uv build
 
-            - name: Check distribution metadata
-              run: uv run --with twine twine check dist/*
+      - name: Check distribution metadata
+        run: uv run --with twine twine check dist/*
