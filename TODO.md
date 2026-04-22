@@ -48,6 +48,7 @@ Deliberately deferred. Do not implement until there is a concrete user need.
 * [ ] `AppSpec`
 * [ ] `ComponentSpec`
 * [ ] Topic component specs
+* [ ] Add `pydantic>=2.0` to `dependencies` in `pyproject.toml` when `spec_model.py` is implemented (removed in a6280fd because unused at the time)
 
 ### Factory and registry
 
