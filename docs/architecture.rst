@@ -98,6 +98,103 @@ whose hook returned ``SUCCESS``. ``on_deactivate`` clears it only on ``SUCCESS``
 after the hook, regardless of the hook's return value, and propagate the worst of the
 two results.
 
+Concurrency Contract
+--------------------
+
+.. rubric:: ADR — Threading model: single-threaded executor with thread-safe registration
+
+**Decision:** lifecore_ros2 targets the ROS 2 ``SingleThreadedExecutor`` model.
+Lifecycle transitions are driven sequentially by the ROS 2 executor and must not be
+called concurrently from multiple threads. Component registration (``add_component``)
+is additionally protected by an internal ``threading.RLock`` to allow calling from
+any thread before the first transition starts.
+
+**Rationale:**
+``SingleThreadedExecutor`` is the default for lifecycle nodes in ROS 2. Introducing
+mutex-based protection around every transition would add overhead and complexity for
+a scenario that is not part of standard ROS 2 usage. The existing ``RLock`` on the
+registration gate already handles the common pre-spin setup pattern, where an
+application may register components from a constructor or a setup thread before
+calling ``rclpy.spin``.
+
+**Consequences:**
+Application code that runs ``LifecycleComponentNode`` under a
+``MultiThreadedExecutor`` must not trigger lifecycle transitions concurrently. The
+framework enforces this with ``ConcurrentTransitionError``, described below.
+
+Thread-safety guarantees
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. list-table::
+   :header-rows: 1
+   :widths: 40 20 40
+
+   * - Operation
+     - Thread-safe?
+     - Mechanism
+   * - ``add_component`` (before first transition)
+     - Yes
+     - ``threading.RLock`` — safe from any thread, including pre-spin setup
+   * - ``add_component`` (after first transition)
+     - Yes (raises)
+     - ``RegistrationClosedError`` raised inside the lock — no partial state
+   * - ``get_component``, ``components`` property
+     - Yes
+     - ``threading.RLock``
+   * - Lifecycle transitions (``on_configure``, ``on_activate``, etc.)
+     - Single-thread only
+     - Relies on the ROS 2 executor; concurrent calls raise ``ConcurrentTransitionError``
+   * - Component hook execution (``_on_configure``, etc.)
+     - Single-thread only
+     - Called synchronously inside the transition; no cross-thread dispatch
+
+Forbidden concurrent transitions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Calling any lifecycle hook (``on_configure``, ``on_activate``, ``on_deactivate``,
+``on_cleanup``, ``on_shutdown``) while another transition is already running is a
+programming error. The framework detects this via an internal ``_in_transition`` flag
+guarded by ``_lock`` and raises :exc:`~lifecore_ros2.ConcurrentTransitionError`:
+
+.. code-block:: text
+
+    Thread A: on_configure()  ──────────────────────────────────►
+    Thread B:        on_activate()  ← raises ConcurrentTransitionError immediately
+
+The flag is set atomically at the start of each hook entry point and cleared in a
+``finally`` block so it is always released, even if the transition fails.
+
+.. note::
+
+   ``on_error`` is **not** guarded by ``_in_transition``. rclpy calls ``on_error``
+   as part of the error-recovery path after a failed transition. Guarding it would
+   interfere with normal error handling.
+
+Reentrancy from callbacks
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Lifecycle hooks are called synchronously by the ROS 2 executor. A component's
+``_on_configure`` (or any other ``_on_*`` hook) must not call back into a lifecycle
+transition on the same node — doing so would trigger ``ConcurrentTransitionError``
+because ``_in_transition`` is still set.
+
+Calling ``add_component`` from within a lifecycle hook is safe (the ``RLock`` is
+reentrant), but any component added after ``_close_registration`` has run will be
+rejected with ``RegistrationClosedError``. ``_close_registration`` is called at the
+start of ``on_configure`` and ``on_shutdown``.
+
+Component destruction during active callbacks
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The framework does not manage component lifetime beyond the lifecycle transitions it
+drives. If application code destroys a component object while a subscription or timer
+callback is executing on that component, the result is undefined. The contract is:
+
+- Release component resources explicitly in ``_on_cleanup`` / ``_on_shutdown``.
+- Do not hold external references to component objects beyond the node's lifetime.
+- Do not destroy a node while it is still being spun. Call ``rclpy.shutdown()`` or
+  stop the executor before releasing the node object.
+
 Topic-Resource Lifecycle
 ------------------------
 

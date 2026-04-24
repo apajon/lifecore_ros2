@@ -11,7 +11,8 @@ Hierarchy::
     ├── RegistrationClosedError   (RuntimeError)
     ├── DuplicateComponentError   (ValueError)
     ├── ComponentNotAttachedError (RuntimeError)
-    └── ComponentNotConfiguredError (RuntimeError)
+    ├── ComponentNotConfiguredError (RuntimeError)
+    └── ConcurrentTransitionError (RuntimeError)
 """
 
 from __future__ import annotations
@@ -40,3 +41,7 @@ class ComponentNotAttachedError(LifecoreError, RuntimeError):
 
 class ComponentNotConfiguredError(LifecoreError, RuntimeError):
     """Raised when ``publish()`` is called on a publisher that has not been configured yet."""
+
+
+class ConcurrentTransitionError(LifecoreError, RuntimeError):
+    """Raised when a lifecycle transition is attempted concurrently with an in-progress transition."""
