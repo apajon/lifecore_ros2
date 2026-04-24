@@ -53,23 +53,11 @@ A small set of lifecycle-aware building blocks:
 | `when_active` | Decorator that guards any method to the active state |
 | `LifecoreError` and subclasses | Typed exceptions for boundary violations |
 
-## Design principles
+## Design rules and non-goals
 
-- native ROS 2 lifecycle semantics stay in control — no parallel state machine is introduced
-- `LifecycleComponentNode` owns and drives registered `LifecycleComponent` instances as managed entities
-- components keep `_on_*` hooks focused and deterministic
-- topic-oriented components create ROS resources during configure, gate behavior with activation, and release resources during cleanup
-- errors and misuse raise typed exceptions; inbound callbacks drop silently to protect the executor
+The framework stays lifecycle-native, keeps ownership in `LifecycleComponentNode`, and treats component hooks as explicit extension points rather than hidden orchestration.
 
-## Non-goals
-
-- no hidden state machine layered on top of ROS 2 lifecycle
-- no full application framework with service orchestration or task scheduling
-- no domain-specific components (sensors, actuators, controllers)
-- no plugin or dynamic component loading
-- no replacement of native ROS 2 lifecycle semantics
-
-See [ROADMAP.md](ROADMAP.md) for the full "out of scope" list and deferred features.
+See [docs/architecture.rst](docs/architecture.rst) for lifecycle design rules, [docs/patterns.rst](docs/patterns.rst) for usage patterns, and [ROADMAP.md](ROADMAP.md) for non-goals and deferred scope.
 See [ROADMAP_lifecore_ros2_examples.md](ROADMAP_lifecore_ros2_examples.md) for the companion examples repository plan.
 See [CHANGELOG.md](CHANGELOG.md) for shipped changes or the [GitHub Releases](https://github.com/apajon/lifecore_ros2/releases) page for tagged releases.
 
@@ -83,98 +71,36 @@ See [CHANGELOG.md](CHANGELOG.md) for shipped changes or the [GitHub Releases](ht
 
 ## Quickstart
 
-Prepare a ROS 2 Jazzy shell:
+Clone the repository and enter a ROS 2 Jazzy shell:
 
 ```bash
+git clone https://github.com/apajon/lifecore_ros2.git
+cd lifecore_ros2
 source /opt/ros/jazzy/setup.bash
 ```
 
-Install development dependencies:
+Install dependencies and run the canonical shortest-path example:
 
 ```bash
 uv sync --extra dev
+uv run python examples/minimal_subscriber.py
 ```
 
-Validate the installation:
+From another terminal in the same ROS environment, drive the lifecycle and publish one message:
 
 ```bash
-uv run ruff check .
-uv run ruff format --check .
-uv run pyright
-uv run pytest
+ros2 lifecycle set /demo_node configure
+ros2 lifecycle set /demo_node activate
+ros2 topic pub --once /chatter std_msgs/msg/String "{data: 'hello'}"
 ```
 
-## Minimal example
-
-```python
-from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
-from lifecore_ros2 import LifecycleComponent, LifecycleComponentNode
-
-
-class LoggingComponent(LifecycleComponent):
-    def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self.node.get_logger().info(f"[{self.name}] on_configure called")
-        return TransitionCallbackReturn.SUCCESS
-
-
-class MinimalNode(LifecycleComponentNode):
-    def __init__(self) -> None:
-        super().__init__("minimal_lifecore_node")
-        self.add_component(LoggingComponent("logger_component"))
-```
-
-Run it:
-
-```bash
-source /opt/ros/jazzy/setup.bash
-uv run python examples/minimal_node.py
-```
-
-Then trigger lifecycle transitions from another terminal:
-
-```bash
-ros2 lifecycle set /minimal_lifecore_node configure
-ros2 lifecycle set /minimal_lifecore_node activate
-ros2 lifecycle set /minimal_lifecore_node deactivate
-ros2 lifecycle set /minimal_lifecore_node cleanup
-```
+For the full validation command set, see [docs/getting_started.rst](docs/getting_started.rst). For a lower-level minimal component example, see [examples/minimal_node.py](examples/minimal_node.py).
 
 ## Shortest-path example — subscriber
 
-[`examples/minimal_subscriber.py`](examples/minimal_subscriber.py) is the
-canonical shortest-path example.  It demonstrates activation-gated message
-delivery in **3 steps**: import, subclass + `__init__`, implement `on_message`.
+[examples/minimal_subscriber.py](examples/minimal_subscriber.py) is the canonical shortest-path example for activation-gated message delivery.
 
-```python
-from std_msgs.msg import String
-from lifecore_ros2 import LifecycleComponentNode, LifecycleSubscriberComponent
-
-
-class EchoSubscriber(LifecycleSubscriberComponent[String]):
-    def __init__(self) -> None:
-        super().__init__(name="echo_sub", topic_name="/chatter", msg_type=String, qos_profile=10)
-
-    def on_message(self, msg: String) -> None:
-        self.node.get_logger().info(f"Received: {msg.data}")
-
-
-class DemoNode(LifecycleComponentNode):
-    def __init__(self) -> None:
-        super().__init__("demo_node")
-        self.add_component(EchoSubscriber())
-```
-
-Run it and observe activation gating:
-
-```bash
-uv run python examples/minimal_subscriber.py
-ros2 lifecycle set /demo_node configure
-ros2 topic pub --once /chatter std_msgs/msg/String "{data: 'before activate'}"
-# no Received: log — then activate:
-ros2 lifecycle set /demo_node activate
-ros2 topic pub --once /chatter std_msgs/msg/String "{data: 'after activate'}"
-# Received: after activate
-```
+See [examples/minimal_subscriber.py](examples/minimal_subscriber.py) for the complete runnable file, [docs/api_friction_audit.rst](docs/api_friction_audit.rst) for the regression baseline, and [docs/examples.rst](docs/examples.rst) for the walkthrough.
 
 > Component + node definition: **24 lines** (regression baseline — see
 > [`docs/api_friction_audit.rst`](docs/api_friction_audit.rst)).
@@ -193,27 +119,13 @@ ros2 topic echo /chatter
 
 Messages appear only after `activate`. Deactivation stops them.
 
-Run the subscriber and observe that messages are dropped before activation:
-
-```bash
-uv run python examples/minimal_subscriber.py
-# configure but do not yet activate:
-ros2 lifecycle set /demo_node configure
-ros2 topic pub --once /chatter std_msgs/msg/String "{data: 'before activate'}"
-# no Received: log appears — then activate:
-ros2 lifecycle set /demo_node activate
-ros2 topic pub --once /chatter std_msgs/msg/String "{data: 'after activate'}"
-```
+For the subscriber path, use the quickstart above or the full example walkthrough in [docs/examples.rst](docs/examples.rst).
 
 ## Public API overview
 
 All exported symbols and their stability levels are documented in [ROADMAP.md](ROADMAP.md#public-api-and-extension-model).
 
-The extension model uses four buckets defined in the architecture docs:
-- public API (direct use by application code)
-- protected extension points (`_on_*` hooks — override in subclasses)
-- framework-controlled entry points (`on_*` — sealed with `@final` on components)
-- framework-internal (`_attach`, `_guarded_call`, etc. — not for user code)
+The extension model and API buckets are defined in [docs/architecture.rst](docs/architecture.rst) and [docs/api.rst](docs/api.rst).
 
 ## Current limitations
 
