@@ -12,9 +12,11 @@ lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no 
 
 *The `examples/composed_pipeline.py` walk-through highlights the key distinction the library makes explicit: **deactivate ≠ cleanup** — `/pipeline/*` topics persist across deactivate and only disappear on cleanup.*
 
-## Why this exists
+## Why lifecore_ros2 exists
 
-ROS 2 provides a powerful managed-node lifecycle (`configure → active → deactivate → cleanup`). In practice, using it for anything beyond a trivial node leads to recurring problems:
+**Audience.** This library is for teams building modular ROS 2 nodes that need reusable lifecycle-aware components, especially in larger robotics stacks, embedded systems, or runtime-orchestrated applications.
+
+**Problem framing.** ROS 2 provides a powerful managed-node lifecycle (`configure → active → deactivate → cleanup`). In practice, using it for anything beyond a trivial node leads to recurring problems:
 
 - lifecycle logic gets scattered across monolithic node classes with no clear ownership
 - ROS resource setup and teardown (publishers, subscriptions, timers) are easy to make inconsistent — resources allocated in the wrong place or released too late
@@ -22,6 +24,20 @@ ROS 2 provides a powerful managed-node lifecycle (`configure → active → deac
 - reusable lifecycle-aware building blocks are awkward in raw `rclpy` because the lifecycle contract is on the node, not on reusable sub-units
 
 lifecore_ros2 solves these four problems with a small, explicit composition layer. It does not replace or extend the ROS 2 lifecycle state machine — it makes the lifecycle contract expressible at the component level.
+
+**Non-goals.** It is not a full application framework, not a plugin system, and not a replacement for native ROS 2 lifecycle semantics.
+
+## Architecture at a glance
+
+```mermaid
+flowchart LR
+    Lifecycle[ROS 2 Lifecycle]
+    Node[LifecycleComponentNode]
+    Components[LifecycleComponent instances]
+    Lifecycle <--> Node
+    Node <--> Components
+    Lifecycle -. drives .-> Components
+```
 
 ## What the library provides
 
