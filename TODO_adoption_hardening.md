@@ -144,15 +144,15 @@ Do not promote runtime `remove_component` to a public API before the Option C de
 - [x] Write a design note for observability (structured logging, lifecycle
       tracing) — explicitly gated on §5 strict contract being done
       → `docs/design_notes/observability.rst`
-- [ ] Do **not** start implementation until §4, §5, §6 are green
+- [x] Do **not** start implementation until §4, §5, §6 are green
 
 ## 8. README
 
-- [ ] Add a 30-second quickstart (clone → install → run one example)
-- [ ] Link to one complete example already in `examples/` instead of duplicating
-- [ ] Embed the architecture diagram from §1
-- [ ] Link to design rules rather than restating them
-- [ ] Verify every command in the README works from a clean clone
+- [x] Add a 30-second quickstart (clone → install → run one example)
+- [x] Link to one complete example already in `examples/` instead of duplicating
+- [x] Embed the architecture diagram from §1
+- [x] Link to design rules rather than restating them
+- [x] Verify every command in the README works from a clean clone
 
 ## 9. Long-term vision
 
