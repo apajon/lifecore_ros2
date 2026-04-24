@@ -1,14 +1,14 @@
 from __future__ import annotations
 
 import threading
-from collections.abc import Iterable
+from collections.abc import Callable, Iterable
 from typing import Any
 
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleNode, LifecycleState
 
 from .exceptions import ConcurrentTransitionError, DuplicateComponentError, RegistrationClosedError
-from .lifecycle_component import LifecycleComponent
+from .lifecycle_component import LifecycleComponent, _worst_of
 
 
 class LifecycleComponentNode(LifecycleNode):
@@ -44,6 +44,7 @@ class LifecycleComponentNode(LifecycleNode):
         self._components: dict[str, LifecycleComponent] = {}
         self._registration_open: bool = True
         self._in_transition: bool = False
+        self._managed_transition_name: str | None = None
         self._lock: threading.RLock = threading.RLock()
 
     @property
@@ -113,6 +114,54 @@ class LifecycleComponentNode(LifecycleNode):
         with self._lock:
             self._in_transition = False
 
+    def _begin_managed_transition(self, name: str) -> None:
+        """Framework-internal. Do not call from user code."""
+        with self._lock:
+            self._managed_transition_name = name
+
+    def _end_managed_transition(self) -> None:
+        """Framework-internal. Do not call from user code."""
+        with self._lock:
+            self._managed_transition_name = None
+
+    def _current_state_label(self) -> str:
+        """Framework-internal. Do not call from user code."""
+        _, current_state = self._state_machine.current_state  # pyright: ignore[reportPrivateUsage]
+        return str(current_state)
+
+    def _log_transition_rejection(self, attempted_transition: str, exc: Exception) -> None:
+        """Framework-internal. Do not call from user code."""
+        component_names = ", ".join(component.name for component in self.components) or "<none>"
+        self.get_logger().error(
+            f"Rejected lifecycle transition attempted='{attempted_transition}' "
+            f"current_state='{self._current_state_label()}' components='{component_names}' "
+            f"reason='{type(exc).__name__}: {exc}'"
+        )
+
+    def _run_trigger(
+        self,
+        attempted_transition: str,
+        trigger: Callable[[], TransitionCallbackReturn],
+    ) -> TransitionCallbackReturn:
+        """Framework-internal. Do not call from user code."""
+        try:
+            return trigger()
+        except Exception as exc:
+            self._log_transition_rejection(attempted_transition, exc)
+            raise
+
+    def _rollback_failed_configure(self) -> TransitionCallbackReturn:
+        """Framework-internal. Do not call from user code."""
+        self.get_logger().warning(
+            "Configure transition failed; releasing component resources to restore an unconfigured state"
+        )
+
+        rollback_result = TransitionCallbackReturn.SUCCESS
+        for component in self.components:
+            component_result = component._rollback_failed_configure()  # pyright: ignore[reportPrivateUsage]
+            rollback_result = _worst_of(rollback_result, component_result)
+        return rollback_result
+
     # -- override-with-super hooks -----------------------------------------------
     # Application nodes may override these. Always call super() to preserve
     # component propagation and the registration gate.
@@ -129,7 +178,15 @@ class LifecycleComponentNode(LifecycleNode):
         self._begin_transition("configure")
         try:
             self._close_registration()
-            return super().on_configure(state)
+            self._begin_managed_transition("configure")
+            try:
+                result = super().on_configure(state)
+            finally:
+                self._end_managed_transition()
+            if result != TransitionCallbackReturn.SUCCESS:
+                rollback_result = self._rollback_failed_configure()
+                return _worst_of(result, rollback_result)
+            return result
         finally:
             self._end_transition()
 
@@ -144,7 +201,11 @@ class LifecycleComponentNode(LifecycleNode):
         """
         self._begin_transition("activate")
         try:
-            return super().on_activate(state)
+            self._begin_managed_transition("activate")
+            try:
+                return super().on_activate(state)
+            finally:
+                self._end_managed_transition()
         finally:
             self._end_transition()
 
@@ -159,7 +220,11 @@ class LifecycleComponentNode(LifecycleNode):
         """
         self._begin_transition("deactivate")
         try:
-            return super().on_deactivate(state)
+            self._begin_managed_transition("deactivate")
+            try:
+                return super().on_deactivate(state)
+            finally:
+                self._end_managed_transition()
         finally:
             self._end_transition()
 
@@ -174,7 +239,11 @@ class LifecycleComponentNode(LifecycleNode):
         """
         self._begin_transition("cleanup")
         try:
-            return super().on_cleanup(state)
+            self._begin_managed_transition("cleanup")
+            try:
+                return super().on_cleanup(state)
+            finally:
+                self._end_managed_transition()
         finally:
             self._end_transition()
 
@@ -190,6 +259,25 @@ class LifecycleComponentNode(LifecycleNode):
         self._begin_transition("shutdown")
         try:
             self._close_registration()
-            return super().on_shutdown(state)
+            self._begin_managed_transition("shutdown")
+            try:
+                return super().on_shutdown(state)
+            finally:
+                self._end_managed_transition()
         finally:
             self._end_transition()
+
+    def trigger_configure(self) -> TransitionCallbackReturn:
+        return self._run_trigger("configure", super().trigger_configure)
+
+    def trigger_activate(self) -> TransitionCallbackReturn:
+        return self._run_trigger("activate", super().trigger_activate)
+
+    def trigger_deactivate(self) -> TransitionCallbackReturn:
+        return self._run_trigger("deactivate", super().trigger_deactivate)
+
+    def trigger_cleanup(self) -> TransitionCallbackReturn:
+        return self._run_trigger("cleanup", super().trigger_cleanup)
+
+    def trigger_shutdown(self) -> TransitionCallbackReturn:
+        return self._run_trigger("shutdown", super().trigger_shutdown)

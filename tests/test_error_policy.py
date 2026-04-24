@@ -26,6 +26,7 @@ from lifecore_ros2 import (
     ComponentNotAttachedError,
     ComponentNotConfiguredError,
     DuplicateComponentError,
+    InvalidLifecycleTransitionError,
     LifecoreError,
     LifecycleComponent,
     LifecycleComponentNode,
@@ -243,6 +244,7 @@ class TestTypedExceptions:
         assert issubclass(DuplicateComponentError, lifecore_ros2.LifecoreError)
         assert issubclass(ComponentNotAttachedError, lifecore_ros2.LifecoreError)
         assert issubclass(ComponentNotConfiguredError, lifecore_ros2.LifecoreError)
+        assert issubclass(InvalidLifecycleTransitionError, lifecore_ros2.LifecoreError)
 
 
 # ===========================================================================
@@ -288,6 +290,7 @@ class TestCleanupWorstOfAggregation:
         # Rule D: hook=FAILURE, release=SUCCESS → FAILURE.
         comp = WorstOfComponent("wof_fail", hook_return=TransitionCallbackReturn.FAILURE)
         node.add_component(comp)
+        comp.on_configure(DUMMY_STATE)
 
         result = comp.on_cleanup(DUMMY_STATE)
 
@@ -297,6 +300,7 @@ class TestCleanupWorstOfAggregation:
         # Rule D: hook=ERROR, release=SUCCESS → ERROR.
         comp = WorstOfComponent("wof_err", hook_return=TransitionCallbackReturn.ERROR)
         node.add_component(comp)
+        comp.on_configure(DUMMY_STATE)
 
         result = comp.on_cleanup(DUMMY_STATE)
 
@@ -306,6 +310,7 @@ class TestCleanupWorstOfAggregation:
         # Rule D: hook=SUCCESS, release raises → ERROR.
         comp = WorstOfComponent("wof_release_err", hook_return=TransitionCallbackReturn.SUCCESS, release_raises=True)
         node.add_component(comp)
+        comp.on_configure(DUMMY_STATE)
 
         result = comp.on_cleanup(DUMMY_STATE)
 
@@ -315,6 +320,7 @@ class TestCleanupWorstOfAggregation:
         # Rule D: _release_resources must run even when the hook returns FAILURE.
         comp = WorstOfComponent("wof_no_skip", hook_return=TransitionCallbackReturn.FAILURE)
         node.add_component(comp)
+        comp.on_configure(DUMMY_STATE)
         released = []
 
         original = comp._release_resources

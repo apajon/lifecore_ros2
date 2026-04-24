@@ -47,6 +47,17 @@ def node():
     n.destroy_node()
 
 
+@pytest.fixture(autouse=True)
+def mock_topic_factories(node: LifecycleComponentNode):
+    with (
+        patch.object(node, "create_publisher", return_value=MagicMock()),
+        patch.object(node, "destroy_publisher", return_value=None),
+        patch.object(node, "create_subscription", return_value=MagicMock()),
+        patch.object(node, "destroy_subscription", return_value=None),
+    ):
+        yield
+
+
 # ---------------------------------------------------------------------------
 # 5.3  LifecycleSubscriberComponent
 # ---------------------------------------------------------------------------
@@ -90,6 +101,7 @@ class TestSubscriberComponent:
 
         sub.on_configure(DUMMY_STATE)
         sub.on_activate(DUMMY_STATE)
+        sub.on_deactivate(DUMMY_STATE)
         sub.on_cleanup(DUMMY_STATE)
 
         assert not sub.is_active
@@ -137,6 +149,7 @@ class TestPublisherComponent:
 
         pub.on_configure(DUMMY_STATE)
         pub.on_activate(DUMMY_STATE)
+        pub.on_deactivate(DUMMY_STATE)
         pub.on_cleanup(DUMMY_STATE)
 
         assert not pub.is_active
