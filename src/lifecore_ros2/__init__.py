@@ -6,6 +6,7 @@ from .core import (
     ComponentNotConfiguredError,
     ConcurrentTransitionError,
     DuplicateComponentError,
+    InvalidLifecycleTransitionError,
     LifecoreError,
     LifecycleComponent,
     LifecycleComponentNode,
@@ -25,5 +26,6 @@ __all__ = [
     "DuplicateComponentError",
     "ComponentNotAttachedError",
     "ComponentNotConfiguredError",
+    "InvalidLifecycleTransitionError",
     "ConcurrentTransitionError",
 ]
