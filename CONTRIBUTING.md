@@ -95,6 +95,7 @@ Breaking changes: add `BREAKING CHANGE:` in the commit footer.
 - [ ] All four validation commands pass
 - [ ] `uv build` + `twine check` pass
 - [ ] New behavior has at least one focused pytest test
+- [ ] **Bug fix PRs include a regression test** in `tests/test_regression_<symbol>.py` that fails before the fix and passes after (see [Test coverage — Regression discipline](TODO_adoption_hardening.md))
 - [ ] If lifecycle semantics change, an example in `examples/` is added or updated
 - [ ] Public `__all__` and type annotations are unchanged unless explicitly intended
 - [ ] Commit messages follow Conventional Commits

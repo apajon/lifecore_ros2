@@ -79,26 +79,59 @@ Rule: no item on this list justifies violating the guardrails in `TODO.md §3`
 ## 6. Test coverage
 
 ### Unit
-- [ ] Full lifecycle walk (configure → activate → deactivate → cleanup → shutdown)
-- [ ] Double `activate` (expect rejection or idempotence — per §5 decision)
-- [ ] `deactivate` without prior `activate`
-- [ ] `add_component` before and after first transition (registration closed)
-- [ ] Remove component (if supported) during each lifecycle state
+- [x] Full lifecycle walk (configure → activate → deactivate → cleanup → shutdown)
+      → `test_full_cycle_propagation` (integration) + `TestIntegrationShutdown` (from active)
+- [x] Double `activate` (expect rejection or idempotence — per §5 decision)
+      → `TestDoubleActivate` + `TestEdgeTransitionsDirect`
+- [x] `deactivate` without prior `activate`
+      → `test_deactivate_without_prior_activate` + `test_deactivate_without_activate_direct`
+- [x] `add_component` before and after first transition (registration closed)
+      → `TestAddComponent` + `TestIntegrationRegistrationGuard`
+- [x] Remove component (if supported) during each lifecycle state
+      → `remove_component` implemented (pre-transition only); runtime removal deferred
+        (see § remove_component runtime removal below)
 
 ### Concurrency
-- [ ] Multi-thread `add_component` (per §4 decision: either proves safety, or
+- [x] Multi-thread `add_component` (per §4 decision: either proves safety, or
       proves the documented single-thread rule by failing loudly)
-- [ ] Transition triggered during `add_component`
-- [ ] Component destruction during `spin`
+      → `TestConcurrentRegistration` in `test_regression_threaded_registration.py`
+- [x] Transition triggered during `add_component`
+      → `TestConcurrentGateClosure` in `test_regression_threaded_registration.py`
+- [x] Reentrant transition from a component hook
+      → `TestReentrantTransitionFromHook` in `test_regression_concurrent_transitions.py`
+- [x] Component destruction during `spin`
+      → `TestDestructionDuringSpin` in `test_regression_concurrent_transitions.py`
+        (mock-based: asserts `_release_resources` called via `on_shutdown` before `destroy_node`)
 
 ### Integration
-- [ ] Node with three heterogeneous components transitioning together
+- [x] Node with three heterogeneous components transitioning together
+      → `TestIntegrationHeterogeneousComponents` in `test_integration_lifecycle.py`
 - [ ] Inter-component interaction through pub/sub
-- [ ] Failure in one component's `_on_configure` does not leave siblings in an
+      → deferred: requires full ROS 2 graph context (non-goal for unit/integration suite)
+- [x] Failure in one component's `_on_configure` does not leave siblings in an
       inconsistent state
+      → `test_configure_failure_rolls_back_component_resources` in `test_failure_propagation.py`
+        + `TestPartialResourceAllocation`
 
 ### Regression discipline
-- [ ] Rule: any bug fix from now on ships with a regression test in the same PR
+- [x] Rule: any bug fix from now on ships with a regression test in the same PR
+      → Added to `CONTRIBUTING.md` PR checklist
+
+---
+
+## remove_component — runtime removal (deferred)
+
+`remove_component(name)` is implemented and allowed **before the first lifecycle transition** only
+(`_registration_open is True`). Post-transition removal is blocked by `RegistrationClosedError`
+because components may have allocated ROS resources that must be released via the lifecycle path.
+
+Runtime removal (remove from an active/inactive node) requires one of:
+- **Option B** (current): `_withdrawn` flag silences the component as a ghost managed entity —
+  acceptable for pre-transition use, not clean post-transition.
+- **Option C** (future): take over propagation from rclpy, iterate `_components.values()` directly
+  in each `on_*` method. Enables true runtime removal. Tracked as a post-1.0 design note (see §7).
+
+Do not promote runtime `remove_component` to a public API before the Option C design note is written and reviewed.
 
 ## 7. Differentiators — design notes only, no code yet
 
