@@ -3,6 +3,7 @@
 from .exceptions import (
     ComponentNotAttachedError,
     ComponentNotConfiguredError,
+    ConcurrentTransitionError,
     DuplicateComponentError,
     LifecoreError,
     RegistrationClosedError,
@@ -19,4 +20,5 @@ __all__ = [
     "DuplicateComponentError",
     "ComponentNotAttachedError",
     "ComponentNotConfiguredError",
+    "ConcurrentTransitionError",
 ]

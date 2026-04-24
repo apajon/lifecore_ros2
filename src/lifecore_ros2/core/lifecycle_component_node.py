@@ -7,7 +7,7 @@ from typing import Any
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleNode, LifecycleState
 
-from .exceptions import DuplicateComponentError, RegistrationClosedError
+from .exceptions import ConcurrentTransitionError, DuplicateComponentError, RegistrationClosedError
 from .lifecycle_component import LifecycleComponent
 
 
@@ -43,6 +43,7 @@ class LifecycleComponentNode(LifecycleNode):
         super().__init__(node_name, namespace=namespace, **kwargs)
         self._components: dict[str, LifecycleComponent] = {}
         self._registration_open: bool = True
+        self._in_transition: bool = False
         self._lock: threading.RLock = threading.RLock()
 
     @property
@@ -94,6 +95,24 @@ class LifecycleComponentNode(LifecycleNode):
         with self._lock:
             self._registration_open = False
 
+    def _begin_transition(self, name: str) -> None:
+        """Framework-internal. Do not call from user code.
+
+        Raises:
+            ConcurrentTransitionError: If a lifecycle transition is already in progress.
+        """
+        with self._lock:
+            if self._in_transition:
+                raise ConcurrentTransitionError(
+                    f"Cannot start '{name}': a lifecycle transition is already in progress"
+                )
+            self._in_transition = True
+
+    def _end_transition(self) -> None:
+        """Framework-internal. Do not call from user code."""
+        with self._lock:
+            self._in_transition = False
+
     # -- override-with-super hooks -----------------------------------------------
     # Application nodes may override these. Always call super() to preserve
     # component propagation and the registration gate.
@@ -103,15 +122,74 @@ class LifecycleComponentNode(LifecycleNode):
 
         Override in application nodes to add node-level configure behavior.
         Always call ``super().on_configure(state)`` first.
+
+        Raises:
+            ConcurrentTransitionError: If called concurrently with an in-progress transition.
         """
-        self._close_registration()
-        return super().on_configure(state)
+        self._begin_transition("configure")
+        try:
+            self._close_registration()
+            return super().on_configure(state)
+        finally:
+            self._end_transition()
+
+    def on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Propagate activate to all components.
+
+        Override in application nodes to add node-level activate behavior.
+        Always call ``super().on_activate(state)``.
+
+        Raises:
+            ConcurrentTransitionError: If called concurrently with an in-progress transition.
+        """
+        self._begin_transition("activate")
+        try:
+            return super().on_activate(state)
+        finally:
+            self._end_transition()
+
+    def on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Propagate deactivate to all components.
+
+        Override in application nodes to add node-level deactivate behavior.
+        Always call ``super().on_deactivate(state)``.
+
+        Raises:
+            ConcurrentTransitionError: If called concurrently with an in-progress transition.
+        """
+        self._begin_transition("deactivate")
+        try:
+            return super().on_deactivate(state)
+        finally:
+            self._end_transition()
+
+    def on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Propagate cleanup to all components.
+
+        Override in application nodes to add node-level cleanup behavior.
+        Always call ``super().on_cleanup(state)``.
+
+        Raises:
+            ConcurrentTransitionError: If called concurrently with an in-progress transition.
+        """
+        self._begin_transition("cleanup")
+        try:
+            return super().on_cleanup(state)
+        finally:
+            self._end_transition()
 
     def on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
         """Close the registration gate and propagate shutdown to all components.
 
         Override in application nodes to add node-level shutdown behavior.
         Always call ``super().on_shutdown(state)``.
+
+        Raises:
+            ConcurrentTransitionError: If called concurrently with an in-progress transition.
         """
-        self._close_registration()
-        return super().on_shutdown(state)
+        self._begin_transition("shutdown")
+        try:
+            self._close_registration()
+            return super().on_shutdown(state)
+        finally:
+            self._end_transition()

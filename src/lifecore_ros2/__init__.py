@@ -4,6 +4,7 @@ from .components import LifecyclePublisherComponent, LifecycleSubscriberComponen
 from .core import (
     ComponentNotAttachedError,
     ComponentNotConfiguredError,
+    ConcurrentTransitionError,
     DuplicateComponentError,
     LifecoreError,
     LifecycleComponent,
@@ -24,4 +25,5 @@ __all__ = [
     "DuplicateComponentError",
     "ComponentNotAttachedError",
     "ComponentNotConfiguredError",
+    "ConcurrentTransitionError",
 ]
