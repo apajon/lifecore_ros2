@@ -19,14 +19,18 @@ Rule: no item on this list justifies violating the guardrails in `TODO.md §3`
 
 ## 2. API ergonomics — friction audit
 
-- [ ] Count steps required to implement a minimal `LifecyclePublisherComponent`
+- [x] Count steps required to implement a minimal `LifecyclePublisherComponent`
       from scratch; record in an audit note
-- [ ] Count steps for a minimal `LifecycleSubscriberComponent`
-- [ ] Count steps to compose two components under a `LifecycleComponentNode`
-- [ ] For any step that exists only for framework bookkeeping, open an issue
+- [x] Count steps for a minimal `LifecycleSubscriberComponent`
+- [x] Count steps to compose two components under a `LifecycleComponentNode`
+- [x] For any step that exists only for framework bookkeeping, open an issue
       proposing removal or defaulting
-- [ ] Promote one example as the canonical "shortest path" and snapshot its line
+      → Issue #1: consider making `msg_type` optional (Python type-erasure
+        limitation; investigation deferred); no other bookkeeping-only step found
+- [x] Promote one example as the canonical "shortest path" and snapshot its line
       count as a regression target
+      → `examples/minimal_subscriber.py`; component + node definition: 24 lines
+      → Audit note: `docs/api_friction_audit.rst`
 
 ## 3. Naming — lock-in
 
