@@ -98,6 +98,7 @@ Breaking changes: add `BREAKING CHANGE:` in the commit footer.
 - [ ] If lifecycle semantics change, an example in `examples/` is added or updated
 - [ ] Public `__all__` and type annotations are unchanged unless explicitly intended
 - [ ] Commit messages follow Conventional Commits
+- [ ] No new class uses `Abstract*`, `*Manager`, `*Handler`, `*Core`, or `*Impl` without explicit justification in the PR description (see [Naming Conventions](docs/architecture.rst))
 
 ## Design constraints
 

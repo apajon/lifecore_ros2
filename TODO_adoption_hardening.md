@@ -34,12 +34,12 @@ Rule: no item on this list justifies violating the guardrails in `TODO.md §3`
 
 ## 3. Naming — lock-in
 
-- [ ] Promote `.github/instructions/naming-conventions.instructions.md` content
+- [x] Promote `.github/instructions/naming-conventions.instructions.md` content
       into a user-facing `docs/` section (architecture or contributing)
-- [ ] Add explicit rule: no `Abstract` prefix; prefer `Base` or no prefix
-- [ ] Add explicit rule: no `*Manager`, `*Handler`, `*Core` synonyms without
+- [x] Add explicit rule: no `Abstract` prefix; prefer `Base` or no prefix
+- [x] Add explicit rule: no `*Manager`, `*Handler`, `*Core` synonyms without
       review justification
-- [ ] Add a review checklist item in `CONTRIBUTING.md` covering naming
+- [x] Add a review checklist item in `CONTRIBUTING.md` covering naming
 
 ## 4. Ownership & threading
 
