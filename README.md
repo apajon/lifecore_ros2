@@ -139,6 +139,46 @@ ros2 lifecycle set /minimal_lifecore_node deactivate
 ros2 lifecycle set /minimal_lifecore_node cleanup
 ```
 
+## Shortest-path example — subscriber
+
+[`examples/minimal_subscriber.py`](examples/minimal_subscriber.py) is the
+canonical shortest-path example.  It demonstrates activation-gated message
+delivery in **3 steps**: import, subclass + `__init__`, implement `on_message`.
+
+```python
+from std_msgs.msg import String
+from lifecore_ros2 import LifecycleComponentNode, LifecycleSubscriberComponent
+
+
+class EchoSubscriber(LifecycleSubscriberComponent[String]):
+    def __init__(self) -> None:
+        super().__init__(name="echo_sub", topic_name="/chatter", msg_type=String, qos_profile=10)
+
+    def on_message(self, msg: String) -> None:
+        self.node.get_logger().info(f"Received: {msg.data}")
+
+
+class DemoNode(LifecycleComponentNode):
+    def __init__(self) -> None:
+        super().__init__("demo_node")
+        self.add_component(EchoSubscriber())
+```
+
+Run it and observe activation gating:
+
+```bash
+uv run python examples/minimal_subscriber.py
+ros2 lifecycle set /demo_node configure
+ros2 topic pub --once /chatter std_msgs/msg/String "{data: 'before activate'}"
+# no Received: log — then activate:
+ros2 lifecycle set /demo_node activate
+ros2 topic pub --once /chatter std_msgs/msg/String "{data: 'after activate'}"
+# Received: after activate
+```
+
+> Component + node definition: **24 lines** (regression baseline — see
+> [`docs/api_friction_audit.rst`](docs/api_friction_audit.rst)).
+
 ## Publisher and subscriber examples
 
 Run the publisher and observe activation gating:
