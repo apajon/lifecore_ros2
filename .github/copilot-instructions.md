@@ -7,6 +7,53 @@
 - Language/runtime: Python 3.12+.
 - Packaging: `src/` layout with setuptools and setuptools-scm.
 
+## Behavioral Guidelines
+
+Transverse rules to reduce common LLM coding mistakes. Bias toward caution over
+speed; for trivial tasks, use judgment. These merge with the more specific
+sections below and with `.instructions.md` files.
+
+### Think before coding
+
+- State assumptions explicitly; if uncertain, ask before implementing.
+- When multiple interpretations exist, present them — do not pick silently.
+- If a simpler approach exists, say so and push back when warranted.
+- If something is unclear, stop and name what is confusing.
+
+### Simplicity first
+
+- Write the minimum code that solves the stated problem; nothing speculative.
+- No features, abstractions, configurability, or error handling for scenarios
+  that were not requested or cannot happen.
+- If the result feels overcomplicated for a senior reviewer, rewrite smaller.
+
+### Surgical changes
+
+- Every changed line must trace directly to the user's request.
+- Do not "improve" adjacent code, comments, or formatting; match existing style
+  even if you would write it differently.
+- Remove only imports/variables/functions that *your* changes orphaned. Do not
+  delete pre-existing dead code unless asked — mention it instead.
+
+### Goal-driven execution
+
+- Translate tasks into verifiable success criteria before coding
+  (e.g. "fix the bug" → "write a failing test that reproduces it, then make it
+  pass"; "refactor X" → "tests pass before and after").
+- For multi-step work, state a brief plan with a verification step per item,
+  and use `manage_todo_list` when tracking adds value.
+- Loop until the stated criteria are met; do not declare done on weak signals.
+  Strong success criteria enable independent iteration; weak ones
+  ("make it work") force re-clarification.
+
+### Accountability
+
+Codex reviews your output. Write code and explanations that hold up under a
+second pair of eyes: traceable changes, stated assumptions, verified criteria.
+These guidelines are working when diffs contain fewer unnecessary changes,
+fewer rewrites due to overcomplication, and clarifying questions arrive
+*before* implementation rather than after mistakes.
+
 ## Environment Assumptions
 
 - ROS 2 (`rclpy`) is required at runtime and is expected to come from the system ROS installation.
