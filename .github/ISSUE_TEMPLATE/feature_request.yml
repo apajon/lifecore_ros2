@@ -2,56 +2,56 @@ name: Feature Request
 description: Propose a new lifecycle component, behavior, or API addition.
 labels: [ "enhancement" ]
 body:
-  - type: markdown
-    attributes:
-        value: |
-            Before requesting a feature, check [ROADMAP.md](../blob/main/ROADMAP.md) and
-            [TODO.md](../blob/main/TODO.md) for planned work.
+- type: markdown
+  attributes:
+    value: |
+      Before requesting a feature, check [ROADMAP.md](../blob/main/ROADMAP.md) and
+      [TODO.md](../blob/main/TODO.md) for planned work.
 
-            A feature belongs here if it is **framework-level and message-type-agnostic**.
-            Domain-specific patterns belong in the `lifecore_ros2_examples` companion repository.
+      A feature belongs here if it is **framework-level and message-type-agnostic**.
+      Domain-specific patterns belong in the `lifecore_ros2_examples` companion repository.
 
-  - type: textarea
-    id: problem
-    attributes:
-        label: What lifecycle or composition problem does this solve?
-        description: Describe the ROS 2 lifecycle pain point concretely.
-    validations:
-        required: true
+- type: textarea
+  id: problem
+  attributes:
+    label: What lifecycle or composition problem does this solve?
+    description: Describe the ROS 2 lifecycle pain point concretely.
+  validations:
+    required: true
 
-  - type: textarea
-    id: proposal
-    attributes:
-        label: Proposed solution
-        description: What should the new behavior or API look like?
-    validations:
-        required: true
+- type: textarea
+  id: proposal
+  attributes:
+    label: Proposed solution
+    description: What should the new behavior or API look like?
+  validations:
+    required: true
 
-  - type: textarea
-    id: lifecycle_contract
-    attributes:
-        label: Expected lifecycle behavior
-        description: |
-            Describe the expected behavior at each relevant transition:
-            configure / activate / deactivate / cleanup / shutdown / error.
-        placeholder: "configure: ...
+- type: textarea
+  id: lifecycle_contract
+  attributes:
+    label: Expected lifecycle behavior
+    description: |
+      Describe the expected behavior at each relevant transition:
+      configure / activate / deactivate / cleanup / shutdown / error.
+    placeholder: "configure: ...
 
-            activate: ...
+      activate: ...
 
-            deactivate: ...
+      deactivate: ...
 
-            cleanup: ..."
-    validations:
-        required: false
+      cleanup: ..."
+  validations:
+    required: false
 
-  - type: checkboxes
-    id: scope_check
-    attributes:
-        label: Scope check
-        options:
-          - label: This is framework-level and message-type-agnostic (core library scope)
-            required: false
-          - label: This could belong in the companion examples repository instead
-            required: false
-          - label: This does not add a hidden state machine on top of ROS 2 lifecycle
-            required: false
+- type: checkboxes
+  id: scope_check
+  attributes:
+    label: Scope check
+    options:
+    - label: This is framework-level and message-type-agnostic (core library scope)
+      required: false
+    - label: This could belong in the companion examples repository instead
+      required: false
+    - label: This does not add a hidden state machine on top of ROS 2 lifecycle
+      required: false

@@ -60,7 +60,8 @@ jobs:
       - name: Sync dev dependencies
         run: uv sync --extra dev
 
-      - name: Install numpy into venv (ROS 2 transitive dependency missing from ros:jazzy base image)
+      - name: Install numpy into venv (ROS 2 transitive dependency missing from
+          ros:jazzy base image)
         run: uv pip install numpy
 
       - name: Pyright type check
