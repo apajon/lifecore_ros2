@@ -91,6 +91,7 @@ from lifecore_ros2 import (  # noqa: E402
     ComponentNotAttachedError,
     ComponentNotConfiguredError,
     DuplicateComponentError,
+    InvalidLifecycleTransitionError,
     LifecoreError,
     RegistrationClosedError,
 )
@@ -112,6 +113,10 @@ def _check_exception_hierarchy() -> None:
     nc: ComponentNotConfiguredError = ComponentNotConfiguredError("msg")
     _lc4: LifecoreError = nc  # must be silent
     _rt3: RuntimeError = nc  # must be silent
+
+    ilt: InvalidLifecycleTransitionError = InvalidLifecycleTransitionError("msg")
+    _lc5: LifecoreError = ilt  # must be silent
+    _rt4: RuntimeError = ilt  # must be silent
 
 
 # ---------------------------------------------------------------------------
