@@ -10,12 +10,15 @@ Separation rationale:
 from __future__ import annotations
 
 import threading
+from typing import Any
+from unittest.mock import MagicMock
 
 import pytest
 from rclpy.executors import SingleThreadedExecutor
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleState
 
+from lifecore_ros2.components import LifecyclePublisherComponent, LifecycleSubscriberComponent
 from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
 
 # ---------------------------------------------------------------------------
@@ -223,3 +226,103 @@ class TestIntegrationMultipleComponents:
         # rclpy treats FAILURE from a managed entity as an overall failure;
         # the node should stay in the unconfigured state.
         assert result == TransitionCallbackReturn.FAILURE
+
+
+# ---------------------------------------------------------------------------
+# TestIntegrationShutdown
+# ---------------------------------------------------------------------------
+
+
+class TestIntegrationShutdown:
+    """trigger_shutdown() from the active state returns SUCCESS."""
+
+    def test_trigger_shutdown_from_active_returns_success(self, spinning_node: LifecycleComponentNode) -> None:
+        # Regression: trigger_shutdown from the active state was not covered; a broken
+        # transition path could silently return non-SUCCESS without failing any existing test.
+        # Expected: trigger_shutdown() returns SUCCESS after configure + activate.
+        class ShutdownRecordingComponent(RecordingComponent):
+            def _on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
+                self.calls.append("shutdown")
+                return TransitionCallbackReturn.SUCCESS
+
+        comp = ShutdownRecordingComponent("shutdown_active")
+        spinning_node.add_component(comp)
+
+        spinning_node.trigger_configure()
+        spinning_node.trigger_activate()
+        result = spinning_node.trigger_shutdown()
+
+        assert result == TransitionCallbackReturn.SUCCESS
+        # rclpy propagates on_shutdown to managed entities when the node is in the active
+        # state, unlike the unconfigured and inactive states where propagation is skipped
+        # (see test_shutdown_from_unconfigured_does_not_propagate and
+        # test_shutdown_from_inactive_does_not_propagate_to_entities).
+        assert "shutdown" in comp.calls
+
+
+# ---------------------------------------------------------------------------
+# TestIntegrationHeterogeneousComponents
+# ---------------------------------------------------------------------------
+
+
+class TestIntegrationHeterogeneousComponents:
+    """configure → activate → deactivate → cleanup propagates correctly to all component types."""
+
+    def test_full_cycle_with_publisher_subscriber_and_plain_component(
+        self, spinning_node: LifecycleComponentNode
+    ) -> None:
+        # Regression: heterogeneous component sets (publisher, subscriber, plain lifecycle)
+        # were not tested together; silent propagation failures could skip a specific type.
+        # Expected: all three components receive all four transitions; activation and resource state correct.
+
+        class LocalPublisher(LifecyclePublisherComponent[Any]):
+            def __init__(self) -> None:
+                super().__init__(name="het_pub", topic_name="/het_test", msg_type=MagicMock, qos_profile=10)
+
+            def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+                self._publisher = MagicMock()
+                return TransitionCallbackReturn.SUCCESS
+
+            def _release_resources(self) -> None:
+                self._publisher = None
+                super()._release_resources()
+
+        class LocalSubscriber(LifecycleSubscriberComponent[Any]):
+            def __init__(self) -> None:
+                super().__init__(name="het_sub", topic_name="/het_test", msg_type=MagicMock, qos_profile=10)
+
+            def on_message(self, msg: Any) -> None:  # required abstract method
+                pass
+
+            def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+                self._subscription = MagicMock()
+                return TransitionCallbackReturn.SUCCESS
+
+            def _release_resources(self) -> None:
+                self._subscription = None
+                super()._release_resources()
+
+        pub_comp = LocalPublisher()
+        sub_comp = LocalSubscriber()
+        rec_comp = RecordingComponent("het_rec")
+        spinning_node.add_components([pub_comp, sub_comp, rec_comp])
+
+        spinning_node.trigger_configure()
+        spinning_node.trigger_activate()
+
+        assert pub_comp.is_active
+        assert sub_comp.is_active
+        assert rec_comp.is_active
+
+        spinning_node.trigger_deactivate()
+
+        assert not pub_comp.is_active
+        assert not sub_comp.is_active
+        assert not rec_comp.is_active
+
+        spinning_node.trigger_cleanup()
+
+        # _release_resources is called automatically by on_cleanup; no resource leak.
+        assert pub_comp._publisher is None
+        assert sub_comp._subscription is None
+        assert rec_comp.calls == ["configure", "activate", "deactivate", "cleanup"]
