@@ -135,12 +135,15 @@ Do not promote runtime `remove_component` to a public API before the Option C de
 
 ## 7. Differentiators — design notes only, no code yet
 
-- [ ] Write a design note for runtime introspection (read-only API: list
+- [x] Write a design note for runtime introspection (read-only API: list
       components, lifecycle state, attached resources)
-- [ ] Write a design note for dynamic components (add/remove at runtime) —
+      → `docs/design_notes/runtime_introspection.rst`
+- [x] Write a design note for dynamic components (add/remove at runtime) —
       explicitly gated on §4 concurrency decision being done
-- [ ] Write a design note for observability (structured logging, lifecycle
+      → `docs/design_notes/dynamic_components.rst`
+- [x] Write a design note for observability (structured logging, lifecycle
       tracing) — explicitly gated on §5 strict contract being done
+      → `docs/design_notes/observability.rst`
 - [ ] Do **not** start implementation until §4, §5, §6 are green
 
 ## 8. README

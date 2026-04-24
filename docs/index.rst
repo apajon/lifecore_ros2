@@ -25,3 +25,11 @@ lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no 
 
    contributing
    mempalace_strategy
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Design notes (internal)
+
+   design_notes/runtime_introspection
+   design_notes/observability
+   design_notes/dynamic_components
