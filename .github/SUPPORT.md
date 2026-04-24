@@ -12,7 +12,7 @@ Before opening a feature request, check ROADMAP.md and TODO.md.
 
 ## Contact paths
 
-Use the public GitHub issue tracker for normal project questions, bugs, and feature requests.
+Use the public GitHub issue tracker for normal questions, bugs, and feature requests.
 
 Use a private contact path only for sensitive topics:
 

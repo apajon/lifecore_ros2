@@ -2,18 +2,18 @@
 
 ## Scope
 
-This repository is a small Python library for ROS 2 Jazzy. If you believe you have found a security issue in this repository, please report it privately.
+This repository is a small Python library for ROS 2 Jazzy. If you think you found a security issue, please report it privately.
 
 Do not open a public GitHub issue for suspected security vulnerabilities.
 
 ## Reporting
 
-If you think you found a security issue, use one of these private contact paths:
+Use one of these private contact paths:
 
 - email: 7260230+apajon@users.noreply.github.com
 - GitHub private vulnerability reporting, if it is enabled for this repository
 
-If you are unsure whether the issue is really security-sensitive, prefer the private path first.
+If you are not sure whether something is really security-sensitive, use the private path first.
 
 Include the following when possible:
 
@@ -25,7 +25,7 @@ Include the following when possible:
 
 ## Response
 
-This project is maintained on a best-effort basis. Reports will be reviewed when possible, and valid issues will be fixed privately first when that is practical.
+This project is maintained on a best-effort basis. Reports will be reviewed when possible, and valid issues will usually be fixed privately first when that makes sense.
 
 ## Disclosure
 
