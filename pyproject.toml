@@ -31,7 +31,7 @@ dependencies = []
 
 [project.urls]
 Repository = "https://github.com/apajon/lifecore_ros2"
-Documentation = "https://github.com/apajon/lifecore_ros2/tree/main/docs"
+Documentation = "https://github.com/apajon/lifecore_ros2#readme"
 Changelog = "https://github.com/apajon/lifecore_ros2/blob/main/CHANGELOG.md"
 Issues = "https://github.com/apajon/lifecore_ros2/issues"
 
@@ -68,7 +68,7 @@ version_file = "src/lifecore_ros2/_version.py"
 
 [tool.semantic_release]
 version_toml = []
-build_command = "python -m pip install build && python -m build"
+build_command = "uv build"
 tag_format = "v{version}"
 commit_parser = "conventional"
 allow_zero_version = true

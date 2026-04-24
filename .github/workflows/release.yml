@@ -1,7 +1,7 @@
 name: Release
 
 # Manual dispatch only — do not restore the cron schedule until the release
-# flow has been rehearsed end-to-end at least once (see TODO_2.md §6.7).
+# flow has been rehearsed end-to-end at least once (see TODO.md, section 1).
 on:
     workflow_dispatch: {}
 

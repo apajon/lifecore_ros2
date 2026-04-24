@@ -6,7 +6,7 @@ body:
     attributes:
         value: |
             Before requesting a feature, check [ROADMAP.md](../blob/main/ROADMAP.md) and
-            [TODO_2.md](../blob/main/TODO_2.md) for planned work.
+            [TODO.md](../blob/main/TODO.md) for planned work.
 
             A feature belongs here if it is **framework-level and message-type-agnostic**.
             Domain-specific patterns belong in the `lifecore_ros2_examples` companion repository.
