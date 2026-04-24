@@ -1,7 +1,7 @@
 ---
 name: "MemPalace Knowledge Writer"
 description: "Use when persisting a validated architecture decision, stable framework rule, reusable convention, inter-component contract, confirmed anti-pattern, or regression-prevention rule into MemPalace. NOT for coding, refactoring, or architecture changes — memory persistence only."
-tools: [mempalace/*]
+tools: [read, search, mempalace/*]
 user-invocable: true
 agents: []
 argument-hint: "Describe the decision, rule, or knowledge candidate to persist. Specify whether it is project-specific (lifecore_ros2) or general ROS 2 knowledge."

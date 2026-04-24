@@ -1,7 +1,7 @@
 ---
 name: "MemPalace Auditor"
 description: "Use when auditing MemPalace for duplicate, stale, misclassified, or low-quality entries in the lifecore_ros2 or ros2 wings. Produces a structured audit report with actionable recommendations. Never writes automatically — proposes changes and waits for human validation."
-tools: [mempalace/*]
+tools: [read,search,mempalace/*]
 user-invocable: true
 agents: []
 argument-hint: "Specify the wing or room to audit (e.g., 'lifecore_ros2', 'ros2/lifecycle'), or request a full audit."

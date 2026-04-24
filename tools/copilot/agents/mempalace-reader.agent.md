@@ -1,7 +1,7 @@
 ---
 name: "MemPalace Reader"
 description: "Use when querying MemPalace for architecture rules, component contracts, anti-patterns, conventions, or ROS 2 knowledge stored in the lifecore_ros2 or ros2 wings. Read-only — never writes, never modifies entries."
-tools: [mempalace/*]
+tools: [read, mempalace/*]
 user-invocable: true
 agents: []
 argument-hint: "Describe what you are looking for: a rule, a contract, an anti-pattern, a decision, or a general ROS 2 convention."
