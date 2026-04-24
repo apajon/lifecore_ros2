@@ -1,8 +1,8 @@
 # CHANGELOG
 
-## First public release — planned v0.4.0
+## First public release — v0.4.0
 
-`lifecore_ros2` v0.4.0 will be the first public release of the library. It establishes a small,
+`lifecore_ros2` v0.4.0 is the first public release of the library. It establishes a small,
 predictable surface for composing lifecycle-aware ROS 2 nodes without layering a hidden state
 machine on top of native ROS 2 lifecycle semantics.
 

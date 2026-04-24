@@ -35,8 +35,9 @@ Items still required before tagging the first public release.
 
 ### Final release gate
 
-* [ ] Confirm the published version number matches the real stability level (currently
-      on the `0.x` beta track; promotion to `1.0.0` only when the API is judged stable)
+* [x] Confirm the published version number matches the real stability level (shipped as
+      `v0.4.0` on the `0.x` beta track; promotion to `1.0.0` only when the API is judged
+      stable) — released at https://github.com/apajon/lifecore_ros2/releases/tag/v0.4.0
 
 ---
 
