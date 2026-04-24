@@ -9,7 +9,7 @@ Verifies that:
 from __future__ import annotations
 
 import threading
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
 from rclpy.lifecycle import TransitionCallbackReturn
@@ -163,3 +163,81 @@ class TestRegressionConcurrentTransitions:
             pass  # rclpy lifecycle state errors are acceptable
         finally:
             node._in_transition = False
+
+
+# ---------------------------------------------------------------------------
+# Reentrant transition helpers
+# ---------------------------------------------------------------------------
+
+
+class _ReentrantComponent(DummyComponent):
+    """Subclass that calls node.on_configure() from within its own _on_configure hook.
+
+    Used to simulate a synchronous reentrant configure: the hook fires during an
+    active transition and attempts to start a second one on the same node.
+    """
+
+    def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+        # Reentrant call — raises ConcurrentTransitionError because _in_transition is True.
+        self.node.on_configure(state)
+        return TransitionCallbackReturn.SUCCESS
+
+
+# ---------------------------------------------------------------------------
+# TestReentrantTransitionFromHook
+# ---------------------------------------------------------------------------
+
+
+class TestReentrantTransitionFromHook:
+    """ConcurrentTransitionError is raised when a hook attempts a synchronous reentrant transition."""
+
+    def test_reentrant_configure_from_hook_raises_concurrent_error(self) -> None:
+        # Regression: same-thread reentrant on_configure from within a component hook was not
+        # detected; _begin_transition received _in_transition=True and could silently corrupt state.
+        # Expected: ConcurrentTransitionError is raised by the reentrant node.on_configure() call.
+        node = LifecycleComponentNode("reentrant_test_node")
+        comp = _ReentrantComponent("reentrant")
+        node.add_component(comp)
+
+        # Simulate the node being mid-transition: _in_transition is True and registration is
+        # closed, exactly as when on_configure propagates to managed entities.
+        # _on_configure is called directly to bypass _guarded_call so the exception propagates.
+        node._in_transition = True
+        node._close_registration()
+        try:
+            with pytest.raises(ConcurrentTransitionError):
+                comp._on_configure(DUMMY_STATE)
+        finally:
+            node._in_transition = False
+            node.destroy_node()
+
+
+# ---------------------------------------------------------------------------
+# TestDestructionDuringSpin
+# ---------------------------------------------------------------------------
+
+
+class TestDestructionDuringSpin:
+    """_release_resources is called for every active component when the node is torn down."""
+
+    def test_release_resources_called_on_teardown_after_activate(self) -> None:
+        # Regression: _release_resources was not invoked on components in the active state
+        # when destroy_node() was called without an explicit shutdown transition.
+        # Expected: _release_resources runs for each active component during teardown.
+        node = LifecycleComponentNode("teardown_test_node")
+        comp = DummyComponent("teardown_comp")
+        node.add_component(comp)
+
+        node.on_configure(DUMMY_STATE)
+        node.on_activate(DUMMY_STATE)
+
+        mock_release = MagicMock()
+        comp._release_resources = mock_release  # type: ignore[method-assign]
+
+        # rclpy's destroy_node does not drive lifecycle transitions for managed entities.
+        # on_shutdown is the semantically correct path to trigger _release_resources on
+        # each component before the node is destroyed.
+        node.on_shutdown(DUMMY_STATE)
+        node.destroy_node()
+
+        mock_release.assert_called()
