@@ -11,7 +11,7 @@ from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.managed_entity import ManagedEntity
 from rclpy.lifecycle.node import LifecycleState
 
-from .exceptions import ComponentNotAttachedError
+from .exceptions import ComponentNotAttachedError, InvalidLifecycleTransitionError
 
 if TYPE_CHECKING:
     from .lifecycle_component_node import LifecycleComponentNode
@@ -160,6 +160,8 @@ class LifecycleComponent(ManagedEntity, ABC):
         super().__init__()
         self._name: str = name
         self._node: LifecycleComponentNode | None = None
+        self._is_configured: bool = False
+        self._needs_cleanup: bool = False
         self._is_active: bool = False
 
     @property
@@ -245,6 +247,72 @@ class LifecycleComponent(ManagedEntity, ABC):
             log.error(traceback.format_exc())
             return TransitionCallbackReturn.ERROR
 
+    def _contract_state(self) -> str:
+        """Framework-internal. Do not call from user code."""
+        if self._is_active:
+            return "active"
+        if self._is_configured:
+            return "inactive"
+        if self._needs_cleanup:
+            return "partially_configured"
+        return "unconfigured"
+
+    def _is_node_managed_transition(self, attempted_transition: str) -> bool:
+        """Framework-internal. Do not call from user code."""
+        if self._node is None:
+            return False
+        return self._node._managed_transition_name == attempted_transition  # pyright: ignore[reportPrivateUsage]
+
+    def _raise_invalid_transition(self, attempted_transition: str, reason: str) -> None:
+        """Framework-internal. Do not call from user code."""
+        current_state = self._contract_state()
+        self._resolve_logger().error(
+            f"[{self._name}] rejected lifecycle transition "
+            f"attempted='{attempted_transition}' current_state='{current_state}' reason='{reason}'"
+        )
+        raise InvalidLifecycleTransitionError(
+            f"Component '{self._name}' cannot '{attempted_transition}' from '{current_state}': {reason}"
+        )
+
+    def _assert_transition_allowed(self, attempted_transition: str) -> None:
+        """Framework-internal. Do not call from user code."""
+        if self._is_node_managed_transition(attempted_transition):
+            return
+
+        if attempted_transition == "configure":
+            if self._needs_cleanup:
+                self._raise_invalid_transition(attempted_transition, "component requires cleanup before reconfigure")
+            return
+
+        if attempted_transition == "activate":
+            if not self._is_configured:
+                self._raise_invalid_transition(attempted_transition, "component is not configured")
+            if self._is_active:
+                self._raise_invalid_transition(attempted_transition, "component is already active")
+            return
+
+        if attempted_transition == "deactivate":
+            if not self._is_configured:
+                self._raise_invalid_transition(attempted_transition, "component is not configured")
+            if not self._is_active:
+                self._raise_invalid_transition(attempted_transition, "component is not active")
+            return
+
+        if attempted_transition == "cleanup":
+            if not self._needs_cleanup:
+                self._raise_invalid_transition(attempted_transition, "component is not configured")
+            if self._is_active:
+                self._raise_invalid_transition(attempted_transition, "component is still active")
+
+    def _rollback_failed_configure(self) -> TransitionCallbackReturn:
+        """Framework-internal. Do not call from user code."""
+        self._is_configured = False
+        self._is_active = False
+        release_result = self._safe_release_resources()
+        if release_result == TransitionCallbackReturn.SUCCESS:
+            self._needs_cleanup = False
+        return release_result
+
     # -- framework-controlled entry points (do not override) ----------------
     # These implement the rclpy ManagedEntity protocol. Sealed with @final so
     # pyright catches accidental overrides in application code. Extend behavior
@@ -252,10 +320,19 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     @final
     def on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        return self._guarded_call("on_configure", self._on_configure, state)
+        self._assert_transition_allowed("configure")
+        result = self._guarded_call("on_configure", self._on_configure, state)
+        if result == TransitionCallbackReturn.SUCCESS:
+            self._is_configured = True
+            self._needs_cleanup = True
+        elif result in {TransitionCallbackReturn.FAILURE, TransitionCallbackReturn.ERROR}:
+            self._is_configured = False
+            self._needs_cleanup = True
+        return result
 
     @final
     def on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        self._assert_transition_allowed("activate")
         result = self._guarded_call("on_activate", self._on_activate, state)
         if result == TransitionCallbackReturn.SUCCESS:
             self._is_active = True
@@ -263,6 +340,7 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     @final
     def on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        self._assert_transition_allowed("deactivate")
         result = self._guarded_call("on_deactivate", self._on_deactivate, state)
         if result == TransitionCallbackReturn.SUCCESS:
             self._is_active = False
@@ -270,23 +348,36 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     @final
     def on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
+        self._assert_transition_allowed("cleanup")
         self._is_active = False
+        self._is_configured = False
         result = self._guarded_call("on_cleanup", self._on_cleanup, state)
         release_result = self._safe_release_resources()
+        if release_result == TransitionCallbackReturn.SUCCESS:
+            self._is_configured = False
+            self._needs_cleanup = False
         return _worst_of(result, release_result)
 
     @final
     def on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
         self._is_active = False
+        self._is_configured = False
         result = self._guarded_call("on_shutdown", self._on_shutdown, state)
         release_result = self._safe_release_resources()
+        if release_result == TransitionCallbackReturn.SUCCESS:
+            self._is_configured = False
+            self._needs_cleanup = False
         return _worst_of(result, release_result)
 
     @final
     def on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
         self._is_active = False
+        self._is_configured = False
         result = self._guarded_call("on_error", self._on_error, state)
         release_result = self._safe_release_resources()
+        if release_result == TransitionCallbackReturn.SUCCESS:
+            self._is_configured = False
+            self._needs_cleanup = False
         return _worst_of(result, release_result)
 
     # -- protected extension points (override these in subclasses) -----------
@@ -362,4 +453,6 @@ class LifecycleComponent(ManagedEntity, ABC):
         Implementations must be idempotent. Call ``super()._release_resources()`` last
         when overriding in a subclass chain.
         """
+        self._is_configured = False
+        self._needs_cleanup = False
         self._is_active = False

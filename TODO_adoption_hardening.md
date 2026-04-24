@@ -62,14 +62,19 @@ Rule: no item on this list justifies violating the guardrails in `TODO.md §3`
 
 ## 5. Strict lifecycle contract
 
-- [ ] Enumerate invalid transition sequences in a single table
+- [x] Enumerate invalid transition sequences in a single table
       (double activate, deactivate-without-activate, cleanup-while-active, etc.)
-- [ ] For each invalid case, decide: rely on native rclpy rejection, or raise a
+      → `docs/architecture.rst §Strict direct-call contract`
+- [x] For each invalid case, decide: rely on native rclpy rejection, or raise a
       typed `LifecoreError` subclass
-- [ ] Ensure every rejection path emits an actionable log line (component name,
+      → Node path: native `rclpy` rejection with framework logging; direct component path:
+        `InvalidLifecycleTransitionError`
+- [x] Ensure every rejection path emits an actionable log line (component name,
       current state, attempted transition)
-- [ ] Guarantee state coherence on failure: no half-configured components left
+      → Direct and node-driven rejection logging added in core lifecycle boundaries
+- [x] Guarantee state coherence on failure: no half-configured components left
       visible to the node
+      → Failed node-driven `configure` now rolls back component resources before returning
 
 ## 6. Test coverage
 

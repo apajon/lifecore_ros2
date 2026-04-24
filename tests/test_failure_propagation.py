@@ -298,10 +298,9 @@ class TestComponentFailureInComposedNode:
 
         assert act_result == TransitionCallbackReturn.FAILURE
 
-    def test_configure_failure_leaves_resources_on_good_component(self, spinning_node: LifecycleComponentNode) -> None:
-        # Regression: when one component fails configure, the other component's
-        # already-allocated resources must NOT be automatically released.
-        # Expected: overall FAILURE, no automatic rollback/cleanup on any component.
+    def test_configure_failure_rolls_back_component_resources(self, spinning_node: LifecycleComponentNode) -> None:
+        # Regression: a failed configure left successful siblings half-configured.
+        # Expected: the node restores a clean state before returning FAILURE.
         # Note: rclpy may stop propagation after the first FAILURE, so which
         # component actually ran is implementation-dependent.
         good = ResourceTrackingComponent("res_good")
@@ -312,9 +311,8 @@ class TestComponentFailureInComposedNode:
         result = spinning_node.trigger_configure()
 
         assert result == TransitionCallbackReturn.FAILURE
-        # rclpy does NOT automatically clean up already-configured components.
-        assert good.resource_released is False
-        assert bad.resource_released is False
+        assert good.resource_allocated is False
+        assert bad.resource_allocated is False
 
 
 # ===========================================================================
@@ -328,13 +326,12 @@ class TestPartialResourceAllocation:
     Demonstrates that manual cleanup after partial failure works correctly.
     """
 
-    def test_partial_configure_leaves_resources_allocated(self, spinning_node: LifecycleComponentNode) -> None:
-        # Regression: partial configure must leave the successful component's
-        # resources intact — no automatic rollback.
-        # Expected: overall FAILURE, and any component that DID configure keeps its resources.
+    def test_partial_configure_rolls_back_allocated_resources(self, spinning_node: LifecycleComponentNode) -> None:
+        # Regression: partial configure left allocated resources visible after failure.
+        # Expected: overall FAILURE with automatic resource rollback.
         # Note: rclpy managed entity propagation order is implementation-dependent;
         # rclpy may stop propagation after the first FAILURE, so we cannot assume
-        # which component ran.  We verify no automatic cleanup occurred.
+        # which component ran. We verify the framework restored a clean state.
         first = ResourceTrackingComponent("first")
         second = ResourceTrackingComponent("second", fail_on="configure")
         spinning_node.add_component(first)
@@ -343,9 +340,21 @@ class TestPartialResourceAllocation:
         result = spinning_node.trigger_configure()
 
         assert result == TransitionCallbackReturn.FAILURE
-        # No automatic rollback: whatever was allocated stays allocated.
-        assert first.resource_released is False
-        assert second.resource_released is False
+        assert first.resource_allocated is False
+        assert second.resource_allocated is False
+
+    def test_configure_error_rolls_back_allocated_resources(self, spinning_node: LifecycleComponentNode) -> None:
+        # Regression: configure errors left sibling resources allocated.
+        # Expected: the node returns ERROR without leaving allocated resources behind.
+        good = ResourceTrackingComponent("err_good")
+        bad = CrashingComponent("err_bad", crash_on="configure")
+        spinning_node.add_component(good)
+        spinning_node.add_component(bad)
+
+        result = spinning_node.trigger_configure()
+
+        assert result == TransitionCallbackReturn.ERROR
+        assert good.resource_allocated is False
 
     def test_manual_cleanup_after_partial_failure(self, node: LifecycleComponentNode) -> None:
         # Regression: after a partial configure failure, the consumer must be

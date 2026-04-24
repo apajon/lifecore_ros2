@@ -11,6 +11,7 @@ from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleState
 
 from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
+from lifecore_ros2.core.exceptions import InvalidLifecycleTransitionError
 from lifecore_ros2.core.lifecycle_component import when_active
 
 DUMMY_STATE = LifecycleState(state_id=0, label="test")
@@ -75,25 +76,23 @@ class TestDoubleActivate:
     """Calling on_activate twice without an intervening on_deactivate."""
 
     def test_double_activate_calls_hook_twice(self, node: LifecycleComponentNode) -> None:
-        # Regression: a second activate must still call the hook (ROS 2 node
-        # may trigger transitions in unexpected orders during error recovery).
-        # Expected: both calls go through; _is_active remains True.
+        # Regression: direct repeated activate once called the hook twice.
+        # Expected: the second direct activate is rejected and state stays active.
         comp = RecordingComponent("dbl_act")
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
         result1 = comp.on_activate(DUMMY_STATE)
-        result2 = comp.on_activate(DUMMY_STATE)
 
         assert result1 == TransitionCallbackReturn.SUCCESS
-        assert result2 == TransitionCallbackReturn.SUCCESS
+        with pytest.raises(InvalidLifecycleTransitionError, match="cannot 'activate' from 'active'"):
+            comp.on_activate(DUMMY_STATE)
         assert comp.is_active is True
-        assert comp.calls.count("activate") == 2
+        assert comp.calls.count("activate") == 1
 
     def test_double_activate_second_fails_stays_active(self, node: LifecycleComponentNode) -> None:
-        # Regression: if the second activate fails, _is_active must still
-        # reflect the first successful activation.
-        # Expected: _is_active remains True after failed second activate.
+        # Regression: the second direct activate must fail before hook dispatch.
+        # Expected: typed rejection and the first successful activation still holds.
         comp = RecordingComponent("dbl_act_fail")
         node.add_component(comp)
 
@@ -101,11 +100,8 @@ class TestDoubleActivate:
         comp.on_activate(DUMMY_STATE)
         assert comp.is_active is True
 
-        # Inject failure for second activate
-        comp._fail_on = "activate"
-        result = comp.on_activate(DUMMY_STATE)
-
-        assert result == TransitionCallbackReturn.FAILURE
+        with pytest.raises(InvalidLifecycleTransitionError, match="cannot 'activate' from 'active'"):
+            comp.on_activate(DUMMY_STATE)
         assert comp.is_active is True  # first activation still holds
 
 
@@ -118,8 +114,8 @@ class TestDoubleDeactivate:
     """Calling on_deactivate twice without an intervening on_activate."""
 
     def test_double_deactivate_calls_hook_twice(self, node: LifecycleComponentNode) -> None:
-        # Regression: a second deactivate call must still invoke the hook.
-        # Expected: both calls succeed; _is_active remains False.
+        # Regression: direct repeated deactivate once called the hook twice.
+        # Expected: the second direct deactivate is rejected and state stays inactive.
         comp = RecordingComponent("dbl_deact")
         node.add_component(comp)
 
@@ -128,24 +124,24 @@ class TestDoubleDeactivate:
         comp.on_deactivate(DUMMY_STATE)
         assert comp.is_active is False
 
-        result = comp.on_deactivate(DUMMY_STATE)
-        assert result == TransitionCallbackReturn.SUCCESS
+        with pytest.raises(InvalidLifecycleTransitionError, match="cannot 'deactivate' from 'inactive'"):
+            comp.on_deactivate(DUMMY_STATE)
         assert comp.is_active is False
-        assert comp.calls.count("deactivate") == 2
+        assert comp.calls.count("deactivate") == 1
 
     def test_deactivate_without_prior_activate(self, node: LifecycleComponentNode) -> None:
-        # Guard: calling deactivate on a configured-but-never-activated component.
-        # Expected: hook runs, _is_active stays False.
+        # Regression: direct deactivate once succeeded before any activate.
+        # Expected: the invalid direct call is rejected.
         comp = RecordingComponent("cold_deact")
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
         assert comp.is_active is False
 
-        result = comp.on_deactivate(DUMMY_STATE)
-        assert result == TransitionCallbackReturn.SUCCESS
+        with pytest.raises(InvalidLifecycleTransitionError, match="cannot 'deactivate' from 'inactive'"):
+            comp.on_deactivate(DUMMY_STATE)
         assert comp.is_active is False
-        assert "deactivate" in comp.calls
+        assert "deactivate" not in comp.calls
 
 
 # ---------------------------------------------------------------------------
@@ -238,24 +234,26 @@ class TestGatingConsistencyDuringDoubleTransitions:
     """Validates @when_active gating is consistent at every double-transition step."""
 
     def test_gated_after_double_activate(self, node: LifecycleComponentNode) -> None:
-        # Guard: after two activates, gated method must still work.
+        # Guard: a rejected second activate must not break the active gate.
         comp = _GatedComponent("gated_dbl_act")
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
         comp.on_activate(DUMMY_STATE)
-        comp.on_activate(DUMMY_STATE)
+        with pytest.raises(InvalidLifecycleTransitionError, match="cannot 'activate' from 'active'"):
+            comp.on_activate(DUMMY_STATE)
         assert comp.gated_action() == "ok"
 
     def test_gated_after_double_deactivate(self, node: LifecycleComponentNode) -> None:
-        # Guard: after two deactivates, gated method must still raise.
+        # Guard: a rejected second deactivate must leave the inactive gate intact.
         comp = _GatedComponent("gated_dbl_deact")
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
         comp.on_activate(DUMMY_STATE)
         comp.on_deactivate(DUMMY_STATE)
-        comp.on_deactivate(DUMMY_STATE)
+        with pytest.raises(InvalidLifecycleTransitionError, match="cannot 'deactivate' from 'inactive'"):
+            comp.on_deactivate(DUMMY_STATE)
 
         with pytest.raises(RuntimeError, match="not active"):
             comp.gated_action()
@@ -302,6 +300,7 @@ class TestReleaseResourcesIdempotency:
 
         comp.on_configure(DUMMY_STATE)
         comp.on_activate(DUMMY_STATE)
+        comp.on_deactivate(DUMMY_STATE)
         comp.on_cleanup(DUMMY_STATE)  # auto-calls _release_resources
         assert comp.release_count == 1
 

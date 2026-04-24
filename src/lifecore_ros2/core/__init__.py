@@ -5,6 +5,7 @@ from .exceptions import (
     ComponentNotConfiguredError,
     ConcurrentTransitionError,
     DuplicateComponentError,
+    InvalidLifecycleTransitionError,
     LifecoreError,
     RegistrationClosedError,
 )
@@ -20,5 +21,6 @@ __all__ = [
     "DuplicateComponentError",
     "ComponentNotAttachedError",
     "ComponentNotConfiguredError",
+    "InvalidLifecycleTransitionError",
     "ConcurrentTransitionError",
 ]

@@ -292,6 +292,52 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
   ``super()._on_activate()`` or ``super()._on_deactivate()`` to manage the flag —
   the framework handles it.
 
+**Strict direct-call contract**
+  ``LifecycleComponent.on_*`` remains framework-owned. When a component hook entry point is
+  called directly in an invalid order, lifecore_ros2 now raises
+  ``InvalidLifecycleTransitionError`` instead of silently accepting the sequence.
+
+  The node-driven path stays lifecycle-native: invalid node transitions are still rejected by
+  the native rclpy state machine, and the framework logs the attempted transition, current node
+  state, and attached components before re-raising the native error. The extra component-side
+  bookkeeping is limited to boundary checks for direct calls plus a cleanup-needed flag used to
+  prevent direct reconfigure before resources are released. This is not an independent lifecycle
+  controller.
+
+  .. list-table:: Invalid transition handling
+     :header-rows: 1
+
+     * - Invalid case
+       - Node-level path
+       - Direct ``LifecycleComponent.on_*`` path
+     * - ``activate`` before ``configure``
+       - Native rclpy rejection
+       - ``InvalidLifecycleTransitionError``
+     * - repeated ``configure`` without ``cleanup``
+       - Native rclpy rejection
+       - ``InvalidLifecycleTransitionError``
+     * - repeated ``activate`` without ``deactivate``
+       - Native rclpy rejection
+       - ``InvalidLifecycleTransitionError``
+     * - ``deactivate`` without prior ``activate``
+       - Native rclpy rejection
+       - ``InvalidLifecycleTransitionError``
+     * - ``cleanup`` before ``configure``
+       - Native rclpy rejection
+       - ``InvalidLifecycleTransitionError``
+     * - ``cleanup`` while active
+       - Native rclpy rejection
+       - ``InvalidLifecycleTransitionError``
+
+  Every direct rejection logs the component name, attempted transition, current contract state,
+  and rejection reason before raising.
+
+**Configure failure rollback**
+  A failed node-driven ``configure`` no longer leaves half-configured components visible to the
+  node. After a managed ``configure`` returns ``FAILURE`` or ``ERROR``,
+  ``LifecycleComponentNode`` calls ``_release_resources()`` on every attached component to
+  restore a coherent unconfigured state before returning the final result.
+
 **Activation gating**
   ``LifecyclePublisherComponent.publish()`` raises ``RuntimeError`` when inactive.
   ``LifecycleSubscriberComponent`` silently drops incoming messages when inactive.

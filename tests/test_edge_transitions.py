@@ -17,6 +17,7 @@ Note on rclpy Jazzy behavior:
 from __future__ import annotations
 
 import threading
+from unittest.mock import MagicMock, patch
 
 import pytest
 from rclpy._rclpy_pybind11 import RCLError
@@ -25,6 +26,7 @@ from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleState
 
 from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
+from lifecore_ros2.core.exceptions import InvalidLifecycleTransitionError
 
 # ---------------------------------------------------------------------------
 # Instrumented components
@@ -109,70 +111,82 @@ def spinning_node():
 class TestEdgeTransitionsDirect:
     """Direct calls to component hooks bypass the rclpy state machine.
 
-    These tests document the observed behavior when hooks are called in
-    an invalid order at the component level.
+    These tests guard the strict contract enforced for direct component hooks.
     """
 
     # -- 1. Activate before configure (direct) ----------------------------
 
     def test_activate_before_configure_direct(self, node: LifecycleComponentNode) -> None:
-        # Observed behavior: _on_activate sets _is_active regardless of prior
-        # configure state because the component has no resource precondition.
+        # Regression: direct activate once succeeded before configure.
+        # Expected: direct invalid order is rejected with a typed boundary error.
         comp = ActivationTrackingComponent("act_no_cfg")
         node.add_component(comp)
 
         assert comp.is_active is False
-        result = comp.on_activate(DUMMY_STATE)
-        # Component-level: succeeds because super()._on_activate sets _is_active
-        assert result == TransitionCallbackReturn.SUCCESS
-        assert comp.is_active is True
+        with pytest.raises(InvalidLifecycleTransitionError, match="cannot 'activate' from 'unconfigured'"):
+            comp.on_activate(DUMMY_STATE)
+        assert comp.is_active is False
+
+    def test_activate_before_configure_direct_logs_actionable_context(self, node: LifecycleComponentNode) -> None:
+        comp = ActivationTrackingComponent("act_no_cfg_log")
+        node.add_component(comp)
+
+        mock_logger = MagicMock()
+        with patch.object(comp, "_resolve_logger", return_value=mock_logger):
+            with pytest.raises(InvalidLifecycleTransitionError):
+                comp.on_activate(DUMMY_STATE)
+
+        error_msg = mock_logger.error.call_args[0][0]
+        assert "attempted='activate'" in error_msg
+        assert "current_state='unconfigured'" in error_msg
+        assert "reason='component is not configured'" in error_msg
 
     # -- 2. Cleanup before configure (direct) ------------------------------
 
     def test_cleanup_before_configure_direct(self, node: LifecycleComponentNode) -> None:
-        # Observed behavior: _on_cleanup succeeds on a fresh component because
-        # there are no resources to release.
+        # Regression: direct cleanup once succeeded on an unconfigured component.
+        # Expected: direct invalid order is rejected with a typed boundary error.
         comp = ActivationTrackingComponent("cleanup_no_cfg")
         node.add_component(comp)
 
-        result = comp.on_cleanup(DUMMY_STATE)
-        assert result == TransitionCallbackReturn.SUCCESS
+        with pytest.raises(InvalidLifecycleTransitionError, match="cannot 'cleanup' from 'unconfigured'"):
+            comp.on_cleanup(DUMMY_STATE)
 
     # -- 3. Repeated configure (direct) ------------------------------------
 
     def test_configure_twice_direct(self, node: LifecycleComponentNode) -> None:
-        # Observed behavior: calling configure twice succeeds both times;
-        # the component hooks are idempotent at the direct-call level.
+        # Regression: direct repeated configure once ran twice.
+        # Expected: second configure is rejected until cleanup releases the component.
         comp = RecordingComponent("cfg_twice")
         node.add_component(comp)
 
         result1 = comp.on_configure(DUMMY_STATE)
-        result2 = comp.on_configure(DUMMY_STATE)
 
         assert result1 == TransitionCallbackReturn.SUCCESS
-        assert result2 == TransitionCallbackReturn.SUCCESS
-        assert comp.calls == ["configure", "configure"]
+        with pytest.raises(InvalidLifecycleTransitionError, match="cannot 'configure' from 'inactive'"):
+            comp.on_configure(DUMMY_STATE)
+        assert comp.calls == ["configure"]
 
     # -- 4. Deactivate without prior activate (direct) ---------------------
 
     def test_deactivate_without_activate_direct(self, node: LifecycleComponentNode) -> None:
-        # Observed behavior: _on_deactivate clears _is_active, which is
-        # already False after configure.  No crash; the call is safe.
+        # Regression: direct deactivate once succeeded from inactive state.
+        # Expected: direct invalid order is rejected with a typed boundary error.
         comp = ActivationTrackingComponent("deact_no_act")
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
         assert comp.is_active is False
 
-        result = comp.on_deactivate(DUMMY_STATE)
-        assert result == TransitionCallbackReturn.SUCCESS
+        with pytest.raises(InvalidLifecycleTransitionError, match="cannot 'deactivate' from 'inactive'"):
+            comp.on_deactivate(DUMMY_STATE)
         assert comp.is_active is False
 
     # -- 5. Activate → activate without deactivate (direct) ----------------
 
     def test_activate_twice_without_deactivate_direct(self, node: LifecycleComponentNode) -> None:
-        # Observed behavior: second activate succeeds at component level
-        # because _on_activate simply sets _is_active = True again.
+        # Regression: direct repeated activate once succeeded twice.
+        # Expected: second activate is rejected while already active.
         comp = ActivationTrackingComponent("act_twice")
         node.add_component(comp)
 
@@ -180,15 +194,15 @@ class TestEdgeTransitionsDirect:
         comp.on_activate(DUMMY_STATE)
         assert comp.is_active is True
 
-        result = comp.on_activate(DUMMY_STATE)
-        assert result == TransitionCallbackReturn.SUCCESS
+        with pytest.raises(InvalidLifecycleTransitionError, match="cannot 'activate' from 'active'"):
+            comp.on_activate(DUMMY_STATE)
         assert comp.is_active is True
 
     # -- 6. Cleanup resets activation flag ---------------------------------
 
     def test_cleanup_clears_is_active(self, node: LifecycleComponentNode) -> None:
-        # The framework clears _is_active before calling _on_cleanup
-        # and calls _release_resources automatically after.
+        # Regression: direct cleanup once succeeded while the component was active.
+        # Expected: cleanup must be rejected until deactivate succeeds.
         comp = ActivationTrackingComponent("cleanup_active")
         node.add_component(comp)
 
@@ -196,8 +210,9 @@ class TestEdgeTransitionsDirect:
         comp.on_activate(DUMMY_STATE)
         assert comp.is_active is True
 
-        comp.on_cleanup(DUMMY_STATE)
-        assert comp.is_active is False
+        with pytest.raises(InvalidLifecycleTransitionError, match="cannot 'cleanup' from 'active'"):
+            comp.on_cleanup(DUMMY_STATE)
+        assert comp.is_active is True
 
 
 # ===========================================================================
@@ -223,6 +238,22 @@ class TestEdgeTransitionsIntegration:
             spinning_node.trigger_activate()
         # Component hook was never called:
         assert "activate" not in comp.calls
+
+    def test_activate_before_configure_integration_logs_actionable_context(
+        self, spinning_node: LifecycleComponentNode
+    ) -> None:
+        comp = RecordingComponent("act_before_cfg_log")
+        spinning_node.add_component(comp)
+
+        mock_logger = MagicMock()
+        with patch.object(spinning_node, "get_logger", return_value=mock_logger):
+            with pytest.raises(RCLError, match="Transition is not registered"):
+                spinning_node.trigger_activate()
+
+        error_msg = mock_logger.error.call_args[0][0]
+        assert "attempted='activate'" in error_msg
+        assert "current_state='unconfigured'" in error_msg
+        assert "act_before_cfg_log" in error_msg
 
     # -- 2. Cleanup before configure (integration) -------------------------
 

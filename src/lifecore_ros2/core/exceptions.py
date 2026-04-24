@@ -12,6 +12,7 @@ Hierarchy::
     ├── DuplicateComponentError   (ValueError)
     ├── ComponentNotAttachedError (RuntimeError)
     ├── ComponentNotConfiguredError (RuntimeError)
+    ├── InvalidLifecycleTransitionError (RuntimeError)
     └── ConcurrentTransitionError (RuntimeError)
 """
 
@@ -41,6 +42,10 @@ class ComponentNotAttachedError(LifecoreError, RuntimeError):
 
 class ComponentNotConfiguredError(LifecoreError, RuntimeError):
     """Raised when ``publish()`` is called on a publisher that has not been configured yet."""
+
+
+class InvalidLifecycleTransitionError(LifecoreError, RuntimeError):
+    """Raised when a ``LifecycleComponent`` hook is called in an invalid lifecycle order."""
 
 
 class ConcurrentTransitionError(LifecoreError, RuntimeError):
