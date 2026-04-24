@@ -89,6 +89,41 @@ class LifecycleComponentNode(LifecycleNode):
             except KeyError as exc:
                 raise KeyError(f"Unknown component: {name}") from exc
 
+    def remove_component(self, name: str) -> None:
+        """Unregister a component before lifecycle transitions begin.
+
+        Marks the component as withdrawn and detaches it from this node.
+        The component remains in rclpy's managed entity list as a silent no-op:
+        all subsequent transition callbacks return ``SUCCESS`` immediately without
+        executing hooks, allocating resources, or modifying component state.
+
+        Allowed states:
+            Only callable before the first lifecycle transition (while registration
+            is still open). Raises ``RegistrationClosedError`` after transitions
+            have started, because components may have already allocated resources
+            and must be cleaned up via the normal lifecycle path.
+
+        Args:
+            name: The name of the component to remove.
+
+        Raises:
+            RegistrationClosedError: If lifecycle transitions have already started.
+            KeyError: If no component with the given name is registered.
+        """
+        with self._lock:
+            if not self._registration_open:
+                raise RegistrationClosedError(
+                    f"Cannot remove component '{name}': lifecycle transitions have already started"
+                )
+            try:
+                component = self._components.pop(name)
+            except KeyError as exc:
+                raise KeyError(f"Unknown component: {name}") from exc
+            component._withdrawn = True  # pyright: ignore[reportPrivateUsage]
+            component._detach()  # pyright: ignore[reportPrivateUsage]
+
+        self.get_logger().info(f"Unregistered component '{name}'")
+
     # -- registration gate -------------------------------------------------------
 
     def _close_registration(self) -> None:

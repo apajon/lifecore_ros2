@@ -163,6 +163,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         self._is_configured: bool = False
         self._needs_cleanup: bool = False
         self._is_active: bool = False
+        self._withdrawn: bool = False
 
     @property
     def name(self) -> str:
@@ -320,6 +321,8 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     @final
     def on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+        if self._withdrawn:
+            return TransitionCallbackReturn.SUCCESS
         self._assert_transition_allowed("configure")
         result = self._guarded_call("on_configure", self._on_configure, state)
         if result == TransitionCallbackReturn.SUCCESS:
@@ -332,6 +335,8 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     @final
     def on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        if self._withdrawn:
+            return TransitionCallbackReturn.SUCCESS
         self._assert_transition_allowed("activate")
         result = self._guarded_call("on_activate", self._on_activate, state)
         if result == TransitionCallbackReturn.SUCCESS:
@@ -340,6 +345,8 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     @final
     def on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
+        if self._withdrawn:
+            return TransitionCallbackReturn.SUCCESS
         self._assert_transition_allowed("deactivate")
         result = self._guarded_call("on_deactivate", self._on_deactivate, state)
         if result == TransitionCallbackReturn.SUCCESS:
@@ -348,6 +355,8 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     @final
     def on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
+        if self._withdrawn:
+            return TransitionCallbackReturn.SUCCESS
         self._assert_transition_allowed("cleanup")
         self._is_active = False
         self._is_configured = False
@@ -360,6 +369,8 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     @final
     def on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
+        if self._withdrawn:
+            return TransitionCallbackReturn.SUCCESS
         self._is_active = False
         self._is_configured = False
         result = self._guarded_call("on_shutdown", self._on_shutdown, state)
@@ -371,6 +382,8 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     @final
     def on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
+        if self._withdrawn:
+            return TransitionCallbackReturn.SUCCESS
         self._is_active = False
         self._is_configured = False
         result = self._guarded_call("on_error", self._on_error, state)
