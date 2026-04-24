@@ -43,15 +43,22 @@ Rule: no item on this list justifies violating the guardrails in `TODO.md §3`
 
 ## 4. Ownership & threading
 
-- [ ] Audit `LifecycleComponentNode.add_component` for thread safety; document
+- [x] Audit `LifecycleComponentNode.add_component` for thread safety; document
       current guarantees
-- [ ] Audit lifecycle transition dispatch for reentrancy from callbacks
-- [ ] Audit component destruction relative to active callbacks
-- [ ] Write an Architecture Decision Record: single-threaded model vs
+      → Thread-safe via `threading.RLock`; documented in `docs/architecture.rst §Concurrency Contract`
+- [x] Audit lifecycle transition dispatch for reentrancy from callbacks
+      → Documented: hooks are synchronous; reentrant calls raise `ConcurrentTransitionError`
+- [x] Audit component destruction relative to active callbacks
+      → Documented in §Concurrency Contract; no framework management beyond lifecycle transitions
+- [x] Write an Architecture Decision Record: single-threaded model vs
       mutex-protected model (pick one, justify)
-- [ ] Document forbidden concurrent transitions and their enforcement
-- [ ] Add an assertion or typed exception for forbidden concurrent cases
-- [ ] Add a concurrency section to `docs/architecture.rst`
+      → Decision: single-threaded executor + RLock for registration; see `docs/architecture.rst §ADR`
+- [x] Document forbidden concurrent transitions and their enforcement
+      → Documented in §Concurrency Contract; enforced by `_in_transition` flag
+- [x] Add an assertion or typed exception for forbidden concurrent cases
+      → `ConcurrentTransitionError(LifecoreError, RuntimeError)` added; raised by `_begin_transition`
+- [x] Add a concurrency section to `docs/architecture.rst`
+      → `Concurrency Contract` section added (ADR, thread-safety table, forbidden transitions, reentrancy, destruction)
 
 ## 5. Strict lifecycle contract
 
