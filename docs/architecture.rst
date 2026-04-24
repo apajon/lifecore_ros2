@@ -198,6 +198,42 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
 **Activation gating**
   ``LifecyclePublisherComponent.publish()`` raises ``RuntimeError`` when inactive.
   ``LifecycleSubscriberComponent`` silently drops incoming messages when inactive.
+
+Naming Conventions
+------------------
+
+Framework type names are stable and must not be changed or aliased.
+
+**Fixed names:**
+
+- ``LifecycleComponent`` — the core reusable abstraction for a lifecycle-aware modular unit.
+- ``LifecycleComponentNode`` — the framework base node that owns and drives registered components.
+
+**Application node names** must use domain/business names, not framework names:
+
+.. code-block:: python
+
+    # Correct
+    class CameraNode(LifecycleComponentNode): ...
+    class NavigationNode(LifecycleComponentNode): ...
+
+    # Wrong — do not embed framework terms in application class names
+    class LifecycleCameraNode(LifecycleComponentNode): ...
+
+**Framework-provided components** follow the pattern ``Lifecycle<Capability>Component``:
+
+- ``LifecyclePublisherComponent``
+- ``LifecycleSubscriberComponent``
+
+**Explicit rules:**
+
+- No ``Abstract`` prefix. Use ``Base`` or no prefix if a base class is needed.
+- No ``*Manager``, ``*Handler``, ``*Core`` synonyms without explicit review justification.
+  These terms signal hidden complexity; prefer a descriptive name tied to one responsibility.
+- No redundant qualifiers (``Impl``, ``Mixin``, ``Core``) appended mechanically to a type name.
+
+These rules are enforced in pull request review. Any new class that violates them
+must include an explicit justification in the PR description.
   Both behaviors are intentional and consistent with explicit activation semantics.
 
 Error Policy
