@@ -341,6 +341,7 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
 **Activation gating**
   ``LifecyclePublisherComponent.publish()`` raises ``RuntimeError`` when inactive.
   ``LifecycleSubscriberComponent`` silently drops incoming messages when inactive.
+  Both behaviors are intentional and consistent with explicit activation semantics.
 
 Naming Conventions
 ------------------
@@ -377,7 +378,6 @@ Framework type names are stable and must not be changed or aliased.
 
 These rules are enforced in pull request review. Any new class that violates them
 must include an explicit justification in the PR description.
-  Both behaviors are intentional and consistent with explicit activation semantics.
 
 Error Policy
 ------------
