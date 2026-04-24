@@ -26,4 +26,7 @@ Project maintainers may remove, edit, or reject comments, issues, commits, or ot
 
 ## Reporting
 
-If you experience or witness unacceptable behavior, report it privately to the maintainer through GitHub.
+If you experience or witness unacceptable behavior, report it privately using one of these contact paths:
+
+- email: 7260230+apajon@users.noreply.github.com
+- GitHub private contact or maintainer contact path, when available
