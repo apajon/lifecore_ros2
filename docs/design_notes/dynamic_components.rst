@@ -4,10 +4,11 @@ Dynamic Components — Design Note
 .. admonition:: Audience
    :class: note
 
-   Internal contributors of ``lifecore_ros2``. This is a **design note**, not
-   user documentation. No code under ``src/lifecore_ros2/`` exists for this
-   feature yet. ``remove_component`` already exists but is gated to the
-   pre-transition window only — see :ref:`dynamic-components-current-state`.
+  Contributors and advanced readers evaluating future directions of
+  ``lifecore_ros2``. This is a **design note**, not committed user
+  documentation. No code under ``src/lifecore_ros2/`` exists for this feature
+  yet. ``remove_component`` already exists but is gated to the pre-transition
+  window only — see :ref:`dynamic-components-current-state`.
 
 .. admonition:: Status
    :class: important
