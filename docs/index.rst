@@ -71,6 +71,12 @@ Documentation map
 
 .. toctree::
    :maxdepth: 1
+   :caption: Concepts
+
+   concepts/mental_model
+
+.. toctree::
+   :maxdepth: 1
    :caption: Contributing
 
    contributing
