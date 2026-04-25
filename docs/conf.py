@@ -19,6 +19,7 @@ extensions = [
 ]
 
 templates_path = ["_templates"]
+html_static_path = ["_static"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
 autosummary_generate = True
@@ -30,6 +31,7 @@ napoleon_numpy_docstring = False
 
 html_title = "lifecore_ros2"
 html_theme = "furo"
+html_css_files = ["custom.css"]
 html_theme_options = {
     "source_repository": "https://github.com/apajon/lifecore_ros2",
     "source_branch": "main",
