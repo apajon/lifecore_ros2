@@ -41,8 +41,10 @@ Start here
    :widths: 30 70
    :header-rows: 0
 
+   * - :doc:`Quickstart <quickstart>`
+     - Clone the repository, install the dev environment, and run the smallest composed lifecycle example.
    * - :doc:`Getting Started <getting_started>`
-     - Install the project, run the shortest path example, and validate the local setup.
+     - Review prerequisites, validation commands, and reference setup details after the quickstart.
    * - :doc:`Architecture <architecture>`
      - Read the lifecycle ownership model, transition rules, and component contracts.
    * - :doc:`Examples <examples>`
@@ -56,17 +58,16 @@ Documentation map
 -----------------
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents
 
-   getting_started
-   architecture
-   patterns
-   migration_from_rclpy
-   examples
-   api
-   faq
-   changelog
+    quickstart
+    getting_started
+    architecture
+    patterns
+    migration_from_rclpy
+    examples
+    api
+    faq
+    changelog
 
 .. toctree::
    :maxdepth: 1

@@ -1,6 +1,9 @@
 Getting Started
 ===============
 
+Need the shortest runnable path first? Start with :doc:`Quickstart <quickstart>`.
+This page remains the reference for prerequisites, validation commands, and documentation tooling.
+
 Audience
 --------
 
