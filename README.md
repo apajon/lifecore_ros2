@@ -72,34 +72,34 @@ See [CHANGELOG.md](CHANGELOG.md) for shipped changes or the [GitHub Releases](ht
 
 ## Quickstart
 
-Clone the repository and enter a ROS 2 Jazzy shell:
+Clone the repository, source ROS 2 Jazzy, and sync the local development environment:
 
 ```bash
 git clone https://github.com/apajon/lifecore_ros2.git
 cd lifecore_ros2
 source /opt/ros/jazzy/setup.bash
-```
-
-Install dependencies and run the canonical shortest-path example:
-
-```bash
 uv sync --extra dev
-uv run python examples/minimal_subscriber.py
 ```
 
-From another terminal in the same ROS environment, drive the lifecycle and publish one message:
+Run the smallest composed lifecycle example already in the repository:
 
 ```bash
-ros2 lifecycle set /demo_node configure
-ros2 lifecycle set /demo_node activate
-ros2 topic pub --once /chatter std_msgs/msg/String "{data: 'hello'}"
+uv run python examples/minimal_node.py
 ```
 
-For the full validation command set, see [docs/getting_started.rst](docs/getting_started.rst). For a lower-level minimal component example, see [examples/minimal_node.py](examples/minimal_node.py).
+From another terminal in the same ROS 2 environment, drive the node through configure and activate:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+ros2 lifecycle set /minimal_lifecore_node configure
+ros2 lifecycle set /minimal_lifecore_node activate
+```
+
+For the full walkthrough, see [docs/quickstart.rst](docs/quickstart.rst). For validation and documentation commands, see [docs/getting_started.rst](docs/getting_started.rst). For the activation-gated subscriber example, continue with [examples/minimal_subscriber.py](examples/minimal_subscriber.py) or [docs/examples.rst](docs/examples.rst).
 
 ## Shortest-path example — subscriber
 
-[examples/minimal_subscriber.py](examples/minimal_subscriber.py) is the canonical shortest-path example for activation-gated message delivery.
+[examples/minimal_subscriber.py](examples/minimal_subscriber.py) is the next runnable example if you want to see activation-gated message delivery after the minimal node quickstart.
 
 See [examples/minimal_subscriber.py](examples/minimal_subscriber.py) for the complete runnable file, [docs/api_friction_audit.rst](docs/api_friction_audit.rst) for the regression baseline, and [docs/examples.rst](docs/examples.rst) for the walkthrough.
 
