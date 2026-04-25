@@ -7,11 +7,21 @@ Explicit lifecycle composition for ROS 2 Jazzy
 .. Canonical positioning sentence — keep in sync with pyproject.toml project.description.
 .. See CONTRIBUTING.md "Canonical positioning sentence".
 
-lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.
+.. container:: doc-hero
 
-It provides a small composition layer for building lifecycle-managed ROS 2 nodes from explicit, reusable components.
-Instead of concentrating lifecycle behavior in one large ``rclpy`` node class, it lets a lifecycle node own named
-components and drive their hooks through the native ROS 2 transition flow.
+  .. container:: doc-hero__lead
+
+    lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.
+
+  It provides a small composition layer for building lifecycle-managed ROS 2 nodes from explicit, reusable
+  components. Instead of concentrating lifecycle behavior in one large ``rclpy`` node class, it lets a lifecycle
+  node own named components and drive their hooks through the native ROS 2 transition flow.
+
+  .. container:: doc-hero__actions
+
+    :doc:`Quickstart <quickstart>`
+    :doc:`Mental Model <concepts/mental_model>`
+    :doc:`API Reference <api>`
 
 The library exists to make raw ``rclpy`` lifecycle code easier to structure and verify. Resource creation, activation,
 deactivation, and cleanup stay explicit; component boundaries stay testable; and the framework does not add a second

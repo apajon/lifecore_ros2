@@ -1,0 +1,91 @@
+:root {
+    --doc-hero-border: color-mix(in srgb, var(--color-brand-primary) 18%, var(--color-background-border));
+    --doc-hero-background: color-mix(in srgb, var(--color-brand-primary) 7%, var(--color-background-secondary));
+    --doc-note-background: color-mix(in srgb, var(--color-brand-primary) 8%, var(--color-background-secondary));
+    --doc-code-border: color-mix(in srgb, var(--color-brand-primary) 14%, var(--color-background-border));
+}
+
+body[data-theme="dark"] {
+    --doc-hero-border: color-mix(in srgb, var(--color-brand-primary) 30%, var(--color-background-border));
+    --doc-hero-background: color-mix(in srgb, var(--color-brand-primary) 12%, var(--color-background-secondary));
+    --doc-note-background: color-mix(in srgb, var(--color-brand-primary) 14%, var(--color-background-secondary));
+    --doc-code-border: color-mix(in srgb, var(--color-brand-primary) 22%, var(--color-background-border));
+}
+
+.content .doc-hero {
+    margin: 1.5rem 0 2rem;
+    padding: 1.25rem 1.5rem;
+    border: 1px solid var(--doc-hero-border);
+    border-radius: 1rem;
+    background: linear-gradient(135deg, var(--doc-hero-background), transparent 72%);
+}
+
+.content .doc-hero__lead>p {
+    margin: 0;
+    font-size: 1.2rem;
+    font-weight: 700;
+    line-height: 1.4;
+    color: var(--color-foreground-primary);
+}
+
+.content .doc-hero>p {
+    margin: 0.9rem 0 0;
+    max-width: 62rem;
+}
+
+.content .doc-hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem 1rem;
+    margin-top: 1rem;
+}
+
+.content .doc-hero__actions a {
+    font-weight: 600;
+}
+
+.content .admonition.important,
+.content .admonition.note {
+    border-radius: 0.9rem;
+    border: 1px solid var(--doc-hero-border);
+    background: var(--doc-note-background);
+}
+
+.content .admonition.important>.admonition-title,
+.content .admonition.note>.admonition-title {
+    border-top-left-radius: 0.9rem;
+    border-top-right-radius: 0.9rem;
+}
+
+.content div.highlight,
+.content .literal-block-wrapper {
+    margin: 1.1rem 0 1.35rem;
+    border: 1px solid var(--doc-code-border);
+    border-radius: 0.9rem;
+    overflow: hidden;
+    box-shadow: 0 10px 24px -22px rgba(15, 23, 42, 0.7);
+}
+
+.content div.highlight pre {
+    padding: 0.95rem 1.05rem;
+}
+
+.content section,
+.content .section {
+    margin-top: 1.5rem;
+}
+
+.content h2,
+.content h3 {
+    scroll-margin-top: 5rem;
+}
+
+@media (max-width: 767px) {
+    .content .doc-hero {
+        padding: 1rem;
+    }
+
+    .content .doc-hero__lead>p {
+        font-size: 1.05rem;
+    }
+}
