@@ -13,6 +13,9 @@ The architecture is centered on two layers:
 - a lifecycle-aware core in ``src/lifecore_ros2/core``
 - reusable topic-oriented components in ``src/lifecore_ros2/components``
 
+If you need the conceptual model before the structural details on this page, read
+:doc:`Mental Model <concepts/mental_model>` first.
+
 Node–Component Ownership
 ------------------------
 

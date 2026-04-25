@@ -63,6 +63,9 @@ The generated HTML output is written to docs/_build/html.
 Repository Concepts
 -------------------
 
+For the intended conceptual model before reading API details, start with
+:doc:`Mental Model <concepts/mental_model>`.
+
 The architecture is organized around:
 
 - LifecycleComponentNode as the lifecycle-aware orchestrator
