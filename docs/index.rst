@@ -37,6 +37,9 @@ When to use it
 Start here
 ----------
 
+Begin with the guides below.
+They explain the framework's lifecycle model, ownership rules, and recommended usage before you jump into symbol-level API details.
+
 .. list-table::
    :widths: 30 70
    :header-rows: 0
@@ -45,40 +48,47 @@ Start here
      - Clone the repository, install the dev environment, and run the smallest composed lifecycle example.
    * - :doc:`Getting Started <getting_started>`
      - Review prerequisites, validation commands, and reference setup details after the quickstart.
+   * - :doc:`Mental Model <concepts/mental_model>`
+     - Build the right framework intuition before diving into lifecycle internals and extension points.
    * - :doc:`Architecture <architecture>`
      - Read the lifecycle ownership model, transition rules, and component contracts.
+   * - :doc:`Recommended Patterns and Anti-Patterns <patterns>`
+     - Learn the concrete practices that keep components explicit, testable, and lifecycle-aligned.
    * - :doc:`Examples <examples>`
      - Walk through runnable publisher, subscriber, and composed node examples.
    * - :doc:`Migration from Raw rclpy <migration_from_rclpy>`
      - Compare the framework approach with direct lifecycle code in ``rclpy``.
-   * - :doc:`API Reference <api>`
-     - Inspect the public Python API and generated reference pages.
 
 Documentation map
 -----------------
 
-.. toctree::
-
-    quickstart
-    getting_started
-    architecture
-    patterns
-    migration_from_rclpy
-    examples
-    api
-    faq
-    changelog
+The guides section is the recommended reading path for new users.
+Use the API reference afterward as a lookup surface for classes, methods, and module details.
 
 .. toctree::
    :maxdepth: 1
-   :caption: Concepts
+   :caption: Guides
 
+   quickstart
+   getting_started
    concepts/mental_model
+   architecture
+   patterns
+   migration_from_rclpy
+   examples
+   faq
 
 .. toctree::
    :maxdepth: 1
-   :caption: Contributing
+   :caption: API Reference
 
+   api
+
+.. toctree::
+   :maxdepth: 1
+   :caption: Project
+
+   changelog
    contributing
    mempalace_strategy
 
