@@ -1,153 +1,143 @@
 Examples
 ========
 
-Overview
---------
+Read these examples before the API reference when you want the lifecycle model in one pass.
+They are ordered from the smallest hook surface to full component composition.
 
-The repository currently contains a small set of examples intended to validate the core architecture rather than provide a full application template.
+If you are new to the repository, run ``minimal_node.py`` first. It shows the native ROS 2
+transition flow without adding topic resources or runtime behavior.
 
-Minimal Composed Node
----------------------
+Across all examples, the same lifecycle contract holds: ``configure`` creates long-lived ROS
+resources, ``activate`` starts behavior, ``deactivate`` stops or gates behavior, and ``cleanup``
+releases resources.
 
-examples/minimal_node.py defines a small lifecycle-aware node based on LifecycleComponentNode.
+Example map
+-----------
 
-It demonstrates:
+.. list-table::
+   :header-rows: 1
+   :widths: 20 26 24 30
 
-- attaching a LifecycleComponent to a composed node
-- relying on the native lifecycle callback flow
-- keeping component lifecycle hooks explicit and minimal
+   * - Example
+     - What it demonstrates
+     - When to read it
+     - Command to run
+   * - `minimal_node.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_node.py>`_
+     - Smallest ``LifecycleComponentNode`` plus one explicit component hook.
+     - Start here if you want the base transition flow without topic resources.
+     - ``uv run python examples/minimal_node.py``
+   * - `minimal_publisher.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_publisher.py>`_
+     - Framework-owned publisher plus component-owned timer.
+     - Read after the node example to see ``configure`` versus ``activate`` for publishing.
+     - ``uv run python examples/minimal_publisher.py``
+   * - `minimal_subscriber.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_subscriber.py>`_
+     - Activation-gated delivery with a managed subscription.
+     - Read when you want to see inactive message drops and subscriber ownership.
+     - ``uv run python examples/minimal_subscriber.py``
+   * - `telemetry_publisher.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/telemetry_publisher.py>`_
+     - Full ``configure`` / ``activate`` / ``deactivate`` / ``cleanup`` split in one publisher component.
+     - Read when you need a concrete pattern for long-lived handles plus runtime behavior.
+     - ``uv run python examples/telemetry_publisher.py``
+   * - `composed_pipeline.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/composed_pipeline.py>`_
+     - Three sibling components transitioning together inside one node.
+     - Read last to see composition, raw ROS resource ownership, and reactivation behavior.
+     - ``uv run python examples/composed_pipeline.py``
 
-Minimal Subscriber Component
-----------------------------
+After launching an example, drive it with ``ros2 lifecycle set /<node_name> configure``, then
+``activate``, ``deactivate``, and ``cleanup``. Each module docstring includes the expected output
+for those transitions, so you can compare logs and graph changes without reading the code first.
 
-examples/minimal_subscriber.py defines a LifecycleSubscriberComponent subclass attached to a managed node.
+Minimal Node
+------------
 
-It demonstrates:
+Source: `examples/minimal_node.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_node.py>`_
 
-- declaring a topic-oriented component
-- handling incoming messages through on_message
-- using the lifecycle-aware component model instead of embedding subscriber logic directly into the node
+What it demonstrates
+~~~~~~~~~~~~~~~~~~~~
 
-Minimal Publisher Component
----------------------------
+The smallest managed setup: one ``LifecycleComponentNode`` owns one ``LifecycleComponent`` with only
+``_on_configure`` overridden.
 
-examples/minimal_publisher.py defines a LifecyclePublisherComponent subclass attached to a managed node.
+What to look for
+~~~~~~~~~~~~~~~~
 
-It demonstrates:
+- ``configure`` runs the component hook explicitly and nothing else.
+- The node owns the component; the component does not manage node lifetime.
+- ``activate`` and ``deactivate`` succeed with the native silent base behavior.
+- No topics or ROS resources are created, retained, or released in this example.
 
-- creating a periodic publisher on a topic using a timer
-- gating publication with activation state
-- releasing the timer and publisher during deactivate and cleanup
+Minimal Publisher
+-----------------
+
+Source: `examples/minimal_publisher.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_publisher.py>`_
+
+What it demonstrates
+~~~~~~~~~~~~~~~~~~~~
+
+A ``LifecyclePublisherComponent`` where the framework owns the ROS publisher and the component owns
+the runtime timer.
+
+What to look for
+~~~~~~~~~~~~~~~~
+
+- ``configure`` creates the publisher on ``/chatter``.
+- The node owns one publisher component; the timer belongs to that component, not to the node.
+- ``activate`` starts the timer; ``deactivate`` stops it while the publisher stays available.
+- ``cleanup`` removes the publisher, so ``/chatter`` disappears from the graph.
+
+Minimal Subscriber
+------------------
+
+Source: `examples/minimal_subscriber.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_subscriber.py>`_
+
+What it demonstrates
+~~~~~~~~~~~~~~~~~~~~
+
+A ``LifecycleSubscriberComponent`` where delivery is gated by lifecycle state instead of being
+embedded directly in the node.
+
+What to look for
+~~~~~~~~~~~~~~~~
+
+- ``configure`` creates the subscription on ``/chatter``.
+- The node owns one subscriber component; ``on_message`` is the component contract.
+- ``activate`` allows delivery; ``deactivate`` silently drops messages by design.
+- ``cleanup`` releases the subscription and removes the topic from the subscriber graph.
 
 Telemetry Publisher
 -------------------
 
-examples/telemetry_publisher.py defines a ``LifecyclePublisherComponent`` subclass with all four
-lifecycle hooks overridden.
+Source: `examples/telemetry_publisher.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/telemetry_publisher.py>`_
 
-It demonstrates:
+What it demonstrates
+~~~~~~~~~~~~~~~~~~~~
 
-- the split between configure-time resource acquisition and activate-time sampling behavior
-- a timer created on activate and destroyed on deactivate (runtime resource vs ROS resource)
-- that deactivate suspends behavior without releasing the sensor handle, while cleanup does
-- how ``@when_active`` gating on ``publish()`` makes explicit activation guards unnecessary in ``_emit``
+A publisher component with all four hooks overridden to separate ROS resources, runtime behavior,
+and non-ROS handles.
+
+What to look for
+~~~~~~~~~~~~~~~~
+
+- ``configure`` acquires both the ROS publisher and the simulated sensor handle.
+- One component owns the publisher, timer, and sensor handle as a single lifecycle unit.
+- ``activate`` starts sampling; ``deactivate`` pauses it without releasing the sensor handle.
+- ``cleanup`` releases the sensor handle and then lets the framework release the publisher.
 
 Composed Pipeline
 -----------------
 
-examples/composed_pipeline.py composes three sibling components inside one ``LifecycleComponentNode``:
-a ``SineSource`` publisher, a ``MovingAverageRelay``, and a ``LoggingSink`` subscriber.  All three
-transition together via the standard ROS 2 lifecycle.
+Source: `examples/composed_pipeline.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/composed_pipeline.py>`_
 
-It demonstrates what the minimal and telemetry examples cannot show individually:
+What it demonstrates
+~~~~~~~~~~~~~~~~~~~~
 
-- composition as the unit of value: no single component delivers the observable pipeline behavior;
-  the value only appears when all three activate together
-- ``MovingAverageRelay`` extends ``LifecycleComponent`` directly, owning both a raw ROS subscription
-  and a raw ROS publisher; this makes explicit what the pre-built topic components do internally and
-  shows that any pair of ROS resources belongs together in one component
-- activation gating across a multi-hop pipeline: while inactive, no data flows even though both
-  topics remain visible in ``ros2 topic list``
-- buffer reset on deactivate: the relay clears its moving-average window so that reactivation
-  always starts from a known empty state rather than from stale samples
+Three sibling components inside one ``LifecycleComponentNode``: a source, a relay, and a sink that
+transition together through the native ROS 2 lifecycle.
 
-Reactivation Cycles
--------------------
+What to look for
+~~~~~~~~~~~~~~~~
 
-The ``activate → deactivate → activate`` sequence is fully supported. No special handling is
-required in the framework — ``on_activate`` sets ``_is_active = True`` and ``on_deactivate``
-clears it on SUCCESS, so the second ``activate`` follows the same path as the first.
-
-``composed_pipeline.py`` exercises this explicitly: the pipeline's drive instructions include a
-second ``ros2 lifecycle set /pipeline_node activate`` after deactivation. The example output
-documents the ``[reactivate]`` state as:
-
-.. code-block:: text
-
-    [reactivate] [INFO] [pipeline_node] [source] sampling started
-                 data flow:  resumes from an empty window; average builds from scratch
-
-The key design responsibility during a reactivation cycle falls on the component, not the
-framework: **state accumulated during the first active period must be cleared in
-``_on_deactivate``**, or the second activation will start from stale data. The relay's
-``_on_deactivate`` clears its ``deque`` buffer for exactly this reason.
-
-Checklist for components that support reactivation:
-
-- Clear any in-memory buffers or counters in ``_on_deactivate``.
-- Do **not** destroy ROS resources in ``_on_deactivate`` — the subscription and publisher
-  must survive deactivation so they are available when ``activate`` is called again.
-- Verify that ``_release_resources`` is idempotent: it will be called at most once
-  (during cleanup or shutdown), but never between activate/deactivate cycles.
-
-Companion examples repository (planned)
----------------------------------------
-
-Applied, domain-flavored, or multi-node scenarios are intentionally kept out of the core
-repository. They will live in a separate companion repository, ``lifecore_ros2_examples``
-(*planned — not yet published*).
-
-An example belongs in the companion repository if it depends on third-party ROS packages
-beyond ``rclpy`` and ``std_msgs``, uses domain-specific message types, spans more than one
-ROS node, or teaches an applied pattern rather than a single core abstraction.
-
-Initial categories planned:
-
-- *Sensor-pipeline composition* — multi-publisher / fan-in topologies
-- *Lifecycle-aware diagnostics* — ``/diagnostics`` integration and inter-component health
-- *Multi-node orchestration patterns* — supervisor and launch-coordinated lifecycle nodes
-
-The first applied example will be a sensor-fusion pipeline. See ``ROADMAP.md`` and
-``ROADMAP_lifecore_ros2_examples.md`` in the core repository for the full plan.
-
-Observability Format
---------------------
-
-Every example module docstring contains an ``Expected output`` section (or ``Expected output per
-transition`` for multi-component examples) that follows a consistent format.  Reading it before
-running an example tells you exactly what to expect:
-
-- ``[before configure]`` — baseline state before any lifecycle transition: which topics are absent,
-  which node info is visible.
-- ``[configure]`` — log lines emitted on configure plus the resulting ``ros2 topic list`` state and
-  initial data-flow gate.
-- ``[activate]`` / ``[while active]`` — log lines on activate and the periodic output while the node
-  is running.  Silent transitions are stated explicitly as ``(no component log — by design)``.
-- ``[deactivate]`` — what stops, what is retained (topics still visible; handles kept), and whether
-  any drops are silent.
-- ``[cleanup]`` — final log lines and which topics disappear from ``ros2 topic list``.
-- ``[shutdown]`` — terminal teardown note.
-
-The ``[before configure]`` and cleanup disappearance entries answer the four ``TODO 5.4``
-sub-questions directly: what to observe in logs, what happens before activation, what happens after
-deactivation, and what disappears after cleanup.
-
-Reading Examples Safely
------------------------
-
-These examples should be read as architecture demonstrations, not as production-ready launch patterns.
-When extending them, preserve the repository lifecycle rules:
-
-- create ROS resources during configure
-- gate runtime behavior with activation state
-- release ROS resources during cleanup
+- ``configure`` creates both pipeline topics and wires all three components.
+- The node owns three sibling components; the relay shows direct ownership of both a raw subscription and a raw publisher.
+- ``activate`` enables end-to-end flow, and ``deactivate`` stops flow for the whole pipeline.
+- The relay clears its buffer on ``deactivate``; ``cleanup`` releases raw ROS resources and removes both topics.
