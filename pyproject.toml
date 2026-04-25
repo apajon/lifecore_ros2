@@ -30,8 +30,8 @@ classifiers = [
 dependencies = []
 
 [project.urls]
-Repository = "https://github.com/apajon/lifecore_ros2"
-Documentation = "https://github.com/apajon/lifecore_ros2#readme"
+Documentation = "https://apajon.github.io/lifecore_ros2/"
+Source = "https://github.com/apajon/lifecore_ros2"
 Changelog = "https://github.com/apajon/lifecore_ros2/blob/main/CHANGELOG.md"
 Issues = "https://github.com/apajon/lifecore_ros2/issues"
 

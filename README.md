@@ -138,6 +138,8 @@ This project is licensed under the Apache-2.0 License — see [LICENSE](LICENSE)
 
 ## Documentation
 
+Documentation: https://apajon.github.io/lifecore_ros2/
+
 Full documentation lives under `docs/` and is built with Sphinx:
 
 ```bash
