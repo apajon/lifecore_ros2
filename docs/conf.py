@@ -28,7 +28,13 @@ autodoc_mock_imports = ["rclpy"]
 napoleon_google_docstring = True
 napoleon_numpy_docstring = False
 
-html_theme = "alabaster"
+html_title = "lifecore_ros2"
+html_theme = "furo"
+html_theme_options = {
+    "source_repository": "https://github.com/apajon/lifecore_ros2",
+    "source_branch": "main",
+    "source_directory": "docs/",
+}
 
 # Extension points (protected hooks subclasses are meant to override) are
 # documented by default because their leading underscore reflects the
