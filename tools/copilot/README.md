@@ -1,10 +1,10 @@
 # Copilot Assets
 
-This directory contains versioned internal Copilot assets used by the engineering team.
+This directory contains versioned Copilot assets used to support repository workflows.
 
 ## Purpose
 
-These files are internal engineering assets, not runtime package code.
+These files are repository tooling assets, not runtime package code.
 They support day-to-day development workflows across:
 
 - feature delivery orchestration
@@ -19,7 +19,7 @@ They support day-to-day development workflows across:
 - `prompts/`: reusable prompt templates.
 - `skills/`: skill assets and domain playbooks.
 - `hooks/`: hook-related assets, including frontmatter validation helpers.
-- `instructions/`: additional internal instruction material when needed.
+- `instructions/`: additional instruction material when needed.
 
 ## Notes
 
