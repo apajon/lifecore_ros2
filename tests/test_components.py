@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
-from typing import Any
+from typing import Any, cast
 from unittest.mock import MagicMock, patch
 
 import pytest
+from rclpy.callback_groups import CallbackGroup
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleState
 from rclpy.qos import QoSProfile
@@ -369,3 +370,107 @@ class TestSubscriberNominalCycle:
         result = sub.on_cleanup(DUMMY_STATE)
         assert result == TransitionCallbackReturn.SUCCESS
         assert sub._subscription is None
+
+
+# ---------------------------------------------------------------------------
+# Helpers for callback_group tests
+# ---------------------------------------------------------------------------
+
+
+class _CbPublisher(LifecyclePublisherComponent[Any]):
+    """Publisher stub that accepts a custom callback_group."""
+
+    def __init__(self, callback_group: CallbackGroup | None = None) -> None:
+        super().__init__(
+            name="cb_pub",
+            topic_name="/cb_test",
+            msg_type=MagicMock,
+            qos_profile=10,
+            callback_group=callback_group,
+        )
+
+
+class _CbSubscriber(LifecycleSubscriberComponent[Any]):
+    """Subscriber stub that accepts a custom callback_group."""
+
+    def __init__(self, callback_group: CallbackGroup | None = None) -> None:
+        super().__init__(
+            name="cb_sub",
+            topic_name="/cb_test",
+            msg_type=MagicMock,
+            qos_profile=10,
+            callback_group=callback_group,
+        )
+
+    def on_message(self, msg: Any) -> None:
+        pass
+
+
+# ---------------------------------------------------------------------------
+# callback_group propagation
+# ---------------------------------------------------------------------------
+
+
+class TestCallbackGroupPropagation:
+    def test_publisher_default_callback_group_is_none(self, node: LifecycleComponentNode) -> None:
+        pub = _CbPublisher()
+        node.add_component(pub)
+
+        assert pub.callback_group is None
+
+        pub.on_configure(DUMMY_STATE)
+
+        assert cast(MagicMock, node.create_publisher).call_args.kwargs["callback_group"] is None
+
+    def test_publisher_callback_group_propagated_to_create_publisher(self, node: LifecycleComponentNode) -> None:
+        cg = MagicMock(spec=CallbackGroup)
+        pub = _CbPublisher(callback_group=cg)
+        node.add_component(pub)
+
+        assert pub.callback_group is cg
+
+        pub.on_configure(DUMMY_STATE)
+
+        assert cast(MagicMock, node.create_publisher).call_args.kwargs["callback_group"] is cg
+
+    def test_subscriber_default_callback_group_is_none(self, node: LifecycleComponentNode) -> None:
+        sub = _CbSubscriber()
+        node.add_component(sub)
+
+        assert sub.callback_group is None
+
+        sub.on_configure(DUMMY_STATE)
+
+        assert cast(MagicMock, node.create_subscription).call_args.kwargs["callback_group"] is None
+
+    def test_subscriber_callback_group_propagated_to_create_subscription(self, node: LifecycleComponentNode) -> None:
+        cg = MagicMock(spec=CallbackGroup)
+        sub = _CbSubscriber(callback_group=cg)
+        node.add_component(sub)
+
+        assert sub.callback_group is cg
+
+        sub.on_configure(DUMMY_STATE)
+
+        assert cast(MagicMock, node.create_subscription).call_args.kwargs["callback_group"] is cg
+
+    def test_callback_group_persists_across_cleanup(self, node: LifecycleComponentNode) -> None:
+        cg = MagicMock(spec=CallbackGroup)
+        pub = _CbPublisher(callback_group=cg)
+        node.add_component(pub)
+
+        pub.on_configure(DUMMY_STATE)
+        pub.on_activate(DUMMY_STATE)
+        pub.on_deactivate(DUMMY_STATE)
+        pub.on_cleanup(DUMMY_STATE)
+
+        # Option B: _callback_group is borrowed and never cleared; it must survive cleanup.
+        assert pub.callback_group is cg
+        assert pub._callback_group is cg
+
+    def test_callback_group_keyword_only(self) -> None:
+        cg = MagicMock(spec=CallbackGroup)
+        # callback_group is keyword-only; passing it positionally must raise TypeError.
+        positional_args: tuple[Any, ...] = ("kw_pub", "/cb_test", MagicMock, 10, cg)
+        with pytest.raises(TypeError):
+            LifecyclePublisherComponent(*positional_args)
