@@ -59,6 +59,14 @@ Deliberately deferred. Do not implement until there is a concrete user need.
 * [ ] `ComponentFactory`
 * [ ] `SpecLoader`
 
+### Callback group management
+
+* [ ] Helper for `LifecycleComponentNode` to create and track `CallbackGroup` instances
+      per component (tracking via a registry keyed by component name or ID; currently
+      applications create callback groups manually via `node.create_callback_group(...)`)
+* [ ] Optional: provide convenience constructors for common patterns
+      (e.g., `create_exclusive_group_for_component(name)`)
+
 ### Additional components
 
 * [ ] `TimerComponent`
