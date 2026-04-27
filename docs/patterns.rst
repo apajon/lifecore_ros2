@@ -62,6 +62,48 @@ Recommended Patterns
   Invariant upheld: **activate**, **deactivate** — hooks are called synchronously inside
   the rclpy executor spin loop.
 
+.. _patterns:borrow-only-contract:
+
+**Treat ``callback_group`` (and other injected handles) as borrow-only**
+
+  The optional ``callback_group`` accepted by ``LifecycleComponent`` and the topic
+  components is **borrowed** from the application. The component stores a reference and
+  forwards it to ``create_publisher`` / ``create_subscription``, but it never creates,
+  reassigns, or destroys it. Lifetime belongs to the caller (typically the node or the
+  application that built the component).
+
+  Practical consequences:
+
+  - The same callback group instance can be shared across multiple components to
+    coordinate their executor scheduling (e.g. a single
+    ``MutuallyExclusiveCallbackGroup`` shared between a subscriber and a timer).
+  - Passing ``None`` selects the node's default group; this is the recommended choice
+    when no specific concurrency policy is required.
+  - The borrow contract holds across the whole lifecycle: configure / activate /
+    deactivate / cleanup all see the same reference. ``cleanup`` releases the ROS
+    publisher or subscription that referenced the group; it never touches the group
+    itself.
+
+  .. code-block:: python
+
+      # Application owns the callback group; components borrow it.
+      cb_group = MutuallyExclusiveCallbackGroup()
+      sensor_sub = LifecycleSubscriberComponent(
+          name="sensor",
+          topic_name="/sensor",
+          msg_type=Float64,
+          callback_group=cb_group,
+      )
+      command_pub = LifecyclePublisherComponent(
+          name="command",
+          topic_name="/command",
+          msg_type=Float64,
+          callback_group=cb_group,
+      )
+
+  Invariant upheld: **cleanup** — components release only what they allocated; borrowed
+  handles outlive the component instance.
+
 Anti-Patterns
 -------------
 
@@ -177,3 +219,21 @@ Anti-Patterns
 
   Rule reference: **Rule C** in :doc:`architecture` (inbound exceptions are logged and
   dropped; they never propagate to the executor).
+
+**Destroying a borrowed ``callback_group`` from inside a component**
+
+  The ``callback_group`` passed to a component is borrowed (see
+  :ref:`patterns:borrow-only-contract`). Destroying it, reassigning it, or treating it as
+  component-owned state breaks the contract: other components or node-level callbacks may
+  still hold the same reference, and the application has no way to know the group has
+  been invalidated.
+
+  .. code-block:: python
+
+      # WRONG: a component must not invalidate a borrowed handle
+      def _release_resources(self) -> None:
+          self._callback_group = None  # the application still owns this reference
+          super()._release_resources()
+
+  Invariant violated: **borrow-only contract** — the component never owns the lifetime of
+  injected handles.
