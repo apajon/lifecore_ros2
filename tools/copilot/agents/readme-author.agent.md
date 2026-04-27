@@ -1,5 +1,6 @@
 ---
 name: "README Author"
+model: "GPT-5.4 (copilot)"
 description: "Use when creating or updating the README for this repository, especially project overview, installation, uv commands, ROS 2 Jazzy setup notes, examples, and contributor-facing quickstart guidance."
 tools: [read, search, edit, execute, todo, mempalace/*]
 user-invocable: true

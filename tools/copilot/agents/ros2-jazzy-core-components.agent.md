@@ -1,5 +1,6 @@
 ---
 name: "ROS 2 Jazzy Core Components"
+model: "Claude Sonnet 4.6 (copilot)"
 description: "Use when working on ROS 2 Jazzy, rclpy lifecycle nodes, LifecycleComponentNode, LifecycleComponent, publisher/subscriber/topic components, lifecycle transitions, managed entities, or component-based ROS 2 architecture in this repository."
 tools: [read, search, edit, execute, todo, mempalace/*]
 user-invocable: true

@@ -1,5 +1,6 @@
 ---
 name: "Lifecycle Test Designer"
+model: "Claude Sonnet 4.6 (copilot)"
 description: "Use when designing focused pytest coverage for ROS 2 lifecycle transitions, managed entities, and activation gating."
 tools: [read, search, edit, execute, todo, mempalace/*]
 user-invocable: false

@@ -1,5 +1,6 @@
 ---
 name: "README Review"
+model: "Claude Opus 4.7 (copilot)"
 description: "Use when reviewing the README for accuracy, onboarding quality, uv commands, ROS 2 Jazzy assumptions, missing prerequisites, misleading examples, or documentation gaps without editing files."
 tools: [read, search, execute, todo, mempalace/*]
 user-invocable: true

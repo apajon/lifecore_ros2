@@ -1,5 +1,6 @@
 ---
 name: "ROS 2 Architecture Guard"
+model: "Claude Sonnet 4.6 (copilot)"
 description: "Use when implementing changes that touch src/lifecore_ros2/core/, src/lifecore_ros2/components/, lifecycle transitions, inter-component contracts, symbol renames with architecture impact, or any architecture-sensitive code in this ROS 2 Python framework. Not for autonomous refactors — for disciplined, human-controlled implementation."
 tools: [read, search, edit, execute, todo, mempalace/*]
 user-invocable: true

@@ -1,5 +1,6 @@
 ---
 name: "MemPalace Auditor"
+model: "Claude Opus 4.7 (copilot)"
 description: "Use when auditing MemPalace for duplicate, stale, misclassified, or low-quality entries in the lifecore_ros2 or ros2 wings. Produces a structured audit report with actionable recommendations. Never writes automatically — proposes changes and waits for human validation."
 tools: [read,search,mempalace/*]
 user-invocable: true

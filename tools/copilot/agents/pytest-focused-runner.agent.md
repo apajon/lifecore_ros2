@@ -1,5 +1,6 @@
 ---
 name: "Pytest Focused Runner"
+model: "Claude Sonnet 4.6 (copilot)"
 description: "Use when running focused pytest commands for touched ROS 2 Python code and summarizing behavior-level failures. Use for targeted test execution by package, file, symbol, or lifecycle behavior — not for designing new tests."
 tools: [read, search, execute, todo, mempalace/*]
 user-invocable: false

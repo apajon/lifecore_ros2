@@ -1,5 +1,6 @@
 ---
 name: "MemPalace Reader"
+model: "Claude Opus 4.7 (copilot)"
 description: "Use when querying MemPalace for architecture rules, component contracts, anti-patterns, conventions, or ROS 2 knowledge stored in the lifecore_ros2 or ros2 wings. Read-only — never writes, never modifies entries."
 tools: [read, mempalace/*]
 user-invocable: true

@@ -1,7 +1,8 @@
 ---
 name: "Packaging and Build Check"
+model: "Claude Opus 4.7 (copilot)"
 description: "Use when validating pyproject metadata, setuptools-scm version generation, wheel/sdist buildability, packaging regressions, or semantic-release auto-versioning flow for this Python ROS 2 package."
-tools: [read, search, execute, todo, gitkraken/*, mempalace/*]
+tools: [read, search, execute, todo, github/*, mempalace/*]
 user-invocable: true
 agents: []
 argument-hint: "Describe the packaging or build concern to validate."
