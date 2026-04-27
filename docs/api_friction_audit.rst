@@ -94,11 +94,110 @@ parameters are not available via ``type(self)`` at ``__init__`` time, so
 ``msg_type`` must be supplied explicitly for ``rclpy`` to create the
 publisher or subscription.
 
-**Decision recorded here:** the current duplication is a Python limitation,
-not a framework design choice.  Making ``msg_type`` optional (via
-``__orig_bases__`` introspection) is feasible but fragile and out of scope
-for the ``0.x`` series.  A GitHub issue has been opened to track the
-investigation (see ``TODO_adoption_hardening.md``).
+**Initial decision (2026-04-24):** the current duplication is a Python
+limitation, not a framework design choice.  Making ``msg_type`` optional
+(via ``__orig_bases__`` introspection) is feasible but was deferred to a
+dedicated investigation.  See issue
+`#1 <https://github.com/apajon/lifecore_ros2/issues/1>`_.
+
+Investigation outcome (2026-04-27)
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+**Verdict: IMPLEMENT** as a transverse utility usable by future
+``ServiceComponent`` / ``ActionComponent`` as well as today's topic
+components.
+
+Evidence: the POC ``scripts/investigate_iface_type_inference.py`` exercised
+nine scenarios on CPython 3.12 against the exact PEP 695 generic shape used
+by ``TopicComponent[MsgT]``.  All nine matched the oracle:
+
+.. list-table::
+   :header-rows: 1
+   :widths: 6 60 34
+
+   * - #
+     - Scenario
+     - Oracle
+   * - 1
+     - Direct subclass parameterized as ``Sub(Base[MsgT])``
+     - infer ``MsgT``
+   * - 2
+     - Indirect subclass without re-parameterization (resolution via MRO)
+     - infer ``MsgT``
+   * - 3
+     - Multi-level concrete chain ``Leaf < Mid < Base[MsgT]``
+     - infer ``MsgT``
+   * - 4
+     - Unparameterized subclass and no explicit argument
+     - ``TypeError`` at ``__init__``
+   * - 5
+     - Ancestor forwards an unresolved ``TypeVar``
+     - ``TypeError`` at ``__init__`` (no false positive)
+   * - 6
+     - Generic and explicit argument disagree
+     - ``TypeError`` at ``__init__`` (no silent surprise)
+   * - 7
+     - Generic and explicit argument agree
+     - resolved to that type
+   * - 8
+     - Explicit only, generic unparameterized (fallback)
+     - resolved to the explicit type
+   * - 9
+     - ``__orig_bases__`` under ``from __future__ import annotations``
+     - contains real type objects, not strings
+
+Result on Python 3.12.3: ``failures: 0/9``.
+
+Decisions locked
+~~~~~~~~~~~~~~~~
+
+These apply uniformly to ``msg_type``, ``srv_type``, and ``action_type``
+across current and future components.
+
+.. rubric:: ADR — R-IfaceTypeInference
+
+**Decision.** Any component parameterized over a ROS interface type accepts
+that type either via the generic parameter of the class
+(``Component[InterfaceT]``) or via an explicit constructor argument.  The
+two sources are reconciled by a single transverse utility.  When neither is
+available, or when both are available and disagree, the framework raises a
+typed boundary exception at ``__init__`` time.
+
+**Rationale.** Avoids the "stated twice" friction documented above without
+adding magic: explicit argument remains supported, generic parameterization
+becomes sufficient, and divergence is surfaced loudly instead of silently.
+
+**Consequences.**
+
+- A single resolver lives at ``src/lifecore_ros2/core/_iface_type.py`` —
+  transverse, reusable by ``ServiceComponent`` and ``ActionComponent`` when
+  they are introduced (see ``TODO.md §2``).  Placing it in ``core/`` rather
+  than ``components/`` is deliberate: the rule is not topic-specific.
+- Boundary failure is a typed exception
+  ``_InterfaceTypeNotResolvedError(LifecoreError, TypeError)`` — internal
+  (Rule A: typed boundary errors), prefixed with ``_``, and **not**
+  re-exported from ``lifecore_ros2``.  Subclassing ``TypeError`` keeps
+  user-facing tracebacks idiomatic.
+- Conflict policy is **error**, never "explicit wins".  Silent disagreement
+  is forbidden.
+- Failure happens **at** ``__init__``.  No component can ever reach
+  ``_on_configure`` with an unresolved interface type, which keeps the
+  Rule A / Rule B split intact (boundary errors stay outside lifecycle
+  hooks).
+- Pedagogical examples under ``examples/`` keep ``msg_type=…`` explicit;
+  the generic-only short form is documented in ``docs/patterns.rst`` only.
+
+**Open implementation question.** Whether the rule is enforced inside
+``TopicComponent.__init__`` directly or through a small mixin used by every
+interface-typed component.  To be settled at implementation time with the
+``ROS 2 Architecture Guard``.
+
+Status
+~~~~~~
+
+- Investigation: closed.
+- Implementation: tracked separately; not yet scheduled.
+- Tracker: ``TODO_adoption_hardening.md §2`` is updated with this verdict.
 
 No other framework-bookkeeping-only steps were found.  All remaining steps
 either carry clear functional justification or belong to application logic
