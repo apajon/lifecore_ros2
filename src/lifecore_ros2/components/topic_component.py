@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from abc import ABC
 
+from rclpy.callback_groups import CallbackGroup
 from rclpy.qos import QoSProfile
 
 from lifecore_ros2.core.lifecycle_component import LifecycleComponent
@@ -17,6 +18,7 @@ class TopicComponent[MsgT](LifecycleComponent, ABC):
         - The ROS publisher or subscription objects — those belong to concrete subclasses.
         - Any lifecycle hook logic — concrete subclasses provide ``_on_configure``,
           ``_on_cleanup``, and ``_release_resources`` implementations.
+        - The callback group — it is borrowed from the application and forwarded to the core.
 
     Override points:
         - Not intended to be subclassed directly outside the framework.
@@ -29,8 +31,10 @@ class TopicComponent[MsgT](LifecycleComponent, ABC):
         topic_name: str,
         msg_type: type[MsgT],
         qos_profile: QoSProfile | int = 10,
+        *,
+        callback_group: CallbackGroup | None = None,
     ) -> None:
-        super().__init__(name=name)
+        super().__init__(name=name, callback_group=callback_group)
         self._topic_name = topic_name
         self._msg_type = msg_type
         self._qos_profile = qos_profile

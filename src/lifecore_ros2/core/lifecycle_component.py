@@ -7,6 +7,7 @@ from functools import wraps
 from logging import getLogger
 from typing import TYPE_CHECKING, Any, Protocol, cast, final, overload
 
+from rclpy.callback_groups import CallbackGroup
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.managed_entity import ManagedEntity
 from rclpy.lifecycle.node import LifecycleState
@@ -156,9 +157,17 @@ class LifecycleComponent(ManagedEntity, ABC):
           manage lifecycle invariants and delegate to the ``_on_*`` hooks.
     """
 
-    def __init__(self, name: str) -> None:
+    def __init__(self, name: str, *, callback_group: CallbackGroup | None = None) -> None:
+        """Initialize the lifecycle component.
+
+        Args:
+            name: Unique name for this component within the node.
+            callback_group: Optional CallbackGroup borrowed from the application; lifetime owned
+                by the caller. None selects the node default group.
+        """
         super().__init__()
         self._name: str = name
+        self._callback_group: CallbackGroup | None = callback_group
         self._node: LifecycleComponentNode | None = None
         self._is_configured: bool = False
         self._needs_cleanup: bool = False
@@ -173,6 +182,11 @@ class LifecycleComponent(ManagedEntity, ABC):
     def is_active(self) -> bool:
         """Whether the component is in the active state."""
         return self._is_active
+
+    @property
+    def callback_group(self) -> CallbackGroup | None:
+        """The callback group borrowed from the application, or None for the node default."""
+        return self._callback_group
 
     @property
     def node(self) -> LifecycleComponentNode:

@@ -3,6 +3,7 @@ from __future__ import annotations
 from abc import abstractmethod
 from typing import final
 
+from rclpy.callback_groups import CallbackGroup
 from rclpy.lifecycle.node import LifecycleState, TransitionCallbackReturn
 from rclpy.qos import QoSProfile
 from rclpy.subscription import Subscription
@@ -25,6 +26,7 @@ class LifecycleSubscriberComponent[MsgT](TopicComponent[MsgT]):
 
     Does not own:
         - The topic name, message type, or QoS profile (inherited from ``TopicComponent``).
+        - The callback group — it is borrowed from the application; lifetime is owned by the caller.
         - The node or lifecycle state transitions.
         - Activation state management (handled by the framework).
 
@@ -40,12 +42,15 @@ class LifecycleSubscriberComponent[MsgT](TopicComponent[MsgT]):
         topic_name: str,
         msg_type: type[MsgT],
         qos_profile: QoSProfile | int = 10,
+        *,
+        callback_group: CallbackGroup | None = None,
     ) -> None:
         super().__init__(
             name=name,
             topic_name=topic_name,
             msg_type=msg_type,
             qos_profile=qos_profile,
+            callback_group=callback_group,
         )
         self._subscription: Subscription | None = None  # type: ignore[type-arg]  # rclpy Subscription is not generic
 
@@ -59,6 +64,7 @@ class LifecycleSubscriberComponent[MsgT](TopicComponent[MsgT]):
             self.topic_name,
             self._on_message_wrapper,
             self.qos_profile,
+            callback_group=self._callback_group,
         )
         self.node.get_logger().info(f"[{self.name}] subscription created on '{self.topic_name}'")
         return TransitionCallbackReturn.SUCCESS
