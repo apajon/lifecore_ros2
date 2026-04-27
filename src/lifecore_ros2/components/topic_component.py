@@ -34,6 +34,18 @@ class TopicComponent[MsgT](LifecycleComponent, ABC):
         *,
         callback_group: CallbackGroup | None = None,
     ) -> None:
+        """Initialize the topic component.
+
+        Args:
+            name: Unique name for this component within the node.
+            topic_name: ROS topic name used by the publisher or subscriber subclass.
+            msg_type: ROS message type for the topic.
+            qos_profile: QoS profile or depth (default 10).
+            callback_group: Optional CallbackGroup borrowed from the application and
+                forwarded to the underlying publisher or subscription. Lifetime is owned
+                by the caller; the component never destroys it. ``None`` selects the
+                node default group.
+        """
         super().__init__(name=name, callback_group=callback_group)
         self._topic_name = topic_name
         self._msg_type = msg_type

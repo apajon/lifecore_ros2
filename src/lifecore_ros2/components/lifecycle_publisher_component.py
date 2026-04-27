@@ -39,6 +39,18 @@ class LifecyclePublisherComponent[MsgT](TopicComponent[MsgT]):
         *,
         callback_group: CallbackGroup | None = None,
     ) -> None:
+        """Initialize the lifecycle publisher component.
+
+        Args:
+            name: Unique name for this component within the node.
+            topic_name: ROS topic name to publish on.
+            msg_type: ROS message type for the topic.
+            qos_profile: QoS profile or depth (default 10).
+            callback_group: Optional CallbackGroup borrowed from the application and
+                forwarded to ``create_publisher`` on configure. Lifetime is owned by the
+                caller; the component never destroys it. ``None`` selects the node
+                default group.
+        """
         super().__init__(
             name=name,
             topic_name=topic_name,
