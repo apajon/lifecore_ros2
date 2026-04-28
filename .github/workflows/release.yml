@@ -46,20 +46,23 @@ jobs:
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
+                  # --print exits after printing; no commit/tag/push/GH outputs are set.
                   NEXT=$(uv run semantic-release version --print 2>/dev/null || true)
-                  echo "version=${NEXT}" >> "$GITHUB_OUTPUT"
+                  if [[ -z "${NEXT}" ]]; then
+                    echo "No releasable commits since last release — aborting."
+                    echo "version=" >> "$GITHUB_OUTPUT"
+                  else
+                    echo "version=${NEXT}" >> "$GITHUB_OUTPUT"
+                  fi
 
-            - name: No release needed
-              if: steps.next_version.outputs.version == ''
-              run: |
-                  echo "No releasable commits since last release — aborting."
-                  exit 0
-
-            - name: Bump version locally (no push, no tag)
+            - name: Update CHANGELOG for next release
               if: steps.next_version.outputs.version != ''
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: uv run semantic-release version --no-push --no-tag
+              run: |
+                  # Writes the unreleased changelog section into CHANGELOG.md locally;
+                  # does not commit, tag, push, or call the GitHub releases API.
+                  uv run semantic-release changelog
 
             - name: Create release branch and open PR
               if: steps.next_version.outputs.version != ''
@@ -68,10 +71,14 @@ jobs:
               run: |
                   VERSION="${{ steps.next_version.outputs.version }}"
                   BRANCH="release/bump-v${VERSION}"
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
                   git checkout -b "${BRANCH}"
+                  git add CHANGELOG.md
+                  git commit -m "chore(release): update changelog for v${VERSION}"
                   git push origin "${BRANCH}"
                   gh pr create \
                     --title "chore(release): bump to v${VERSION}" \
-                    --body "Automated version bump to \`v${VERSION}\`.\n\nAfter merging, push the tag to trigger the publish workflow:\n\`\`\`bash\ngit pull && git tag v${VERSION} && git push origin v${VERSION}\n\`\`\`" \
+                    --body "Automated changelog update for \`v${VERSION}\`.\n\nAfter merging, push the tag to trigger the publish workflow:\n\`\`\`bash\ngit pull && git tag v${VERSION} && git push origin v${VERSION}\n\`\`\`" \
                     --base main \
                     --head "${BRANCH}"
