@@ -66,7 +66,7 @@ gating, failure propagation, and resource handling.
 
 <!-- version list -->
 
-## Unreleased
+## v0.5.0 (2026-04-28)
 
 ### Bug Fixes
 
