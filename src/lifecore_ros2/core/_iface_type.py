@@ -84,8 +84,7 @@ def _resolve_iface_type(
 
     if explicit is not None and inferred is not None and explicit is not inferred:
         raise _InterfaceTypeNotResolvedError(
-            f"{cls.__name__}: explicit {interface_kind} {explicit!r} conflicts "
-            f"with generic parameter {inferred!r}."
+            f"{cls.__name__}: explicit {interface_kind} {explicit!r} conflicts with generic parameter {inferred!r}."
         )
 
     return explicit if explicit is not None else inferred  # type: ignore[return-value]
