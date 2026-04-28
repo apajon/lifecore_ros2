@@ -69,7 +69,8 @@ Deliberately deferred. Do not implement until there is a concrete user need.
 
 ### Additional components
 
-* [ ] `TimerComponent`
+* [x] `LifecycleTimerComponent` — shipped; activation-gated `on_tick`, ROS timer created
+      on configure and released on cleanup; example in `examples/minimal_timer.py`
 * [ ] `ServiceComponent`
 * [ ] `ActionComponent`
 * [ ] `ParameterComponent`
