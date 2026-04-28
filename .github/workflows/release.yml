@@ -59,11 +59,13 @@ jobs:
               if: steps.next_version.outputs.version != ''
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+                  # Disable PSR's GHA integration: when GITHUB_ACTIONS is set, PSR v10
+                  # tries to write required step outputs (commit_sha, etc.) which fails
+                  # when invoked as a plain `run` step instead of the Docker action.
+                  GITHUB_ACTIONS: ""
               run: |
                   git config user.name "github-actions[bot]"
                   git config user.email "github-actions[bot]@users.noreply.github.com"
-                  # Commits version bump + versioned CHANGELOG header locally.
-                  # --no-push --no-tag: no push to main, no tag created.
                   uv run semantic-release version --no-push --no-tag
 
             - name: Create release branch and open PR
