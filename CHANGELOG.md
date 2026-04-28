@@ -2,6 +2,15 @@
 
 <!-- version list -->
 
+## v0.5.2 (2026-04-28)
+
+### Bug Fixes
+
+- **ci**: Merge tag-release and publish into single workflow to bypass GITHUB_TOKEN trigger
+  restriction
+  ([`d3aa25e`](https://github.com/apajon/lifecore_ros2/commit/d3aa25e59d88ed96836b889128ff3d37a041a6c0))
+
+
 ## v0.5.1 (2026-04-28)
 
 ### Bug Fixes
