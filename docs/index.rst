@@ -96,6 +96,15 @@ Use the API reference afterward as a lookup surface for classes, methods, and mo
 
 .. toctree::
    :maxdepth: 1
+   :caption: Planning
+
+   planning/README
+   planning/backlog
+   planning/adoption_hardening
+   planning/examples_repo
+
+.. toctree::
+   :maxdepth: 1
    :caption: Project
 
    changelog
@@ -103,9 +112,12 @@ Use the API reference afterward as a lookup surface for classes, methods, and mo
    mempalace_strategy
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: Design notes
 
    design_notes/runtime_introspection
    design_notes/observability
    design_notes/dynamic_components
+   design_notes/error_handling_contract
+   design_notes/lifecycle_policies
+   design_notes/callback_groups
