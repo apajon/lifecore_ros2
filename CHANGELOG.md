@@ -2,6 +2,34 @@
 
 <!-- version list -->
 
+## v0.5.1 (2026-04-28)
+
+### Bug Fixes
+
+- **ci**: Disable PSR GHA integration to fix commit_sha output error
+  ([`c1dbddc`](https://github.com/apajon/lifecore_ros2/commit/c1dbddc5d2e20e22c32cad99fa9c6c67772deaea))
+
+- **ci**: Unset GITHUB_ACTIONS before PSR to prevent commit_sha output error
+  ([`4e13270`](https://github.com/apajon/lifecore_ros2/commit/4e1327094ba50c3d3771bb4ef10f98ce51cbe41c))
+
+- **ci**: Use env -u GITHUB_ACTIONS to scope PSR GHA isolation to subprocess
+  ([`f042686`](https://github.com/apajon/lifecore_ros2/commit/f042686e702737bef072660bfbf8e0fce123be0c))
+
+- **ci**: Use heredoc for PR body and force-with-lease for branch push
+  ([`be1600f`](https://github.com/apajon/lifecore_ros2/commit/be1600f7cf811050de6e6d5fbb66ff5dd9d0e52f))
+
+- **ci**: Use semantic-release version --no-push --no-tag for proper versioned changelog header
+  ([`2732e14`](https://github.com/apajon/lifecore_ros2/commit/2732e14dcb210d3a66df1d536a0333f2cf182f4b))
+
+- **deps**: Pin python-semantic-release <10.3.0 to avoid commit_sha output bug
+  ([`bd3118a`](https://github.com/apajon/lifecore_ros2/commit/bd3118acb1cf8c7a61a8dfbb7b5cab3236467211))
+
+### Documentation
+
+- **changelog**: Clean up permanent v0.4.0 header and orphan Unreleased section
+  ([`76ba234`](https://github.com/apajon/lifecore_ros2/commit/76ba234933a39ef81593b14e603694891544f8f3))
+
+
 ## v0.5.0 (2026-04-28)
 
 ### Bug Fixes
