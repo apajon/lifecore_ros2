@@ -77,9 +77,11 @@ jobs:
                   VERSION="${{ steps.next_version.outputs.version }}"
                   BRANCH="release/bump-v${VERSION}"
                   git checkout -b "${BRANCH}"
-                  git push --force origin "${BRANCH}"
+                  git push --force-with-lease origin "${BRANCH}"
+                  printf 'Automated changelog update for `v%s`.\n\nAfter merging, push the tag to trigger the publish workflow:\n\n```bash\ngit pull && git tag v%s && git push origin v%s\n```\n' \
+                    "${VERSION}" "${VERSION}" "${VERSION}" > /tmp/pr_body.md
                   gh pr create \
                     --title "chore(release): bump to v${VERSION}" \
-                    --body "Automated changelog update for \`v${VERSION}\`.\n\nAfter merging, push the tag to trigger the publish workflow:\n\`\`\`bash\ngit pull && git tag v${VERSION} && git push origin v${VERSION}\n\`\`\`" \
+                    --body-file /tmp/pr_body.md \
                     --base main \
                     --head "${BRANCH}"
