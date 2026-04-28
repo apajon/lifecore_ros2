@@ -3,162 +3,86 @@
 <!-- Canonical positioning sentence — keep in sync with pyproject.toml project.description. -->
 lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.
 
-## First public release — 0.x series
+---
 
-### Included
+## Current status — 0.4.0
 
-**Core API**
-- `LifecycleComponentNode` — lifecycle node that owns and drives registered `LifecycleComponent` instances as native ROS 2 managed entities
-- `LifecycleComponent` — base class for lifecycle-aware components (abstract by convention); propagates transitions through `_on_configure`, `_on_activate`, `_on_deactivate`, `_on_cleanup`, `_on_shutdown`
-- `TopicComponent` — base class for topic-oriented components; allocates ROS pub/sub during configure, releases during cleanup
-- `LifecyclePublisherComponent` — publishes messages gated by activation state
-- `LifecycleSubscriberComponent` — processes incoming messages gated by activation state
-- `when_active` — decorator that guards component methods to the active state
+The first public release is shipped. The core library provides:
 
-**Examples**
-- `examples/minimal_node.py` — minimal composed lifecycle node
-- `examples/minimal_publisher.py` — lifecycle-gated publisher
-- `examples/minimal_subscriber.py` — lifecycle-gated subscriber
-- `examples/telemetry_publisher.py` — lifecycle-gated publisher with timer split across configure/activate
-- `examples/composed_pipeline.py` — three sibling components (source, relay, sink) transitioning together
+- `LifecycleComponentNode` and `LifecycleComponent` base classes
+- `TopicComponent`, `LifecyclePublisherComponent`, `LifecycleSubscriberComponent` implementations
+- `when_active` decorator for activation gating
+- Concurrency safety via RLock and reentrant-call detection
+- Strict lifecycle contract with error handling and rollback
+- Comprehensive test coverage (unit, concurrency, integration)
+- Complete documentation and examples
 
-**Documentation**
-- Getting started guide, architecture overview, API reference, examples walkthrough
-- Sphinx-buildable docs under `docs/`
-
-**Quality baseline**
-- Ruff formatting and linting, Pyright static checks, pytest suite covering nominal transitions, activation gating, and resource handling
+See [API Reference](docs/api.rst) and [Getting Started](docs/getting_started.rst) to begin.
 
 ---
 
-### Intentionally deferred
+## Adoption and hardening
 
-- Companion examples repository (`lifecore_ros2_examples`)
-- Visual demo assets (terminal recording or GIF)
-- `CONTRIBUTING.md` and GitHub issue templates
-- Advanced patterns, anti-patterns, and migration docs
-- FAQ section
+Before pursuing new features, the project is focused on making the library adoptable at scale:
 
----
+- Clear positioning and ergonomic APIs
+- Bulletproof concurrency model
+- Strict lifecycle semantics with actionable diagnostics
+- Rich test coverage for confidence
+- Strategic design notes for future extensions
 
-### Out of scope for the core library
+**See [Adoption & Hardening Roadmap](docs/planning/adoption_hardening.rst)** for the nine-concern framework.
 
-- Full application framework with service orchestration or task scheduling
-- Hidden parallel state machine layered on top of ROS 2 lifecycle
-- Domain-specific components (sensors, actuators, controllers)
-- Plugin or dynamic component loading system
-- Replacement of native ROS 2 lifecycle semantics
+Current status: ✓ all adoption items complete (v0.4.0). The core library is ready for professional use.
 
 ---
 
-## After first public release
+## Post-1.0 backlog
 
-- Multi-component and concrete real-world examples
-- Companion examples repository
-- Richer architecture diagrams and migration guide
-- Extended edge-case test coverage
+Deliberately deferred. Do not implement until there is a concrete user need.
+
+**See [Post-1.0 Backlog](docs/planning/backlog.rst)** for:
+
+- Lifecycle policies (ordering, full-activation semantics)
+- Component dependencies (before/after constraints)
+- Error handling contract (propagation rules, rollback policy)
+- Component state and health (introspection, diagnostics)
+- Execution and timing (callback gating, duration tracking)
+- Testing utilities (fixtures, fake components)
+- Observability (structured logging, tracing)
+- Parameters and runtime configuration
+- Config and specs (application-level configuration)
+- Factory and registry (dynamic component loading)
+- Callback group management (per-component groups, concurrency utilities)
+- Additional components (`ServiceComponent`, `ActionComponent`)
+- Binding layer (if component hierarchy becomes overloaded)
+- README badges (once on PyPI)
+
+Each item includes a rationale for deferral and placement notes for future implementation.
 
 ---
 
 ## Companion examples repository
 
-**Name**: `lifecore_ros2_examples` — owner `apajon`, Apache-2.0, tracks Python 3.12+ /
-ROS 2 Jazzy, follows core release cadence without coupling its version number.
+**See [Examples Repository Plan](docs/planning/examples_repo.rst)** for the full planning.
 
-**Why a separate repo**: keeps the core library abstract and dependency-light. Applied,
-domain-flavored, or multi-node examples have a clearly-signposted home that does not
-dilute the core API surface.
-
-**Scope boundary** (contributor exclusion test): an example belongs in the companion
-repo if it depends on third-party ROS packages beyond `rclpy` and `std_msgs`, uses
-domain-specific message types, spans more than one ROS node, or teaches an applied
-pattern rather than a single core abstraction. Otherwise it belongs in `examples/`
-in this repo.
-
-**Initial categories**:
-- *Sensor-pipeline composition* — multi-publisher / fan-in topologies
-- *Lifecycle-aware diagnostics* — `/diagnostics` integration and inter-component health
-- *Multi-node orchestration patterns* — supervisor and launch-coordinated lifecycle nodes
-
-**First concrete example**: a sensor-fusion pipeline (two heterogeneous simulated sensors,
-one fusion component owning two subscriptions and one publisher, one logging subscriber).
-Teaches activation gating across a fan-in topology, configure-time sensor-handle
-acquisition, the warm-up window with inbound-drop semantics, and state reset on
-deactivate.
-
-**Rejected name alternatives**: `lifecore_ros2_demos` (reads as throwaway),
-`lifecore_examples` (drops the ROS qualifier), `lifecore_ros2_recipes` (constrains
-structure prematurely).
-
-Full plan: see `ROADMAP_lifecore_ros2_examples.md` and
-`TODO_lifecore_ros2_examples.md` (planning artifacts in this repo until the companion
-repository is created, then moved into it).
+**Status**: ⏳ Not yet created. Will host applied, domain-flavored, or multi-node examples that fall outside the core library's scope.
 
 ---
 
-## Public API and extension model
+## Design decisions and architecture
 
-### Public API — exported symbols
+See [Architecture](docs/architecture.rst) for the lifecycle model, component contracts, concurrency guarantees, and strict transition rules.
 
-The following symbols are exported from `lifecore_ros2` and form the public API:
+See [Naming Conventions](.github/instructions/naming-conventions.instructions.md) for stable naming rules.
 
-| Symbol | Kind | Role |
-|---|---|---|
-| `LifecycleComponentNode` | class | Owns and drives registered LifecycleComponent instances |
-| `LifecycleComponent` | abstract class | Base for all lifecycle-aware components |
-| `TopicComponent` | abstract class | Base for topic-oriented components |
-| `LifecyclePublisherComponent` | concrete class | Lifecycle-gated ROS publisher |
-| `LifecycleSubscriberComponent` | abstract class | Lifecycle-gated ROS subscriber |
-| `when_active` | decorator | Guards a method to the active state |
-| `LifecoreError` | exception | Base class for all framework boundary violations |
-| `RegistrationClosedError` | exception | Raised by `add_component` after first lifecycle transition |
-| `DuplicateComponentError` | exception | Raised by `add_component` when a name is already registered |
-| `ComponentNotAttachedError` | exception | Raised when `.node` is accessed on a detached component |
-| `ComponentNotConfiguredError` | exception | Raised by `publish()` before `_on_configure` has run |
-
-### Naming decision record (3.1)
-
-- `ComposedLifecycleNode` renamed to `LifecycleComponentNode` to name the class after what it owns and drives.
-- `PublisherComponent` renamed to `LifecyclePublisherComponent` for explicit lifecycle intent at call sites.
-- `SubscriberComponent` renamed to `LifecycleSubscriberComponent` for naming consistency with publisher.
-- `LifecycleComponent` and `TopicComponent` kept unchanged.
-
-### Intended subclassing hooks
-
-These `_on_*` methods are the intended extension points. They are `abstractmethod` where enforcement is required; otherwise they have a safe default:
-
-| Hook | Where | Abstract | Notes |
-|---|---|---|---|
-| `_on_configure(state)` | `LifecycleComponent` and subclasses | no (default: SUCCESS) | Allocate ROS resources here |
-| `_on_activate(state)` | `LifecycleComponent` and subclasses | no (default: SUCCESS) | Enable runtime behavior |
-| `_on_deactivate(state)` | `LifecycleComponent` and subclasses | no (default: SUCCESS) | Disable runtime behavior |
-| `_on_cleanup(state)` | `LifecycleComponent` and subclasses | no (default: SUCCESS) | Release resources; override to call `_release_resources` in subclasses |
-| `_on_shutdown(state)` | `LifecycleComponent` | no (default: SUCCESS) | Calls `_release_resources`; override if needed |
-| `_on_error(state)` | `LifecycleComponent` | no (default: SUCCESS) | Calls `_release_resources`; override if needed |
-| `_release_resources()` | `LifecycleComponent` and subclasses | no (default: no-op) | Release all allocated ROS resources; override in each subclass |
-| `on_message(msg)` | `LifecycleSubscriberComponent` | yes | Handle incoming messages while active |
-
-**Do not override** the native `on_configure`, `on_activate`, `on_deactivate`, `on_cleanup`, `on_shutdown`, `on_error` methods directly. These are owned by ROS 2 `ManagedEntity` and delegate to the `_on_*` hooks after applying the lifecycle guard.
-
-### Internal helpers — not part of the public API
-
-The following are internal and subject to change without notice:
-
-- `_LoggerLike` — internal protocol for logger duck-typing
-- `_LifecycleHook` — internal type alias
-- `_SENTINEL` — internal sentinel value for `when_active`
-- `_attach()` / `_detach()` on `LifecycleComponent` — registration lifecycle managed by `LifecycleComponentNode.add_component()`; do not call directly
-- `_guarded_call` — wraps `_on_*` hooks with error handling and return-value normalisation
-- `_safe_release_resources` — exception-safe wrapper around `_release_resources`
-- `_close_registration` on `LifecycleComponentNode` — closes `add_component` gate on first transition
-- `_on_message_wrapper` on `LifecycleSubscriberComponent` — framework dispatch method; sealed with `@final`
-
-### Stability statement
-
-All public API symbols are in the `0.x` series and carry an **experimental** stability level:
-- The class hierarchy and hook names are considered stable in intent and will not change without a minor version bump and a changelog entry.
-- The `_on_*` hook signatures (`state: LifecycleState`) are stable and will not change before `1.0.0` without a `BREAKING CHANGE` commit.
-- Internal helpers (`_`-prefixed or not exported) may change in any release.
+See **Design Notes** under [docs/design_notes/](docs/design_notes/) for detailed decisions on:
+- Runtime introspection
+- Dynamic components
+- Observability
+- Error handling (pending implementation)
+- Lifecycle policies (pending implementation)
+- Callback groups (pending implementation)
 
 ---
 
@@ -173,4 +97,4 @@ The project uses [Conventional Commits](https://www.conventionalcommits.org/) an
 - `major_on_zero = false` — breaking changes (BREAKING CHANGE commits) increment the minor version while in `0.x`, not the major
 - `tag_format = "v{version}"` — tags are prefixed with `v`
 
-**Promotion to `1.0.0`:** will happen only when the public API (`LifecycleComponentNode`, `LifecycleComponent`, `TopicComponent`, `LifecyclePublisherComponent`, `LifecycleSubscriberComponent`, `when_active`) is considered stable enough to defend. This requires a deliberate decision and a `BREAKING CHANGE` or manual bump — it will not happen automatically.
+**Promotion to `1.0.0`:** will happen only when the public API is considered stable enough to defend. This requires completion of adoption hardening (concurrency safety, strict contract, test coverage) and is a deliberate decision — not automatic.
