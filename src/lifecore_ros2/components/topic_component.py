@@ -5,6 +5,7 @@ from abc import ABC
 from rclpy.callback_groups import CallbackGroup
 from rclpy.qos import QoSProfile
 
+from lifecore_ros2.core._iface_type import _resolve_iface_type
 from lifecore_ros2.core.lifecycle_component import LifecycleComponent
 
 
@@ -29,7 +30,7 @@ class TopicComponent[MsgT](LifecycleComponent, ABC):
         self,
         name: str,
         topic_name: str,
-        msg_type: type[MsgT],
+        msg_type: type[MsgT] | None = None,
         qos_profile: QoSProfile | int = 10,
         *,
         callback_group: CallbackGroup | None = None,
@@ -39,16 +40,31 @@ class TopicComponent[MsgT](LifecycleComponent, ABC):
         Args:
             name: Unique name for this component within the node.
             topic_name: ROS topic name used by the publisher or subscriber subclass.
-            msg_type: ROS message type for the topic.
+            msg_type: ROS message type for the topic. Optional when the concrete
+                subclass parameterizes the generic base (e.g.
+                ``LifecycleSubscriberComponent[String]``); in that case the type
+                is inferred from the generic argument. Must be supplied when the
+                generic base is not parameterized. If both are supplied, they
+                must agree.
             qos_profile: QoS profile or depth (default 10).
             callback_group: Optional CallbackGroup borrowed from the application and
                 forwarded to the underlying publisher or subscription. Lifetime is owned
                 by the caller; the component never destroys it. ``None`` selects the
                 node default group.
+
+        Raises:
+            TypeError: if ``msg_type`` cannot be resolved (neither passed nor
+                inferred from the generic parameter), or if the explicit value
+                conflicts with the inferred one.
         """
         super().__init__(name=name, callback_group=callback_group)
         self._topic_name = topic_name
-        self._msg_type = msg_type
+        self._msg_type: type[MsgT] = _resolve_iface_type(
+            type(self),
+            base=TopicComponent,
+            explicit=msg_type,
+            interface_kind="msg_type",
+        )
         self._qos_profile = qos_profile
 
     @property
