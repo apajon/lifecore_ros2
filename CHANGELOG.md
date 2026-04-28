@@ -1,69 +1,5 @@
 # CHANGELOG
 
-## First public release — v0.4.0
-
-`lifecore_ros2` v0.4.0 is the first public release of the library. It establishes a small,
-predictable surface for composing lifecycle-aware ROS 2 nodes without layering a hidden state
-machine on top of native ROS 2 lifecycle semantics.
-
-This section is the project's permanent first-release statement. Subsequent versioned entries
-are appended below the `version list` marker by `python-semantic-release` and are not edited
-by hand. The live scope boundary is tracked in [ROADMAP.md](ROADMAP.md); this section is a
-snapshot at the time of the first public release.
-
-### What this release provides
-
-**Public API** (re-exported from `lifecore_ros2`):
-
-- `LifecycleComponentNode` — lifecycle node that owns and drives registered components as
-  native ROS 2 managed entities.
-- `LifecycleComponent` — base class for lifecycle-aware components (abstract by convention);
-  propagates transitions through `_on_configure`, `_on_activate`, `_on_deactivate`,
-  `_on_cleanup`, `_on_shutdown`, `_on_error`.
-- `TopicComponent` — base class for topic-oriented components; allocates ROS pub/sub
-  during configure, releases during cleanup.
-- `LifecyclePublisherComponent` — generic publisher (`[MsgT]`) gated by activation state.
-- `LifecycleSubscriberComponent` — generic subscriber (`[MsgT]`) whose `on_message` callback
-  is gated by activation state.
-- `when_active` — decorator that guards component methods on activation state.
-- `LifecoreError` and the typed boundary-violation subclasses `RegistrationClosedError`,
-  `DuplicateComponentError`, `ComponentNotAttachedError`, `ComponentNotConfiguredError`.
-
-**Examples**: `examples/minimal_node.py`, `examples/minimal_publisher.py`,
-`examples/minimal_subscriber.py`, `examples/telemetry_publisher.py`.
-
-**Documentation**: getting-started guide, architecture overview, recommended patterns and
-anti-patterns, migration notes from raw `rclpy`, and a Sphinx-buildable API reference under
-[docs/](docs/).
-
-**Quality baseline**: Ruff formatting and linting, Pyright in strict mode for the core
-package, and a pytest suite covering nominal transitions, edge transitions, activation
-gating, failure propagation, and resource handling.
-
-### What this release does not provide yet
-
-- Companion examples repository (`lifecore_ros2_examples`).
-- Visual demo asset (terminal recording or GIF).
-- Extended FAQ section.
-- Advanced patterns beyond the recommended/anti-pattern pairs already documented.
-
-### Supported baseline
-
-- Python 3.12 or newer.
-- ROS 2 Jazzy.
-- `rclpy` is required at runtime and is expected to come from the system ROS installation;
-  it is intentionally not declared as a PyPI dependency.
-
-### Known limitations
-
-- `composed_pipeline.py` demonstrates multi-component composition inside a single node;
-  multi-node or domain-specific examples live in the planned companion repository.
-- The `MsgT` type parameter on topic components is unbounded by design — no stable ROS 2
-  message base class is exported by `rosidl` to constrain it without coupling.
-- No companion examples repository, visual asset, or FAQ ships with this release.
-- Lifecycle observability beyond standard `rclpy` logging (e.g. `/diagnostics` integration)
-  is out of scope for the core library.
-
 <!-- version list -->
 
 ## v0.5.0 (2026-04-28)
@@ -330,15 +266,11 @@ gating, failure propagation, and resource handling.
 - **regression**: Cover reentrant transitions and teardown resource release
   ([`6b2d058`](https://github.com/apajon/lifecore_ros2/commit/6b2d0588135aaf4e2ba17d2ab7eaefb3667ff5f4))
 
-
-## Unreleased
-
-### Documentation
-
 - **iface-type-inference**: Mark issue [#1](https://github.com/apajon/lifecore_ros2/issues/1)
   as shipped in the API friction audit, document the generic-only topic-component
   form in `docs/patterns.rst`, and close `TODO_adoption_hardening.md §2`
   for PR [#4](https://github.com/apajon/lifecore_ros2/pull/4).
+
 
 ## v0.4.0 (2026-04-22)
 
