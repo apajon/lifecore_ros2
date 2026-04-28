@@ -55,14 +55,16 @@ jobs:
                     echo "version=${NEXT}" >> "$GITHUB_OUTPUT"
                   fi
 
-            - name: Update CHANGELOG for next release
+            - name: Bump version and update changelog locally
               if: steps.next_version.outputs.version != ''
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
-                  # Writes the unreleased changelog section into CHANGELOG.md locally;
-                  # does not commit, tag, push, or call the GitHub releases API.
-                  uv run semantic-release changelog
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+                  # Commits version bump + versioned CHANGELOG header locally.
+                  # --no-push --no-tag: no push to main, no tag created.
+                  uv run semantic-release version --no-push --no-tag
 
             - name: Create release branch and open PR
               if: steps.next_version.outputs.version != ''
@@ -71,11 +73,7 @@ jobs:
               run: |
                   VERSION="${{ steps.next_version.outputs.version }}"
                   BRANCH="release/bump-v${VERSION}"
-                  git config user.name "github-actions[bot]"
-                  git config user.email "github-actions[bot]@users.noreply.github.com"
                   git checkout -b "${BRANCH}"
-                  git add CHANGELOG.md
-                  git commit -m "chore(release): update changelog for v${VERSION}"
                   git push --force origin "${BRANCH}"
                   gh pr create \
                     --title "chore(release): bump to v${VERSION}" \
