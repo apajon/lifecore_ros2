@@ -102,6 +102,7 @@ Use the API reference afterward as a lookup surface for classes, methods, and mo
    planning/backlog
    planning/adoption_hardening
    planning/examples_repo
+   planning/sprints/README
 
 .. toctree::
    :maxdepth: 1
