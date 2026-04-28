@@ -1,0 +1,33 @@
+name: Tag release on merge
+
+# Triggered when a release/bump-v* PR is merged into main.
+# Creates and pushes the version tag, which in turn triggers the Publish workflow.
+on:
+    pull_request:
+        types: [closed]
+        branches: [main]
+
+jobs:
+    tag:
+        if: >
+            github.event.pull_request.merged == true &&
+            startsWith(github.event.pull_request.head.ref, 'release/bump-v')
+        runs-on: ubuntu-latest
+
+        permissions:
+            contents: write
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v5
+              with:
+                  fetch-depth: 0
+
+            - name: Extract version and push tag
+              run: |
+                  BRANCH="${{ github.event.pull_request.head.ref }}"
+                  VERSION="${BRANCH#release/bump-v}"
+                  git config user.name "github-actions[bot]"
+                  git config user.email "github-actions[bot]@users.noreply.github.com"
+                  git tag "v${VERSION}"
+                  git push origin "v${VERSION}"
