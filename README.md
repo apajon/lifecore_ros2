@@ -59,7 +59,7 @@ A small set of lifecycle-aware building blocks:
 The framework stays lifecycle-native, keeps ownership in `LifecycleComponentNode`, and treats component hooks as explicit extension points rather than hidden orchestration.
 
 See [docs/architecture.rst](docs/architecture.rst) for lifecycle design rules, [docs/patterns.rst](docs/patterns.rst) for usage patterns, and [ROADMAP.md](ROADMAP.md) for non-goals and deferred scope.
-See [ROADMAP_lifecore_ros2_examples.md](ROADMAP_lifecore_ros2_examples.md) for the companion examples repository plan.
+See [Examples Repository Plan](docs/planning/examples_repo.rst) for the companion repository planning.
 See [CHANGELOG.md](CHANGELOG.md) for shipped changes or the [GitHub Releases](https://github.com/apajon/lifecore_ros2/releases) page for tagged releases.
 
 ## Prerequisites

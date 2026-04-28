@@ -4,7 +4,7 @@ API Friction Audit
 ==================
 
 This page records the ergonomics audit required by
-``TODO_adoption_hardening.md §2``.  The goal is to count the steps a developer
+the Adoption & Hardening Roadmap (``docs/planning/adoption_hardening.rst`` §2). The goal is to count the steps a developer
 must take to produce a useful component, identify any steps that exist only for
 framework bookkeeping, and designate a canonical "shortest path" example.
 
@@ -200,7 +200,7 @@ Status
 - Implementation: shipped in PR
   `#4 <https://github.com/apajon/lifecore_ros2/pull/4>`_
   for issue `#1 <https://github.com/apajon/lifecore_ros2/issues/1>`_.
-- Tracker: ``TODO_adoption_hardening.md §2`` is closed and ``docs/patterns.rst``
+- Tracker: Adoption & Hardening §2 is closed and ``docs/patterns.rst``
   documents the generic-only form.
 
 No other framework-bookkeeping-only steps were found.  All remaining steps

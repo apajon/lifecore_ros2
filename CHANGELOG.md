@@ -305,7 +305,7 @@
 
 - **iface-type-inference**: Mark issue [#1](https://github.com/apajon/lifecore_ros2/issues/1)
   as shipped in the API friction audit, document the generic-only topic-component
-  form in `docs/patterns.rst`, and close `TODO_adoption_hardening.md §2`
+  form in `docs/patterns.rst`, and close adoption hardening §2
   for PR [#4](https://github.com/apajon/lifecore_ros2/pull/4).
 
 

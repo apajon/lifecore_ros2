@@ -66,7 +66,7 @@ raises :class:`RegistrationClosedError`.
 Implementation uses a ``_withdrawn`` flag on the component so that, even if
 the component remains in rclpy's managed-entity list, all subsequent
 transition callbacks return ``SUCCESS`` as a silent no-op. This is the
-**Option B** sketched in ``TODO_adoption_hardening.md`` (repo root):
+**Option B** sketched in the Adoption & Hardening Roadmap (``docs/planning/adoption_hardening.rst``):
 
    *Option B (current): ``_withdrawn`` flag silences the component as a
    ghost managed entity — acceptable for pre-transition use, not clean
@@ -297,7 +297,7 @@ To be answered in the implementation PR, not silently in code.
    teardown failure forced removal, mid-transition rejection, concurrent
    add/remove. Match these against §6's existing structure.
 9. **MemPalace persistence.** The "Option B vs Option C" deferred ADR is
-   currently only in ``TODO_adoption_hardening.md`` (repo root). Once Option C
+   currently only in the Adoption & Hardening Roadmap. Once Option C
    is decided, persist via the MemPalace Knowledge Writer agent. Until
    then, this note is the canonical source.
 
