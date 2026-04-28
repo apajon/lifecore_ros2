@@ -71,7 +71,6 @@ The same behavior expressed with ``LifecycleSubscriberComponent``:
             super().__init__(
                 name="chatter_sub",
                 topic_name="/chatter",
-                msg_type=String,
                 qos_profile=10,
             )
 
