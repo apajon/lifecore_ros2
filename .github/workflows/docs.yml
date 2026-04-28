@@ -53,6 +53,7 @@ jobs:
           path: docs/_build/html
 
   deploy:
+    if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }}
     needs: sphinx
     runs-on: ubuntu-latest
     environment:

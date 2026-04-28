@@ -26,13 +26,15 @@ Rule: no item on this list justifies violating the guardrails in `TODO.md §3`
 - [x] For any step that exists only for framework bookkeeping, open an issue
       proposing removal or defaulting
       → Issue #1: consider making `msg_type` optional (Python type-erasure
-        limitation). Investigation closed 2026-04-27 — verdict: **IMPLEMENT**
-        as a transverse utility (`R-IfaceTypeInference`) usable by future
-        `ServiceComponent` / `ActionComponent`. POC:
+      limitation). Shipped in PR #4 after the 2026-04-27 investigation
+      verdict: **IMPLEMENT** as a transverse utility
+      (`R-IfaceTypeInference`) usable by future `ServiceComponent` /
+      `ActionComponent`. POC:
         `scripts/investigate_iface_type_inference.py` (9/9 scenarios pass on
-        CPython 3.12.3). Decision record: `docs/api_friction_audit.rst`
-        (Investigation outcome). Implementation tracked separately, not yet
-        scheduled.
+      CPython 3.12.3). Decision record: `docs/api_friction_audit.rst`
+      (Investigation outcome). User-facing generic-only form documented in
+      `docs/patterns.rst`; explicit `msg_type=...` remains supported for
+      unparameterized subclasses.
       → No other bookkeeping-only step found.
 - [x] Promote one example as the canonical "shortest path" and snapshot its line
       count as a regression target

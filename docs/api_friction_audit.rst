@@ -23,8 +23,9 @@ Minimal ``LifecyclePublisherComponent`` (publish-on-demand)
 
 1. Import ``LifecyclePublisherComponent`` and the ROS message type.
 2. Subclass ``LifecyclePublisherComponent[MsgT]``; implement ``__init__``
-   with four named arguments: ``name``, ``topic_name``, ``msg_type``,
-   ``qos_profile`` (default: ``10``).
+  with named arguments ``name`` and ``topic_name``; ``qos_profile`` remains
+  optional (default: ``10``). ``msg_type`` is optional when the subclass is
+  parameterized with a concrete generic argument.
 3. Call ``self.publish(msg)`` from any callback or override.
 
 **Total: 3 steps.**  No override is mandatory.
@@ -47,8 +48,9 @@ Minimal ``LifecycleSubscriberComponent``
 
 1. Import ``LifecycleSubscriberComponent`` and the ROS message type.
 2. Subclass ``LifecycleSubscriberComponent[MsgT]``; implement ``__init__``
-   with four named arguments: ``name``, ``topic_name``, ``msg_type``,
-   ``qos_profile`` (default: ``10``).
+  with named arguments ``name`` and ``topic_name``; ``qos_profile`` remains
+  optional (default: ``10``). ``msg_type`` is optional when the subclass is
+  parameterized with a concrete generic argument.
 3. Implement ``on_message(self, msg: MsgT) -> None``.
 
 **Total: 3 steps.**  ``on_message`` is the only mandatory user override.
@@ -74,9 +76,10 @@ One potential friction item was identified during the audit.
 ``msg_type`` parameter is redundant with the generic argument
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Every ``TopicComponent`` subclass requires the message type to be stated
-twice: once as the generic parameter ``[String]`` and once as the constructor
-argument ``msg_type=String``.
+Before PR `#4 <https://github.com/apajon/lifecore_ros2/pull/4>`_, every
+``TopicComponent`` subclass required the message type to be stated twice: once
+as the generic parameter ``[String]`` and once as the constructor argument
+``msg_type=String``.
 
 .. code-block:: python
 
@@ -89,10 +92,9 @@ argument ``msg_type=String``.
                 qos_profile=10,
             )
 
-The duplication is a consequence of Python's runtime type erasure: generic
-parameters are not available via ``type(self)`` at ``__init__`` time, so
-``msg_type`` must be supplied explicitly for ``rclpy`` to create the
-publisher or subscription.
+The duplication came from Python's runtime type erasure: the framework had to
+recover the concrete generic argument at ``__init__`` time before handing the
+resolved type to ``rclpy``.
 
 **Initial decision (2026-04-24):** the current duplication is a Python
 limitation, not a framework design choice.  Making ``msg_type`` optional
@@ -187,17 +189,19 @@ becomes sufficient, and divergence is surfaced loudly instead of silently.
 - Pedagogical examples under ``examples/`` keep ``msg_type=…`` explicit;
   the generic-only short form is documented in ``docs/patterns.rst`` only.
 
-**Open implementation question.** Whether the rule is enforced inside
-``TopicComponent.__init__`` directly or through a small mixin used by every
-interface-typed component.  To be settled at implementation time with the
-``ROS 2 Architecture Guard``.
+**Implementation landed.** The rule is enforced directly in
+``TopicComponent.__init__`` through the transverse resolver in
+``src/lifecore_ros2/core/_iface_type.py``.
 
 Status
 ~~~~~~
 
 - Investigation: closed.
-- Implementation: tracked separately; not yet scheduled.
-- Tracker: ``TODO_adoption_hardening.md §2`` is updated with this verdict.
+- Implementation: shipped in PR
+  `#4 <https://github.com/apajon/lifecore_ros2/pull/4>`_
+  for issue `#1 <https://github.com/apajon/lifecore_ros2/issues/1>`_.
+- Tracker: ``TODO_adoption_hardening.md §2`` is closed and ``docs/patterns.rst``
+  documents the generic-only form.
 
 No other framework-bookkeeping-only steps were found.  All remaining steps
 either carry clear functional justification or belong to application logic
@@ -247,7 +251,7 @@ Conclusions
 - Subscriber path (3 steps): minimal.  ``on_message`` is the sole mandatory
   override.
 - Composition path (3 steps): straightforward.
-- One friction item noted: ``msg_type`` duplication (Python limitation;
-  tracked as issue, deferred).
+- One friction item shipped: ``msg_type`` no longer needs to be duplicated when
+  the component class is parameterized with a concrete generic argument.
 - Canonical shortest path: ``examples/minimal_subscriber.py`` — 24 lines for
   component + node definition.
