@@ -34,7 +34,7 @@ class LifecyclePublisherComponent[MsgT](TopicComponent[MsgT]):
         self,
         name: str,
         topic_name: str,
-        msg_type: type[MsgT],
+        msg_type: type[MsgT] | None = None,
         qos_profile: QoSProfile | int = 10,
         *,
         callback_group: CallbackGroup | None = None,
@@ -44,7 +44,11 @@ class LifecyclePublisherComponent[MsgT](TopicComponent[MsgT]):
         Args:
             name: Unique name for this component within the node.
             topic_name: ROS topic name to publish on.
-            msg_type: ROS message type for the topic.
+            msg_type: ROS message type for the topic. Optional when the concrete
+                subclass parameterizes the generic base (e.g.
+                ``LifecyclePublisherComponent[String]``); see
+                :class:`~lifecore_ros2.components.topic_component.TopicComponent`
+                for resolution rules.
             qos_profile: QoS profile or depth (default 10).
             callback_group: Optional CallbackGroup borrowed from the application and
                 forwarded to ``create_publisher`` on configure. Lifetime is owned by the
