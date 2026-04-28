@@ -1,7 +1,8 @@
 name: Release
 
-# Manual dispatch only — do not restore the cron schedule until the release
-# flow has been rehearsed end-to-end at least once (see TODO.md, section 1).
+# Creates a version-bump PR against main (no direct push to protected branch).
+# After merging the PR, tag and trigger publish:
+#   git pull && git tag v<VERSION> && git push origin v<VERSION>
 on:
     workflow_dispatch: {}
 
@@ -9,7 +10,7 @@ permissions:
     contents: read
 
 jobs:
-    release:
+    bump:
         if: ${{ github.ref == 'refs/heads/main' }}
         runs-on: ubuntu-latest
         concurrency:
@@ -18,6 +19,7 @@ jobs:
 
         permissions:
             contents: write
+            pull-requests: write
 
         steps:
             - name: Checkout repository
@@ -28,7 +30,7 @@ jobs:
             - name: Set up uv
               uses: astral-sh/setup-uv@v8.1.0
 
-            - name: Sync dev dependencies
+            - name: Sync dependencies
               run: uv sync --extra dev --group release
 
             # Lightweight gate: lint must pass on the release commit.
@@ -39,9 +41,37 @@ jobs:
                   uv run ruff check .
                   uv run ruff format --check .
 
-            - name: Run Python Semantic Release
+            - name: Determine next version
+              id: next_version
               env:
                   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               run: |
-                  uv run semantic-release version
-                  uv run semantic-release publish
+                  NEXT=$(uv run semantic-release version --print 2>/dev/null || true)
+                  echo "version=${NEXT}" >> "$GITHUB_OUTPUT"
+
+            - name: No release needed
+              if: steps.next_version.outputs.version == ''
+              run: |
+                  echo "No releasable commits since last release — aborting."
+                  exit 0
+
+            - name: Bump version locally (no push, no tag)
+              if: steps.next_version.outputs.version != ''
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: uv run semantic-release version --no-push --no-tag
+
+            - name: Create release branch and open PR
+              if: steps.next_version.outputs.version != ''
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: |
+                  VERSION="${{ steps.next_version.outputs.version }}"
+                  BRANCH="release/bump-v${VERSION}"
+                  git checkout -b "${BRANCH}"
+                  git push origin "${BRANCH}"
+                  gh pr create \
+                    --title "chore(release): bump to v${VERSION}" \
+                    --body "Automated version bump to \`v${VERSION}\`.\n\nAfter merging, push the tag to trigger the publish workflow:\n\`\`\`bash\ngit pull && git tag v${VERSION} && git push origin v${VERSION}\n\`\`\`" \
+                    --base main \
+                    --head "${BRANCH}"

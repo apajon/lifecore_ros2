@@ -1,0 +1,35 @@
+name: Publish
+
+# Triggered when a version tag is pushed after merging a release bump PR.
+# To trigger: git pull && git tag v<VERSION> && git push origin v<VERSION>
+on:
+    push:
+        tags:
+            - "v[0-9]*"
+
+permissions:
+    contents: write
+
+jobs:
+    publish:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v5
+              with:
+                  fetch-depth: 0
+
+            - name: Set up uv
+              uses: astral-sh/setup-uv@v8.1.0
+
+            - name: Sync release dependencies
+              run: uv sync --group release
+
+            - name: Build distributions
+              run: uv build
+
+            - name: Create GitHub release and upload assets
+              env:
+                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              run: uv run semantic-release publish
