@@ -13,7 +13,8 @@ Hierarchy::
     ├── ComponentNotAttachedError (RuntimeError)
     ├── ComponentNotConfiguredError (RuntimeError)
     ├── InvalidLifecycleTransitionError (RuntimeError)
-    └── ConcurrentTransitionError (RuntimeError)
+    ├── ConcurrentTransitionError (RuntimeError)
+    └── _InterfaceTypeNotResolvedError (TypeError)  [internal — not re-exported]
 """
 
 from __future__ import annotations
@@ -50,3 +51,13 @@ class InvalidLifecycleTransitionError(LifecoreError, RuntimeError):
 
 class ConcurrentTransitionError(LifecoreError, RuntimeError):
     """Raised when a lifecycle transition is attempted concurrently with an in-progress transition."""
+
+
+class _InterfaceTypeNotResolvedError(LifecoreError, TypeError):  # pyright: ignore[reportUnusedClass]
+    """Raised when a component's ROS interface type cannot be resolved at ``__init__``.
+
+    Internal exception — not re-exported from :mod:`lifecore_ros2`. Indicates
+    either a missing source (no generic parameter and no explicit argument) or
+    a conflict (generic parameter and explicit argument disagree). Subclasses
+    :class:`TypeError` so user tracebacks remain idiomatic.
+    """
