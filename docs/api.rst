@@ -36,3 +36,8 @@ Components
    :members:
    :undoc-members:
    :show-inheritance:
+
+.. automodule:: lifecore_ros2.components.lifecycle_timer_component
+   :members:
+   :undoc-members:
+   :show-inheritance:

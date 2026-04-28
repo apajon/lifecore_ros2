@@ -26,6 +26,9 @@ What this release provides
 - ``TopicComponent`` — base class for topic-oriented components; allocates ROS pub/sub
   during configure, releases during cleanup.
 - ``LifecyclePublisherComponent`` — generic publisher (``[MsgT]``) gated by activation state.
+- ``LifecycleTimerComponent`` — periodic timer component whose ``on_tick`` callback is
+  gated by activation state; the underlying ROS timer is created on configure and
+  released on cleanup.
 - ``LifecycleSubscriberComponent`` — generic subscriber (``[MsgT]``) whose ``on_message``
   callback is gated by activation state.
 - ``when_active`` — decorator that guards component methods on activation state.

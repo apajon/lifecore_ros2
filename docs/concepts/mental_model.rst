@@ -25,6 +25,7 @@ Components live inside that node and are registered there.
     LifecycleComponentNode
       ├── LifecyclePublisherComponent
       ├── LifecycleSubscriberComponent
+      ├── LifecycleTimerComponent
       └── Custom LifecycleComponent
 
 Think in terms of one lifecycle node coordinating several small managed parts, not one large class doing everything.
