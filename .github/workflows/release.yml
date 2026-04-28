@@ -76,7 +76,7 @@ jobs:
                   git checkout -b "${BRANCH}"
                   git add CHANGELOG.md
                   git commit -m "chore(release): update changelog for v${VERSION}"
-                  git push origin "${BRANCH}"
+                  git push --force origin "${BRANCH}"
                   gh pr create \
                     --title "chore(release): bump to v${VERSION}" \
                     --body "Automated changelog update for \`v${VERSION}\`.\n\nAfter merging, push the tag to trigger the publish workflow:\n\`\`\`bash\ngit pull && git tag v${VERSION} && git push origin v${VERSION}\n\`\`\`" \
