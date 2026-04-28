@@ -34,6 +34,10 @@ Example map
      - Activation-gated delivery with a managed subscription.
      - Read when you want to see inactive message drops and subscriber ownership.
      - ``uv run python examples/minimal_subscriber.py``
+   * - `minimal_timer.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_timer.py>`_
+     - Standalone ``LifecycleTimerComponent`` with activation-gated ticks.
+     - Read when you want a periodic callback whose firing is bound to lifecycle state.
+     - ``uv run python examples/minimal_timer.py``
    * - `telemetry_publisher.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/telemetry_publisher.py>`_
      - Full ``configure`` / ``activate`` / ``deactivate`` / ``cleanup`` split in one publisher component.
      - Read when you need a concrete pattern for long-lived handles plus runtime behavior.
@@ -103,6 +107,25 @@ What to look for
 - The node owns one subscriber component; ``on_message`` is the component contract.
 - ``activate`` allows delivery; ``deactivate`` silently drops messages by design.
 - ``cleanup`` releases the subscription and removes the topic from the subscriber graph.
+
+Minimal Timer
+-------------
+
+Source: `examples/minimal_timer.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_timer.py>`_
+
+What it demonstrates
+~~~~~~~~~~~~~~~~~~~~
+
+A standalone ``LifecycleTimerComponent`` where the framework owns the ROS timer and ticks are
+routed to ``on_tick`` only while the component is active.
+
+What to look for
+~~~~~~~~~~~~~~~~
+
+- ``configure`` creates the ROS timer with the configured period; ticks fire but are silently dropped.
+- ``activate`` opens the gate so each tick reaches ``on_tick``; ``deactivate`` closes it again without destroying the timer.
+- ``cleanup`` lets the framework cancel and destroy the timer through ``_release_resources``.
+- The component never owns a publisher or subscription, so the example isolates the timer contract on its own.
 
 Telemetry Publisher
 -------------------
