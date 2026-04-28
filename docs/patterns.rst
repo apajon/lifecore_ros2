@@ -53,6 +53,34 @@ Recommended Patterns
 
   Invariant upheld: **Activation gating**.
 
+**Prefer the generic-only form for concrete topic components**
+
+  When a concrete publisher or subscriber class already parameterizes
+  ``LifecyclePublisherComponent[MsgT]`` or
+  ``LifecycleSubscriberComponent[MsgT]``, omit ``msg_type=...`` in the
+  constructor call. The framework now infers the ROS interface type from the
+  generic argument at ``__init__`` time.
+
+  .. code-block:: python
+
+    class EchoSub(LifecycleSubscriberComponent[String]):
+      def __init__(self) -> None:
+        super().__init__(
+          name="echo",
+          topic_name="/chatter",
+        )
+
+      def on_message(self, msg: String) -> None:
+        self.node.get_logger().info(msg.data)
+
+  Keep the explicit ``msg_type=...`` form only when the subclass is not
+  parameterized or when the type is supplied dynamically. If both the generic
+  argument and ``msg_type`` are provided, they must agree or ``__init__`` raises
+  ``TypeError``.
+
+  Invariant upheld: **configure** boundary correctness starts at construction time;
+  no component reaches lifecycle hooks with an unresolved interface type.
+
 **Keep ``_on_*`` hooks deterministic and side-effect-free**
 
   Lifecycle hooks should only manage resource setup, teardown, or state flags.
