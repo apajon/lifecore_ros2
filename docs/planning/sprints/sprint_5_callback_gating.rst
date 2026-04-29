@@ -1,4 +1,4 @@
-Sprint 4 — Unified callback gating
+Sprint 5 — Unified callback gating
 ===================================
 
 **Objectif.** Extract activation-gating logic into a shared, reusable utility. Remove duplication across Publisher, Subscriber, Service, Client, Timer.
@@ -43,8 +43,8 @@ Remove duplicated gate logic; call shared utility.
 
 ---
 
-Tests to write
---------------
+Tests for io_gateway_node
+--------------------------
 
 Gating utility tests
 ^^^^^^^^^^^^^^^^^^^^

@@ -1,4 +1,4 @@
-Sprint 5 — Concurrency infrastructure
+Sprint 6 — Concurrency infrastructure
 =====================================
 
 **Objectif.** Support safe multi-threaded callback execution; formalize callback group management.

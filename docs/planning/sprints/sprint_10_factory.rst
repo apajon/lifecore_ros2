@@ -1,4 +1,4 @@
-Sprint 9 — Minimal factory and registry
+Sprint 10 — Minimal factory and registry
 ========================================
 
 **Objectif.** Enable dynamic component instantiation; prepare foundation for future config-driven setup.
@@ -132,7 +132,7 @@ Risks and mitigation
 Dependencies
 ------------
 
-- Requires: All components (Sprints 1–8)
+- Requires: All components (Sprints 1–9)
 - Requires: Testing utilities (Sprint 3) — fixtures for registry/factory testing
 - Requires: No external dependencies (dict parsing with stdlib)
 

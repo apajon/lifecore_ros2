@@ -1,4 +1,4 @@
-Sprint 8 — Parameters and runtime configuration
+Sprint 9 — Parameters and runtime configuration
 ================================================
 
 **Objectif.** Add lifecycle-aware parameter management; bind parameters to component lifecycle.
@@ -127,9 +127,9 @@ Dependencies
 
 - Requires: ``LifecycleComponent`` (shipped)
 - Requires: Error handling (Sprint 2) — parameter validation failure
-- Requires: Concurrency (Sprint 5) — thread-safe parameter updates
+- Requires: Concurrency (Sprint 6) — thread-safe parameter updates
 - Requires: Testing utilities (Sprint 3) — fixtures for parameter testing
-- Optionally: Lifecycle policies (Sprint 6) — if parameter is linked to activation
+- Optionally: Lifecycle policies (Sprint 7) — if parameter is linked to activation
 
 ---
 

@@ -1,4 +1,4 @@
-Sprint 6 — Lifecycle policies
+Sprint 7 — Lifecycle policies
 ==============================
 
 **Objectif.** Make component ordering and activation semantics configurable without ad-hoc code.
@@ -135,7 +135,7 @@ Dependencies
 
 - Requires: Error handling (Sprint 2) — rollback must respect ordering
 - Requires: Testing utilities (Sprint 3) — easy setup of policy scenarios
-- Requires: All components (Sprints 1, 4)
+- Requires: All components (Sprints 1, 5)
 
 ---
 

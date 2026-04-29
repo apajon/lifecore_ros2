@@ -1,4 +1,4 @@
-Sprint 7 — Minimal observability
+Sprint 8 — Minimal observability
 =================================
 
 **Objectif.** Add structured logging and lifecycle tracing for industrial debugging.
@@ -126,7 +126,7 @@ Risks and mitigation
 Dependencies
 ------------
 
-- Requires: All components (Sprints 1–6)
+- Requires: All components (Sprints 1–7)
 - Requires: Error handling (Sprint 2) — capture and log failures
 - Requires: Testing utilities (Sprint 3) — verify logs in tests
 

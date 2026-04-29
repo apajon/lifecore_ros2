@@ -26,12 +26,13 @@ Roadmap des sprints
    sprint_1_service_client
    sprint_2_error_handling
    sprint_3_testing_infrastructure
-   sprint_4_callback_gating
-   sprint_5_concurrency
-   sprint_6_lifecycle_policies
-   sprint_7_observability
-   sprint_8_parameters
-   sprint_9_factory
+   sprint_4_real_examples
+   sprint_5_callback_gating
+   sprint_6_concurrency
+   sprint_7_lifecycle_policies
+   sprint_8_observability
+   sprint_9_parameters
+   sprint_10_factory
 
 ---
 
@@ -43,12 +44,13 @@ Vue condensée
    S1: Service/Client components (primitives ROS2)
    S2: Error handling solide (fiabilité lifecycle)
    S3: Testing infrastructure (accélération)
-   S4: Callback gating centralisé (homogénéité)
-   S5: Concurrency propre (multi-thread)
-   S6: Lifecycle policies (configurabilité)
-   S7: Observability minimale (debug)
-   S8: Parameters (config runtime)
-   S9: Factory minimal (instanciation dynamique)
+   S4: Real examples v1 (validation API)
+   S5: Callback gating centralisé (homogénéité)
+   S6: Concurrency propre (multi-thread)
+   S7: Lifecycle policies (configurabilité)
+   S8: Observability minimale (debug)
+   S9: Parameters (config runtime)
+   S10: Factory minimal (instanciation dynamique)
 
 ---
 

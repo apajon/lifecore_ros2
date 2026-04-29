@@ -56,6 +56,16 @@ An example belongs in **lifecore_ros2/examples/** (core repo) if **all** of the 
 Example categories (initial outline)
 ------------------------------------
 
+Core examples — validated via Sprint 4
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+These examples are **developed in the core repo first** (Sprint 4) to validate the API and detect friction early. Once proven, they move to the companion repo or inspire examples here.
+
+- **io_gateway_node** — I/O transformation with Pub, Sub, Timer, Service + stateful processing. Teaches component coordination and gating.
+- **robot_state_monitor** — Health aggregation from multiple subscribers. Teaches composition, partial failure, state queries.
+- **command_gateway** — Service request validation and dispatch to client. Teaches validation hooks, error handling, async patterns.
+- **minimal_supervised_node** — Multiple components with supervised error recovery. Teaches rollback, partial activation, orchestration.
+
 Sensor-pipeline composition
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -147,6 +157,16 @@ Coupling to core releases
 Implementation phases
 ---------------------
 
+Validation phase (Sprint 4 in core repo)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Before the companion repo exists, core examples are validated in the core `examples/` directory:
+
+- Core examples are simple but real: io_gateway_node, command_gateway, etc.
+- They validate the API and reveal friction
+- They guide the design of future sprints (S5–S10)
+- Once proven, they can be ported or extended in the companion repo
+
 Phase 0 — Repository bootstrap
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -159,7 +179,9 @@ Phase 0 — Repository bootstrap
 Phase 1 — First applied example: sensor-fusion pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- [ ] Create ``examples/sensor_fusion/sensor_fusion_pipeline.py``
+**Context.** Core examples (Sprint 4) are validated in the core repo. This phase extends them with domain-specific, multi-node, or complex scenarios that belong in the companion repo.
+
+First example focuses on **sensor-fusion pipeline** — fan-in multi-sensor integration:
 - [ ] Two simulated heterogeneous sensors as ``LifecyclePublisherComponent`` instances
 - [ ] Fusion ``LifecycleComponent`` with two subscriptions and one publisher
 - [ ] Downstream ``LifecycleSubscriberComponent`` for logging
