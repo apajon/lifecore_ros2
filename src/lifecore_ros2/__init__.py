@@ -2,8 +2,11 @@
 
 from .components import (
     LifecyclePublisherComponent,
+    LifecycleServiceClientComponent,
+    LifecycleServiceServerComponent,
     LifecycleSubscriberComponent,
     LifecycleTimerComponent,
+    ServiceComponent,
     TopicComponent,
 )
 from .core import (
@@ -26,6 +29,9 @@ __all__ = [
     "LifecyclePublisherComponent",
     "LifecycleSubscriberComponent",
     "LifecycleTimerComponent",
+    "ServiceComponent",
+    "LifecycleServiceServerComponent",
+    "LifecycleServiceClientComponent",
     "when_active",
     "LifecoreError",
     "RegistrationClosedError",
