@@ -49,17 +49,17 @@ Tests for io_gateway_node
 Gating utility tests
 ^^^^^^^^^^^^^^^^^^^^
 
-- [x] ``is_active()`` returns True/False correctly
-- [x] ``require_active()`` raises if inactive
-- [x] ``require_active()`` does not raise if active
-- [x] ``_gated_callback`` prevents execution if inactive
+- [ ] ``is_active()`` returns True/False correctly
+- [ ] ``require_active()`` raises if inactive
+- [ ] ``require_active()`` does not raise if active
+- [ ] ``_gated_callback`` prevents execution if inactive
 
 Component refactor tests
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-- [x] All existing tests still pass (regression)
-- [x] Activation gating behavior unchanged (behavior-preserving refactor)
-- [x] Logging consistent across all components (gate action + component name)
+- [ ] All existing tests still pass (regression)
+- [ ] Activation gating behavior unchanged (behavior-preserving refactor)
+- [ ] Logging consistent across all components (gate action + component name)
 
 Edge cases
 ^^^^^^^^^^

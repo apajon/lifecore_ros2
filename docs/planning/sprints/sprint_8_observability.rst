@@ -65,26 +65,26 @@ Tests to write
 Logging tests
 ^^^^^^^^^^^^^
 
-- [x] Transition logs include state and component count
-- [x] Hook execution logs include component name, hook type, result
-- [x] Gating logs include action name and decision (allowed/denied)
-- [x] All logs go through Python logging (not print)
-- [x] Log level DEBUG shows all details
-- [x] Log level INFO shows only transitions
+- [ ] Transition logs include state and component count
+- [ ] Hook execution logs include component name, hook type, result
+- [ ] Gating logs include action name and decision (allowed/denied)
+- [ ] All logs go through Python logging (not print)
+- [ ] Log level DEBUG shows all details
+- [ ] Log level INFO shows only transitions
 
 Structured data tests
 ^^^^^^^^^^^^^^^^^^^^^
 
-- [x] Last error is captured on hook failure
-- [x] Last error is cleared on successful transition
-- [x] Transition history ring buffer works (capacity limit)
-- [x] Querying history returns correct order (newest first or oldest first, pick one)
+- [ ] Last error is captured on hook failure
+- [ ] Last error is cleared on successful transition
+- [ ] Transition history ring buffer works (capacity limit)
+- [ ] Querying history returns correct order (newest first or oldest first, pick one)
 
 Timing tests
 ^^^^^^^^^^^^
 
-- [x] Hook duration is measured and logged
-- [x] Duration is reasonable (not zero or huge)
+- [ ] Hook duration is measured and logged
+- [ ] Duration is reasonable (not zero or huge)
 
 ---
 

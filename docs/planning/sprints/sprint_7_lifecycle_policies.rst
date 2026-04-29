@@ -162,16 +162,16 @@ Scope boundaries
 Success signal
 --------------
 
-- [x] ``ActivationPolicy`` and ``StartupPolicy`` are defined
-- [x] ``node.add_component(..., activation_policy=...)`` works
-- [x] ``node.set_startup_policy(...)`` works
-- [x] All ordering tests pass (activate/deactivate order correct)
-- [x] Full-activation semantics are defined and testable
-- [x] Policies + error handling work together correctly (integration test)
-- [x] Example: ``examples/ordered_components.py`` (demonstrates activation ordering)
-- [x] Example: ``examples/auto_bootstrap.py`` (demonstrates StartupPolicy.AUTO_CONFIGURE)
-- [x] Ruff, Pyright, Pytest all green
-- [x] Design note: lifecycle policies (if future-proofing needed)
+- [ ] ``ActivationPolicy`` and ``StartupPolicy`` are defined
+- [ ] ``node.add_component(..., activation_policy=...)`` works
+- [ ] ``node.set_startup_policy(...)`` works
+- [ ] All ordering tests pass (activate/deactivate order correct)
+- [ ] Full-activation semantics are defined and testable
+- [ ] Policies + error handling work together correctly (integration test)
+- [ ] Example: ``examples/ordered_components.py`` (demonstrates activation ordering)
+- [ ] Example: ``examples/auto_bootstrap.py`` (demonstrates StartupPolicy.AUTO_CONFIGURE)
+- [ ] Ruff, Pyright, Pytest all green
+- [ ] Design note: lifecycle policies (if future-proofing needed)
 
 ---
 

@@ -62,32 +62,32 @@ Tests to write
 Callback group tests
 ^^^^^^^^^^^^^^^^^^^^
 
-- [x] ``create_callback_group_for_component`` creates group
-- [x] Same component name returns same group (idempotent)
-- [x] Different components → different groups
-- [x] Component constructor accepts ``callback_group`` parameter
-- [x] Service/Client created with explicit group are called via that group
+- [ ] ``create_callback_group_for_component`` creates group
+- [ ] Same component name returns same group (idempotent)
+- [ ] Different components → different groups
+- [ ] Component constructor accepts ``callback_group`` parameter
+- [ ] Service/Client created with explicit group are called via that group
 
 Concurrency tests (multi-threaded executor)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- [x] Multiple subscribers with different callback groups receive messages concurrently
-- [x] Component activation state is consistent across threads
-- [x] Deactivate blocks new callbacks while in-flight callbacks complete
-- [x] Component destruction is safe if callbacks are executing (no use-after-free)
+- [ ] Multiple subscribers with different callback groups receive messages concurrently
+- [ ] Component activation state is consistent across threads
+- [ ] Deactivate blocks new callbacks while in-flight callbacks complete
+- [ ] Component destruction is safe if callbacks are executing (no use-after-free)
 
 Data race tests
 ^^^^^^^^^^^^^^^
 
-- [x] Concurrent calls to ``add_component`` from multiple threads
-- [x] Concurrent lifecycle transitions from multiple threads (should fail + log)
-- [x] Concurrent reads of component state from multiple threads (should be atomic)
+- [ ] Concurrent calls to ``add_component`` from multiple threads
+- [ ] Concurrent lifecycle transitions from multiple threads (should fail + log)
+- [ ] Concurrent reads of component state from multiple threads (should be atomic)
 
 Lock contention tests
 ^^^^^^^^^^^^^^^^^^^^^
 
-- [x] High-frequency component registration does not deadlock
-- [x] Lifecycle transitions do not block all callbacks (use fine-grained locking if needed)
+- [ ] High-frequency component registration does not deadlock
+- [ ] Lifecycle transitions do not block all callbacks (use fine-grained locking if needed)
 
 ---
 

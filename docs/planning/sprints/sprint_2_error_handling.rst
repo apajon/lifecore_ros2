@@ -167,13 +167,13 @@ Scope boundaries
 Success signal
 --------------
 
-- [x] Error propagation rules written and documented in ``docs/architecture.rst``
-- [x] Rollback option chosen and enforced in code
-- [x] All error scenarios have tests (unit + integration)
-- [x] Resource cleanup is guaranteed (test with ``Mock`` if needed)
-- [x] Logs are actionable and include component context
-- [x] Ruff, Pyright, Pytest all green
-- [x] Design note: error handling contract (if future-proofing needed)
+- [ ] Error propagation rules written and documented in ``docs/architecture.rst``
+- [ ] Rollback option chosen and enforced in code
+- [ ] All error scenarios have tests (unit + integration)
+- [ ] Resource cleanup is guaranteed (test with ``Mock`` if needed)
+- [ ] Logs are actionable and include component context
+- [ ] Ruff, Pyright, Pytest all green
+- [ ] Design note: error handling contract (if future-proofing needed)
 
 ---
 

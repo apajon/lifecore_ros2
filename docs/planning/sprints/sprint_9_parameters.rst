@@ -61,27 +61,27 @@ Tests to write
 ParameterComponent unit tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- [x] Parameter declared in ``_on_configure``, destroyed in ``_on_cleanup``
-- [x] Parameter value retrieved with ``get_parameter()``
-- [x] Parameter updated with ``set_parameter()`` (if policy allows)
-- [x] ``on_parameter_updated`` hook called when parameter changes
-- [x] Validation hook blocks invalid updates
-- [x] Update policy enforced (``ACTIVE_ONLY`` blocks update when inactive)
+- [ ] Parameter declared in ``_on_configure``, destroyed in ``_on_cleanup``
+- [ ] Parameter value retrieved with ``get_parameter()``
+- [ ] Parameter updated with ``set_parameter()`` (if policy allows)
+- [ ] ``on_parameter_updated`` hook called when parameter changes
+- [ ] Validation hook blocks invalid updates
+- [ ] Update policy enforced (``ACTIVE_ONLY`` blocks update when inactive)
 
 Integration tests
 ^^^^^^^^^^^^^^^^^
 
-- [x] Multiple ``ParameterComponent`` instances in same node
-- [x] Parameter updates are independent
-- [x] Lifecycle transitions clear parameter state correctly
-- [x] Error in validation hook → update blocked and logged
+- [ ] Multiple ``ParameterComponent`` instances in same node
+- [ ] Parameter updates are independent
+- [ ] Lifecycle transitions clear parameter state correctly
+- [ ] Error in validation hook → update blocked and logged
 
 Edge cases
 ^^^^^^^^^^
 
-- [x] Update parameter during deactivate (blocked if ``ACTIVE_ONLY``)
-- [x] Parameter update in ``on_parameter_updated`` callback (no reentrancy)
-- [x] Delete component with active parameters → cleanup removes subscriptions
+- [ ] Update parameter during deactivate (blocked if ``ACTIVE_ONLY``)
+- [ ] Parameter update in ``on_parameter_updated`` callback (no reentrancy)
+- [ ] Delete component with active parameters → cleanup removes subscriptions
 
 ---
 

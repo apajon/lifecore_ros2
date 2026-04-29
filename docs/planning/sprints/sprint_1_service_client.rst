@@ -52,32 +52,32 @@ Tests to write
 ServiceComponent unit tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- [x] Service created in ``_on_configure``, destroyed in ``_on_cleanup``
-- [x] Service callback rejected if not active (component in INACTIVE state)
-- [x] Service callback accepted if active (component in ACTIVE state)
-- [x] Service transitions: ``configure`` → ``activate`` → ``deactivate`` → ``cleanup``
-- [x] Double activate → idempotent or error (per adoption hardening §5 rule)
-- [x] Error in ``on_service_request`` → exception handling (component state, service remains bound)
+- [ ] Service created in ``_on_configure``, destroyed in ``_on_cleanup``
+- [ ] Service callback rejected if not active (component in INACTIVE state)
+- [ ] Service callback accepted if active (component in ACTIVE state)
+- [ ] Service transitions: ``configure`` → ``activate`` → ``deactivate`` → ``cleanup``
+- [ ] Double activate → idempotent or error (per adoption hardening §5 rule)
+- [ ] Error in ``on_service_request`` → exception handling (component state, service remains bound)
 
 ClientComponent unit tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- [x] Client created in ``_on_configure``, destroyed in ``_on_cleanup``
-- [x] ``call()`` blocked if not active → raises ``ComponentNotActiveError``
-- [x] ``call()`` succeeds if active
-- [x] ``call_async()`` blocked if not active → returns failed Future or raises
-- [x] Lifecycle: ``configure`` → ``activate`` → ``call`` → ``deactivate`` → blocked calls
-- [x] Timeout handling: ``call(timeout=1.0)`` respects timeout
-- [x] Error in service handler → client receives error response (not exception leak)
+- [ ] Client created in ``_on_configure``, destroyed in ``_on_cleanup``
+- [ ] ``call()`` blocked if not active → raises ``ComponentNotActiveError``
+- [ ] ``call()`` succeeds if active
+- [ ] ``call_async()`` blocked if not active → returns failed Future or raises
+- [ ] Lifecycle: ``configure`` → ``activate`` → ``call`` → ``deactivate`` → blocked calls
+- [ ] Timeout handling: ``call(timeout=1.0)`` respects timeout
+- [ ] Error in service handler → client receives error response (not exception leak)
 
 Integration tests
 ^^^^^^^^^^^^^^^^^
 
-- [x] ServiceComponent + ClientComponent in same node
-- [x] Client calls service in same node (request/response cycle)
-- [x] Service inactive → client gets error response or timeout
-- [x] Multiple services in same node (distinct names, independent lifecycle)
-- [x] Multiple clients calling same service concurrently
+- [ ] ServiceComponent + ClientComponent in same node
+- [ ] Client calls service in same node (request/response cycle)
+- [ ] Service inactive → client gets error response or timeout
+- [ ] Multiple services in same node (distinct names, independent lifecycle)
+- [ ] Multiple clients calling same service concurrently
 
 ---
 
@@ -153,13 +153,13 @@ Scope boundaries
 Success signal
 --------------
 
-- [x] ``from lifecore_ros2 import ServiceComponent, ClientComponent`` works
-- [x] All tests pass (unit + integration)
-- [x] Activation gating is enforced and tested
-- [x] Ruff, Pyright, Pytest all green
-- [x] Example: ``examples/minimal_service.py`` and ``examples/minimal_client.py`` (or combined)
-- [x] Design note: none required (primitives only)
-- [x] Docstrings complete (Google style, Napoleon-ready)
+- [ ] ``from lifecore_ros2 import ServiceComponent, ClientComponent`` works
+- [ ] All tests pass (unit + integration)
+- [ ] Activation gating is enforced and tested
+- [ ] Ruff, Pyright, Pytest all green
+- [ ] Example: ``examples/minimal_service.py`` and ``examples/minimal_client.py`` (or combined)
+- [ ] Design note: none required (primitives only)
+- [ ] Docstrings complete (Google style, Napoleon-ready)
 
 ---
 

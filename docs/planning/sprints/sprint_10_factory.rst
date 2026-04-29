@@ -167,10 +167,10 @@ Success signal
 - [x] Batch creation works: ``factory.create_batch(node, specs_list)``
 - [x] SpecLoader parses YAML and JSON specs
 - [x] Error messages are clear (missing type, parse error, etc.)
-- [x] Example: ``examples/factory_demo.py`` (demonstrates registry + factory + specs)
-- [x] Ruff, Pyright, Pytest all green
-- [x] Docstrings complete (Google style, Napoleon-ready)
-- [x] Documentation: how to use registry/factory for dynamic setup
+- [ ] Example: ``examples/factory_demo.py`` (demonstrates registry + factory + specs)
+- [ ] Ruff, Pyright, Pytest all green
+- [ ] Docstrings complete (Google style, Napoleon-ready)
+- [ ] Documentation: how to use registry/factory for dynamic setup
 
 ---
 

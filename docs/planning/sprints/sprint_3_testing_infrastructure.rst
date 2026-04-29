@@ -53,25 +53,25 @@ Tests to write
 Fixture tests
 ^^^^^^^^^^^^^
 
-- [x] ``lifecycle_node_fixture`` creates and destroys node cleanly
-- [x] ``FakeComponent`` tracks hook calls and state transitions
-- [x] ``FakeComponent`` can be configured to fail at specific hook
-- [x] ``assert_component_state`` passes/fails correctly
+- [ ] ``lifecycle_node_fixture`` creates and destroys node cleanly
+- [ ] ``FakeComponent`` tracks hook calls and state transitions
+- [ ] ``FakeComponent`` can be configured to fail at specific hook
+- [ ] ``assert_component_state`` passes/fails correctly
 
 Helper tests
 ^^^^^^^^^^^^
 
-- [x] ``activate_component`` calls configure then activate in order
-- [x] ``collect_logs`` captures all logs during test
-- [x] ``expect_log`` finds or asserts missing pattern
-- [x] ``spawn_transition_thread`` runs transition from thread safely
+- [ ] ``activate_component`` calls configure then activate in order
+- [ ] ``collect_logs`` captures all logs during test
+- [ ] ``expect_log`` finds or asserts missing pattern
+- [ ] ``spawn_transition_thread`` runs transition from thread safely
 
 Integration example tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- [x] Using fixtures to test a node with 3 fake components
-- [x] Verifying hook call order with ``assert_transition_order``
-- [x] Verifying activation gating with ``assert_activation_gated``
+- [ ] Using fixtures to test a node with 3 fake components
+- [ ] Verifying hook call order with ``assert_transition_order``
+- [ ] Verifying activation gating with ``assert_activation_gated``
 
 ---
 

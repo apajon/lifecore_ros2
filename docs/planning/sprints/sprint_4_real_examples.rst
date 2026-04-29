@@ -317,18 +317,18 @@ Scope boundaries
 Success signal
 --------------
 
-- [x] ``examples/io_gateway_node.py`` runs without errors (smoke test)
-- [x] All 5 components are used together (Pub, Sub, Timer, Service, custom)
-- [x] Lifecycle transitions work (configure → activate → deactivate → cleanup)
-- [x] Service gating is enforced (inactive → rejected)
-- [x] Timer gating is enforced (inactive → no ticks)
-- [x] Input/output flow is correct (messages transform and publish)
-- [x] Error handling is robust (callback errors don't crash node)
-- [x] All tests pass (unit + integration)
-- [x] Docstring is comprehensive (explains teaching goals + usage)
-- [x] Logs are clear (state transitions visible)
-- [x] Ruff, Pyright, Pytest all green
-- [x] Example is added to ``docs/examples.rst`` with explanation
+- [ ] ``examples/io_gateway_node.py`` runs without errors (smoke test)
+- [ ] All 5 components are used together (Pub, Sub, Timer, Service, custom)
+- [ ] Lifecycle transitions work (configure → activate → deactivate → cleanup)
+- [ ] Service gating is enforced (inactive → rejected)
+- [ ] Timer gating is enforced (inactive → no ticks)
+- [ ] Input/output flow is correct (messages transform and publish)
+- [ ] Error handling is robust (callback errors don't crash node)
+- [ ] All tests pass (unit + integration)
+- [ ] Docstring is comprehensive (explains teaching goals + usage)
+- [ ] Logs are clear (state transitions visible)
+- [ ] Ruff, Pyright, Pytest all green
+- [ ] Example is added to ``docs/examples.rst`` with explanation
 
 ---
 
