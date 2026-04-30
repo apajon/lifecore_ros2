@@ -105,9 +105,9 @@ dedicated investigation.  See issue
 Investigation outcome (2026-04-27)
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-**Verdict: IMPLEMENT** as a transverse utility usable by future
-``ServiceComponent`` / ``ActionComponent`` as well as today's topic
-components.
+**Verdict: IMPLEMENT** as a transverse utility usable by
+``ServiceComponent`` (shipped) and future ``ActionComponent`` as well as
+today's topic components.
 
 Evidence: the POC ``scripts/investigate_iface_type_inference.py`` exercised
 nine scenarios on CPython 3.12 against the exact PEP 695 generic shape used
@@ -172,9 +172,10 @@ becomes sufficient, and divergence is surfaced loudly instead of silently.
 **Consequences.**
 
 - A single resolver lives at ``src/lifecore_ros2/core/_iface_type.py`` —
-  transverse, reusable by ``ServiceComponent`` and ``ActionComponent`` when
-  they are introduced (see ``TODO.md §2``).  Placing it in ``core/`` rather
-  than ``components/`` is deliberate: the rule is not topic-specific.
+  transverse, reused by ``ServiceComponent`` (shipped) and reusable by
+  ``ActionComponent`` when introduced (see ``TODO.md §2``).  Placing it in
+  ``core/`` rather than ``components/`` is deliberate: the rule is not
+  topic-specific.
 - Boundary failure is a typed exception
   ``_InterfaceTypeNotResolvedError(LifecoreError, TypeError)`` — internal
   (Rule A: typed boundary errors), prefixed with ``_``, and **not**
