@@ -38,6 +38,14 @@ Example map
      - Standalone ``LifecycleTimerComponent`` with activation-gated ticks.
      - Read when you want a periodic callback whose firing is bound to lifecycle state.
      - ``uv run python examples/minimal_timer.py``
+   * - `minimal_service_server.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_service_server.py>`_
+     - ``LifecycleServiceServerComponent`` with activation-gated request handling.
+     - Read when you want to see how inactive requests are answered with a default response.
+     - ``uv run python examples/minimal_service_server.py``
+   * - `minimal_service_client.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_service_client.py>`_
+     - ``LifecycleServiceClientComponent`` with activation-gated outbound calls.
+     - Read when you want to see how inactive ``call()`` raises and how ``timeout_service`` works.
+     - ``uv run python examples/minimal_service_client.py``
    * - `telemetry_publisher.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/telemetry_publisher.py>`_
      - Full ``configure`` / ``activate`` / ``deactivate`` / ``cleanup`` split in one publisher component.
      - Read when you need a concrete pattern for long-lived handles plus runtime behavior.
@@ -126,6 +134,45 @@ What to look for
 - ``activate`` opens the gate so each tick reaches ``on_tick``; ``deactivate`` closes it again without destroying the timer.
 - ``cleanup`` lets the framework cancel and destroy the timer through ``_release_resources``.
 - The component never owns a publisher or subscription, so the example isolates the timer contract on its own.
+
+Minimal Service Server
+----------------------
+
+Source: `examples/minimal_service_server.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_service_server.py>`_
+
+What it demonstrates
+~~~~~~~~~~~~~~~~~~~~
+
+A ``LifecycleServiceServerComponent`` where the framework owns the ROS service and request
+handling is gated by lifecycle state through ``on_service_request``.
+
+What to look for
+~~~~~~~~~~~~~~~~
+
+- ``configure`` creates the ROS service on ``/trigger``; the service appears in ``ros2 service list``.
+- ``activate`` opens the gate so each request reaches ``on_service_request``.
+- ``deactivate`` does not destroy the service: incoming requests get a default-constructed response with ``success=False`` and ``message="component inactive"``, and a warning is logged.
+- ``cleanup`` destroys the service through ``_release_resources``.
+
+Minimal Service Client
+----------------------
+
+Source: `examples/minimal_service_client.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_service_client.py>`_
+
+What it demonstrates
+~~~~~~~~~~~~~~~~~~~~
+
+A ``LifecycleServiceClientComponent`` where the framework owns the ROS client and outbound
+``call()`` / ``call_async()`` are gated by lifecycle state.
+
+What to look for
+~~~~~~~~~~~~~~~~
+
+- ``configure`` creates the ROS client for ``/trigger``; no calls are issued yet.
+- ``activate`` makes ``call()``, ``call_async()``, and ``wait_for_service()`` safe to invoke.
+- ``call(..., timeout_service=...)`` waits for the service to become available and raises ``TimeoutError`` if it does not appear in time.
+- ``deactivate`` makes new calls raise ``RuntimeError``; futures already returned by ``call_async()`` are not cancelled and remain owned by the application.
+- ``cleanup`` destroys the client through ``_release_resources``.
 
 Telemetry Publisher
 -------------------
