@@ -52,6 +52,11 @@ Problems with this pattern at scale:
   Adding a second subscriber doubles the noise.
 - ``_active`` is a hand-rolled flag that shadows the lifecycle state but is not
   connected to it. A missed ``super()`` call or an exception in a hook desynchronises it.
+  ``lifecore_ros2`` removes both failure modes: activation gating is owned by the
+  framework, and uncaught hook exceptions are wrapped in
+  :class:`~lifecore_ros2.LifecycleHookError`, mapped to
+  ``TransitionCallbackReturn.ERROR``, and routed through rclpy's native
+  ``ErrorProcessing`` (see :doc:`design_notes/error_handling_contract`).
 - Cleanup logic (``destroy_subscription``) is duplicated in every node that needs it.
 - There is no reusable unit — the subscriber behavior is coupled to this specific node.
 

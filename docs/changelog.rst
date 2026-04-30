@@ -33,7 +33,23 @@ What this release provides
   callback is gated by activation state.
 - ``when_active`` — decorator that guards component methods on activation state.
 - ``LifecoreError`` and the typed boundary-violation subclasses ``RegistrationClosedError``,
-  ``DuplicateComponentError``, ``ComponentNotAttachedError``, ``ComponentNotConfiguredError``.
+  ``DuplicateComponentError``, ``ComponentNotAttachedError``, ``ComponentNotConfiguredError``,
+  ``InvalidLifecycleTransitionError``, ``ConcurrentTransitionError``.
+- ``LifecycleHookError`` — typed exception that wraps any uncaught exception raised inside
+  a ``_on_*`` hook (chained via ``__cause__``); never propagated to the caller of
+  ``trigger_*``, used for diagnostic context only.
+
+**Error propagation contract** (ratified Sprint 2):
+
+- Composite transitions follow rollback policy B (all-or-nothing); the node returns the
+  worst component result without replaying hooks in reverse.
+- Caught hook exceptions and invalid hook return values both map to
+  ``TransitionCallbackReturn.ERROR`` with a structured error log; rclpy then drives
+  ``ErrorProcessing`` and invokes ``_on_error`` exactly once.
+- Strict mode is the default and is non-configurable.
+
+See :doc:`design_notes/error_handling_contract` and the
+*Error Policy* section of :doc:`architecture` for the authoritative matrix.
 
 **Examples**: ``examples/minimal_node.py``, ``examples/minimal_publisher.py``,
 ``examples/minimal_subscriber.py``, ``examples/telemetry_publisher.py``.

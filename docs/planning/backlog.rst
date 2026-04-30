@@ -37,16 +37,15 @@ Component dependencies
 
 **Rationale:** Naturally arises when components need to depend on each other; placeholder prevents architectural rework later.
 
-Error handling
-^^^^^^^^^^^^^^
+Error handling — *shipped in Sprint 2 (2026-04-30)*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* [ ] Define error propagation rules for component hooks
-* [ ] Define behavior on partial configure/activate failure
-* [ ] Optional rollback policy
-
-**Rationale:** Error semantics are easy to defer and hard to fix once implicit. Setting the rule now prevents tangled recovery logic later.
-
-See :doc:`../design_notes/error_handling_contract` for the design note placeholder.
+Error propagation rules, partial-failure behavior (rollback policy B —
+all-or-nothing), strict mode for invalid hook returns, ``LifecycleHookError``
+for caught hook exceptions, and native rclpy ``ErrorProcessing``-driven
+``_on_error`` are all locked and enforced. See
+:doc:`../design_notes/error_handling_contract` for the ratified contract and
+the propagation matrix.
 
 Component state and health
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
