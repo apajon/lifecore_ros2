@@ -41,3 +41,18 @@ Components
    :members:
    :undoc-members:
    :show-inheritance:
+
+.. automodule:: lifecore_ros2.components.service_component
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: lifecore_ros2.components.lifecycle_service_server_component
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+.. automodule:: lifecore_ros2.components.lifecycle_service_client_component
+   :members:
+   :undoc-members:
+   :show-inheritance:
