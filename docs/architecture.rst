@@ -484,6 +484,62 @@ The framework enforces one coherent error policy across four axes.
   entered ``ErrorProcessing``. Most components do not need to override ``_on_error``;
   the default returns ``SUCCESS``, and ``_release_resources`` is called automatically.
 
+**Error Propagation Contract**
+
+  The following table is the authoritative propagation matrix for all ``_on_*`` hooks.
+  See :doc:`design_notes/error_handling_contract` for the full rationale.
+
+  .. list-table:: Hook outcome → framework action
+     :header-rows: 1
+     :widths: 30 20 20 15 15
+
+     * - Event in hook
+       - Wrapper return
+       - rclpy next state
+       - ``_on_error``?
+       - ``_release_resources``?
+     * - ``SUCCESS``
+       - ``SUCCESS``
+       - target state
+       - no
+       - per transition
+     * - explicit ``FAILURE``
+       - ``FAILURE``
+       - previous state
+       - no
+       - no (failed configure)
+     * - explicit ``ERROR``
+       - ``ERROR``
+       - ``ErrorProcessing``
+       - yes
+       - yes
+     * - caught exception
+       - ``ERROR`` + log
+       - ``ErrorProcessing``
+       - yes
+       - yes
+     * - invalid return value
+       - ``ERROR`` + log
+       - ``ErrorProcessing``
+       - yes
+       - yes
+
+  **Locked decisions (Sprint 2, ratified 2026-04-30):**
+
+  1. **Rollback policy B — all-or-nothing.** A composite transition fails as soon as one
+     component fails. The node returns ``FAILURE``; siblings that already transited are not
+     externalised as partial. No reverse replay of ``_on_cleanup`` hooks.
+  2. **``LifecycleHookError`` wraps caught hook exceptions.** The framework creates a
+     :class:`~lifecore_ros2.LifecycleHookError` (``__cause__`` set to the original exception)
+     for logging context. It is never propagated to ``trigger_*`` callers.
+  3. **Strict mode is the default and is non-configurable.** Any ``_on_*`` hook that returns
+     a value outside ``{SUCCESS, FAILURE, ERROR}`` is logged at ``ERROR`` and treated as
+     ``ERROR``. There is no lenient mode.
+  4. **``_on_error`` is driven only by native rclpy ``ERROR_PROCESSING``.** The framework
+     never synthesises an extra call to ``_on_error`` on caught exceptions. The native flow
+     (exception → wrapper returns ``ERROR`` → rclpy enters ``ErrorProcessing`` → ``on_error``
+     → ``_release_resources``) provides the full guarantee.
+
 Member Convention
 -----------------
 
