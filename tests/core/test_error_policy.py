@@ -13,11 +13,13 @@ test_failure_propagation.py (guard catches exceptions), test_edge_transitions.py
 
 from __future__ import annotations
 
+import threading
 from collections.abc import Generator
 from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
+from rclpy.executors import SingleThreadedExecutor
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleState
 
@@ -30,6 +32,7 @@ from lifecore_ros2 import (
     LifecoreError,
     LifecycleComponent,
     LifecycleComponentNode,
+    LifecycleHookError,
     RegistrationClosedError,
 )
 from lifecore_ros2.components import LifecyclePublisherComponent, LifecycleSubscriberComponent
@@ -117,6 +120,19 @@ def node() -> Generator[LifecycleComponentNode, None, None]:
     n = LifecycleComponentNode("error_policy_node")
     yield n
     n.destroy_node()
+
+
+@pytest.fixture()
+def spinning_error_node() -> Generator[LifecycleComponentNode, None, None]:
+    n = LifecycleComponentNode("error_policy_integration_node")
+    executor = SingleThreadedExecutor()
+    executor.add_node(n)
+    spin_thread = threading.Thread(target=executor.spin, daemon=True)
+    spin_thread.start()
+    yield n
+    executor.shutdown()
+    n.destroy_node()
+    spin_thread.join(timeout=5.0)
 
 
 # ===========================================================================
@@ -422,3 +438,147 @@ class TestOnMessageExceptionWrapping:
         assert sub.is_active
         sub._on_message_wrapper("msg2")
         assert sub.is_active
+
+
+# ===========================================================================
+# Sprint 2 error-handling contract — log content, propagation, and idempotence
+# ===========================================================================
+
+
+class TestContractLogFormat:
+    """Log records on hook exception and invalid return match the documented contract format."""
+
+    def test_exception_log_contains_component_name_hook_name_and_exception(self, node: LifecycleComponentNode) -> None:
+        # Contract: _guarded_call logs ERROR carrying the component name, the hook name
+        # ("on_configure", not "_on_configure"), the exception type, and the original message.
+        class _Crashing(LifecycleComponent):
+            def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+                raise RuntimeError("boom")
+
+        comp = _Crashing("crash_log_comp")
+        node.add_component(comp)
+
+        mock_logger = MagicMock()
+        with patch.object(comp, "_resolve_logger", return_value=mock_logger):
+            comp.on_configure(DUMMY_STATE)
+
+        # First error call is the structured hook-error message; second is the traceback.
+        assert mock_logger.error.call_count >= 1
+        first_msg: str = mock_logger.error.call_args_list[0][0][0]
+        assert "crash_log_comp" in first_msg
+        assert "on_configure" in first_msg
+        assert "RuntimeError" in first_msg
+        assert "boom" in first_msg
+
+    def test_invalid_return_log_contains_type_repr_and_expected_return_type(
+        self, node: LifecycleComponentNode
+    ) -> None:
+        # Contract: invalid return value logs component name, hook name, type name, repr,
+        # and the phrase "TransitionCallbackReturn" to indicate what was expected.
+        class _BadReturn(LifecycleComponent):
+            def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+                return 42  # type: ignore[return-value]
+
+        comp = _BadReturn("bad_return_log_comp")
+        node.add_component(comp)
+
+        mock_logger = MagicMock()
+        with patch.object(comp, "_resolve_logger", return_value=mock_logger):
+            comp.on_configure(DUMMY_STATE)
+
+        mock_logger.error.assert_called_once()
+        msg: str = mock_logger.error.call_args[0][0]
+        assert "bad_return_log_comp" in msg
+        assert "on_configure" in msg
+        assert "int" in msg
+        assert "42" in msg
+        assert "TransitionCallbackReturn" in msg
+
+
+class TestLifecycleHookErrorContract:
+    """LifecycleHookError is used for internal logging only; it never propagates to the caller."""
+
+    def test_hook_exception_does_not_propagate_to_caller(self, node: LifecycleComponentNode) -> None:
+        # Contract: _guarded_call absorbs exceptions, returns ERROR, and never re-raises.
+        # The caller of on_configure must never receive any exception.
+        class _Crashing(LifecycleComponent):
+            def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+                raise RuntimeError("boom")
+
+        comp = _Crashing("no_leak_comp")
+        node.add_component(comp)
+
+        result = comp.on_configure(DUMMY_STATE)  # must not raise
+
+        assert result == TransitionCallbackReturn.ERROR
+
+    def test_lifecycle_hook_error_importable_and_correct_hierarchy(self) -> None:
+        # Contract: LifecycleHookError is exported from the top-level package and is
+        # a subclass of both LifecoreError (framework catch-all) and RuntimeError (compat).
+        assert issubclass(LifecycleHookError, LifecoreError)
+        assert issubclass(LifecycleHookError, RuntimeError)
+
+
+class TestOnErrorInvocationCount:
+    """_on_error is driven exactly once by rclpy; the framework must not synthesize an extra call."""
+
+    def test_on_error_invoked_exactly_once_after_configure_exception(
+        self, spinning_error_node: LifecycleComponentNode
+    ) -> None:
+        # Contract: when _on_configure raises, _guarded_call returns ERROR.
+        # rclpy then drives the ERROR_PROCESSING transition which calls on_error on managed
+        # entities exactly once.  A count of 2 would indicate the framework also synthesized
+        # a second call — which is forbidden by the contract.
+        error_calls: list[int] = []
+
+        class _CountingError(LifecycleComponent):
+            def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+                raise RuntimeError("boom")
+
+            def _on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
+                error_calls.append(1)
+                return TransitionCallbackReturn.SUCCESS
+
+        comp = _CountingError("count_err_comp")
+        spinning_error_node.add_component(comp)
+
+        spinning_error_node.trigger_configure()
+
+        assert len(error_calls) == 1
+
+
+class TestDoubleReleaseAfterOnError:
+    """_release_resources idempotence guarantees no crash on a second release after the on_error path."""
+
+    def test_second_release_after_on_error_is_a_noop(self, node: LifecycleComponentNode) -> None:
+        # Contract: on_error calls _release_resources once (inside on_error).
+        # A subsequent on_shutdown must not raise and must not trigger a second increment
+        # when the implementation follows the idempotency rule (check-then-release).
+        release_count: list[int] = []
+
+        class _IdempotentRelease(LifecycleComponent):
+            def __init__(self) -> None:
+                super().__init__("idem_comp")
+                self._resource: object | None = object()
+
+            def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
+                self._resource = object()
+                return TransitionCallbackReturn.SUCCESS
+
+            def _release_resources(self) -> None:
+                if self._resource is not None:
+                    release_count.append(1)
+                    self._resource = None
+                super()._release_resources()
+
+        comp = _IdempotentRelease()
+        node.add_component(comp)
+        comp.on_configure(DUMMY_STATE)
+
+        # on_error path: calls _on_error then _release_resources.
+        comp.on_error(DUMMY_STATE)
+        assert len(release_count) == 1
+
+        # Subsequent on_shutdown must not raise and must not double-release.
+        comp.on_shutdown(DUMMY_STATE)  # must not raise
+        assert len(release_count) == 1  # idempotent: no second increment
