@@ -12,7 +12,7 @@ from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.managed_entity import ManagedEntity
 from rclpy.lifecycle.node import LifecycleState
 
-from .exceptions import ComponentNotAttachedError, InvalidLifecycleTransitionError
+from .exceptions import ComponentNotAttachedError, InvalidLifecycleTransitionError, LifecycleHookError
 
 if TYPE_CHECKING:
     from .lifecycle_component_node import LifecycleComponentNode
@@ -243,11 +243,16 @@ class LifecycleComponent(ManagedEntity, ABC):
         try:
             result = hook(state)
             if result not in _VALID_RETURNS:
-                log.error(f"[{self._name}.{hook_name}] invalid return value: {result!r}")
+                log.error(
+                    f"[{self._name}.{hook_name}] expected TransitionCallbackReturn, "
+                    f"got {type(result).__name__} {result!r}"
+                )
                 return TransitionCallbackReturn.ERROR
             return result
         except Exception as exc:
-            log.error(f"[{self._name}.{hook_name}] {type(exc).__name__}: {exc}")
+            hook_error = LifecycleHookError(f"[{self._name}.{hook_name}] raised {type(exc).__name__}: {exc}")
+            hook_error.__cause__ = exc
+            log.error(str(hook_error))
             log.error(traceback.format_exc())
             return TransitionCallbackReturn.ERROR
 

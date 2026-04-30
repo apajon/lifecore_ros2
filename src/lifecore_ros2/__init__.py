@@ -18,6 +18,7 @@ from .core import (
     LifecoreError,
     LifecycleComponent,
     LifecycleComponentNode,
+    LifecycleHookError,
     RegistrationClosedError,
     when_active,
 )
@@ -34,6 +35,7 @@ __all__ = [
     "LifecycleServiceClientComponent",
     "when_active",
     "LifecoreError",
+    "LifecycleHookError",
     "RegistrationClosedError",
     "DuplicateComponentError",
     "ComponentNotAttachedError",

@@ -14,6 +14,7 @@ Hierarchy::
     ├── ComponentNotConfiguredError (RuntimeError)
     ├── InvalidLifecycleTransitionError (RuntimeError)
     ├── ConcurrentTransitionError (RuntimeError)
+    ├── LifecycleHookError        (RuntimeError)
     └── _InterfaceTypeNotResolvedError (TypeError)  [internal — not re-exported]
 """
 
@@ -51,6 +52,14 @@ class InvalidLifecycleTransitionError(LifecoreError, RuntimeError):
 
 class ConcurrentTransitionError(LifecoreError, RuntimeError):
     """Raised when a lifecycle transition is attempted concurrently with an in-progress transition."""
+
+
+class LifecycleHookError(LifecoreError, RuntimeError):
+    """Raised internally when a lifecycle hook raises an unexpected exception.
+
+    Wraps the original exception as ``__cause__`` for diagnosis. Never propagated
+    to the caller of ``trigger_*``; used only for logging and internal aggregation.
+    """
 
 
 class _InterfaceTypeNotResolvedError(LifecoreError, TypeError):  # pyright: ignore[reportUnusedClass]

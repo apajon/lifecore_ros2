@@ -7,6 +7,7 @@ from .exceptions import (
     DuplicateComponentError,
     InvalidLifecycleTransitionError,
     LifecoreError,
+    LifecycleHookError,
     RegistrationClosedError,
 )
 from .lifecycle_component import LifecycleComponent, when_active
@@ -17,6 +18,7 @@ __all__ = [
     "LifecycleComponent",
     "when_active",
     "LifecoreError",
+    "LifecycleHookError",
     "RegistrationClosedError",
     "DuplicateComponentError",
     "ComponentNotAttachedError",
