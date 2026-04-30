@@ -53,13 +53,17 @@ Recommended Patterns
 
   Invariant upheld: **Activation gating**.
 
-**Prefer the generic-only form for concrete topic components**
+**Prefer the generic-only form for concrete topic and service components**
 
-  When a concrete publisher or subscriber class already parameterizes
-  ``LifecyclePublisherComponent[MsgT]`` or
-  ``LifecycleSubscriberComponent[MsgT]``, omit ``msg_type=...`` in the
-  constructor call. The framework now infers the ROS interface type from the
-  generic argument at ``__init__`` time.
+  When a concrete component class already parameterizes
+  ``LifecyclePublisherComponent[MsgT]``,
+  ``LifecycleSubscriberComponent[MsgT]``,
+  ``LifecycleServiceServerComponent[SrvT]``, or
+  ``LifecycleServiceClientComponent[SrvT]``, omit the corresponding
+  ``msg_type=...`` / ``srv_type=...`` keyword in the constructor call. The
+  framework infers the ROS interface type from the generic argument at
+  ``__init__`` time, through the same transverse resolver for both topic and
+  service components.
 
   .. code-block:: python
 
@@ -73,9 +77,9 @@ Recommended Patterns
       def on_message(self, msg: String) -> None:
         self.node.get_logger().info(msg.data)
 
-  Keep the explicit ``msg_type=...`` form only when the subclass is not
+  Keep the explicit ``msg_type=...`` / ``srv_type=...`` form only when the subclass is not
   parameterized or when the type is supplied dynamically. If both the generic
-  argument and ``msg_type`` are provided, they must agree or ``__init__`` raises
+  argument and the explicit keyword are provided, they must agree or ``__init__`` raises
   ``TypeError``.
 
   Invariant upheld: **configure** boundary correctness starts at construction time;
