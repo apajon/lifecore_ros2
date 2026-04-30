@@ -1,7 +1,7 @@
 ---
 name: "Orchestrator | ROS 2 Regression Hunter"
 description: "Use when a ROS 2 Jazzy Python lifecycle behavior regressed and you need to reproduce it, isolate the cause, add focused coverage, apply a minimal fix, and validate the result."
-tools: [read, search, todo, agent, github/*, mempalace/*]
+tools: [read, search, todo, agent, github/*, gitkraken/*, mempalace/*]
 user-invocable: true
 agents:
   [
