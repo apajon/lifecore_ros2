@@ -33,7 +33,10 @@ A lifecycle node that directly owns publishers, subscriptions, timers, and domai
 logic tends to blur two concerns: *when* a resource exists and *what* it does.
 Components separate those concerns. ``TopicComponent`` owns the ROS resource across
 configure/cleanup. ``LifecyclePublisherComponent``, ``LifecycleSubscriberComponent``,
-and ``LifecycleTimerComponent`` additionally gate runtime behavior on activation. Application code composes these
+and ``LifecycleTimerComponent`` additionally gate runtime behavior on activation.
+``ServiceComponent`` mirrors that pattern for ROS services, with
+``LifecycleServiceServerComponent`` and ``LifecycleServiceClientComponent`` gating
+request handling and outbound calls on activation. Application code composes these
 components inside a ``LifecycleComponentNode`` and keeps each ``_on_*`` hook focused.
 
 What belongs in this repository and what belongs in an application repository?
@@ -41,7 +44,8 @@ What belongs in this repository and what belongs in an application repository?
 
 This repository ships reusable, lifecycle-native primitives only:
 ``LifecycleComponentNode``, ``LifecycleComponent``, ``TopicComponent``, the
-publisher/subscriber/timer components, ``when_active``, and typed errors. Domain-specific
+publisher/subscriber/timer components, ``ServiceComponent`` and the service
+server/client components, ``when_active``, and typed errors. Domain-specific
 components, multi-node topologies, ``/diagnostics`` integrations, and applied
 examples belong in application repositories — or in the planned companion
 ``lifecore_ros2_examples`` repository for teaching examples that depend on more than
