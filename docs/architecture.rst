@@ -344,7 +344,14 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
 **Activation gating**
   ``LifecyclePublisherComponent.publish()`` raises ``RuntimeError`` when inactive.
   ``LifecycleSubscriberComponent`` silently drops incoming messages when inactive.
-  Both behaviors are intentional and consistent with explicit activation semantics.
+  ``LifecycleServiceClientComponent.call()`` and ``call_async()`` raise
+  ``RuntimeError`` when inactive; in-flight futures are not cancelled on
+  deactivate (the application owns them).
+  ``LifecycleServiceServerComponent`` does not silently drop inactive requests:
+  it logs a warning and returns a default-constructed response, populating
+  ``success=False`` / ``message="component inactive"`` when those fields exist.
+  All four behaviors are intentional and consistent with explicit activation
+  semantics.
 
 Naming Conventions
 ------------------
@@ -371,6 +378,9 @@ Framework type names are stable and must not be changed or aliased.
 
 - ``LifecyclePublisherComponent``
 - ``LifecycleSubscriberComponent``
+- ``LifecycleTimerComponent``
+- ``LifecycleServiceServerComponent``
+- ``LifecycleServiceClientComponent``
 
 **Explicit rules:**
 
