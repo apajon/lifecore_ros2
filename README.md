@@ -51,6 +51,10 @@ A small set of lifecycle-aware building blocks:
 | `TopicComponent` | Base class for topic-oriented components (pub/sub) |
 | `LifecyclePublisherComponent` | Lifecycle-gated ROS publisher |
 | `LifecycleSubscriberComponent` | Lifecycle-gated ROS subscriber |
+| `LifecycleTimerComponent` | Lifecycle-gated ROS timer |
+| `ServiceComponent` | Base class for service-oriented components (server/client) |
+| `LifecycleServiceServerComponent` | Lifecycle-gated ROS service server |
+| `LifecycleServiceClientComponent` | Lifecycle-gated ROS service client |
 | `when_active` | Decorator that guards any method to the active state |
 | `LifecoreError` and subclasses | Typed exceptions for boundary violations |
 
