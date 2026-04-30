@@ -54,7 +54,7 @@ Deliberately deferred. Do not implement until there is a concrete user need.
 - Config and specs (application-level configuration)
 - Factory and registry (dynamic component loading)
 - Callback group management (per-component groups, concurrency utilities)
-- Additional components (`ServiceComponent`, `ActionComponent`)
+- Additional components (`ActionComponent`, parameter components)
 - Binding layer (if component hierarchy becomes overloaded)
 - README badges (once on PyPI)
 

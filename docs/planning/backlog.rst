@@ -128,7 +128,7 @@ Additional components
 ^^^^^^^^^^^^^^^^^^^^^
 
 * [x] ``LifecycleTimerComponent`` — shipped; activation-gated ``on_tick``, ROS timer created on configure and released on cleanup; example in ``examples/minimal_timer.py``
-* [ ] ``ServiceComponent``
+* [x] ``ServiceComponent`` — shipped (Sprint 1); abstract base + concrete ``LifecycleServiceServerComponent`` and ``LifecycleServiceClientComponent`` with activation gating; examples in ``examples/minimal_service_server.py`` and ``examples/minimal_service_client.py``
 * [ ] ``ActionComponent``
 
 **Rationale:** Each component type needs explicit activation gating and resource management.
