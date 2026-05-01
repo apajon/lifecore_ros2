@@ -1,8 +1,36 @@
 Mental Model
 ============
 
+.. raw:: html
+
+   <div class="lifecycle-signature">
+     <svg class="lifecycle-signature__mark" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+       <circle cx="48" cy="48" r="30" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-dasharray="96 20"/>
+       <path d="M48 12a36 36 0 0 1 25.46 10.54" stroke="#7C3AED" stroke-width="12" stroke-linecap="round"/>
+       <path d="M79.82 64.5A36 36 0 0 1 48 84" stroke="#7C3AED" stroke-width="12" stroke-linecap="round" stroke-dasharray="22 16"/>
+     </svg>
+     <div>
+       <p class="lifecycle-signature__eyebrow">Lifecycle interface</p>
+       <p class="lifecycle-signature__title">Core lifecycle for modular robotics systems</p>
+       <p class="lifecycle-signature__text">The framework stays readable when each concept is tied to an explicit lifecycle phase.</p>
+     </div>
+   </div>
+
 Read this page before the API reference.
 It describes the intended mental model of the framework.
+
+Lifecycle Flow
+--------------
+
+.. raw:: html
+
+   <div class="lifecycle-map">
+     <div class="lifecycle-step"><strong>⚙ Configure</strong><p>Components create ROS-facing resources in configure hooks, not in their constructor.</p></div>
+     <div class="lifecycle-step"><strong>▶ Activate</strong><p>Runtime behavior becomes live only when the node activates managed entities.</p></div>
+     <div class="lifecycle-step"><strong>▶ Run</strong><p>Publish, subscribe, call services, and tick timers only while the active state is explicit.</p></div>
+     <div class="lifecycle-step lifecycle-step--transition"><strong>🔁 Transition</strong><p>The node owns transition propagation, so components do not invent a second control plane.</p></div>
+     <div class="lifecycle-step"><strong>■ Shutdown</strong><p>Cleanup and shutdown release resources and leave no hidden runtime state behind.</p></div>
+   </div>
 
 What A Component Is
 -------------------
@@ -51,6 +79,13 @@ Components create and destroy ROS resources through explicit hooks.
 - Enable runtime behavior during activate.
 - Disable or gate runtime behavior during deactivate.
 - Release ROS resources during cleanup.
+
+.. raw:: html
+
+   <div class="state-box">
+     <strong>State contract.</strong>
+     The lifecycle is the interface: resource creation belongs to configure, runtime work belongs to active states, and teardown belongs to cleanup and shutdown.
+   </div>
 
 Do not treat ``__init__`` as the place where runtime ROS resources become live.
 The framework is designed so resource lifetime follows lifecycle transitions.

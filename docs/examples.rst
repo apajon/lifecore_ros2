@@ -1,6 +1,19 @@
 Examples
 ========
 
+This page is the runtime view of the framework.
+Use it once the lifecycle vocabulary is familiar and you want to see how the contract feels in actual nodes and components.
+
+.. raw:: html
+
+   <div class="lifecycle-map">
+     <div class="lifecycle-step"><strong>⚙ Configure</strong><p>Each example shows where ROS resources are created and what stays dormant until activation.</p></div>
+     <div class="lifecycle-step"><strong>▶ Activate</strong><p>Activation opens message flow, callbacks, or service handling depending on the component type.</p></div>
+     <div class="lifecycle-step"><strong>▶ Run</strong><p>Observe the steady-state behavior you actually care about: publish, subscribe, tick, call, relay.</p></div>
+     <div class="lifecycle-step lifecycle-step--transition"><strong>🔁 Transition</strong><p>Deactivate and cleanup reveal what remains allocated, what is gated, and what disappears from the graph.</p></div>
+     <div class="lifecycle-step"><strong>■ Shutdown</strong><p>The final comparison point is always explicit teardown, never implicit destruction.</p></div>
+   </div>
+
 Read these examples before the API reference when you want the lifecycle model in one pass.
 They are ordered from the smallest hook surface to full component composition.
 
@@ -10,6 +23,13 @@ transition flow without adding topic resources or runtime behavior.
 Across all examples, the same lifecycle contract holds: ``configure`` creates long-lived ROS
 resources, ``activate`` starts behavior, ``deactivate`` stops or gates behavior, and ``cleanup``
 releases resources.
+
+.. raw:: html
+
+   <div class="state-box transition">
+     <strong>How to read the examples.</strong>
+     Do not read them as isolated demos. Read them as the same lifecycle contract replayed through different ROS surfaces: node-only, publisher, subscriber, timer, service server, service client, then multi-component composition.
+   </div>
 
 Example map
 -----------
@@ -58,6 +78,14 @@ Example map
 After launching an example, drive it with ``ros2 lifecycle set /<node_name> configure``, then
 ``activate``, ``deactivate``, and ``cleanup``. Each module docstring includes the expected output
 for those transitions, so you can compare logs and graph changes without reading the code first.
+
+Suggested reading path
+----------------------
+
+- Start with ``minimal_node.py`` for the smallest ownership boundary.
+- Move to publisher, subscriber, and timer examples to see activation gating on long-lived ROS resources.
+- Continue with service server and client examples to compare inbound versus outbound gating behavior.
+- Finish with ``telemetry_publisher.py`` and ``composed_pipeline.py`` for full lifecycle separation across multiple responsibilities.
 
 Minimal Node
 ------------

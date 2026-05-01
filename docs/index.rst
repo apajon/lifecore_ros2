@@ -1,6 +1,11 @@
 lifecore_ros2
 =============
 
+.. raw:: html
+
+   <img src="_static/Logo_main_light_HD.png" class="index-logo index-logo--light" alt="lifecore_ros2">
+   <img src="_static/Logo_main_dark_HD.png" class="index-logo index-logo--dark" alt="lifecore_ros2">
+
 Explicit lifecycle composition for ROS 2 Jazzy
 ==============================================
 
@@ -22,6 +27,16 @@ Explicit lifecycle composition for ROS 2 Jazzy
     :doc:`Quickstart <quickstart>`
     :doc:`Mental Model <concepts/mental_model>`
     :doc:`API Reference <api>`
+
+.. raw:: html
+
+   <div class="lifecycle-map">
+     <div class="lifecycle-step"><strong>⚙ Configure</strong><p>Start with environment setup, resource creation rules, and the ownership model that keeps ROS handles explicit.</p></div>
+     <div class="lifecycle-step"><strong>▶ Activate</strong><p>Read how runtime behavior becomes live only through lifecycle transitions and explicit activation gates.</p></div>
+     <div class="lifecycle-step"><strong>▶ Run</strong><p>Move into examples and API lookup once the lifecycle contract is clear.</p></div>
+     <div class="lifecycle-step lifecycle-step--transition"><strong>🔁 Transition</strong><p>Use architecture and patterns to understand propagation, registration, and failure handling.</p></div>
+     <div class="lifecycle-step"><strong>■ Shutdown</strong><p>Keep cleanup and release semantics in view so resources never outlive the lifecycle that created them.</p></div>
+   </div>
 
 The library exists to make raw ``rclpy`` lifecycle code easier to structure and verify. Resource creation, activation,
 deactivation, and cleanup stay explicit; component boundaries stay testable; and the framework does not add a second
@@ -50,6 +65,13 @@ Start here
 Begin with the guides below.
 They explain the framework's lifecycle model, ownership rules, and recommended usage before you jump into symbol-level API details.
 
+.. raw:: html
+
+   <div class="state-box">
+     <strong>Read the docs like a lifecycle.</strong>
+     Quickstart gets a node running, Getting Started fixes the environment contract, Mental Model explains ownership, Architecture defines transition rules, and Examples shows the contract under load.
+   </div>
+
 .. list-table::
    :widths: 30 70
    :header-rows: 0
@@ -74,6 +96,13 @@ Documentation map
 
 The guides section is the recommended reading path for new users.
 Use the API reference afterward as a lookup surface for classes, methods, and module details.
+
+Lifecycle-oriented reading order:
+
+#. Configure the environment and first node with :doc:`Quickstart <quickstart>` and :doc:`Getting Started <getting_started>`.
+#. Activate the mental model with :doc:`Mental Model <concepts/mental_model>`.
+#. Understand transition ownership with :doc:`Architecture <architecture>` and :doc:`Recommended Patterns and Anti-Patterns <patterns>`.
+#. Run concrete flows with :doc:`Examples <examples>` and compare tradeoffs in :doc:`Migration from Raw rclpy <migration_from_rclpy>`.
 
 .. toctree::
    :maxdepth: 1

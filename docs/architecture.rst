@@ -1,6 +1,19 @@
 Architecture
 ============
 
+This page is the contract surface for how the framework behaves during lifecycle transitions.
+Read it after :doc:`Mental Model <concepts/mental_model>` and before treating the API reference as authoritative lookup.
+
+.. raw:: html
+
+   <div class="lifecycle-map">
+     <div class="lifecycle-step"><strong>⚙ Configure</strong><p>Registration closes, components attach to the node, and resource ownership becomes explicit.</p></div>
+     <div class="lifecycle-step"><strong>▶ Activate</strong><p>Successful hooks mark managed entities active and open runtime behavior.</p></div>
+     <div class="lifecycle-step"><strong>▶ Run</strong><p>Hooks execute in order, results are aggregated, and the node remains the only entry point.</p></div>
+     <div class="lifecycle-step lifecycle-step--transition"><strong>🔁 Transition</strong><p>Concurrency, propagation, and error policy define what happens when transitions overlap or fail.</p></div>
+     <div class="lifecycle-step"><strong>■ Shutdown</strong><p>Cleanup, shutdown, and error handling clear active state and release resources deterministically.</p></div>
+   </div>
+
 Overview
 --------
 
@@ -15,6 +28,14 @@ The architecture is centered on two layers:
 
 If you need the conceptual model before the structural details on this page, read
 :doc:`Mental Model <concepts/mental_model>` first.
+
+What this page answers
+----------------------
+
+- Who owns components and when registration closes.
+- How transitions propagate and how results are aggregated.
+- Which operations are thread-safe and which are intentionally single-threaded.
+- When resources are created, gated, released, and considered invalid.
 
 Node–Component Ownership
 ------------------------
@@ -43,6 +64,13 @@ Key ownership rules:
 - The node calls each component's lifecycle hooks in registration order.
   If one component returns ``FAILURE`` or ``ERROR``, the node's transition result reflects
   the worst outcome across all components.
+
+.. raw:: html
+
+   <div class="state-box">
+     <strong>Ownership rule.</strong>
+     The node owns lifecycle entry, registration, and result aggregation. Components own focused behavior inside hooks, not the transition control plane.
+   </div>
 
 Thread-safety of ``add_component``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -94,6 +122,9 @@ The same pattern repeats for ``on_activate``, ``on_deactivate``, ``on_cleanup``,
 ``on_shutdown``, and ``on_error``. Each uses ``_guarded_call`` so exceptions from hook
 code never escape to the rclpy executor.
 
+Read the sequence as a lifecycle pipeline: node entry, registration gate, ordered hook calls,
+result aggregation, then a single return to ``rclpy``.
+
 ``on_activate`` additionally sets ``component._is_active = True`` on each component
 whose hook returned ``SUCCESS``. ``on_deactivate`` clears it only on ``SUCCESS``.
 ``on_cleanup``, ``on_shutdown``, and ``on_error`` each clear ``_is_active = False``
@@ -103,6 +134,9 @@ two results.
 
 Concurrency Contract
 --------------------
+
+This section exists to keep the lifecycle readable under pressure.
+The framework allows thread-safe registration before the first transition, but it does not normalize concurrent transition execution as a supported runtime pattern.
 
 .. rubric:: ADR — Threading model: single-threaded executor with thread-safe registration
 
@@ -200,6 +234,9 @@ callback is executing on that component, the result is undefined. The contract i
 
 Topic-Resource Lifecycle
 ------------------------
+
+This is the resource contract that should shape how you read component code.
+If resource lifetime is unclear in an implementation, check it against this section first.
 
 ``TopicComponent`` (and its subclasses ``LifecyclePublisherComponent`` and
 ``LifecycleSubscriberComponent``) follow a strict three-phase resource lifecycle:

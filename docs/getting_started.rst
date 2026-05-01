@@ -1,6 +1,21 @@
 Getting Started
 ===============
 
+.. raw:: html
+
+    <div class="lifecycle-signature">
+       <svg class="lifecycle-signature__mark" viewBox="0 0 96 96" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+          <circle cx="48" cy="48" r="30" stroke="currentColor" stroke-width="12" stroke-linecap="round" stroke-dasharray="96 20"/>
+          <path d="M48 12a36 36 0 0 1 25.46 10.54" stroke="#7C3AED" stroke-width="12" stroke-linecap="round"/>
+          <path d="M79.82 64.5A36 36 0 0 1 48 84" stroke="#7C3AED" stroke-width="12" stroke-linecap="round" stroke-dasharray="22 16"/>
+       </svg>
+       <div>
+          <p class="lifecycle-signature__eyebrow">Lifecycle interface</p>
+          <p class="lifecycle-signature__title">Core lifecycle for modular robotics systems</p>
+          <p class="lifecycle-signature__text">Start from the shortest runnable path, then follow the same lifecycle vocabulary used by the framework.</p>
+       </div>
+    </div>
+
 Need the shortest runnable path first? Start with :doc:`Quickstart <quickstart>`.
 This page remains the reference for prerequisites, validation commands, and documentation tooling.
 
@@ -21,6 +36,19 @@ Environment Notes
 
 The project expects rclpy to come from the system ROS installation.
 It should not be added as a normal PyPI dependency of the package.
+
+Lifecycle Landmarks
+-------------------
+
+.. raw:: html
+
+    <div class="lifecycle-map">
+       <div class="lifecycle-step"><strong>⚙ Configure</strong><p>Install ROS 2 Jazzy, keep <span class="lifecycle-accent">rclpy</span> system-provided, and sync the workspace with uv.</p></div>
+       <div class="lifecycle-step"><strong>▶ Activate</strong><p>Enable the developer toolchain with lint, format, type-check, and test commands that match the repository defaults.</p></div>
+       <div class="lifecycle-step"><strong>▶ Run</strong><p>Build the docs and exercise examples before diving into API details.</p></div>
+       <div class="lifecycle-step lifecycle-step--transition"><strong>🔁 Transition</strong><p>Move from quick validation into the conceptual model and architecture pages.</p></div>
+       <div class="lifecycle-step"><strong>■ Shutdown</strong><p>Keep cleanup semantics in mind: configured resources are meant to be released explicitly during lifecycle cleanup.</p></div>
+    </div>
 
 Install Development Dependencies
 --------------------------------
@@ -59,6 +87,13 @@ The Sphinx documentation can be built with:
    uv run --group docs python -m sphinx -b html docs docs/_build/html
 
 The generated HTML output is written to docs/_build/html.
+
+.. raw:: html
+
+    <div class="state-box transition">
+       <strong>Lifecycle reading path.</strong>
+       The onboarding flow mirrors the framework vocabulary: configure the environment, activate tooling, run validation, then transition into the mental model before you rely on API details.
+    </div>
 
 Repository Concepts
 -------------------
