@@ -2,6 +2,109 @@
 
 <!-- version list -->
 
+## v0.6.0 (2026-05-01)
+
+### Chores
+
+- Remove old root-level test files
+  ([`86b244d`](https://github.com/apajon/lifecore_ros2/commit/86b244da71ba3abc3bbec93bce422f5ae0b6ed68))
+
+### Documentation
+
+- Add 9 sprints for post-1.0 development
+  ([`5d67a12`](https://github.com/apajon/lifecore_ros2/commit/5d67a1243949a6bb3cc0f07b7876c17e0a9cc3e2))
+
+- Add HD PNG logo assets for Sphinx branding
+  ([`a31e4e0`](https://github.com/apajon/lifecore_ros2/commit/a31e4e0c8a385c5ace343495e8e4d8aa857d742d))
+
+- Add lifecycle branding CSS system
+  ([`9452121`](https://github.com/apajon/lifecore_ros2/commit/945212139bbe308d3da943d2f896c82ed338e509))
+
+- Add lifecycle branding to documentation pages
+  ([`a45fb3a`](https://github.com/apajon/lifecore_ros2/commit/a45fb3a42314b87afab1fdce0495fc2ed95d0dd7))
+
+- Add light/dark logo switching to README
+  ([`c4f9253`](https://github.com/apajon/lifecore_ros2/commit/c4f925363bba9958fe6e6ce1448284dd2a6c5f7d))
+
+- Add Real examples v1 sprint (S4), renumber S5-S10
+  ([`576f350`](https://github.com/apajon/lifecore_ros2/commit/576f350a2ae00f05d712d336872513a16f792719))
+
+- Add service component API references
+  ([`a74cb4f`](https://github.com/apajon/lifecore_ros2/commit/a74cb4fe0e731c2a6b343ba0cfd6257145c19832))
+
+- Add service component examples
+  ([`79adadb`](https://github.com/apajon/lifecore_ros2/commit/79adadbcabb028856c14173f8c81dc1212a30ddf))
+
+- Add SVG placeholder assets for icon and logos
+  ([`ad34fd2`](https://github.com/apajon/lifecore_ros2/commit/ad34fd219b4129ada1a733a4227645bde70d1a30))
+
+- Configure Furo theme with lifecycle branding
+  ([`b8962f3`](https://github.com/apajon/lifecore_ros2/commit/b8962f3fce2a7fda9ed42170dbf2c340f93dace7))
+
+- Create planning/ section and lifecycle design notes
+  ([`8e039f2`](https://github.com/apajon/lifecore_ros2/commit/8e039f2c91bba64f51d3af6901f631e50ccc9f4d))
+
+- Document service component gating and naming
+  ([`4f11249`](https://github.com/apajon/lifecore_ros2/commit/4f11249e34fa850cb5d2f1183aa8e65c5696d2df))
+
+- Document testing utilities and split API reference
+  ([`4ea7c9f`](https://github.com/apajon/lifecore_ros2/commit/4ea7c9f188ce65aef0a24e93f7f5ee1a56921d13))
+
+- Generalize interface-type inference pattern to services
+  ([`92719c7`](https://github.com/apajon/lifecore_ros2/commit/92719c758d045b5afd5776695b5a578541efd66e))
+
+- Mark LifecycleTimerComponent as shipped in TODO backlog
+  ([`d5d468b`](https://github.com/apajon/lifecore_ros2/commit/d5d468b9ca113d868b8ff38d1ac061a0ec0b0242))
+
+- Move ServiceComponent from backlog to shipped
+  ([`f2f42ec`](https://github.com/apajon/lifecore_ros2/commit/f2f42ecb414f359779a6d85ce519864e5d76f5b2))
+
+- Refactor ROADMAP.md to strategic overview
+  ([`efe4890`](https://github.com/apajon/lifecore_ros2/commit/efe4890502dd0d247989894889556c36d7f5f1c4))
+
+- Remove consolidated files from root
+  ([`df5cbd6`](https://github.com/apajon/lifecore_ros2/commit/df5cbd6cb1d218f9a75f3fb5e7757e3173f4eb10))
+
+- Switch banner icon to light/dark theme variants
+  ([`5437aab`](https://github.com/apajon/lifecore_ros2/commit/5437aab81dd03b51634a26685805f1bd330d6d53))
+
+- Uncheck sprint checklists, renumber S5-S10 after S4 insertion
+  ([`0e7a569`](https://github.com/apajon/lifecore_ros2/commit/0e7a569495fedea9af64c349644a6af259bfbea2))
+
+- Update api_friction_audit to reflect ServiceComponent shipped
+  ([`6a799f1`](https://github.com/apajon/lifecore_ros2/commit/6a799f1894b4c146c8c5a681125af0af282d3980))
+
+- Update links to point to new planning/ location
+  ([`4a3bdaf`](https://github.com/apajon/lifecore_ros2/commit/4a3bdaf4e893c34033ee3ba9b48423718229389b))
+
+- Update mental model and FAQ for services
+  ([`d6585e5`](https://github.com/apajon/lifecore_ros2/commit/d6585e5ff367f5dafe43e95275bd48111532b9bc))
+
+- Update README with tagline and lifecycle reading path
+  ([`9501e96`](https://github.com/apajon/lifecore_ros2/commit/9501e961e66868613bea5e969702982859cccd36))
+
+- Wire planning section into Sphinx index
+  ([`cd29401`](https://github.com/apajon/lifecore_ros2/commit/cd29401b23138349d3299b071d3d03f99b0357d9))
+
+### Features
+
+- **sprint-1**: Add service component primitives
+  ([`bc2d631`](https://github.com/apajon/lifecore_ros2/commit/bc2d6317492635e0c1bd0f25c2eabf586e6b7bd8))
+
+### Refactoring
+
+- Reorganize tests/ into sub-folders (smoke, core, components, integration)
+  ([`3a697f5`](https://github.com/apajon/lifecore_ros2/commit/3a697f5c577f53a5e3192c0e1e09e10f95b1c327))
+
+### Testing
+
+- Add lifecycle testing utilities
+  ([`62f0b4f`](https://github.com/apajon/lifecore_ros2/commit/62f0b4f80dbb73b83cfb09b3a6c7e444866e6756))
+
+- Reuse lifecycle testing fakes
+  ([`cb52c89`](https://github.com/apajon/lifecore_ros2/commit/cb52c899e4a93aefd59f64eff8903111c07263e1))
+
+
 ## v0.5.2 (2026-04-28)
 
 ### Bug Fixes
