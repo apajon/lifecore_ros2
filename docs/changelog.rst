@@ -54,12 +54,20 @@ See :doc:`design_notes/error_handling_contract` and the
 **Examples**: ``examples/minimal_node.py``, ``examples/minimal_publisher.py``,
 ``examples/minimal_subscriber.py``, ``examples/telemetry_publisher.py``.
 
+**Testing utilities** (Sprint 3): ``lifecore_ros2.testing`` provides lifecycle
+fakes, pytest-compatible fixtures, assertion helpers, log helpers, and small
+concurrency probes for framework and application tests. The standard fakes use
+``std_msgs.msg.String`` and ``std_srvs.srv.Trigger`` to stay concrete while
+keeping test setup compact.
+
 **Documentation**: getting-started guide, architecture overview, recommended patterns and
-anti-patterns, migration notes from raw ``rclpy``, and a Sphinx-buildable API reference.
+anti-patterns, testing utilities guide, migration notes from raw ``rclpy``, and a
+Sphinx-buildable API reference.
 
 **Quality baseline**: Ruff formatting and linting, Pyright in strict mode for the core
-package, and a pytest suite covering nominal transitions, edge transitions, activation
-gating, failure propagation, and resource handling.
+package, reusable lifecycle testing utilities, and a pytest suite covering nominal
+transitions, edge transitions, activation gating, failure propagation, resource
+handling, and the Sprint 3 testing package itself.
 
 What this release does not provide yet
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

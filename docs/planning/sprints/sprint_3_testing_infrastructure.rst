@@ -5,6 +5,26 @@ Sprint 3 — Testing infrastructure
 
 **Livrable.** "Application tests can verify lifecycle behavior without boilerplate."
 
+Status
+------
+
+Implemented in ``lifecore_ros2.testing`` as an extensible package with focused
+submodules:
+
+- ``fakes`` for reusable lifecycle, topic, timer, service, and client fakes
+- ``fixtures`` for pytest-compatible node fixtures
+- ``assertions`` for lifecycle state, transition order, and activation gating checks
+- ``helpers`` for common activate/deactivate and logging flows
+- ``concurrency`` for small threaded transition probes
+
+The package uses concrete ROS 2 message/service types for the standard topic and
+service fakes: ``std_msgs.msg.String`` and ``std_srvs.srv.Trigger``.
+
+Documentation entry points:
+
+- User guide: :doc:`/testing`
+- API reference: :doc:`/api`
+
 ---
 
 Content
@@ -53,25 +73,25 @@ Tests to write
 Fixture tests
 ^^^^^^^^^^^^^
 
-- [ ] ``lifecycle_node_fixture`` creates and destroys node cleanly
-- [ ] ``FakeComponent`` tracks hook calls and state transitions
-- [ ] ``FakeComponent`` can be configured to fail at specific hook
-- [ ] ``assert_component_state`` passes/fails correctly
+- [x] ``lifecycle_node_fixture`` creates and destroys node cleanly
+- [x] ``FakeComponent`` tracks hook calls and state transitions
+- [x] ``FakeComponent`` can be configured to fail at specific hook
+- [x] ``assert_component_state`` passes/fails correctly
 
 Helper tests
 ^^^^^^^^^^^^
 
-- [ ] ``activate_component`` calls configure then activate in order
-- [ ] ``collect_logs`` captures all logs during test
-- [ ] ``expect_log`` finds or asserts missing pattern
-- [ ] ``spawn_transition_thread`` runs transition from thread safely
+- [x] ``activate_component`` calls configure then activate in order
+- [x] ``collect_logs`` captures all logs during test
+- [x] ``expect_log`` finds or asserts missing pattern
+- [x] ``spawn_transition_thread`` runs transition from thread safely
 
 Integration example tests
 ^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- [ ] Using fixtures to test a node with 3 fake components
-- [ ] Verifying hook call order with ``assert_transition_order``
-- [ ] Verifying activation gating with ``assert_activation_gated``
+- [x] Using fixtures to test a node with standard fake components
+- [x] Verifying hook call order with ``assert_transition_order``
+- [x] Verifying activation gating with ``assert_activation_gated``
 
 ---
 
@@ -137,17 +157,17 @@ Success signal
 --------------
 
 - [x] ``from lifecore_ros2.testing import FakeComponent, lifecycle_node_fixture, activate_component`` works
-- [x] All utilities have docstrings with usage examples
-- [x] Example test file using fixtures (``tests/examples/test_with_fixtures.py``)
-- [x] All Sprint 1–2 tests can be rewritten to use these utilities (as regression test)
-- [x] Ruff, Pyright, Pytest all green
-- [x] No external testing library added (pytest is already a dev dependency)
+- [x] Public utilities have concise docstrings
+- [x] Example usage is covered by ``tests/testing``
+- [x] Generic lifecycle test doubles were migrated to use these utilities
+- [x] Ruff, Pyright, Pytest passed on the targeted test migration
+- [x] No external testing library added (pytest remains a development dependency)
 
 ---
 
 Location
 --------
 
-- Module: ``src/lifecore_ros2/testing.py`` or ``src/lifecore_ros2/testing/__init__.py``
-- Tests: ``tests/test_testing_infrastructure.py``
-- Examples: docstrings + one integration example test
+- Module package: ``src/lifecore_ros2/testing/``
+- Tests: ``tests/testing/`` plus migrated existing lifecycle/component tests
+- Examples: ``docs/testing.rst`` and focused tests under ``tests/testing/``

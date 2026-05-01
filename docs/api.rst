@@ -1,58 +1,27 @@
 API Reference
 =============
 
-Core
-----
+Use this section as the generated symbol-level reference for the public package
+surface. For narrative guidance, start with :doc:`testing` for test utilities or
+the guide pages listed in the sidebar.
 
-.. automodule:: lifecore_ros2.core.lifecycle_component_node
-   :members:
-   :undoc-members:
-   :show-inheritance:
+.. toctree::
+   :maxdepth: 1
 
-.. automodule:: lifecore_ros2.core.lifecycle_component
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   api/core
+   api/components
+   api/testing
 
-.. automodule:: lifecore_ros2.core.exceptions
-   :members:
-   :undoc-members:
-   :show-inheritance:
+Reference Sections
+------------------
 
-Components
-----------
+.. list-table::
+   :widths: 30 70
+   :header-rows: 0
 
-.. automodule:: lifecore_ros2.components.topic_component
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: lifecore_ros2.components.lifecycle_publisher_component
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: lifecore_ros2.components.lifecycle_subscriber_component
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: lifecore_ros2.components.lifecycle_timer_component
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: lifecore_ros2.components.service_component
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: lifecore_ros2.components.lifecycle_service_server_component
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-.. automodule:: lifecore_ros2.components.lifecycle_service_client_component
-   :members:
-   :undoc-members:
-   :show-inheritance:
+   * - :doc:`Core <api/core>`
+     - Lifecycle node, component base class, lifecycle hooks, and typed exceptions.
+   * - :doc:`Components <api/components>`
+     - Topic, timer, service server, and service client component APIs.
+   * - :doc:`Testing <api/testing>`
+     - Testing fakes, fixtures, assertions, helpers, and concurrency utilities.

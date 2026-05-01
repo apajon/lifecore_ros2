@@ -56,6 +56,7 @@ A small set of lifecycle-aware building blocks:
 | `LifecycleServiceClientComponent` | Lifecycle-gated ROS service client |
 | `when_active` | Decorator that guards any method to the active state |
 | `LifecoreError` and subclasses | Typed exceptions for boundary violations |
+| `lifecore_ros2.testing` | Reusable fakes, fixtures, assertions, and helpers for lifecycle-focused tests |
 
 ## Design rules and non-goals
 
@@ -117,7 +118,8 @@ Recommended order:
 3. [docs/concepts/mental_model.rst](docs/concepts/mental_model.rst)
 4. [docs/architecture.rst](docs/architecture.rst)
 5. [docs/patterns.rst](docs/patterns.rst)
-6. [docs/examples.rst](docs/examples.rst)
+6. [docs/testing.rst](docs/testing.rst)
+7. [docs/examples.rst](docs/examples.rst)
 
 ## Shortest-path example — subscriber
 
@@ -174,6 +176,7 @@ Key pages:
 - `docs/getting_started.rst` — setup and validation commands
 - `docs/architecture.rst` — lifecycle design rules, error policy, member conventions
 - `docs/patterns.rst` — recommended patterns and anti-patterns
+- `docs/testing.rst` — reusable lifecycle test fakes, fixtures, assertions, and helpers
 - `docs/migration_from_rclpy.rst` — before/after comparison with raw rclpy
 - `docs/api.rst` — generated API reference
 - `docs/examples.rst` — example walkthroughs

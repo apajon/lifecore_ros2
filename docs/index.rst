@@ -86,6 +86,8 @@ They explain the framework's lifecycle model, ownership rules, and recommended u
      - Read the lifecycle ownership model, transition rules, and component contracts.
    * - :doc:`Recommended Patterns and Anti-Patterns <patterns>`
      - Learn the concrete practices that keep components explicit, testable, and lifecycle-aligned.
+   * - :doc:`Testing Utilities <testing>`
+     - Reuse fakes, fixtures, assertions, and helpers for lifecycle-focused tests.
    * - :doc:`Examples <examples>`
      - Walk through runnable publisher, subscriber, and composed node examples.
    * - :doc:`Migration from Raw rclpy <migration_from_rclpy>`
@@ -102,6 +104,7 @@ Lifecycle-oriented reading order:
 #. Configure the environment and first node with :doc:`Quickstart <quickstart>` and :doc:`Getting Started <getting_started>`.
 #. Activate the mental model with :doc:`Mental Model <concepts/mental_model>`.
 #. Understand transition ownership with :doc:`Architecture <architecture>` and :doc:`Recommended Patterns and Anti-Patterns <patterns>`.
+#. Test lifecycle boundaries with :doc:`Testing Utilities <testing>`.
 #. Run concrete flows with :doc:`Examples <examples>` and compare tradeoffs in :doc:`Migration from Raw rclpy <migration_from_rclpy>`.
 
 .. toctree::
@@ -113,12 +116,13 @@ Lifecycle-oriented reading order:
    concepts/mental_model
    architecture
    patterns
+   testing
    migration_from_rclpy
    examples
    faq
 
 .. toctree::
-   :maxdepth: 1
+   :maxdepth: 2
    :caption: API Reference
 
    api
@@ -128,9 +132,6 @@ Lifecycle-oriented reading order:
    :caption: Planning
 
    planning/README
-   planning/backlog
-   planning/adoption_hardening
-   planning/examples_repo
    planning/sprints/README
 
 .. toctree::
