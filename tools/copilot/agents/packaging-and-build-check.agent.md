@@ -1,6 +1,6 @@
 ---
 name: "Packaging and Build Check"
-model: "Claude Opus 4.7 (copilot)"
+model: "GPT-5.5"
 description: "Use when validating pyproject metadata, setuptools-scm version generation, wheel/sdist buildability, packaging regressions, or semantic-release auto-versioning flow for this Python ROS 2 package."
 tools: [read, search, execute, todo, github/*, gitkraken/*, mempalace/*]
 user-invocable: true

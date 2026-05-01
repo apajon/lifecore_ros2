@@ -1,6 +1,6 @@
 ---
 name: "MemPalace Knowledge Writer"
-model: "Claude Opus 4.7 (copilot)"
+model: "GPT-5.5"
 description: "Use when persisting a validated architecture decision, stable framework rule, reusable convention, inter-component contract, confirmed anti-pattern, or regression-prevention rule into MemPalace. NOT for coding, refactoring, or architecture changes — memory persistence only."
 tools: [read, search, mempalace/*]
 user-invocable: true

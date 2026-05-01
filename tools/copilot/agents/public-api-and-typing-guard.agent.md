@@ -1,6 +1,6 @@
 ---
 name: "Public API and Typing Guard"
-model: "Claude Opus 4.7 (copilot)"
+model: "GPT-5.5"
 description: "Use when reviewing __init__.py exports, __all__, public imports, API breakage risk, and public typing consistency for this Python ROS 2 package before release, refactors, module moves, or public surface changes."
 tools: [read, search, execute, todo, mempalace/*]
 user-invocable: false
