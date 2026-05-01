@@ -1,10 +1,8 @@
 # lifecore_ros2
+![Logo](docs/_static/Logo_main_light_HD.png)
 
-[![CI](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml)
-[![Docs](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml)
-[![Release](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml)
-[![License: Apache 2.0](https://img.shields.io/github/license/apajon/lifecore_ros2)](LICENSE)
-[![Documentation](https://img.shields.io/badge/docs-github--pages-blue)](https://apajon.github.io/lifecore_ros2/)
+[![CI](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml) [![Docs](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml) [![Release](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml)
+[![License: Apache 2.0](https://img.shields.io/github/license/apajon/lifecore_ros2)](LICENSE)[![Documentation](https://img.shields.io/badge/docs-github--pages-blue)](https://apajon.github.io/lifecore_ros2/)
 
 <!-- Canonical positioning sentence — keep in sync with pyproject.toml project.description. See CONTRIBUTING.md. -->
 lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.
@@ -100,6 +98,25 @@ ros2 lifecycle set /minimal_lifecore_node activate
 ```
 
 For the full walkthrough, see [docs/quickstart.rst](docs/quickstart.rst). For validation and documentation commands, see [docs/getting_started.rst](docs/getting_started.rst). For the activation-gated subscriber example, continue with [examples/minimal_subscriber.py](examples/minimal_subscriber.py) or [docs/examples.rst](docs/examples.rst).
+
+## Lifecycle reading path
+
+The documentation now follows the same lifecycle vocabulary as the framework:
+
+- Configure: environment, prerequisites, ROS resource creation model
+- Activate: runtime enablement and activation gating
+- Run: examples, API usage, composed execution flow
+- Transition: ownership, propagation, and error handling rules
+- Shutdown: cleanup, release, and lifecycle end-state expectations
+
+Recommended order:
+
+1. [docs/quickstart.rst](docs/quickstart.rst)
+2. [docs/getting_started.rst](docs/getting_started.rst)
+3. [docs/concepts/mental_model.rst](docs/concepts/mental_model.rst)
+4. [docs/architecture.rst](docs/architecture.rst)
+5. [docs/patterns.rst](docs/patterns.rst)
+6. [docs/examples.rst](docs/examples.rst)
 
 ## Shortest-path example — subscriber
 
