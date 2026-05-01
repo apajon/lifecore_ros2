@@ -60,6 +60,7 @@ package-dir = {"" = "src"}
 lifecore_ros2 = ["py.typed"]
 "lifecore_ros2.core" = ["py.typed"]
 "lifecore_ros2.components" = ["py.typed"]
+"lifecore_ros2.testing" = ["py.typed"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
