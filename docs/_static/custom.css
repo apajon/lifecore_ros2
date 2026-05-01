@@ -88,10 +88,20 @@ body[data-theme="dark"] .index-logo--dark {
     width: 2.8rem;
     height: 2.8rem;
     flex-shrink: 0;
-    background-image: url('Logo_icon_HD.png');
+    background-image: url('Logo_icon_HD_light.png');
     background-size: contain;
     background-repeat: no-repeat;
     background-position: center;
+}
+
+body[data-theme="dark"] .content .page-lifecycle-banner__icon {
+    background-image: url('Logo_icon_HD_dark.png');
+}
+
+@media (prefers-color-scheme: dark) {
+    body:not([data-theme="light"]) .content .page-lifecycle-banner__icon {
+        background-image: url('Logo_icon_HD_dark.png');
+    }
 }
 
 .content .page-lifecycle-banner__eyebrow {
