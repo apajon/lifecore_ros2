@@ -8,14 +8,11 @@ from __future__ import annotations
 
 import pytest
 from rclpy.lifecycle import TransitionCallbackReturn
-from rclpy.lifecycle.node import LifecycleState
 
 from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
 from lifecore_ros2.core.exceptions import InvalidLifecycleTransitionError
 from lifecore_ros2.core.lifecycle_component import when_active
-
-DUMMY_STATE = LifecycleState(state_id=0, label="test")
-
+from lifecore_ros2.testing import DUMMY_STATE, FailingComponent, FakeComponent
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -30,44 +27,6 @@ def node():
 
 
 # ---------------------------------------------------------------------------
-# Instrumented component
-# ---------------------------------------------------------------------------
-
-
-class RecordingComponent(LifecycleComponent):
-    """Records hook calls and supports injected failures."""
-
-    def __init__(self, name: str, *, fail_on: str | None = None) -> None:
-        super().__init__(name)
-        self.calls: list[str] = []
-        self._fail_on = fail_on
-
-    def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self.calls.append("configure")
-        if self._fail_on == "configure":
-            return TransitionCallbackReturn.FAILURE
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self.calls.append("activate")
-        if self._fail_on == "activate":
-            return TransitionCallbackReturn.FAILURE
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self.calls.append("deactivate")
-        if self._fail_on == "deactivate":
-            return TransitionCallbackReturn.FAILURE
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self.calls.append("cleanup")
-        if self._fail_on == "cleanup":
-            return TransitionCallbackReturn.FAILURE
-        return TransitionCallbackReturn.SUCCESS
-
-
-# ---------------------------------------------------------------------------
 # Double activate
 # ---------------------------------------------------------------------------
 
@@ -78,7 +37,7 @@ class TestDoubleActivate:
     def test_double_activate_calls_hook_twice(self, node: LifecycleComponentNode) -> None:
         # Regression: direct repeated activate once called the hook twice.
         # Expected: the second direct activate is rejected and state stays active.
-        comp = RecordingComponent("dbl_act")
+        comp = FakeComponent("dbl_act")
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
@@ -93,7 +52,7 @@ class TestDoubleActivate:
     def test_double_activate_second_fails_stays_active(self, node: LifecycleComponentNode) -> None:
         # Regression: the second direct activate must fail before hook dispatch.
         # Expected: typed rejection and the first successful activation still holds.
-        comp = RecordingComponent("dbl_act_fail")
+        comp = FakeComponent("dbl_act_fail")
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
@@ -116,7 +75,7 @@ class TestDoubleDeactivate:
     def test_double_deactivate_calls_hook_twice(self, node: LifecycleComponentNode) -> None:
         # Regression: direct repeated deactivate once called the hook twice.
         # Expected: the second direct deactivate is rejected and state stays inactive.
-        comp = RecordingComponent("dbl_deact")
+        comp = FakeComponent("dbl_deact")
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
@@ -132,7 +91,7 @@ class TestDoubleDeactivate:
     def test_deactivate_without_prior_activate(self, node: LifecycleComponentNode) -> None:
         # Regression: direct deactivate once succeeded before any activate.
         # Expected: the invalid direct call is rejected.
-        comp = RecordingComponent("cold_deact")
+        comp = FakeComponent("cold_deact")
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
@@ -154,7 +113,7 @@ class TestRapidActivateDeactivateCycles:
 
     def test_many_cycles_is_active_consistent(self, node: LifecycleComponentNode) -> None:
         # Guard: _is_active must correctly track state through many cycles.
-        comp = RecordingComponent("rapid")
+        comp = FakeComponent("rapid")
         node.add_component(comp)
         comp.on_configure(DUMMY_STATE)
 
@@ -171,7 +130,7 @@ class TestRapidActivateDeactivateCycles:
     def test_failed_deactivate_keeps_active(self, node: LifecycleComponentNode) -> None:
         # Regression: a failed deactivate must NOT clear _is_active.
         # Expected: _is_active remains True after FAILURE from on_deactivate.
-        comp = RecordingComponent("fail_deact", fail_on="deactivate")
+        comp = FakeComponent("fail_deact", fail_at_hook="deactivate")
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
@@ -194,7 +153,7 @@ class TestReactivation:
     def test_reactivate_restores_is_active(self, node: LifecycleComponentNode) -> None:
         # Guard: after a full deactivate→reactivate cycle, _is_active must be True
         # and hooks must all be called.
-        comp = RecordingComponent("react")
+        comp = FakeComponent("react")
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
@@ -321,7 +280,7 @@ class TestActivateWithException:
         # Regression: if _on_activate raises, _guarded_call returns ERROR.
         # _is_active must NOT be set to True.
         # Expected: _is_active remains False after exception in activate.
-        comp = _CrashingActivateComponent("crash_act")
+        comp = FailingComponent("crash_act", fail_at_hook="activate", exception=RuntimeError("activate crash"))
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
@@ -332,7 +291,7 @@ class TestActivateWithException:
 
     def test_activate_failure_keeps_inactive(self, node: LifecycleComponentNode) -> None:
         # Guard: explicit FAILURE return from _on_activate must not set _is_active.
-        comp = RecordingComponent("fail_act", fail_on="activate")
+        comp = FakeComponent("fail_act", fail_at_hook="activate")
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
@@ -420,10 +379,3 @@ class _TrackingReleaseComponent(LifecycleComponent):
     def _release_resources(self) -> None:
         self.release_count += 1
         super()._release_resources()
-
-
-class _CrashingActivateComponent(LifecycleComponent):
-    """Component that raises during _on_activate."""
-
-    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        raise RuntimeError("activate crash")

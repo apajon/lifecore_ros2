@@ -19,43 +19,14 @@ from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleState
 
 from lifecore_ros2.components import LifecyclePublisherComponent, LifecycleSubscriberComponent
-from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
-
-# ---------------------------------------------------------------------------
-# Instrumented component
-# ---------------------------------------------------------------------------
+from lifecore_ros2.core import LifecycleComponentNode
+from lifecore_ros2.testing import FakeComponent
 
 
-class RecordingComponent(LifecycleComponent):
-    """Records lifecycle hook invocations for integration assertions."""
+class _NoShutdownRecordingComponent(FakeComponent):
+    """Fake component variant that preserves the old shutdown-blind test helper behavior."""
 
-    def __init__(self, name: str, *, fail_on: str | None = None) -> None:
-        super().__init__(name)
-        self.calls: list[str] = []
-        self._fail_on = fail_on
-
-    def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self.calls.append("configure")
-        if self._fail_on == "configure":
-            return TransitionCallbackReturn.FAILURE
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self.calls.append("activate")
-        if self._fail_on == "activate":
-            return TransitionCallbackReturn.FAILURE
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self.calls.append("deactivate")
-        if self._fail_on == "deactivate":
-            return TransitionCallbackReturn.FAILURE
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        self.calls.append("cleanup")
-        if self._fail_on == "cleanup":
-            return TransitionCallbackReturn.FAILURE
+    def _on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
         return TransitionCallbackReturn.SUCCESS
 
 
@@ -90,8 +61,8 @@ class TestIntegrationTransitionPropagation:
     """trigger_* on the node must propagate to all registered components."""
 
     def test_configure_propagates_to_all_components(self, spinning_node: LifecycleComponentNode) -> None:
-        comp_a = RecordingComponent("prop_a")
-        comp_b = RecordingComponent("prop_b")
+        comp_a = FakeComponent("prop_a")
+        comp_b = FakeComponent("prop_b")
         spinning_node.add_component(comp_a)
         spinning_node.add_component(comp_b)
 
@@ -102,7 +73,7 @@ class TestIntegrationTransitionPropagation:
         assert "configure" in comp_b.calls
 
     def test_activate_propagates_after_configure(self, spinning_node: LifecycleComponentNode) -> None:
-        comp = RecordingComponent("act")
+        comp = FakeComponent("act")
         spinning_node.add_component(comp)
 
         spinning_node.trigger_configure()
@@ -112,7 +83,7 @@ class TestIntegrationTransitionPropagation:
         assert comp.calls == ["configure", "activate"]
 
     def test_full_cycle_propagation(self, spinning_node: LifecycleComponentNode) -> None:
-        comp = RecordingComponent("full_cycle")
+        comp = FakeComponent("full_cycle")
         spinning_node.add_component(comp)
 
         assert spinning_node.trigger_configure() == TransitionCallbackReturn.SUCCESS
@@ -123,7 +94,7 @@ class TestIntegrationTransitionPropagation:
         assert comp.calls == ["configure", "activate", "deactivate", "cleanup"]
 
     def test_activate_deactivate_repeat_cycle(self, spinning_node: LifecycleComponentNode) -> None:
-        comp = RecordingComponent("repeat")
+        comp = FakeComponent("repeat")
         spinning_node.add_component(comp)
 
         spinning_node.trigger_configure()
@@ -145,7 +116,7 @@ class TestIntegrationTransitionPropagation:
     def test_shutdown_from_unconfigured_does_not_propagate(self, spinning_node: LifecycleComponentNode) -> None:
         # rclpy does not propagate on_shutdown to managed entities when the
         # node transitions directly from unconfigured to finalized.
-        comp = RecordingComponent("shutdown_unc")
+        comp = _NoShutdownRecordingComponent("shutdown_unc")
         spinning_node.add_component(comp)
 
         result = spinning_node.trigger_shutdown()
@@ -159,7 +130,7 @@ class TestIntegrationTransitionPropagation:
         # rclpy does not propagate on_shutdown to managed entities even from
         # the inactive state.  The node's own on_shutdown runs (closing
         # registration), but entity-level propagation is skipped.
-        comp = RecordingComponent("shutdown_inact")
+        comp = _NoShutdownRecordingComponent("shutdown_inact")
         spinning_node.add_component(comp)
 
         spinning_node.trigger_configure()
@@ -179,7 +150,7 @@ class TestIntegrationRegistrationGuard:
 
     def test_registration_closed_after_trigger_configure(self, spinning_node: LifecycleComponentNode) -> None:
         # Registration: still possible before first transition
-        comp = RecordingComponent("pre_cfg")
+        comp = FakeComponent("pre_cfg")
         spinning_node.add_component(comp)
 
         spinning_node.trigger_configure()
@@ -187,14 +158,14 @@ class TestIntegrationRegistrationGuard:
         # Guard: registration must be closed after trigger_configure
         assert not spinning_node._registration_open
         with pytest.raises(RuntimeError, match="lifecycle transitions have already started"):
-            spinning_node.add_component(RecordingComponent("late_cfg"))
+            spinning_node.add_component(FakeComponent("late_cfg"))
 
     def test_registration_closed_after_trigger_shutdown(self, spinning_node: LifecycleComponentNode) -> None:
         spinning_node.trigger_shutdown()
 
         assert not spinning_node._registration_open
         with pytest.raises(RuntimeError, match="lifecycle transitions have already started"):
-            spinning_node.add_component(RecordingComponent("late_shut"))
+            spinning_node.add_component(FakeComponent("late_shut"))
 
 
 # ---------------------------------------------------------------------------
@@ -206,7 +177,7 @@ class TestIntegrationMultipleComponents:
     """All registered components receive every propagated transition."""
 
     def test_three_components_configure_activate(self, spinning_node: LifecycleComponentNode) -> None:
-        comps = [RecordingComponent(f"multi_{i}") for i in range(3)]
+        comps = [FakeComponent(f"multi_{i}") for i in range(3)]
         spinning_node.add_components(comps)
 
         spinning_node.trigger_configure()
@@ -216,8 +187,8 @@ class TestIntegrationMultipleComponents:
             assert comp.calls == ["configure", "activate"]
 
     def test_component_failure_prevents_transition(self, spinning_node: LifecycleComponentNode) -> None:
-        good = RecordingComponent("good")
-        bad = RecordingComponent("bad", fail_on="configure")
+        good = FakeComponent("good")
+        bad = FakeComponent("bad", fail_at_hook="configure")
         spinning_node.add_component(good)
         spinning_node.add_component(bad)
 
@@ -240,12 +211,7 @@ class TestIntegrationShutdown:
         # Regression: trigger_shutdown from the active state was not covered; a broken
         # transition path could silently return non-SUCCESS without failing any existing test.
         # Expected: trigger_shutdown() returns SUCCESS after configure + activate.
-        class ShutdownRecordingComponent(RecordingComponent):
-            def _on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
-                self.calls.append("shutdown")
-                return TransitionCallbackReturn.SUCCESS
-
-        comp = ShutdownRecordingComponent("shutdown_active")
+        comp = FakeComponent("shutdown_active")
         spinning_node.add_component(comp)
 
         spinning_node.trigger_configure()
@@ -304,7 +270,7 @@ class TestIntegrationHeterogeneousComponents:
 
         pub_comp = LocalPublisher()
         sub_comp = LocalSubscriber()
-        rec_comp = RecordingComponent("het_rec")
+        rec_comp = FakeComponent("het_rec")
         spinning_node.add_components([pub_comp, sub_comp, rec_comp])
 
         spinning_node.trigger_configure()

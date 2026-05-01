@@ -15,18 +15,13 @@ import pytest
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleNode, LifecycleState
 
-from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
+from lifecore_ros2.core import LifecycleComponentNode
 from lifecore_ros2.core.exceptions import ConcurrentTransitionError, RegistrationClosedError
-
-DUMMY_STATE = LifecycleState(state_id=0, label="test")
+from lifecore_ros2.testing import DUMMY_STATE, FakeComponent
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
-
-
-class DummyComponent(LifecycleComponent):
-    pass
 
 
 class BlockingNode(LifecycleComponentNode):
@@ -144,7 +139,7 @@ class TestRegressionConcurrentTransitions:
         node._in_transition = True
         try:
             with pytest.raises(RegistrationClosedError):
-                node.add_component(DummyComponent("late"))
+                node.add_component(FakeComponent("late"))
         finally:
             node._in_transition = False
 
@@ -170,7 +165,7 @@ class TestRegressionConcurrentTransitions:
 # ---------------------------------------------------------------------------
 
 
-class _ReentrantComponent(DummyComponent):
+class _ReentrantComponent(FakeComponent):
     """Subclass that calls node.on_configure() from within its own _on_configure hook.
 
     Used to simulate a synchronous reentrant configure: the hook fires during an
@@ -225,7 +220,7 @@ class TestDestructionDuringSpin:
         # when destroy_node() was called without an explicit shutdown transition.
         # Expected: _release_resources runs for each active component during teardown.
         node = LifecycleComponentNode("teardown_test_node")
-        comp = DummyComponent("teardown_comp")
+        comp = FakeComponent("teardown_comp")
         node.add_component(comp)
 
         node.on_configure(DUMMY_STATE)

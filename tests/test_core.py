@@ -3,24 +3,13 @@
 from __future__ import annotations
 
 import pytest
-from rclpy.lifecycle.node import LifecycleState
 
-from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
-
-# ---------------------------------------------------------------------------
-# Concrete test component
-# ---------------------------------------------------------------------------
-
-
-class DummyComponent(LifecycleComponent):
-    pass
-
+from lifecore_ros2.core import LifecycleComponentNode
+from lifecore_ros2.testing import DUMMY_STATE, FakeComponent
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
-
-DUMMY_STATE = LifecycleState(state_id=0, label="test")
 
 
 @pytest.fixture()
@@ -37,27 +26,27 @@ def node():
 
 class TestAddComponent:
     def test_add_component_registers_managed_entity(self, node: LifecycleComponentNode) -> None:
-        comp = DummyComponent("comp_a")
+        comp = FakeComponent("comp_a")
         node.add_component(comp)
 
         assert comp.name in [c.name for c in node.components]
         assert comp._node is node
 
     def test_add_component_duplicate_name_raises(self, node: LifecycleComponentNode) -> None:
-        node.add_component(DummyComponent("dup"))
+        node.add_component(FakeComponent("dup"))
 
         with pytest.raises(ValueError, match="already registered"):
-            node.add_component(DummyComponent("dup"))
+            node.add_component(FakeComponent("dup"))
 
     def test_add_components_bulk(self, node: LifecycleComponentNode) -> None:
-        comps = [DummyComponent("a"), DummyComponent("b"), DummyComponent("c")]
+        comps = [FakeComponent("a"), FakeComponent("b"), FakeComponent("c")]
         node.add_components(comps)
         assert len(node.components) == 3
 
 
 class TestGetComponent:
     def test_get_existing_component(self, node: LifecycleComponentNode) -> None:
-        comp = DummyComponent("findme")
+        comp = FakeComponent("findme")
         node.add_component(comp)
         assert node.get_component("findme") is comp
 
@@ -68,12 +57,12 @@ class TestGetComponent:
 
 class TestComponentAttach:
     def test_unattached_component_node_raises(self) -> None:
-        comp = DummyComponent("orphan")
+        comp = FakeComponent("orphan")
         with pytest.raises(RuntimeError, match="not attached"):
             _ = comp.node
 
     def test_double_attach_raises(self, node: LifecycleComponentNode) -> None:
-        comp = DummyComponent("once")
+        comp = FakeComponent("once")
         comp._attach(node)
 
         with pytest.raises(RuntimeError, match="already attached"):
@@ -87,8 +76,8 @@ class TestComponentAttach:
 
 class TestManagedNodeNominal:
     def test_components_property_returns_registered(self, node: LifecycleComponentNode) -> None:
-        comp_a = DummyComponent("alpha")
-        comp_b = DummyComponent("beta")
+        comp_a = FakeComponent("alpha")
+        comp_b = FakeComponent("beta")
         node.add_component(comp_a)
         node.add_component(comp_b)
 
@@ -101,6 +90,6 @@ class TestManagedNodeNominal:
         assert node._registration_open is True
 
     def test_registration_closed_after_configure(self, node: LifecycleComponentNode) -> None:
-        node.add_component(DummyComponent("pre"))
+        node.add_component(FakeComponent("pre"))
         node.on_configure(DUMMY_STATE)
         assert node._registration_open is False

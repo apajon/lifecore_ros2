@@ -12,12 +12,9 @@ from __future__ import annotations
 import threading
 
 import pytest
-from rclpy.lifecycle.node import LifecycleState
 
 from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
-
-DUMMY_STATE = LifecycleState(state_id=0, label="test")
-
+from lifecore_ros2.testing import DUMMY_STATE, FakeComponent
 
 # ---------------------------------------------------------------------------
 # Fixtures
@@ -53,8 +50,8 @@ class TestConcurrentRegistration:
             except Exception as exc:
                 errors.append(exc)
 
-        comp_a = _DummyComponent("thread_a")
-        comp_b = _DummyComponent("thread_b")
+        comp_a = FakeComponent("thread_a")
+        comp_b = FakeComponent("thread_b")
 
         t1 = threading.Thread(target=add_with_barrier, args=(comp_a,))
         t2 = threading.Thread(target=add_with_barrier, args=(comp_b,))
@@ -82,7 +79,7 @@ class TestConcurrentRegistration:
             except Exception as exc:
                 errors.append(exc)
 
-        comps = [_DummyComponent(f"stress_{i}") for i in range(count)]
+        comps = [FakeComponent(f"stress_{i}") for i in range(count)]
         threads = [threading.Thread(target=add_with_barrier, args=(c,)) for c in comps]
         for t in threads:
             t.start()
@@ -122,8 +119,8 @@ class TestConcurrentDuplicateRejection:
             except Exception as exc:
                 errors.append(exc)
 
-        comp1 = _DummyComponent("same_name")
-        comp2 = _DummyComponent("same_name")
+        comp1 = FakeComponent("same_name")
+        comp2 = FakeComponent("same_name")
 
         t1 = threading.Thread(target=try_add, args=(comp1,))
         t2 = threading.Thread(target=try_add, args=(comp2,))
@@ -165,7 +162,7 @@ class TestConcurrentGateClosure:
         def try_add() -> None:
             try:
                 barrier.wait()
-                node.add_component(_DummyComponent("late_component"))
+                node.add_component(FakeComponent("late_component"))
                 registration_result.append("registered")
             except RuntimeError:
                 registration_result.append("rejected")
@@ -205,13 +202,4 @@ class TestConcurrentGateClosure:
         node.on_configure(DUMMY_STATE)
 
         with pytest.raises(RuntimeError, match="lifecycle transitions have already started"):
-            node.add_component(_DummyComponent("too_late"))
-
-
-# ---------------------------------------------------------------------------
-# Helpers
-# ---------------------------------------------------------------------------
-
-
-class _DummyComponent(LifecycleComponent):
-    pass
+            node.add_component(FakeComponent("too_late"))

@@ -5,24 +5,13 @@ from __future__ import annotations
 from unittest.mock import patch
 
 import pytest
-from rclpy.lifecycle.node import LifecycleState
 
-from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
-
-# ---------------------------------------------------------------------------
-# Concrete test component
-# ---------------------------------------------------------------------------
-
-
-class DummyComponent(LifecycleComponent):
-    pass
-
+from lifecore_ros2.core import LifecycleComponentNode
+from lifecore_ros2.testing import DUMMY_STATE, FakeComponent
 
 # ---------------------------------------------------------------------------
 # Fixtures
 # ---------------------------------------------------------------------------
-
-DUMMY_STATE = LifecycleState(state_id=0, label="test")
 
 
 @pytest.fixture()
@@ -46,7 +35,7 @@ class TestRegressionRegistrationGuard:
         # Expected: RuntimeError prevents late registration.
 
         # Negative case first: registration works before any transition
-        comp_before = DummyComponent("before_configure")
+        comp_before = FakeComponent("before_configure")
         node.add_component(comp_before)
         assert comp_before.name in [c.name for c in node.components]
 
@@ -55,7 +44,7 @@ class TestRegressionRegistrationGuard:
 
         # Positive case: adding after configure must raise
         with pytest.raises(RuntimeError, match="lifecycle transitions have already started"):
-            node.add_component(DummyComponent("after_configure"))
+            node.add_component(FakeComponent("after_configure"))
 
     def test_shutdown_closes_registration(self, node: LifecycleComponentNode) -> None:
         # Regression: add_component was accepted after on_shutdown,
@@ -63,7 +52,7 @@ class TestRegressionRegistrationGuard:
         # Expected: RuntimeError prevents registration after shutdown.
 
         # Negative case first: registration works before shutdown
-        comp_before = DummyComponent("before_shutdown")
+        comp_before = FakeComponent("before_shutdown")
         node.add_component(comp_before)
         assert comp_before.name in [c.name for c in node.components]
 
@@ -72,7 +61,7 @@ class TestRegressionRegistrationGuard:
 
         # Positive case: adding after shutdown must raise
         with pytest.raises(RuntimeError, match="lifecycle transitions have already started"):
-            node.add_component(DummyComponent("after_shutdown"))
+            node.add_component(FakeComponent("after_shutdown"))
 
     def test_registration_open_flag_initially_true(self, node: LifecycleComponentNode) -> None:
         # Guard: the flag must default to True for fresh nodes.
@@ -93,7 +82,7 @@ class TestRegressionAtomicAddComponent:
         # leaving it in a broken state that prevented re-attachment.
         # Expected: _detach() is called, _node is reset to None.
 
-        comp = DummyComponent("rollback_test")
+        comp = FakeComponent("rollback_test")
 
         with patch.object(node, "add_managed_entity", side_effect=RuntimeError("injected")):
             with pytest.raises(RuntimeError, match="injected"):
@@ -106,7 +95,7 @@ class TestRegressionAtomicAddComponent:
         # Regression: partial registration left ghost entries in _components.
         # Expected: failed component must not appear in the registry.
 
-        comp = DummyComponent("ghost_check")
+        comp = FakeComponent("ghost_check")
 
         with patch.object(node, "add_managed_entity", side_effect=RuntimeError("injected")):
             with pytest.raises(RuntimeError, match="injected"):
@@ -120,7 +109,7 @@ class TestRegressionAtomicAddComponent:
         # in "already attached" state and could not be registered elsewhere.
         # Expected: component can be re-added after rollback.
 
-        comp = DummyComponent("reattach_test")
+        comp = FakeComponent("reattach_test")
 
         # First attempt: fail
         with patch.object(node, "add_managed_entity", side_effect=RuntimeError("injected")):

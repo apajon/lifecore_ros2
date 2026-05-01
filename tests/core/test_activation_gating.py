@@ -18,12 +18,11 @@ from rclpy.lifecycle.node import LifecycleState
 from lifecore_ros2.components import LifecyclePublisherComponent, LifecycleSubscriberComponent
 from lifecore_ros2.core import LifecycleComponentNode
 from lifecore_ros2.core.lifecycle_component import LifecycleComponent, when_active
+from lifecore_ros2.testing import DUMMY_STATE
 
 # ---------------------------------------------------------------------------
 # Dummy state for direct hook invocations
 # ---------------------------------------------------------------------------
-
-DUMMY_STATE = LifecycleState(state_id=0, label="test")
 
 # ---------------------------------------------------------------------------
 # Instrumented subclasses — real hooks, mock ROS transport

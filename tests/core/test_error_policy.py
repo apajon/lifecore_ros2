@@ -37,8 +37,7 @@ from lifecore_ros2 import (
 )
 from lifecore_ros2.components import LifecyclePublisherComponent, LifecycleSubscriberComponent
 from lifecore_ros2.core.lifecycle_component import _worst_of
-
-DUMMY_STATE = LifecycleState(state_id=0, label="test")
+from lifecore_ros2.testing import DUMMY_STATE, FakeComponent
 
 # ---------------------------------------------------------------------------
 # Instrumented helpers
@@ -147,21 +146,15 @@ class TestTypedExceptions:
 
     def test_add_after_configure_raises_registration_closed(self, node: LifecycleComponentNode) -> None:
         # Rule A: adding a component after configure must raise RegistrationClosedError.
-        class _Dummy(LifecycleComponent):
-            pass
-
         node.on_configure(DUMMY_STATE)
         with pytest.raises(RegistrationClosedError, match="lifecycle transitions have already started"):
-            node.add_component(_Dummy("after_configure"))
+            node.add_component(FakeComponent("after_configure"))
 
     def test_registration_closed_is_runtime_error(self, node: LifecycleComponentNode) -> None:
         # Backward-compat: RegistrationClosedError must be catchable as RuntimeError.
         node.on_configure(DUMMY_STATE)
 
-        class _Dummy(LifecycleComponent):
-            pass
-
-        dummy = _Dummy("dummy_rt")
+        dummy = FakeComponent("dummy_rt")
         with pytest.raises(RuntimeError):
             node.add_component(dummy)
 
@@ -169,10 +162,7 @@ class TestTypedExceptions:
         # LifecoreError catches all framework boundary violations.
         node.on_configure(DUMMY_STATE)
 
-        class _Dummy(LifecycleComponent):
-            pass
-
-        dummy = _Dummy("dummy_le")
+        dummy = FakeComponent("dummy_le")
         with pytest.raises(LifecoreError):
             node.add_component(dummy)
 
@@ -180,46 +170,31 @@ class TestTypedExceptions:
 
     def test_duplicate_name_raises_duplicate_component_error(self, node: LifecycleComponentNode) -> None:
         # Rule A: registering two components with the same name raises DuplicateComponentError.
-        class _Dummy(LifecycleComponent):
-            pass
-
-        node.add_component(_Dummy("dup"))
+        node.add_component(FakeComponent("dup"))
         with pytest.raises(DuplicateComponentError, match="already registered"):
-            node.add_component(_Dummy("dup"))
+            node.add_component(FakeComponent("dup"))
 
     def test_duplicate_component_error_is_value_error(self, node: LifecycleComponentNode) -> None:
         # Backward-compat: DuplicateComponentError must be catchable as ValueError.
-        class _Dummy(LifecycleComponent):
-            pass
-
-        node.add_component(_Dummy("dup_ve"))
+        node.add_component(FakeComponent("dup_ve"))
         with pytest.raises(ValueError):
-            node.add_component(_Dummy("dup_ve"))
+            node.add_component(FakeComponent("dup_ve"))
 
     def test_duplicate_component_error_is_lifecore_error(self, node: LifecycleComponentNode) -> None:
-        class _Dummy(LifecycleComponent):
-            pass
-
-        node.add_component(_Dummy("dup_lce"))
+        node.add_component(FakeComponent("dup_lce"))
         with pytest.raises(LifecoreError):
-            node.add_component(_Dummy("dup_lce"))
+            node.add_component(FakeComponent("dup_lce"))
 
     # -- ComponentNotAttachedError ------------------------------------------
 
     def test_node_property_raises_when_detached(self) -> None:
         # Rule A: accessing .node on a detached component raises ComponentNotAttachedError.
-        class _Dummy(LifecycleComponent):
-            pass
-
-        comp = _Dummy("detached")
+        comp = FakeComponent("detached")
         with pytest.raises(ComponentNotAttachedError, match="not attached"):
             _ = comp.node
 
     def test_not_attached_is_runtime_error(self) -> None:
-        class _Dummy(LifecycleComponent):
-            pass
-
-        comp = _Dummy("detached_rt")
+        comp = FakeComponent("detached_rt")
         with pytest.raises(RuntimeError):
             _ = comp.node
 

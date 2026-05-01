@@ -25,12 +25,11 @@ from lifecore_ros2.components import (
     LifecycleSubscriberComponent,
 )
 from lifecore_ros2.core import LifecycleComponentNode
+from lifecore_ros2.testing import DUMMY_STATE as DUMMY_STATE
 
 # ---------------------------------------------------------------------------
 # Shared constant
 # ---------------------------------------------------------------------------
-
-DUMMY_STATE = LifecycleState(state_id=0, label="test")
 
 # ---------------------------------------------------------------------------
 # Concrete test doubles

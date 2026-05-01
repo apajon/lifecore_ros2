@@ -21,50 +21,11 @@ from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleState
 
 from lifecore_ros2.core import LifecycleComponent, LifecycleComponentNode
+from lifecore_ros2.testing import DUMMY_STATE, FailingComponent
 
 # ---------------------------------------------------------------------------
 # Instrumented components
 # ---------------------------------------------------------------------------
-
-DUMMY_STATE = LifecycleState(state_id=0, label="test")
-
-
-class CrashingComponent(LifecycleComponent):
-    """Component that raises RuntimeError on a configurable hook."""
-
-    def __init__(self, name: str, *, crash_on: str = "configure") -> None:
-        super().__init__(name)
-        self._crash_on = crash_on
-
-    def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
-        if self._crash_on == "configure":
-            raise RuntimeError("boom")
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        if self._crash_on == "activate":
-            raise RuntimeError("boom")
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
-        if self._crash_on == "deactivate":
-            raise RuntimeError("boom")
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        if self._crash_on == "cleanup":
-            raise RuntimeError("boom")
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
-        if self._crash_on == "shutdown":
-            raise RuntimeError("boom")
-        return TransitionCallbackReturn.SUCCESS
-
-    def _on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
-        if self._crash_on == "error":
-            raise RuntimeError("boom")
-        return TransitionCallbackReturn.SUCCESS
 
 
 class BadReturnComponent(LifecycleComponent):
@@ -162,7 +123,7 @@ class TestGuardCatchesExceptions:
     def test_activate_exception_returns_error(self, node: LifecycleComponentNode) -> None:
         # Regression: unhandled exception in _on_activate must not crash the node.
         # Expected: guard catches it, returns ERROR.
-        comp = CrashingComponent("crash_act", crash_on="activate")
+        comp = FailingComponent("crash_act", fail_at_hook="activate", exception=RuntimeError("boom"))
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
@@ -173,7 +134,7 @@ class TestGuardCatchesExceptions:
     def test_deactivate_exception_returns_error(self, node: LifecycleComponentNode) -> None:
         # Regression: unhandled exception in _on_deactivate must not crash the node.
         # Expected: guard catches it, returns ERROR.
-        comp = CrashingComponent("crash_deact", crash_on="deactivate")
+        comp = FailingComponent("crash_deact", fail_at_hook="deactivate", exception=RuntimeError("boom"))
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
@@ -185,7 +146,7 @@ class TestGuardCatchesExceptions:
     def test_cleanup_exception_returns_error(self, node: LifecycleComponentNode) -> None:
         # Regression: unhandled exception in _on_cleanup must not crash the node.
         # Expected: guard catches it, returns ERROR.
-        comp = CrashingComponent("crash_clean", crash_on="cleanup")
+        comp = FailingComponent("crash_clean", fail_at_hook="cleanup", exception=RuntimeError("boom"))
         node.add_component(comp)
 
         comp.on_configure(DUMMY_STATE)
@@ -196,7 +157,7 @@ class TestGuardCatchesExceptions:
     def test_shutdown_exception_returns_error(self, node: LifecycleComponentNode) -> None:
         # Regression: unhandled exception in _on_shutdown must not crash the node.
         # Expected: guard catches it, returns ERROR.
-        comp = CrashingComponent("crash_shut", crash_on="shutdown")
+        comp = FailingComponent("crash_shut", fail_at_hook="shutdown", exception=RuntimeError("boom"))
         node.add_component(comp)
 
         result = comp.on_shutdown(DUMMY_STATE)
@@ -206,7 +167,7 @@ class TestGuardCatchesExceptions:
     def test_error_hook_exception_returns_error(self, node: LifecycleComponentNode) -> None:
         # Regression: unhandled exception in _on_error itself must not crash.
         # Expected: guard catches it, returns ERROR.
-        comp = CrashingComponent("crash_err", crash_on="error")
+        comp = FailingComponent("crash_err", fail_at_hook="error", exception=RuntimeError("boom"))
         node.add_component(comp)
 
         result = comp.on_error(DUMMY_STATE)
@@ -347,7 +308,7 @@ class TestPartialResourceAllocation:
         # Regression: configure errors left sibling resources allocated.
         # Expected: the node returns ERROR without leaving allocated resources behind.
         good = ResourceTrackingComponent("err_good")
-        bad = CrashingComponent("err_bad", crash_on="configure")
+        bad = FailingComponent("err_bad", fail_at_hook="configure", exception=RuntimeError("boom"))
         spinning_node.add_component(good)
         spinning_node.add_component(bad)
 
@@ -388,7 +349,7 @@ class TestPartialResourceAllocation:
         # the other component's resources remain allocated.
         # Expected: good component's resource intact, crashing component raised.
         good = ResourceTrackingComponent("good_res")
-        bad = CrashingComponent("crash_res", crash_on="configure")
+        bad = FailingComponent("crash_res", fail_at_hook="configure", exception=RuntimeError("boom"))
         node.add_component(good)
         node.add_component(bad)
 
