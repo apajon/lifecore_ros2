@@ -6,6 +6,11 @@ Planning for the ``lifecore_ros2_examples`` companion repository.
 This file documents the planning until the companion repository is created at ``apajon/lifecore_ros2_examples``.
 At that point, this planning artifact will move into that repository.
 
+Bootstrap status: the repository exists and the initial foundation lives on the
+``bootstrap/repo-foundation`` branch. Until ``lifecore_ros2`` is published on PyPI,
+the companion repository resolves the core dependency from a sibling local checkout
+at ``../lifecore_ros2``.
+
 ---
 
 Purpose
@@ -55,6 +60,13 @@ An example belongs in **lifecore_ros2/examples/** (core repo) if **all** of the 
 
 Example categories (initial outline)
 ------------------------------------
+
+Some applied examples may take conceptual inspiration from MIT's `Underactuated Robotics`_
+materials, especially when choosing dynamics, estimation, control, or robotics-system scenarios.
+Those materials are inspiration for example design only; the companion repository does not vendor,
+mirror, or reproduce their content.
+
+.. _Underactuated Robotics: https://underactuated.mit.edu/
 
 Core examples — validated via Sprint 4
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -121,7 +133,7 @@ Repository structure (planned)
    lifecore_ros2_examples/
    ├── README.md
    ├── LICENSE
-   ├── pyproject.toml                # depends on lifecore_ros2 from PyPI
+   ├── pyproject.toml                # depends on a local lifecore_ros2 checkout until PyPI release
    ├── examples/
    │   ├── sensor_fusion/
    │   │   ├── __init__.py
@@ -148,7 +160,8 @@ Out of scope
 Coupling to core releases
 --------------------------
 
-- the companion repo pins ``lifecore_ros2 >= <current core release>`` in its ``pyproject.toml``
+- before the first PyPI release, the companion repo uses a local editable ``../lifecore_ros2`` source
+- after the first PyPI release, the companion repo pins ``lifecore_ros2 >= <current core release>`` in its ``pyproject.toml``
 - breaking core API changes update the pin; the companion repo does **not** gate core releases
 - the core repo's release process never blocks on companion-repo state
 
@@ -170,11 +183,12 @@ Before the companion repo exists, core examples are validated in the core `examp
 Phase 0 — Repository bootstrap
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- [ ] Create ``apajon/lifecore_ros2_examples`` on GitHub
-- [ ] Add ``LICENSE`` (Apache-2.0)
-- [ ] Add ``README.md`` with positioning, scope boundary, install, and link back to core
-- [ ] Add ``pyproject.toml``: Python 3.12+, ``lifecore_ros2`` from PyPI, dev extras (ruff, pyright, pytest)
-- [ ] Add ``.gitignore``, ``.editorconfig``, ``.pre-commit-config.yaml`` aligned with core
+- [x] Create ``apajon/lifecore_ros2_examples`` on GitHub
+- [x] Add ``LICENSE`` (Apache-2.0)
+- [x] Add ``README.md`` with positioning, scope boundary, install, and link back to core
+- [x] Add ``pyproject.toml``: Python 3.12+, local editable ``lifecore_ros2`` source, dev extras (ruff, pyright, pytest)
+- [x] Add ``.gitignore``, ``.editorconfig``, ``.pre-commit-config.yaml`` aligned with core
+- [x] Add a manual-only quality workflow (``workflow_dispatch``; no broad ``push`` trigger)
 
 Phase 1 — First applied example: sensor-fusion pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -193,9 +207,9 @@ First example focuses on **sensor-fusion pipeline** — fan-in multi-sensor inte
 Phase 2 — Quality gates
 ^^^^^^^^^^^^^^^^^^^^^^
 
-- [ ] CI workflow: ``ruff check``, ``ruff format --check``, ``pyright``, ``pytest``
+- [x] CI workflow: ``ruff check``, ``ruff format --check``, ``pyright``, ``pytest``
 - [ ] Smoke test that imports each example module without invoking ``rclpy.spin``
-- [ ] Document validation commands in the repo ``README.md``
+- [x] Document validation commands in the repo ``README.md``
 - [ ] Confirm install-from-scratch on a clean ROS 2 Jazzy environment
 
 Phase 3 — Signposting back to core
