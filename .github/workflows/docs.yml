@@ -4,6 +4,8 @@ name: Docs
   schedule:
     - cron: "0 3 * * 1"
   pull_request:
+    types: [ opened, synchronize, reopened, ready_for_review, closed ]
+    branches: [ main ]
     paths:
       - "docs/**"
       - "README.md"
@@ -21,8 +23,11 @@ env:
 
 jobs:
   sphinx:
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.draft
-      == false }}
+    if: >-
+      ${{
+        (github.event_name != 'pull_request' || github.event.pull_request.draft == false) &&
+        (github.event_name != 'pull_request' || github.event.action != 'closed' || github.event.pull_request.merged == true)
+      }}
     runs-on: ubuntu-latest
     concurrency:
       group: ${{ github.workflow }}-${{ github.ref }}
@@ -53,7 +58,8 @@ jobs:
           path: docs/_build/html
 
   deploy:
-    if: ${{ github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ github.ref == 'refs/heads/main' || github.event_name ==
+      'workflow_dispatch' }}
     needs: sphinx
     runs-on: ubuntu-latest
     environment:
