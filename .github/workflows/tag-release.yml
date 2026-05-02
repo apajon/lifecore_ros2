@@ -4,55 +4,55 @@ name: Tag and publish on merge
 # Creates the version tag and publishes the GitHub release in a single job,
 # avoiding the GITHUB_TOKEN cross-workflow trigger restriction.
 on:
-    pull_request:
-        types: [ closed ]
-        branches: [ main ]
+  pull_request:
+    types: [ closed ]
+    branches: [ main ]
 
 jobs:
-    tag-and-publish:
-        if: >
-            github.event.pull_request.merged == true &&
-            startsWith(github.event.pull_request.head.ref, 'release/bump-v')
-        runs-on: ubuntu-latest
+  tag-and-publish:
+    if: >
+      github.event.pull_request.merged == true &&
+      startsWith(github.event.pull_request.head.ref, 'release/bump-v')
+    runs-on: ubuntu-latest
 
-        permissions:
-            contents: write
+    permissions:
+      contents: write
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v5
-              with:
-                  fetch-depth: 0
-                  ref: main
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: main
 
-            - name: Set up uv
-              uses: astral-sh/setup-uv@v8.1.0
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v8.1.0
 
-            - name: Sync build dependencies
-              run: uv sync
+      - name: Sync build dependencies
+        run: uv sync
 
-            - name: Extract version
-              id: version
-              run: |
-                  BRANCH="${{ github.event.pull_request.head.ref }}"
-                  VERSION="${BRANCH#release/bump-v}"
-                  echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+      - name: Extract version
+        id: version
+        run: |
+          BRANCH="${{ github.event.pull_request.head.ref }}"
+          VERSION="${BRANCH#release/bump-v}"
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
 
-            - name: Create and push tag
-              run: |
-                  git config user.name "github-actions[bot]"
-                  git config user.email "github-actions[bot]@users.noreply.github.com"
-                  git tag "v${{ steps.version.outputs.version }}"
-                  git push origin "v${{ steps.version.outputs.version }}"
+      - name: Create and push tag
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git tag "v${{ steps.version.outputs.version }}"
+          git push origin "v${{ steps.version.outputs.version }}"
 
-            - name: Build distributions
-              run: uv build
+      - name: Build distributions
+        run: uv build
 
-            - name: Create GitHub release and upload assets
-              env:
-                  GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-              run: |
-                  gh release create "v${{ steps.version.outputs.version }}" dist/* \
-                    --title "v${{ steps.version.outputs.version }}" \
-                    --notes "See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details." \
-                    --verify-tag
+      - name: Create GitHub release and upload assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v${{ steps.version.outputs.version }}" dist/* \
+            --title "v${{ steps.version.outputs.version }}" \
+            --notes "See [CHANGELOG.md](https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md) for details." \
+            --verify-tag
