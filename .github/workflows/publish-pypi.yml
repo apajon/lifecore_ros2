@@ -1,0 +1,62 @@
+name: Publish to PyPI
+
+"on":
+    workflow_dispatch:
+        inputs:
+            tag:
+                description: Release tag to publish, for example v0.6.2
+                required: true
+                type: string
+
+permissions:
+    contents: read
+
+jobs:
+    build-and-publish:
+        runs-on: ubuntu-24.04
+
+        permissions:
+            contents: read
+            id-token: write
+
+        steps:
+            - name: Checkout release tag
+              uses: actions/checkout@v5
+              with:
+                  fetch-depth: 0
+                  ref: ${{ inputs.tag }}
+
+            - name: Set up Python
+              uses: actions/setup-python@v6
+              with:
+                  python-version: "3.12"
+
+            - name: Set up uv
+              uses: astral-sh/setup-uv@v8.1.0
+
+            - name: Verify release tag checkout
+              env:
+                  TAG: ${{ inputs.tag }}
+              run: |
+                  case "$TAG" in
+                    v[0-9]*) ;;
+                    *)
+                      echo "::error::Expected a release tag like v0.6.2, got '$TAG'."
+                      exit 1
+                      ;;
+                  esac
+
+                  CHECKED_OUT_TAG=$(git describe --exact-match --tags HEAD)
+                  if [[ "$CHECKED_OUT_TAG" != "$TAG" ]]; then
+                    echo "::error::Checked out '$CHECKED_OUT_TAG' instead of '$TAG'."
+                    exit 1
+                  fi
+
+            - name: Build distributions
+              run: uv build
+
+            - name: Check distribution metadata
+              run: uv run --with twine twine check dist/*
+
+            - name: Publish distributions to PyPI
+              uses: pypa/gh-action-pypi-publish@release/v1

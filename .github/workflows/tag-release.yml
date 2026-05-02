@@ -1,7 +1,7 @@
 name: Tag and publish on merge
 
 # Triggered when a release/bump-v* PR is merged into main.
-# Creates the version tag, publishes to PyPI, and publishes the GitHub release in a single job,
+# Creates the version tag, publishes to TestPyPI, and publishes the GitHub release in a single job,
 # avoiding the GITHUB_TOKEN cross-workflow trigger restriction.
 on:
   pull_request:
@@ -52,8 +52,10 @@ jobs:
       - name: Check distribution metadata
         run: uv run --with twine twine check dist/*
 
-      - name: Publish distributions to PyPI
+      - name: Publish distributions to TestPyPI
         uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
 
       - name: Create GitHub release and upload assets
         env:

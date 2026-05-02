@@ -31,13 +31,13 @@ jobs:
             - name: Resolve unique TestPyPI version
               id: version
               run: |
-                BASE_VERSION=$(uv run --with setuptools-scm python -m setuptools_scm | sed 's/+.*//')
-                VERSION=$(printf '%s' "$BASE_VERSION" | sed -E "s/\.dev([0-9]+)$/.dev\1${GITHUB_RUN_NUMBER}/")
-                if [[ "$VERSION" == "$BASE_VERSION" ]]; then
-                  VERSION="${BASE_VERSION}.dev${GITHUB_RUN_NUMBER}"
-                fi
-                  echo "value=$VERSION" >> "$GITHUB_OUTPUT"
-                echo "Resolved TestPyPI version: $VERSION"
+                  BASE_VERSION=$(uv run --with setuptools-scm python -m setuptools_scm | sed 's/+.*//')
+                  VERSION=$(printf '%s' "$BASE_VERSION" | sed -E "s/\.dev([0-9]+)$/.dev\1${GITHUB_RUN_NUMBER}/")
+                  if [[ "$VERSION" == "$BASE_VERSION" ]]; then
+                    VERSION="${BASE_VERSION}.dev${GITHUB_RUN_NUMBER}"
+                  fi
+                    echo "value=$VERSION" >> "$GITHUB_OUTPUT"
+                  echo "Resolved TestPyPI version: $VERSION"
 
             - name: Build distributions
               env:
