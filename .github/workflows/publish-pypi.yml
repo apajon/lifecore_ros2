@@ -25,10 +25,11 @@ jobs:
               env:
                   GH_TOKEN: ${{ github.token }}
                   INPUT_TAG: ${{ inputs.tag }}
+                  REPOSITORY: ${{ github.repository }}
               run: |
                   TAG="$INPUT_TAG"
                   if [[ -z "$TAG" ]]; then
-                    TAG=$(gh release view --json tagName --jq .tagName)
+                    TAG=$(gh release view --repo "$REPOSITORY" --json tagName --jq .tagName)
                   fi
 
                   case "$TAG" in
