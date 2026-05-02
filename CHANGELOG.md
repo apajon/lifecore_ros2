@@ -2,6 +2,34 @@
 
 <!-- version list -->
 
+## v0.6.1 (2026-05-02)
+
+### Bug Fixes
+
+- **ci**: Update docs trigger on PR
+  ([`1a30bc0`](https://github.com/apajon/lifecore_ros2/commit/1a30bc0d9e8e46a757ca280502c5119c82e06902))
+
+### Documentation
+
+- Add latest release badge
+  ([`1a663e1`](https://github.com/apajon/lifecore_ros2/commit/1a663e1b6702db0ef286d3eea1dce04b1b5ae323))
+
+- Align alpha maturity status
+  ([`6d7f39d`](https://github.com/apajon/lifecore_ros2/commit/6d7f39d542f9064af54f25d290d3fac37fa3a03d))
+
+- Fix PyPI README image rendering
+  ([`fc7185f`](https://github.com/apajon/lifecore_ros2/commit/fc7185fe25916b193230eca783efea900784b679))
+
+- Highlight ROS installation requirement
+  ([`4627728`](https://github.com/apajon/lifecore_ros2/commit/4627728cdbab9725c50e293195f05a0fa39a6a03))
+
+- Update companion examples planning
+  ([`15bda8d`](https://github.com/apajon/lifecore_ros2/commit/15bda8df372d911817247fd947d0b82bb31beff8))
+
+- Use uv install command in README
+  ([`df66542`](https://github.com/apajon/lifecore_ros2/commit/df665420be779dde87d3e86acc902f925ae9e10c))
+
+
 ## v0.6.0 (2026-05-01)
 
 ### Chores
