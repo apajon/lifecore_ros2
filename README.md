@@ -8,6 +8,17 @@
 <!-- Canonical positioning sentence — keep in sync with pyproject.toml project.description. See CONTRIBUTING.md. -->
 lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.
 
+## Installation warning: ROS 2 Jazzy required
+
+lifecore_ros2 requires a working ROS 2 Jazzy Python environment. Install and source ROS 2 before importing this package:
+
+```bash
+source /opt/ros/jazzy/setup.bash
+uv pip install lifecore-ros2
+```
+
+`rclpy` comes from the system ROS installation. It is intentionally not declared as a normal PyPI dependency.
+
 ![Composed pipeline lifecycle walk-through: configure creates topics, activate streams data, deactivate stops data flow while topics remain (deactivate ≠ cleanup), cleanup releases resources.](docs/_static/composed_pipeline_demo.gif)
 
 *The `examples/composed_pipeline.py` walk-through highlights the key distinction the library makes explicit: **deactivate ≠ cleanup** — `/pipeline/*` topics persist across deactivate and only disappear on cleanup.*
