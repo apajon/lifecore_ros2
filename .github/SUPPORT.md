@@ -8,7 +8,7 @@ Use GitHub issues for:
 - documentation errors or gaps
 - framework-level feature requests for this repository
 
-Before opening a feature request, check ROADMAP.md and TODO.md.
+Before opening a feature request, check ROADMAP.md and docs/planning/backlog.rst.
 
 ## Contact paths
 
@@ -27,7 +27,7 @@ This repository is for the core library. Domain-specific application code, multi
 
 ## Project status
 
-This project is currently in the 0.x series and should be treated as beta software. Public APIs are stable in intent, but changes may still happen before 1.0.
+This project is currently in the 0.x series and should be treated as alpha-quality for API stability. It is usable and documented for evaluation, but public APIs may still change before 1.0.
 
 ## Response expectations
 

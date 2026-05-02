@@ -56,7 +56,8 @@ See ``ROADMAP.md`` at the repository root for the full "out of scope" list.
 What is the current API stability level?
 ----------------------------------------
 
-The public API is in the ``0.x`` series — experimental stability. Minor version bumps
-may include breaking changes. The surface is deliberately small to keep that risk
-contained. Promotion to ``1.0.0`` will happen only once the API is judged stable
-based on real usage feedback.
+The public API is in the ``0.x`` series — experimental stability. Package metadata
+uses ``Development Status :: 3 - Alpha`` to reflect API stability, not lack of
+usability. Minor version bumps may include breaking changes. The surface is
+deliberately small to keep that risk contained. Promotion to ``1.0.0`` will happen
+only once the API is judged stable based on real usage feedback.

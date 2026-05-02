@@ -154,6 +154,7 @@ The extension model and API buckets are defined in [docs/architecture.rst](docs/
 
 ## Current limitations
 
+- package metadata uses `Development Status :: 3 - Alpha` to reflect API stability, not lack of usability
 - the public API is in the `0.x` series — experimental stability level; minor bumps may include breaking changes
 - companion examples repository `lifecore_ros2_examples` is *planned — not yet published*; see `ROADMAP.md` for scope and the first applied example (sensor-fusion pipeline)
 

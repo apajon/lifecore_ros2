@@ -33,7 +33,7 @@ Before pursuing new features, the project is focused on making the library adopt
 
 **See [Adoption & Hardening Roadmap](docs/planning/adoption_hardening.rst)** for the nine-concern framework.
 
-Current status: ✓ all adoption items complete (v0.4.0). The core library is ready for professional use.
+Current status: ✓ all adoption items complete (v0.4.0). The core library is usable and documented for professional evaluation, while API stability remains experimental until `1.0.0`.
 
 ---
 
@@ -56,6 +56,7 @@ Deliberately deferred. Do not implement until there is a concrete user need.
 - Callback group management (per-component groups, concurrency utilities)
 - Additional components (`ActionComponent`, parameter components)
 - Binding layer (if component hierarchy becomes overloaded)
+- Release status metadata (`Development Status :: 4 - Beta` promotion gate)
 - README badges (once on PyPI)
 
 Each item includes a rationale for deferral and placement notes for future implementation.
@@ -90,7 +91,7 @@ See **Design Notes** under [docs/design_notes/](docs/design_notes/) for detailed
 
 The project uses [Conventional Commits](https://www.conventionalcommits.org/) and [python-semantic-release](https://python-semantic-release.readthedocs.io/).
 
-**Current status:** version is in the `0.x` series. This signals that the public API is not yet considered stable. Experimental adoption is welcome; breaking changes may still occur on minor bumps.
+**Current status:** version is in the `0.x` series and package metadata uses `Development Status :: 3 - Alpha`. This signals that the public API is not yet considered stable. Experimental adoption is welcome; breaking changes may still occur on minor bumps.
 
 **Rules in effect:**
 - `allow_zero_version = true` — semantic-release stays in `0.x` and does not force a `1.0.0` bump automatically

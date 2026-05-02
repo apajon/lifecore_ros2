@@ -10,7 +10,17 @@ See :doc:`../../ROADMAP` for the public-facing scope and :doc:`../../CHANGELOG` 
 Pre-release follow-ups
 ----------------------
 
-All pre-release follow-ups are complete. See commit history for details.
+Release status metadata
+^^^^^^^^^^^^^^^^^^^^^^^
+
+* [ ] Re-evaluate promotion from ``Development Status :: 3 - Alpha`` to
+  ``Development Status :: 4 - Beta`` once the project is ready to signal usable,
+  documented software whose API is still pre-``1.0.0`` but no longer broadly
+  experimental.
+
+**Rationale:** The current ``0.x`` series is documented and usable for evaluation,
+but minor bumps may still include breaking changes. The package classifier should
+stay conservative until that API-stability promise changes.
 
 ---
 
