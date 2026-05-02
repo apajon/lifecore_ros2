@@ -14,7 +14,7 @@ lifecore_ros2 requires a working ROS 2 Jazzy Python environment. Install and sou
 
 ```bash
 source /opt/ros/jazzy/setup.bash
-uv pip install lifecore-ros2
+uv add lifecore-ros2
 ```
 
 `rclpy` comes from the system ROS installation. It is intentionally not declared as a normal PyPI dependency.
