@@ -1,6 +1,5 @@
 # lifecore_ros2
-![Logo](docs/_static/Logo_main_light_HD.png#gh-light-mode-only)
-![Logo](docs/_static/Logo_main_dark_HD.png#gh-dark-mode-only)
+![lifecore_ros2 logo](https://raw.githubusercontent.com/apajon/lifecore_ros2/main/docs/_static/Logo_main_light_HD.png)
 
 [![CI](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml) [![Docs](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml) [![Release](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml)
 [![License: Apache 2.0](https://img.shields.io/github/license/apajon/lifecore_ros2)](LICENSE) [![Latest Release](https://img.shields.io/github/v/release/apajon/lifecore_ros2)](https://github.com/apajon/lifecore_ros2/releases/latest) [![Documentation](https://img.shields.io/badge/docs-github--pages-blue)](https://apajon.github.io/lifecore_ros2/)
@@ -19,7 +18,7 @@ uv add lifecore-ros2
 
 `rclpy` comes from the system ROS installation. It is intentionally not declared as a normal PyPI dependency.
 
-![Composed pipeline lifecycle walk-through: configure creates topics, activate streams data, deactivate stops data flow while topics remain (deactivate ≠ cleanup), cleanup releases resources.](docs/_static/composed_pipeline_demo.gif)
+![Composed pipeline lifecycle walk-through: configure creates topics, activate streams data, deactivate stops data flow while topics remain (deactivate ≠ cleanup), cleanup releases resources.](https://raw.githubusercontent.com/apajon/lifecore_ros2/main/docs/_static/composed_pipeline_demo.gif)
 
 *The `examples/composed_pipeline.py` walk-through highlights the key distinction the library makes explicit: **deactivate ≠ cleanup** — `/pipeline/*` topics persist across deactivate and only disappear on cleanup.*
 
