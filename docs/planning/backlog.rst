@@ -160,7 +160,7 @@ README badges (post-release)
 
 * [ ] Add PyPI version badge (``shields.io/pypi/v/lifecore-ros2``) once published on PyPI
 * [ ] Add Python versions badge (``shields.io/pypi/pyversions/lifecore-ros2``) once on PyPI
-* [ ] Add GitHub latest release badge (``shields.io/github/v/release/apajon/lifecore_ros2``) after first tagged release
+* [x] Add GitHub latest release badge (``shields.io/github/v/release/apajon/lifecore_ros2``) after first tagged release
 
 ---
 

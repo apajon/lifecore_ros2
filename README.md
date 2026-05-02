@@ -3,7 +3,7 @@
 ![Logo](docs/_static/Logo_main_dark_HD.png#gh-dark-mode-only)
 
 [![CI](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml) [![Docs](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml) [![Release](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml)
-[![License: Apache 2.0](https://img.shields.io/github/license/apajon/lifecore_ros2)](LICENSE)[![Documentation](https://img.shields.io/badge/docs-github--pages-blue)](https://apajon.github.io/lifecore_ros2/)
+[![License: Apache 2.0](https://img.shields.io/github/license/apajon/lifecore_ros2)](LICENSE) [![Latest Release](https://img.shields.io/github/v/release/apajon/lifecore_ros2)](https://github.com/apajon/lifecore_ros2/releases/latest) [![Documentation](https://img.shields.io/badge/docs-github--pages-blue)](https://apajon.github.io/lifecore_ros2/)
 
 <!-- Canonical positioning sentence — keep in sync with pyproject.toml project.description. See CONTRIBUTING.md. -->
 lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.
