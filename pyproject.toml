@@ -45,6 +45,9 @@ dev = [
 ]
 
 [dependency-groups]
+dev = [
+    "twine>=6.2.0",
+]
 docs = [
   "furo>=2024.8.6",
   "sphinx>=8.0",
