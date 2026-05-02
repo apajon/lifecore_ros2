@@ -28,9 +28,15 @@ jobs:
             - name: Set up uv
               uses: astral-sh/setup-uv@v8.1.0
 
+            - name: Resolve PEP 440 version (strip local segment)
+              id: version
+              run: |
+                  VERSION=$(uv run python -m setuptools_scm | sed 's/+.*//')
+                  echo "value=$VERSION" >> "$GITHUB_OUTPUT"
+
             - name: Build distributions
               env:
-                  SETUPTOOLS_SCM_PRETEND_VERSION_FOR_LIFECORE_ROS2: 0.0.dev${{ github.run_id }}
+                  SETUPTOOLS_SCM_PRETEND_VERSION_FOR_LIFECORE_ROS2: ${{ steps.version.outputs.value }}
               run: uv build
 
             - name: Check distribution metadata
