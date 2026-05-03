@@ -4,9 +4,13 @@ Quickstart
 Audience
 --------
 
-This page is the fastest path from a fresh clone to a running example.
-It uses the smallest composed lifecycle example already in the repository:
-``examples/minimal_node.py``.
+This page gives two short paths:
+
+- install ``lifecore_ros2`` from PyPI when using the library in an application
+- clone this repository when running the bundled examples or contributing
+
+The repository path uses the smallest composed lifecycle example already in the
+repository: ``examples/minimal_node.py``.
 
 Before You Start
 ----------------
@@ -14,6 +18,16 @@ Before You Start
 - ROS 2 Jazzy must already be installed on the system.
 - ``uv`` must already be available in your shell.
 - ``rclpy`` comes from the system ROS installation, not from PyPI.
+
+Install from PyPI
+-----------------
+
+Use this path when adding ``lifecore_ros2`` to an application project:
+
+.. code-block:: bash
+
+   source /opt/ros/jazzy/setup.bash
+   uv add lifecore-ros2
 
 1. Clone the Repository
 -----------------------

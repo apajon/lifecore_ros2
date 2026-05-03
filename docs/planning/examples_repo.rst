@@ -3,13 +3,12 @@ Companion examples repository
 
 Planning for the ``lifecore_ros2_examples`` companion repository.
 
-This file documents the planning until the companion repository is created at ``apajon/lifecore_ros2_examples``.
-At that point, this planning artifact will move into that repository.
+This file records planning context for the companion repository at
+``apajon/lifecore_ros2_examples``.
 
 Bootstrap status: the repository exists and the initial foundation lives on the
-``bootstrap/repo-foundation`` branch. Until ``lifecore_ros2`` is published on PyPI,
-the companion repository resolves the core dependency from a sibling local checkout
-at ``../lifecore_ros2``.
+``bootstrap/repo-foundation`` branch. Since ``lifecore_ros2`` is published on PyPI,
+the companion repository should resolve the core dependency from PyPI by default.
 
 ---
 
@@ -133,7 +132,7 @@ Repository structure (planned)
    lifecore_ros2_examples/
    ├── README.md
    ├── LICENSE
-   ├── pyproject.toml                # depends on a local lifecore_ros2 checkout until PyPI release
+   ├── pyproject.toml                # depends on the published lifecore_ros2 package
    ├── examples/
    │   ├── sensor_fusion/
    │   │   ├── __init__.py
@@ -160,8 +159,8 @@ Out of scope
 Coupling to core releases
 --------------------------
 
-- before the first PyPI release, the companion repo uses a local editable ``../lifecore_ros2`` source
-- after the first PyPI release, the companion repo pins ``lifecore_ros2 >= <current core release>`` in its ``pyproject.toml``
+- the companion repo depends on the published ``lifecore_ros2`` package by default
+- local editable overrides remain a developer workflow for testing examples against unreleased core changes
 - breaking core API changes update the pin; the companion repo does **not** gate core releases
 - the core repo's release process never blocks on companion-repo state
 

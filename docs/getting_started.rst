@@ -37,6 +37,19 @@ Environment Notes
 The project expects rclpy to come from the system ROS installation.
 It should not be added as a normal PyPI dependency of the package.
 
+Install Paths
+-------------
+
+For an application project that consumes the library from PyPI:
+
+.. code-block:: bash
+
+   source /opt/ros/jazzy/setup.bash
+   uv add lifecore-ros2
+
+For a development checkout of this repository, use the local dependency setup
+below instead.
+
 Lifecycle Landmarks
 -------------------
 

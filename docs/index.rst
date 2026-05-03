@@ -77,7 +77,7 @@ They explain the framework's lifecycle model, ownership rules, and recommended u
    :header-rows: 0
 
    * - :doc:`Quickstart <quickstart>`
-     - Clone the repository, install the dev environment, and run the smallest composed lifecycle example.
+     - Install from PyPI for an application project, or clone the repository to run the smallest composed lifecycle example.
    * - :doc:`Getting Started <getting_started>`
      - Review prerequisites, validation commands, and reference setup details after the quickstart.
    * - :doc:`Mental Model <concepts/mental_model>`
