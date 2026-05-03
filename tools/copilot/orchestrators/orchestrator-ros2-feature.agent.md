@@ -1,7 +1,7 @@
 ---
 name: "Orchestrator | ROS 2 Feature Delivery"
 description: "Use when orchestrating delivery of a new ROS 2 Jazzy lifecycle feature or component in this repository, coordinating core changes, tests, examples, API stability, and quality validation."
-tools: [read, search, edit, todo, agent, github/*, gitkraken/*, mempalace/*]
+tools: [read, search, todo, agent, github/*, gitkraken/*, mempalace/*]
 user-invocable: true
 agents:
   [
@@ -10,6 +10,7 @@ agents:
     "Lifecycle Test Designer",
     "ROS 2 Examples Keeper",
     "Python Quality Gate",
+    "Terminal Validation Gate",
     "Public API and Typing Guard",
     "MemPalace Reader",
     "MemPalace Knowledge Writer"
@@ -40,6 +41,8 @@ Delegate only when a specialist materially reduces implementation risk. Never de
 - New transitions, gating logic, or regression-prone behavior -> Lifecycle Test Designer
 - Example updates only when public lifecycle semantics changed -> ROS 2 Examples Keeper
 - Quality gate only when scope is cross-cutting or risky -> Python Quality Gate
+- Terminal validation requested explicitly, especially full `uv run ruff check .`,
+  `uv run pyright`, and `uv run pytest` execution -> Terminal Validation Gate
 - Public import / typing surface actually touched -> Public API and Typing Guard
 - MemPalace Reader only when (a) change touches `core/` or `components/`, (b) durable architecture decision involved, or (c) user explicitly asks for stored rules
 - MemPalace Knowledge Writer only after user validation of a stable, new, durable rule

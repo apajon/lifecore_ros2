@@ -1,7 +1,7 @@
 ---
 name: "Orchestrator | ROS 2 Documentation Sync"
 description: "Use when a feature or public API changed and you need to synchronize README, Sphinx docs, and Google-style docstrings for this Python ROS 2 repository."
-tools: [read, edit,search, todo, agent, github/*, gitkraken/*, mempalace/*]
+tools: [read, edit, search, todo, agent, github/*, gitkraken/*, mempalace/*]
 user-invocable: true
 agents:
   [
