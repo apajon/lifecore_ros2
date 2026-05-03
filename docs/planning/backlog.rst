@@ -38,11 +38,12 @@ source of truth for priority order; see :doc:`sprints/README`.
 Lifecycle comparison example
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* [ ] Create ``examples/lifecycle_comparison/`` in the core repository.
+* [ ] Create ``lifecore_ros2_examples/examples/lifecycle_comparison/`` in the
+  companion examples repository.
 * [ ] Implement the same sensor watchdog node three ways: plain ROS 2, classic
   ROS 2 lifecycle, and ``lifecore_ros2``.
-* [ ] Use only dependencies suitable for the core repo unless the example moves
-  to the companion examples repo.
+* [ ] Keep the example dependency-light even though it lives in the companion
+  examples repo.
 * [ ] Show subscriber, publisher, and timer behavior across configure,
   activate, deactivate, and cleanup.
 * [ ] Document the observable difference: plain is simple but fragile, classic
