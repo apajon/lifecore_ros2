@@ -93,6 +93,15 @@ They explain the framework's lifecycle model, ownership rules, and recommended u
    * - :doc:`Migration from Raw rclpy <migration_from_rclpy>`
      - Compare the framework approach with direct lifecycle code in ``rclpy``.
 
+.. raw:: html
+
+   <div class="state-box transition">
+     <strong>Need a side-by-side comparison?</strong>
+     Use the <a href="https://github.com/apajon/lifecore_ros2_examples/blob/main/examples/lifecycle_comparison/README.md">sensor watchdog comparison</a>
+     in the companion examples repository to compare the same node behavior across plain ROS 2,
+     classic lifecycle, and lifecore_ros2.
+   </div>
+
 Documentation map
 -----------------
 
@@ -105,7 +114,7 @@ Lifecycle-oriented reading order:
 #. Activate the mental model with :doc:`Mental Model <concepts/mental_model>`.
 #. Understand transition ownership with :doc:`Architecture <architecture>` and :doc:`Recommended Patterns and Anti-Patterns <patterns>`.
 #. Test lifecycle boundaries with :doc:`Testing Utilities <testing>`.
-#. Run concrete flows with :doc:`Examples <examples>` and compare tradeoffs in :doc:`Migration from Raw rclpy <migration_from_rclpy>`.
+#. Run concrete flows with :doc:`Examples <examples>`, then use the `companion sensor watchdog comparison <https://github.com/apajon/lifecore_ros2_examples/blob/main/examples/lifecycle_comparison/README.md>`_ for a side-by-side view against plain ROS 2 and classic lifecycle before comparing tradeoffs in :doc:`Migration from Raw rclpy <migration_from_rclpy>`.
 
 .. toctree::
    :maxdepth: 1

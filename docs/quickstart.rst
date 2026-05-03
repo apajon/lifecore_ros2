@@ -109,3 +109,7 @@ Next Step
 
 After this minimal composed example works, continue with :doc:`Examples <examples>`
 to run the subscriber, publisher, telemetry, and composed pipeline walkthroughs.
+
+If you want the next applied step instead of another minimal example, open the
+`sensor watchdog comparison in lifecore_ros2_examples <https://github.com/apajon/lifecore_ros2_examples/blob/main/examples/lifecycle_comparison/README.md>`_
+for a side-by-side run of plain ROS 2, classic lifecycle, and ``lifecore_ros2``.

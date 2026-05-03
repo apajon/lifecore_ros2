@@ -166,7 +166,7 @@ The extension model and API buckets are defined in [docs/architecture.rst](docs/
 
 - package metadata uses `Development Status :: 3 - Alpha` to reflect API stability, not lack of usability
 - the public API is in the `0.x` series — experimental stability level; minor bumps may include breaking changes
-- companion examples live in [`lifecore_ros2_examples`](https://github.com/apajon/lifecore_ros2_examples); see `ROADMAP.md` for scope and the first applied example (sensor-fusion pipeline)
+- companion examples live in [`lifecore_ros2_examples`](https://github.com/apajon/lifecore_ros2_examples); start with the [`sensor watchdog lifecycle comparison`](https://github.com/apajon/lifecore_ros2_examples/blob/main/examples/lifecycle_comparison/README.md) for the first applied example, then see `ROADMAP.md` there for future scenarios
 
 ## License
 

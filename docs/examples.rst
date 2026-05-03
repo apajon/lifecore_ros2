@@ -31,6 +31,10 @@ releases resources.
      Do not read them as isolated demos. Read them as the same lifecycle contract replayed through different ROS surfaces: node-only, publisher, subscriber, timer, service server, service client, then multi-component composition.
    </div>
 
+The companion repository also ships a scenario-driven comparison:
+`lifecore_ros2_examples sensor watchdog comparison <https://github.com/apajon/lifecore_ros2_examples/blob/main/examples/lifecycle_comparison/README.md>`_.
+Use it when you want the same watchdog behavior shown as plain ROS 2, classic lifecycle, and ``lifecore_ros2``. That README includes the shared sensor publisher command, the commands to run each variant, and the expected ``/sensor/status`` and log signals.
+
 Example map
 -----------
 
@@ -86,6 +90,13 @@ Suggested reading path
 - Move to publisher, subscriber, and timer examples to see activation gating on long-lived ROS resources.
 - Continue with service server and client examples to compare inbound versus outbound gating behavior.
 - Finish with ``telemetry_publisher.py`` and ``composed_pipeline.py`` for full lifecycle separation across multiple responsibilities.
+
+Companion Comparison
+--------------------
+
+After the bundled examples, use the `sensor watchdog comparison in lifecore_ros2_examples <https://github.com/apajon/lifecore_ros2_examples/blob/main/examples/lifecycle_comparison/README.md>`_
+when you want one applied walkthrough that compares plain ROS 2, classic lifecycle, and ``lifecore_ros2`` on the same watchdog node.
+That companion README is the source of truth for its run commands, lifecycle transition commands, and expected ``/sensor/status`` and log signals.
 
 Minimal Node
 ------------

@@ -127,3 +127,11 @@ Lifecycle rules used by the repository:
 - release ROS resources during cleanup
 
 These rules keep component behavior explicit and aligned with native ROS 2 lifecycle semantics.
+
+Applied Comparison Example
+--------------------------
+
+Once the local environment works, continue with :doc:`Examples <examples>` for the runnable examples shipped in this repository.
+
+If you want one applied scenario that compares the same watchdog behavior across plain ROS 2, classic lifecycle, and ``lifecore_ros2``, use the `sensor watchdog comparison in lifecore_ros2_examples <https://github.com/apajon/lifecore_ros2_examples/blob/main/examples/lifecycle_comparison/README.md>`_.
+That companion README keeps the commands, lifecycle transitions, and expected ``/sensor/status`` and log signals in one place.

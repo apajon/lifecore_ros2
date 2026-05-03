@@ -47,7 +47,7 @@ This repository ships reusable, lifecycle-native primitives only:
 publisher/subscriber/timer components, ``ServiceComponent`` and the service
 server/client components, ``when_active``, and typed errors. Domain-specific
 components, multi-node topologies, ``/diagnostics`` integrations, and applied
-examples belong in application repositories — or in the planned companion
+examples belong in application repositories — or in the companion
 ``lifecore_ros2_examples`` repository for teaching examples that depend on more than
 ``rclpy`` and ``std_msgs``.
 
