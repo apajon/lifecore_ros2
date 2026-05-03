@@ -5,7 +5,7 @@ Strategic roadmap for making lifecore_ros2 adoptable beyond the author.
 
 This roadmap addresses structural feedback on the 0.x baseline: the core release is shipped, but scaling adoption requires clear positioning, ergonomic APIs, concurrency safety, strict lifecycle contract, and strong test coverage.
 
-It is organised by nine concerns, each declaring **intent**, **in-scope**, **out-of-scope**, and **success signal**. Actionable items are tracked in the post-1.0 backlog.
+It is organised by nine concerns, each declaring **intent**, **in-scope**, **out-of-scope**, and **success signal**. Actionable items are tracked in the planning backlog.
 
 ---
 
@@ -236,6 +236,6 @@ Related documents
 -----------------
 
 - :doc:`../../ROADMAP` — 0.x release scope and out-of-scope items
-- :doc:`backlog` — post-1.0 backlog
+- :doc:`backlog` — planning backlog
 - `.github/instructions/naming-conventions.instructions.md` — naming rules
 - `CONTRIBUTING.md` — PR checklist including naming and regression discipline

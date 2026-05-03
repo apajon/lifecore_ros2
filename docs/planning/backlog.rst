@@ -1,9 +1,13 @@
-Post-1.0 backlog
+Planning backlog
 ================
 
-The first public release scope is implemented. What remains is split into pre-release follow-ups and post-1.0 backlog.
+The first public release scope is implemented. What remains is split into
+strategic near-term work, future feature candidates, and deliberately deferred
+ideas.
 
 See :doc:`../../ROADMAP` for the public-facing scope and :doc:`../../CHANGELOG` for shipped changes.
+
+See :doc:`strategy` for the product cap that explains why the backlog is ordered this way.
 
 ---
 
@@ -24,7 +28,142 @@ stay conservative until that API-stability promise changes.
 
 ---
 
-Post-1.0 backlog
+Strategic near-term backlog
+---------------------------
+
+These items are not post-1.0 by default. They are strategic candidates because
+they make the value proposition visible and testable. Sprint numbers remain the
+source of truth for priority order; see :doc:`sprints/README`.
+
+Lifecycle comparison example
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+* [ ] Create ``examples/lifecycle_comparison/`` in the core repository.
+* [ ] Implement the same sensor watchdog node three ways: plain ROS 2, classic
+  ROS 2 lifecycle, and ``lifecore_ros2``.
+* [ ] Use only dependencies suitable for the core repo unless the example moves
+  to the companion examples repo.
+* [ ] Show subscriber, publisher, and timer behavior across configure,
+  activate, deactivate, and cleanup.
+* [ ] Document the observable difference: plain is simple but fragile, classic
+  lifecycle is controlled but verbose, ``lifecore_ros2`` is structured and
+  lifecycle-native.
+
+**Rationale:** This is the strongest adoption asset. The project should not
+publish broadly to ROS Discourse before the comparison example makes the value
+obvious.
+
+README comparison update
+^^^^^^^^^^^^^^^^^^^^^^^^
+
+* [ ] Add a concise comparison section after the example exists.
+* [ ] Lead with "build predictable ROS 2 nodes" instead of a generic framework
+  claim.
+* [ ] Link to the full comparison instead of duplicating long explanations in
+  README.
+
+**Rationale:** README should sell the concrete pain and point to the proof, not
+become the technical reference.
+
+Internal component cascade
+^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sprint mapping: :doc:`sprints/sprint_5_internal_cascade`.
+
+* [ ] Add component dependency metadata, likely by component name.
+* [ ] Add component priority metadata only as a secondary ordering hint.
+* [ ] Resolve transition order with dependencies first, priority second, and
+  registration order as the stable fallback.
+* [ ] Apply normal order for configure / activate and reverse order for
+  deactivate / cleanup.
+* [ ] Reject duplicate names, unknown dependencies, and dependency cycles with
+  typed errors.
+
+**Rationale:** Deterministic internal lifecycle ordering is the main
+differentiator after activation gating. Keep this inside one node; do not turn it
+into a system orchestrator.
+
+Cleanup and resource ownership API
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sprint mapping: :doc:`sprints/sprint_7_cleanup_api`.
+
+* [ ] Audit topic, timer, service, and client components for consistent cleanup
+  semantics.
+* [ ] Clarify borrowed-vs-owned resources in API docs and docstrings.
+* [ ] Add focused helpers only if repeated cleanup code remains visible after
+  the audit.
+
+**Rationale:** Cleanup must stay predictable before adding health or watchdog
+behavior. ROS resources should be created in configure and released in cleanup;
+borrowed resources remain application-owned.
+
+Publication gate
+^^^^^^^^^^^^^^^^
+
+* [ ] Publish to ROS Discourse only after the comparison example and README
+  update are ready.
+* [ ] Carry the message "build predictable ROS 2 nodes".
+* [ ] Avoid claims about multi-node orchestration, process restart, or automatic
+  recovery.
+
+**Rationale:** The market need is implicit. Concrete proof should lead the
+announcement.
+
+---
+
+Medium-term candidates
+----------------------
+
+Health / status API
+^^^^^^^^^^^^^^^^^^^
+
+Sprint mapping: :doc:`sprints/sprint_10_health_status`.
+
+* [ ] Define a small ``HealthStatus`` value object with level and reason.
+* [ ] Add ``component.health() -> HealthStatus`` or equivalent only after the
+  state model is clear.
+* [ ] Keep the first version read-only.
+
+**Rationale:** Health is the base for diagnostics and watchdog behavior, but it
+should expose state before trying to repair anything.
+
+Lightweight watchdog
+^^^^^^^^^^^^^^^^^^^^
+
+Sprint mapping: :doc:`sprints/sprint_11_watchdog_light`.
+
+* [ ] Observe health and lifecycle state.
+* [ ] Report stale, warning, and error conditions.
+* [ ] Optionally request a lifecycle transition through normal ROS 2 mechanisms.
+* [ ] Do not restart processes, kill nodes, or invent recovery workflows.
+
+**Rationale:** Watchdog behavior is useful but risky. Version 1 should observe
+and report before any automatic recovery is considered.
+
+---
+
+Long-term candidates
+--------------------
+
+Tooling and generated nodes
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sprint mapping: :doc:`sprints/sprint_15_tooling_generation`.
+
+* [ ] Explore a Copilot skill or generator that creates ``lifecore_ros2`` node
+  skeletons.
+* [ ] Keep generated code aligned with the public API and examples.
+* [ ] Treat MCP integration as a later tooling concern, not a runtime library
+  dependency.
+
+**Rationale:** AI-assisted scaffolding could fit the project well, but only once
+the comparison example, cascade, cleanup, health, and watchdog contracts are
+stable enough to generate confidently.
+
+---
+
+Deferred backlog
 ----------------
 
 Deliberately deferred. Do not implement until there is a concrete user need.
@@ -39,13 +178,17 @@ Lifecycle policies
 
 **Rationale:** Anticipates the question of component ordering and bootstrap automation already surfacing in user discussions.
 
-Component dependencies
-^^^^^^^^^^^^^^^^^^^^^^
+Component dependencies and cascade
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* [ ] Optional component dependency declaration
-* [ ] Optional before/after ordering constraints
+* [ ] See the near-term internal component cascade item above.
+* [ ] Keep broader lifecycle policies deferred until the cascade contract proves
+  useful in examples.
+* [ ] Do not add before/after policy variants unless dependency names and
+  priority are insufficient.
 
-**Rationale:** Naturally arises when components need to depend on each other; placeholder prevents architectural rework later.
+**Rationale:** Component dependencies are likely central, but they should remain
+small and deterministic before any policy layer exists.
 
 Error handling — *shipped in Sprint 2 (2026-04-30)*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -69,11 +212,12 @@ Component state and health
 Execution and timing
 ^^^^^^^^^^^^^^^^^^^^
 
-* [ ] Standard lifecycle-aware callback gating utility
+* [x] Lifecycle-aware callback gating via ``when_active`` and component wrappers
 * [ ] Optional callback duration tracking
 * [ ] Optional missed tick tracking
 
-**Rationale:** Callback groups, timing assumptions, and multi-threading will resurface as applications grow.
+**Rationale:** Callback gating is core behavior. Timing assumptions and missed
+tick tracking remain optional future observability work.
 
 Testing utilities
 ^^^^^^^^^^^^^^^^^

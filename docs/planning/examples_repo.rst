@@ -17,6 +17,9 @@ Purpose
 
 Host **applied, scenario-driven examples** that demonstrate lifecore_ros2 patterns under conditions too domain-flavored or too multi-node to belong in the core repo's ``examples/`` directory.
 
+The companion repo should amplify the core repo's strongest examples. It should
+not become the place where the basic value proposition is first proven.
+
 ---
 
 Repository identity
@@ -67,10 +70,30 @@ mirror, or reproduce their content.
 
 .. _Underactuated Robotics: https://underactuated.mit.edu/
 
-Core examples — validated via Sprint 4
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Strategic comparison bridge
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-These examples are **developed in the core repo first** (Sprint 4) to validate the API and detect friction early. Once proven, they move to the companion repo or inspire examples here.
+The next strategic example should be built in the core repo first:
+
+::
+
+   examples/lifecycle_comparison/
+
+It compares one sensor watchdog node implemented as:
+
+1. plain ROS 2
+2. classic ROS 2 lifecycle
+3. ``lifecore_ros2``
+
+The companion repo can later host a richer version if the scenario needs
+domain-specific messages, multiple nodes, launch files, or applied diagnostics.
+Until then, the core repo owns the proof that ``lifecore_ros2`` makes a single
+node more predictable without hiding ROS 2 lifecycle semantics.
+
+Applied examples — after Sprint 4
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+These examples are candidates for later applied validation after the lifecycle comparison has proven the basic value proposition. They may be developed in the core repo first if they stay dependency-light, then moved to or expanded in the companion repo.
 
 - **io_gateway_node** — I/O transformation with Pub, Sub, Timer, Service + stateful processing. Teaches component coordination and gating.
 - **robot_state_monitor** — Health aggregation from multiple subscribers. Teaches composition, partial failure, state queries.
@@ -95,10 +118,13 @@ Two or more ``LifecycleComponentNode`` processes coordinated by an external supe
 
 ---
 
-First concrete example — sensor-fusion pipeline
------------------------------------------------
+First applied companion example — sensor-fusion pipeline
+--------------------------------------------------------
 
 **Working title**: ``sensor_fusion_pipeline.py`` (or split across a small package)
+
+This remains the first applied companion-repo example after the core comparison
+example has made the basic value proposition obvious.
 
 Topology
 ^^^^^^^^
@@ -169,14 +195,22 @@ Coupling to core releases
 Implementation phases
 ---------------------
 
-Validation phase (Sprint 4 in core repo)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Strategic prerequisite — Sprint 4 lifecycle comparison in core
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Before the companion repo exists, core examples are validated in the core `examples/` directory:
+- [ ] Build ``lifecore_ros2/examples/lifecycle_comparison/`` first.
+- [ ] Keep it dependency-light so it belongs in the core repository.
+- [ ] Use the companion repo only for an extended applied version if needed.
+- [ ] Update core README/docs before broad public announcement.
+
+Applied validation phase (after Sprint 4)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+After the lifecycle comparison exists, additional dependency-light examples can be validated in the core ``examples/`` directory:
 
 - Core examples are simple but real: io_gateway_node, command_gateway, etc.
 - They validate the API and reveal friction
-- They guide the design of future sprints (S5–S10)
+- They guide future design work without replacing the comparison example as the primary adoption proof
 - Once proven, they can be ported or extended in the companion repo
 
 Phase 0 — Repository bootstrap
@@ -192,7 +226,7 @@ Phase 0 — Repository bootstrap
 Phase 1 — First applied example: sensor-fusion pipeline
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**Context.** Core examples (Sprint 4) are validated in the core repo. This phase extends them with domain-specific, multi-node, or complex scenarios that belong in the companion repo.
+**Context.** Core examples are validated in the core repo when they stay small and dependency-light. This phase extends them with domain-specific, multi-node, or complex scenarios that belong in the companion repo.
 
 First example focuses on **sensor-fusion pipeline** — fan-in multi-sensor integration:
 - [ ] Two simulated heterogeneous sensors as ``LifecyclePublisherComponent`` instances

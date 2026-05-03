@@ -37,14 +37,42 @@ Current status: ✓ all adoption items complete (v0.4.0). The core library is us
 
 ---
 
-## Post-1.0 backlog
+## Strategic direction
 
-Deliberately deferred. Do not implement until there is a concrete user need.
+The project is positioned as an **inside-the-node** discipline layer: below launch files, lifecycle managers, and system orchestrators; above raw `rclpy` lifecycle primitives.
 
-**See [Post-1.0 Backlog](docs/planning/backlog.rst)** for:
+It is not a launcher, not a Nav2-style lifecycle manager, and not a replacement for ROS 2 lifecycle semantics. The message to validate with users is:
+
+> Build predictable ROS 2 nodes.
+
+**See [Strategic Cap](docs/planning/strategy.rst)** for the working product thesis, boundaries, adoption sequence, and publication gate.
+
+---
+
+## Next planning window
+
+The recommended sequence after the current foundation is tracked by sprint
+number. Sprint numbers encode priority order:
+
+1. **Lifecycle comparison example** — implement the same sensor watchdog node as plain ROS 2, classic ROS 2 lifecycle, and `lifecore_ros2`.
+2. **Internal component cascade** — move deterministic intra-node ordering directly after the comparison because it is the main differentiator.
+3. **Runtime hardening** — callback gating, cleanup ownership, concurrency, and observability before recovery-facing APIs.
+4. **Health and watchdog** — expose health before adding watchdog behavior.
+5. **Advanced surfaces** — lifecycle policies, parameters, factory/registry, then tooling/generation.
+
+**See [Sprint Planning](docs/planning/sprints/README.rst)** for the execution plan.
+
+---
+
+## Backlog
+
+The backlog separates near-term strategic work, medium-term candidates, and
+ideas that remain deliberately deferred until there is a concrete user need.
+
+**See [Planning Backlog](docs/planning/backlog.rst)** for:
 
 - Lifecycle policies (ordering, full-activation semantics)
-- Component dependencies (before/after constraints)
+- Internal component cascade and broader dependency policy questions
 - Error handling contract (propagation rules, rollback policy)
 - Component state and health (introspection, diagnostics)
 - Execution and timing (callback gating, duration tracking)
@@ -67,7 +95,7 @@ Each item includes a rationale for deferral and placement notes for future imple
 
 **See [Examples Repository Plan](docs/planning/examples_repo.rst)** for the full planning.
 
-**Status**: ⏳ Not yet created. Will host applied, domain-flavored, or multi-node examples that fall outside the core library's scope.
+**Status**: repository exists and should host applied, domain-flavored, or multi-node examples that fall outside the core library's scope. The strategic lifecycle comparison example should be proven in the core repo first, then extended in the companion repo only if it needs applied scenarios or extra dependencies.
 
 ---
 
