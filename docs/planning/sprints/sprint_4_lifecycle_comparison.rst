@@ -139,11 +139,11 @@ Execution plan
   ``LifecycleComponentNode`` and component-oriented lifecycle behavior. The node
   should show the same runtime contract with less lifecycle plumbing in the
   application node.
-- [ ] Step 6 - Add tests that smoke import all example modules and exercise the
+- [x] Step 6 - Add tests that smoke import all example modules and exercise the
   runtime behavior that matters: status publication, activation gating,
   deactivation gating, and cleanup behavior where it is observable without
   fragile timing.
-- [ ] Step 7 - Update documentation links after the example is real, including
+- [x] Step 7 - Update documentation links after the example is real, including
   commands to run each variant and expected log or topic signals.
 
 Acceptance criteria
@@ -190,16 +190,16 @@ The example should make these tradeoffs visible:
 Validation
 ----------
 
-- [ ] Smoke import all watchdog modules and the shared sensor publisher module.
-- [ ] Run runtime ROS 2 tests for the behavior that depends on real publishers,
+- [x] Smoke import all watchdog modules and the shared sensor publisher module.
+- [x] Run runtime ROS 2 tests for the behavior that depends on real publishers,
   subscribers, timers, spin, lifecycle transitions, and cleanup.
-- [ ] Verify the ``lifecore_ros2`` variant gates subscriber and timer behavior
+- [x] Verify the ``lifecore_ros2`` variant gates subscriber and timer behavior
   while inactive.
-- [ ] Verify the classic lifecycle variant publishes only after activation and
+- [x] Verify the classic lifecycle variant publishes only after activation and
   gates behavior after deactivation.
 - [ ] Verify the plain and classic variants remain runnable documentation, not
   regression mirrors.
-- [ ] Document expected commands and log signals.
+- [x] Document expected commands and log signals.
 
 Suggested targeted commands, run from ``lifecore_ros2_examples``:
 
