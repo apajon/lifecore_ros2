@@ -1,77 +1,78 @@
 name: Publish to PyPI
 
 "on":
-    workflow_dispatch:
-        inputs:
-            tag:
-                description: Release tag to publish. Leave empty to publish the latest GitHub release.
-                required: false
-                type: string
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to publish. Leave empty to publish the latest GitHub
+          release.
+        required: false
+        type: string
 
 permissions:
-    contents: read
+  contents: read
 
 jobs:
-    build-and-publish:
-        runs-on: ubuntu-24.04
+  build-and-publish:
+    runs-on: ubuntu-24.04
 
-        permissions:
-            contents: read
-            id-token: write
+    permissions:
+      contents: read
+      id-token: write
 
-        steps:
-            - name: Resolve release tag
-              id: release
-              env:
-                  GH_TOKEN: ${{ github.token }}
-                  INPUT_TAG: ${{ inputs.tag }}
-                  REPOSITORY: ${{ github.repository }}
-              run: |
-                  TAG="$INPUT_TAG"
-                  if [[ -z "$TAG" ]]; then
-                    TAG=$(gh release view --repo "$REPOSITORY" --json tagName --jq .tagName)
-                  fi
+    steps:
+      - name: Resolve release tag
+        id: release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_TAG: ${{ inputs.tag }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          TAG="$INPUT_TAG"
+          if [[ -z "$TAG" ]]; then
+            TAG=$(gh release view --repo "$REPOSITORY" --json tagName --jq .tagName)
+          fi
 
-                  case "$TAG" in
-                    v[0-9]*) ;;
-                    *)
-                      echo "::error::Expected a release tag like v0.6.2, got '$TAG'."
-                      exit 1
-                      ;;
-                  esac
+          case "$TAG" in
+            v[0-9]*) ;;
+            *)
+              echo "::error::Expected a release tag like v0.6.2, got '$TAG'."
+              exit 1
+              ;;
+          esac
 
-                  echo "tag=$TAG" >> "$GITHUB_OUTPUT"
-                  echo "Resolved release tag: $TAG"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Resolved release tag: $TAG"
 
-            - name: Checkout release tag
-              uses: actions/checkout@v5
-              with:
-                  fetch-depth: 0
-                  ref: ${{ steps.release.outputs.tag }}
+      - name: Checkout release tag
+        uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ steps.release.outputs.tag }}
 
-            - name: Set up Python
-              uses: actions/setup-python@v6
-              with:
-                  python-version: "3.12"
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
 
-            - name: Set up uv
-              uses: astral-sh/setup-uv@v8.1.0
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v8.1.0
 
-            - name: Verify release tag checkout
-              env:
-                  TAG: ${{ steps.release.outputs.tag }}
-              run: |
-                  CHECKED_OUT_TAG=$(git describe --exact-match --tags HEAD)
-                  if [[ "$CHECKED_OUT_TAG" != "$TAG" ]]; then
-                    echo "::error::Checked out '$CHECKED_OUT_TAG' instead of '$TAG'."
-                    exit 1
-                  fi
+      - name: Verify release tag checkout
+        env:
+          TAG: ${{ steps.release.outputs.tag }}
+        run: |
+          CHECKED_OUT_TAG=$(git describe --exact-match --tags HEAD)
+          if [[ "$CHECKED_OUT_TAG" != "$TAG" ]]; then
+            echo "::error::Checked out '$CHECKED_OUT_TAG' instead of '$TAG'."
+            exit 1
+          fi
 
-            - name: Build distributions
-              run: uv build
+      - name: Build distributions
+        run: uv build
 
-            - name: Check distribution metadata
-              run: uv run --with twine twine check dist/*
+      - name: Check distribution metadata
+        run: uv run --with twine twine check dist/*
 
-            - name: Publish distributions to PyPI
-              uses: pypa/gh-action-pypi-publish@release/v1
+      - name: Publish distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
