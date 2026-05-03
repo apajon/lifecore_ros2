@@ -29,7 +29,8 @@ To decide during sprint planning
 
 - Whether the first deliverable is a prompt, a Copilot skill, or a repository
   script.
-- Whether generation targets the core repo examples or companion examples first.
+- Whether generation starts with core-style minimal skeletons or
+  companion-repo concrete scenario scaffolds.
 - Which conventions are stable enough to enforce automatically.
 
 ---

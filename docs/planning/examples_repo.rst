@@ -15,10 +15,13 @@ the companion repository should resolve the core dependency from PyPI by default
 Purpose
 -------
 
-Host **applied, scenario-driven examples** that demonstrate lifecore_ros2 patterns under conditions too domain-flavored or too multi-node to belong in the core repo's ``examples/`` directory.
+Host **concrete, scenario-driven examples** that demonstrate lifecore_ros2
+patterns under conditions too applied, too multi-file, or too workflow-oriented
+to belong in the core repo's ``examples/`` directory.
 
-The companion repo should amplify the core repo's strongest examples. It should
-not become the place where the basic value proposition is first proven.
+The core repo keeps simple/minimal examples that teach one framework abstraction
+at a time. The companion repo owns concrete examples that show how those
+abstractions work together in realistic ROS 2 scenarios.
 
 ---
 
@@ -47,7 +50,8 @@ An example belongs in **lifecore_ros2_examples** (companion repo) if **any** of 
 1. it depends on third-party ROS packages beyond ``rclpy`` and ``std_msgs``
 2. it uses domain-specific message types (``sensor_msgs``, ``geometry_msgs``, custom ``.msg``)
 3. it spans more than one ROS node or launch file
-4. it teaches an applied pattern (sensor fusion, supervisor, diagnostics aggregation) rather than a single core abstraction
+4. it teaches an applied pattern (sensor fusion, watchdog comparison,
+   supervisor, diagnostics aggregation) rather than a single core abstraction
 
 An example belongs in **lifecore_ros2/examples/** (core repo) if **all** of the following are true:
 
@@ -73,11 +77,11 @@ mirror, or reproduce their content.
 Strategic comparison bridge
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-The next strategic example should be built in the core repo first:
+The strategic comparison example belongs in the companion examples repository:
 
 ::
 
-   examples/lifecycle_comparison/
+   lifecore_ros2_examples/examples/lifecycle_comparison/
 
 It compares one sensor watchdog node implemented as:
 
@@ -85,15 +89,19 @@ It compares one sensor watchdog node implemented as:
 2. classic ROS 2 lifecycle
 3. ``lifecore_ros2``
 
-The companion repo can later host a richer version if the scenario needs
-domain-specific messages, multiple nodes, launch files, or applied diagnostics.
-Until then, the core repo owns the proof that ``lifecore_ros2`` makes a single
-node more predictable without hiding ROS 2 lifecycle semantics.
+The comparison stays dependency-light, but it is still a concrete scenario: it
+uses multiple autonomous files plus a shared runtime sensor publisher to compare
+the same behavior across implementations. That makes it a better fit for
+``lifecore_ros2_examples`` than for the core repo's minimal ``examples/``
+directory.
 
 Applied examples — after Sprint 4
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-These examples are candidates for later applied validation after the lifecycle comparison has proven the basic value proposition. They may be developed in the core repo first if they stay dependency-light, then moved to or expanded in the companion repo.
+These examples are candidates for later applied validation after the lifecycle
+comparison has proven the basic value proposition. They should start in the
+companion examples repository unless they teach exactly one core abstraction in
+one minimal file.
 
 - **io_gateway_node** — I/O transformation with Pub, Sub, Timer, Service + stateful processing. Teaches component coordination and gating.
 - **robot_state_monitor** — Health aggregation from multiple subscribers. Teaches composition, partial failure, state queries.
@@ -104,7 +112,7 @@ Sensor-pipeline composition
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Multi-publisher / multi-subscriber pipelines with a fan-in or fan-out shape.
-Teaches activation gating across a topology, configure-time resource acquisition for simulated or real sensor handles, and how ``LifecycleComponent`` composition scales past the three-component pipeline already shown in the core repo.
+Teaches activation gating across a topology, configure-time resource acquisition for simulated or real sensor handles, and how ``LifecycleComponent`` composition scales past the minimal examples already shown in the core repo.
 
 Lifecycle-aware diagnostics
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -118,13 +126,13 @@ Two or more ``LifecycleComponentNode`` processes coordinated by an external supe
 
 ---
 
-First applied companion example — sensor-fusion pipeline
+Later applied companion example — sensor-fusion pipeline
 --------------------------------------------------------
 
 **Working title**: ``sensor_fusion_pipeline.py`` (or split across a small package)
 
-This remains the first applied companion-repo example after the core comparison
-example has made the basic value proposition obvious.
+This remains a later applied companion-repo example after the lifecycle
+comparison example has made the basic value proposition obvious.
 
 Topology
 ^^^^^^^^
@@ -160,6 +168,12 @@ Repository structure (planned)
    ├── LICENSE
    ├── pyproject.toml                # depends on the published lifecore_ros2 package
    ├── examples/
+   │   ├── lifecycle_comparison/
+   │   │   ├── README.md
+   │   │   ├── sensor_value_publisher_node.py
+   │   │   ├── ros2_plain/
+   │   │   ├── ros2_lifecycle_classic/
+   │   │   └── lifecore_ros2/
    │   ├── sensor_fusion/
    │   │   ├── __init__.py
    │   │   └── sensor_fusion_pipeline.py
@@ -195,23 +209,31 @@ Coupling to core releases
 Implementation phases
 ---------------------
 
-Strategic prerequisite — Sprint 4 lifecycle comparison in core
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Strategic prerequisite — Sprint 4 lifecycle comparison in companion examples
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- [ ] Build ``lifecore_ros2/examples/lifecycle_comparison/`` first.
-- [ ] Keep it dependency-light so it belongs in the core repository.
-- [ ] Use the companion repo only for an extended applied version if needed.
+- [x] Build ``lifecore_ros2_examples/examples/lifecycle_comparison/``.
+- [x] Keep it dependency-light while still treating it as a concrete comparison
+  scenario.
+- [x] Include the shared plain ROS 2 sensor publisher as an external runtime
+  stimulus for all watchdog variants.
+- [x] Complete the ``lifecore_ros2`` variant.
+- [ ] Add runtime tests that exercise publication, activation gating,
+   deactivation gating, and cleanup behavior.
 - [ ] Update core README/docs before broad public announcement.
 
 Applied validation phase (after Sprint 4)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-After the lifecycle comparison exists, additional dependency-light examples can be validated in the core ``examples/`` directory:
+After the lifecycle comparison exists, additional concrete examples should be
+validated in ``lifecore_ros2_examples/examples/`` by default:
 
-- Core examples are simple but real: io_gateway_node, command_gateway, etc.
+- Companion examples are scenario-shaped but still dependency-light where
+   possible: io_gateway_node, command_gateway, etc.
 - They validate the API and reveal friction
 - They guide future design work without replacing the comparison example as the primary adoption proof
-- Once proven, they can be ported or extended in the companion repo
+- Only one-file, one-abstraction teaching examples should be added to the core
+   repo first
 
 Phase 0 — Repository bootstrap
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -223,12 +245,14 @@ Phase 0 — Repository bootstrap
 - [x] Add ``.gitignore``, ``.editorconfig``, ``.pre-commit-config.yaml`` aligned with core
 - [x] Add a manual-only quality workflow (``workflow_dispatch``; no broad ``push`` trigger)
 
-Phase 1 — First applied example: sensor-fusion pipeline
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Phase 1 — Next applied example: sensor-fusion pipeline
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-**Context.** Core examples are validated in the core repo when they stay small and dependency-light. This phase extends them with domain-specific, multi-node, or complex scenarios that belong in the companion repo.
+**Context.** Concrete examples are validated in the companion repo by default.
+The core repo remains reserved for small, dependency-light examples that teach
+one framework abstraction at a time.
 
-First example focuses on **sensor-fusion pipeline** — fan-in multi-sensor integration:
+This later example focuses on **sensor-fusion pipeline** — fan-in multi-sensor integration:
 - [ ] Two simulated heterogeneous sensors as ``LifecyclePublisherComponent`` instances
 - [ ] Fusion ``LifecycleComponent`` with two subscriptions and one publisher
 - [ ] Downstream ``LifecycleSubscriberComponent`` for logging
