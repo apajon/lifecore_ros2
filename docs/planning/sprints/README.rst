@@ -34,6 +34,7 @@ Sprint roadmap
    sprint_2_error_handling
    sprint_3_testing_infrastructure
    sprint_4_lifecycle_comparison
+   sprint_4_5_state_component_example
    sprint_5_internal_cascade
    sprint_6_callback_gating
    sprint_7_cleanup_api
@@ -57,6 +58,7 @@ Condensed View
    S2: Solid error handling (lifecycle reliability)
    S3: Testing infrastructure (acceleration)
    S4: Lifecycle comparison example (product proof)
+   S4.5: State-only component example (core teaching pattern)
    S5: Internal component cascade (deterministic ordering)
    S6: Centralized callback gating (consistency)
    S7: Cleanup and ownership API (explicit resources)
@@ -92,6 +94,8 @@ Sprint Dependencies
    S1-S3 (foundation)
       v
    S4 (comparison example)
+      v
+   S4.5 (state-only component example)
       v
    S5 (internal cascade)
       v
