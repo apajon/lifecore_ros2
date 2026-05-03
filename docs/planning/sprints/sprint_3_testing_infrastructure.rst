@@ -1,9 +1,9 @@
 Sprint 3 — Testing infrastructure
 ==================================
 
-**Objectif.** Provide reusable test utilities to accelerate framework and application testing.
+**Objective.** Provide reusable test utilities to accelerate framework and application testing.
 
-**Livrable.** "Application tests can verify lifecycle behavior without boilerplate."
+**Deliverable.** "Application tests can verify lifecycle behavior without boilerplate."
 
 Status
 ------

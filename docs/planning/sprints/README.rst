@@ -1,24 +1,31 @@
 Sprint planning
 ===============
 
-9 sprints structurés pour étendre lifecore_ros2 post-1.0 sans dérive architecturale.
+Structured sprints for extending lifecore_ros2 without architectural drift.
 
-Chaque sprint = **livrable concret + stable + testable**.
+Each sprint = **concrete + stable + testable deliverable**.
 
----
-
-Principes
----------
-
-- **Pas de mélange de sprints.** Chacun isolé, revue-able, backportable.
-- **Pas de couplage prématuré.** ServiceComponent ne connaît pas Factory; Factory connaît Registry.
-- **Définition de done.** Chaque sprint a une défition claire: code + tests + doc.
-- **Risques nommés.** Pièges identifiés et mitigation avant de coder.
+Sprint cards stay at framing level: they document decisions already made,
+constraints, risks, and success criteria. Exact signatures, commit breakdown,
+final internal names, and execution details are decided at the beginning of the
+sprint during planning.
 
 ---
 
-Roadmap des sprints
--------------------
+Principles
+----------
+
+- **No sprint mixing.** Each sprint stays isolated, reviewable, and backportable.
+- **No premature coupling.** ServiceComponent does not know Factory; Factory knows Registry.
+- **Definition of Done.** Each sprint has a clear definition: code + tests + docs.
+- **Named risks.** Pitfalls are identified and mitigated before coding.
+- **No premature design.** A card may name an agreed direction, but it does not
+   freeze an API that still needs sprint planning.
+
+---
+
+Sprint roadmap
+--------------
 
 .. toctree::
    :maxdepth: 1
@@ -26,109 +33,132 @@ Roadmap des sprints
    sprint_1_service_client
    sprint_2_error_handling
    sprint_3_testing_infrastructure
-   sprint_4_real_examples
-   sprint_5_callback_gating
-   sprint_6_concurrency
-   sprint_7_lifecycle_policies
-   sprint_8_observability
-   sprint_9_parameters
-   sprint_10_factory
+   sprint_4_lifecycle_comparison
+   sprint_5_internal_cascade
+   sprint_6_callback_gating
+   sprint_7_cleanup_api
+   sprint_8_concurrency
+   sprint_9_observability
+   sprint_10_health_status
+   sprint_11_watchdog_light
+   sprint_12_lifecycle_policies
+   sprint_13_parameters
+   sprint_14_factory
+   sprint_15_tooling_generation
 
 ---
 
-Vue condensée
--------------
+Condensed View
+--------------
 
 ::
 
-   S1: Service/Client components (primitives ROS2)
-   S2: Error handling solide (fiabilité lifecycle)
-   S3: Testing infrastructure (accélération)
-   S4: Real examples v1 (validation API)
-   S5: Callback gating centralisé (homogénéité)
-   S6: Concurrency propre (multi-thread)
-   S7: Lifecycle policies (configurabilité)
-   S8: Observability minimale (debug)
-   S9: Parameters (config runtime)
-   S10: Factory minimal (instanciation dynamique)
+   S1: Service/Client components (ROS 2 primitives)
+   S2: Solid error handling (lifecycle reliability)
+   S3: Testing infrastructure (acceleration)
+   S4: Lifecycle comparison example (product proof)
+   S5: Internal component cascade (deterministic ordering)
+   S6: Centralized callback gating (consistency)
+   S7: Cleanup and ownership API (explicit resources)
+   S8: Clean concurrency (multi-threaded use)
+   S9: Minimal observability (debugging)
+   S10: Health status API (readable observability)
+   S11: Lightweight watchdog (observer/report)
+   S12: Lifecycle policies (ordering and activation)
+   S13: Parameters (runtime configuration)
+   S14: Minimal factory (dynamic instantiation)
+   S15: Tooling and generated nodes (scaffolding)
 
 ---
 
-Hors roadmap immediate
-----------------------
+Outside the Immediate Roadmap
+-----------------------------
 
-**Ne pas inclure dans ces sprints:**
+**Do not include in these sprints:**
 
 - SpecModel / AppSpec
-- ActionComponent (après S1)
-- Binding layer (si jamais)
-- Contrôle robotique avancé (hors scope core)
+- ActionComponent (after S1)
+- Binding layer (if ever needed)
+- Advanced robot control (outside core scope)
+- MCP runtime or direct AI behavior in the library
 
 ---
 
-Dépendances entre sprints
---------------------------
+Sprint Dependencies
+-------------------
 
 ::
 
-   S1 (Service/Client)
-   S2 (Error handling)     ← dépend de tous (appliqué rétro)
-   S3 (Tests)              ← utilisé par S2+
-   S4 (Callback gating)    ← appliqué à S1
-   S5 (Concurrency)        ← prépare multi-thread
-   S6 (Policies)           ← indépendant, mais avant S8
-   S7 (Observability)      ← indépendant
-   S8 (Parameters)         ← optionnellement avec S6
-   S9 (Factory)            ← dernier, se repose sur S1-S8
+   S1-S3 (foundation)
+      v
+   S4 (comparison example)
+      v
+   S5 (internal cascade)
+      v
+   S6 (callback gating)
+      v
+   S7 (cleanup ownership)
+      v
+   S8 (concurrency)
+      v
+   S9 (observability)
+      v
+   S10 (health status)
+      v
+   S11 (watchdog light)
+      v
+   S12-S14 (policies, parameters, factory)
+      v
+   S15 (tooling / generation)
 
 **Recommended sequencing:**
 
-1. S3 (tests) avant tout — fixtured et outillage
-2. S1 (primitives) — surface d'API
-3. S2 (error handling) — retroactively hardens S1
-4. S4 (callback gating) — refactor commun
-5. S5 (concurrency) — préparer scalability
-6. S6 + S7 (policies + observability) — configurabilité
-7. S8 (parameters) — config runtime
-8. S9 (factory) — dynamique
+1. S4 before any major new API - prove the product value.
+2. S5 next - deliver the main internal differentiator.
+3. S6-S9 harden runtime behavior before diagnostic-facing surfaces.
+4. S10 then S11 expose health before observing it automatically.
+5. S12-S14 remain advanced surfaces, after the deterministic core.
+6. S15 only after stabilization - generate code from solid conventions.
 
 ---
 
-Definition of Done (toutes sprints)
------------------------------------
+Definition of Done (All Sprints)
+--------------------------------
 
-Chaque sprint doit satisfaire:
+Each sprint must satisfy:
 
-- ✓ Code avec docstrings Google
-- ✓ Tests unitaires (nominal + edge cases)
-- ✓ Tests d'intégration (avec autres composants si applicable)
-- ✓ Regression tests si bug fix
-- ✓ Linting Ruff + Pyright + Pytest ✓
-- ✓ Documentation (docstrings + design notes si architecture)
-- ✓ CONTRIBUTING.md updated si new patterns
-- ✓ Example(s) si surface utilisateur
-
----
-
-Format de chaque sprint
------------------------
-
-Chaque fichier sprint contient:
-
-- **Objectif** — ce qui se vend à la fin
-- **Contenu** — listes de classes, méthodes, comportements
-- **Tests à écrire** — checklist
-- **Risques** — pièges nommés + mitigation
-- **Dépendances** — ce qui doit être fait avant
-- **Scope boundaries** — ce qui ne s'inclurait PAS
-- **Success signal** — comment valider que c'est bon
+- ✓ Code with Google-style docstrings
+- ✓ Unit tests (nominal + edge cases)
+- ✓ Integration tests (with other components when applicable)
+- ✓ Regression tests for bug fixes
+- ✓ Ruff + Pyright + Pytest green
+- ✓ Documentation (docstrings + design notes for architecture changes)
+- ✓ CONTRIBUTING.md updated for new patterns
+- ✓ Example(s) for user-facing surfaces
 
 ---
 
-Notes d'exécution
------------------
+Sprint Card Format
+------------------
 
-- Chaque sprint = une branche ou un ensemble de commits logiques
-- Code review par sprint, pas par ligne
-- Si un sprint tire un découplage, faire un mini-refactor en parallèle (pas dans le sprint, avant ou après)
-- Ne pas faire de « et au fait, améliorons l'architecture » dans un sprint — note-le pour un sprint dédié
+Each sprint file contains:
+
+- **Objective** - what should be true at the end
+- **Decisions already made** - invariants, limits, agreed behavior
+- **To decide during planning** - exact API, breakdown, implementation order
+- **Validation** - observable criteria and expected tests
+- **Risks** - named pitfalls and mitigations
+- **Dependencies** - what must be done first
+- **Scope boundaries** - what is intentionally excluded
+- **Success signal** - how to validate that the sprint worked
+
+---
+
+Execution Notes
+---------------
+
+- Each sprint = one branch or a logical set of commits.
+- Review by sprint, not line by line in isolation.
+- If a sprint reveals a needed decoupling, schedule a small refactor before or
+   after the sprint instead of hiding it inside the sprint.
+- Do not add incidental architecture improvements to a sprint; record them for a dedicated sprint.

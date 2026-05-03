@@ -1,9 +1,9 @@
 Sprint 2 — Solid error handling
 ================================
 
-**Objectif.** Define and enforce error propagation rules; guarantee no zombie states on partial failure.
+**Objective.** Define and enforce error propagation rules; guarantee no zombie states on partial failure.
 
-**Livrable.** "Error semantics are explicit and lifecycle is always coherent on failure."
+**Deliverable.** "Error semantics are explicit and lifecycle is always coherent on failure."
 
 ---
 

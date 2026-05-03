@@ -5,12 +5,12 @@ Sprint 1 — Service server and Service client components
    quality gates completed. See *Advancements* section below for a full
    delivery log.
 
-**Objectif.** Complete ROS 2 primitive support: introduce a shared abstract
+**Objective.** Complete ROS 2 primitive support: introduce a shared abstract
 ``ServiceComponent`` base (mirroring ``TopicComponent``) and add concrete
 ``LifecycleServiceServerComponent`` and ``LifecycleServiceClientComponent``
 with full lifecycle gating.
 
-**Livrable.** "lifecore supports all ROS 2 communication primitives with
+**Deliverable.** "lifecore supports all ROS 2 communication primitives with
 consistent activation semantics, behind a uniform two-layer
 (base + concrete) component design."
 
