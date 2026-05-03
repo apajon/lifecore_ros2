@@ -175,7 +175,7 @@ Non-goals
 * **No new dependency.** ``pyproject.toml`` is unchanged.
 * **No exposure of rclpy internals.** Live handles to publishers,
   subscribers, or the state machine object are out of scope.
-* **No ROS service / topic façade.** Introspection is a Python API on the
+* **No ROS service / topic facade.** Introspection is a Python API on the
   node instance, not a ROS-graph-level interface.
 * **No promotion of private attributes.** ``_components``,
   ``_registration_open``, ``_resources``, and ``_lock`` remain private.
