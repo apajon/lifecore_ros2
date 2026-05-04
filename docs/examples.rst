@@ -54,18 +54,18 @@ Example map
      - Lifecycle-managed state with no ROS resource ownership.
      - Read after the node example to see lifecycle management applied to owned state rather than ROS resources.
      - ``uv run python examples/minimal_state_component.py``
+   * - `minimal_timer.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_timer.py>`_
+     - Standalone ``LifecycleTimerComponent`` with activation-gated ticks.
+     - Read before the publisher example to understand timer gating in isolation.
+     - ``uv run python examples/minimal_timer.py``
    * - `minimal_publisher.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_publisher.py>`_
-     - Framework-owned publisher plus component-owned timer.
-     - Read after the node example to see ``configure`` versus ``activate`` for publishing.
+     - Framework-owned publisher and timer composing in one node without overrides.
+     - Read after the timer example to see two framework components wiring together.
      - ``uv run python examples/minimal_publisher.py``
    * - `minimal_subscriber.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_subscriber.py>`_
      - Activation-gated delivery with a managed subscription.
      - Read when you want to see inactive message drops and subscriber ownership.
      - ``uv run python examples/minimal_subscriber.py``
-   * - `minimal_timer.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_timer.py>`_
-     - Standalone ``LifecycleTimerComponent`` with activation-gated ticks.
-     - Read when you want a periodic callback whose firing is bound to lifecycle state.
-     - ``uv run python examples/minimal_timer.py``
    * - `minimal_service_server.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_service_server.py>`_
      - ``LifecycleServiceServerComponent`` with activation-gated request handling.
      - Read when you want to see how inactive requests are answered with a default response.
@@ -79,9 +79,13 @@ Example map
      - Read when you need a concrete pattern for long-lived handles plus runtime behavior.
      - ``uv run python examples/telemetry_publisher.py``
    * - `composed_pipeline.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/composed_pipeline.py>`_
-     - Three sibling components transitioning together inside one node.
-     - Read last to see composition, raw ROS resource ownership, and reactivation behavior.
+     - Three sibling components transitioning together inside one node without any ordering.
+     - Read after the timer example to see three framework components composing in one node.
      - ``uv run python examples/composed_pipeline.py``
+   * - `composed_ordered_pipeline.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/composed_ordered_pipeline.py>`_
+     - Three sibling components with explicit internal dependencies inside one node.
+     - Read after ``composed_pipeline.py`` to see the same shape with explicit dependency-driven ordering.
+     - ``uv run python examples/composed_ordered_pipeline.py``
 
 After launching an example, drive it with ``ros2 lifecycle set /<node_name> configure``, then
 ``activate``, ``deactivate``, and ``cleanup``. Each module docstring includes the expected output
@@ -92,9 +96,10 @@ Suggested reading path
 
 - Start with ``minimal_node.py`` for the smallest ownership boundary.
 - Continue with ``minimal_state_component.py`` to see lifecycle management applied to owned state with no ROS resources.
-- Move to publisher, subscriber, and timer examples to see activation gating on long-lived ROS resources.
+- Move to timer, publisher, and subscriber examples to see activation gating on long-lived ROS resources.
 - Continue with service server and client examples to compare inbound versus outbound gating behavior.
-- Finish with ``telemetry_publisher.py`` and ``composed_pipeline.py`` for full lifecycle separation across multiple responsibilities.
+- Finish with ``telemetry_publisher.py``, ``composed_pipeline.py``, and ``composed_ordered_pipeline.py`` for full lifecycle separation across multiple responsibilities.
+- Read ``composed_ordered_pipeline.py`` after ``telemetry_publisher.py`` to see how ``dependencies`` impose a guaranteed transition order across independently managed components.
 
 Companion Comparison
 --------------------
@@ -141,6 +146,25 @@ What to look for
 - The component owns its state; the node calls ``update()`` — the component does not push state outward.
 - No publishers, subscriptions, or timers are created; the lifecycle contract is purely about state.
 
+Minimal Timer
+-------------
+
+Source: `examples/minimal_timer.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_timer.py>`_
+
+What it demonstrates
+~~~~~~~~~~~~~~~~~~~~
+
+A standalone ``LifecycleTimerComponent`` where the framework owns the ROS timer and ticks are
+routed to ``on_tick`` only while the component is active.
+
+What to look for
+~~~~~~~~~~~~~~~~
+
+- ``configure`` creates the ROS timer with the configured period; ticks fire but are silently dropped.
+- ``activate`` opens the gate so each tick reaches ``on_tick``; ``deactivate`` closes it again without destroying the timer.
+- ``cleanup`` lets the framework cancel and destroy the timer through ``_release_resources``.
+- The component never owns a publisher or subscription, so the example isolates the timer contract on its own.
+
 Minimal Publisher
 -----------------
 
@@ -149,16 +173,17 @@ Source: `examples/minimal_publisher.py <https://github.com/apajon/lifecore_ros2/
 What it demonstrates
 ~~~~~~~~~~~~~~~~~~~~
 
-A ``LifecyclePublisherComponent`` where the framework owns the ROS publisher and the component owns
-the runtime timer.
+A ``LifecyclePublisherComponent`` and a ``LifecycleTimerComponent`` composing in one node.
+The framework owns both the ROS publisher and the ROS timer; activation gating is handled
+entirely without overrides.
 
 What to look for
 ~~~~~~~~~~~~~~~~
 
-- ``configure`` creates the publisher on ``/chatter``.
-- The node owns one publisher component; the timer belongs to that component, not to the node.
-- ``activate`` starts the timer; ``deactivate`` stops it while the publisher stays available.
-- ``cleanup`` removes the publisher, so ``/chatter`` disappears from the graph.
+- ``configure`` creates both the publisher on ``/chatter`` and the timer.
+- ``PublisherTimer`` receives ``PeriodicPublisher`` at construction and calls ``emit_next()`` in ``on_tick`` — no overrides needed.
+- ``activate`` enables ticks and publication; ``deactivate`` gates both without any ``_on_deactivate`` override.
+- ``cleanup`` releases the publisher and timer automatically through the framework.
 
 Minimal Subscriber
 ------------------
@@ -178,25 +203,6 @@ What to look for
 - The node owns one subscriber component; ``on_message`` is the component contract.
 - ``activate`` allows delivery; ``deactivate`` silently drops messages by design.
 - ``cleanup`` releases the subscription and removes the topic from the subscriber graph.
-
-Minimal Timer
--------------
-
-Source: `examples/minimal_timer.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_timer.py>`_
-
-What it demonstrates
-~~~~~~~~~~~~~~~~~~~~
-
-A standalone ``LifecycleTimerComponent`` where the framework owns the ROS timer and ticks are
-routed to ``on_tick`` only while the component is active.
-
-What to look for
-~~~~~~~~~~~~~~~~
-
-- ``configure`` creates the ROS timer with the configured period; ticks fire but are silently dropped.
-- ``activate`` opens the gate so each tick reaches ``on_tick``; ``deactivate`` closes it again without destroying the timer.
-- ``cleanup`` lets the framework cancel and destroy the timer through ``_release_resources``.
-- The component never owns a publisher or subscription, so the example isolates the timer contract on its own.
 
 Minimal Service Server
 ----------------------
@@ -264,13 +270,39 @@ Source: `examples/composed_pipeline.py <https://github.com/apajon/lifecore_ros2/
 What it demonstrates
 ~~~~~~~~~~~~~~~~~~~~
 
-Three sibling components inside one ``LifecycleComponentNode``: a source, a relay, and a sink that
-transition together through the native ROS 2 lifecycle.
+Three framework components — a timer, a publisher, and a subscriber — inside one
+``LifecycleComponentNode``.  All three configure, activate, deactivate, and clean up
+together through the native ROS 2 lifecycle.  No activation overrides needed.
 
 What to look for
 ~~~~~~~~~~~~~~~~
 
-- ``configure`` creates both pipeline topics and wires all three components.
-- The node owns three sibling components; the relay shows direct ownership of both a raw subscription and a raw publisher.
-- ``activate`` enables end-to-end flow, and ``deactivate`` stops flow for the whole pipeline.
-- The relay clears its buffer on ``deactivate``; ``cleanup`` releases raw ROS resources and removes both topics.
+- ``configure`` creates the publisher and subscription, and starts the timer in a ready (not firing) state.
+- The node wires ``SineTimer`` to ``SinePublisher`` by passing the publisher at construction — no ``get_component`` call needed.
+- ``activate`` enables end-to-end flow; ``deactivate`` gates all three components without any manual ``_on_deactivate`` override.
+- ``cleanup`` releases the publisher, timer, and subscription automatically through the framework.
+
+Composed Ordered Pipeline
+-------------------------
+
+Source: `examples/composed_ordered_pipeline.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/composed_ordered_pipeline.py>`_
+
+What it demonstrates
+~~~~~~~~~~~~~~~~~~~~
+
+A timer, publisher, and subscriber component wired with explicit ``dependencies``
+so the framework resolves transition order from those declarations, not from
+registration order.  No ``_on_activate`` or ``_on_deactivate`` overrides are
+needed — the framework gates each component automatically.
+
+What to look for
+~~~~~~~~~~~~~~~~
+
+- Components are registered in a deliberately scrambled order (sink first, timer
+  second, publisher last).  Dependencies drive the resolved order: publisher is
+  configured first because both timer and sink depend on it.
+- ``SineTimer`` holds a direct reference to ``SinePublisher`` and calls
+  ``emit_next()`` in ``on_tick`` — no raw ``create_timer`` or ``create_publisher``
+  call appears anywhere in the example.
+- ``deactivate`` and ``cleanup`` propagate in reverse dependency order: timer
+  and sink before publisher.

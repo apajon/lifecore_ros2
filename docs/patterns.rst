@@ -7,26 +7,34 @@ Each entry references the lifecycle invariant it upholds or violates (defined in
 Recommended Patterns
 --------------------
 
-**Allocate ROS resources during configure, not in the constructor**
+**Allocate resources during configure, not in the constructor**
 
-  Create publishers, subscriptions, and timers inside ``_on_configure``, not in ``__init__``.
-  This keeps the component's constructor free of ROS dependencies and aligns with the
+  Allocate resources inside ``_on_configure``, not in ``__init__``.
+  This keeps the component's constructor free of runtime dependencies and aligns with the
   **configure** invariant: resources exist if and only if a successful configure has run.
+
+  For standard ROS resources, prefer the dedicated framework components over raw
+  ``create_*`` calls: ``LifecyclePublisherComponent``, ``LifecycleSubscriberComponent``,
+  ``LifecycleTimerComponent``, ``LifecycleServiceServerComponent``, and
+  ``LifecycleServiceClientComponent`` each encapsulate the configure / cleanup plumbing
+  automatically.  Reserve the ``_on_configure`` override for resources without a framework
+  equivalent — for example, a hardware handle or a custom sensor connection.
 
   .. code-block:: python
 
-      class TelemetryComponent(LifecyclePublisherComponent[BatteryState]):
+      class SensorPublisher(LifecyclePublisherComponent[BatteryState]):
           def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
               result = super()._on_configure(state)  # creates the ROS publisher
               if result != TransitionCallbackReturn.SUCCESS:
                   return result
-              self._diagnostics_timer = self.node.create_timer(5.0, self._publish_diagnostics)
+              # Acquire a custom resource not covered by a framework component.
+              self._sensor = open_sensor_connection(self._port)
               return TransitionCallbackReturn.SUCCESS
 
           def _release_resources(self) -> None:
-              if self._diagnostics_timer is not None:
-                  self.node.destroy_timer(self._diagnostics_timer)
-                  self._diagnostics_timer = None
+              if self._sensor is not None:
+                  self._sensor.close()
+                  self._sensor = None
               super()._release_resources()  # destroys the ROS publisher
 
   Invariant upheld: **configure** (allocate in configure) and **cleanup** (release in

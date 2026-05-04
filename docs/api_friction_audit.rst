@@ -30,18 +30,25 @@ Minimal ``LifecyclePublisherComponent`` (publish-on-demand)
 
 **Total: 3 steps.**  No override is mandatory.
 
-Minimal ``LifecyclePublisherComponent`` (timer-driven publication)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+``LifecyclePublisherComponent`` + ``LifecycleTimerComponent`` (timer-driven)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Additional steps beyond the publish-on-demand case:
 
-4. Declare ``self._timer: Timer | None = None`` in ``__init__``.
-5. Override ``_on_activate``: call ``self.node.create_timer(...)``; store ref.
-6. Override ``_on_deactivate``: cancel and destroy the timer.
-7. Implement the timer callback; build the message and call ``self.publish(msg)``.
+4. Import ``LifecycleTimerComponent``.
+5. Subclass ``LifecycleTimerComponent``; pass the publisher instance at construction.
+6. Implement ``on_tick()``: call the publisher's emit method or ``publish(msg)``.
 
-**Total: 7 steps.**  Steps 4–7 are application logic (timer lifecycle), not
-framework bookkeeping.  No mandatory framework-only step was identified.
+**Total: 6 steps.**  No ``_on_activate``, ``_on_deactivate``, ``create_timer``, or
+``destroy_timer`` call required.  Both components are gated by the framework
+automatically.  See ``examples/minimal_publisher.py`` for the canonical form.
+
+.. note::
+
+   Before ``LifecycleTimerComponent`` was used as a sibling component, timer-driven
+   publication required overriding ``_on_activate`` and ``_on_deactivate`` with manual
+   ``create_timer`` / ``destroy_timer`` calls — 7 steps total.  That path remains valid
+   for resources without a framework equivalent but should not be used for timers.
 
 Minimal ``LifecycleSubscriberComponent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
