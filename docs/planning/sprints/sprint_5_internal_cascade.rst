@@ -59,6 +59,18 @@ To decide during sprint planning
 
 ---
 
+Deliverable note
+----------------
+
+``examples/composed_ordered_pipeline.py`` ships as part of Sprint 5.  It
+demonstrates ``source -> relay -> sink`` ordering via explicit ``dependencies``
+on each component constructor.  ``priority`` is not used; the example is
+intentionally limited to dependencies so the first reading stays focused.
+
+Registration order in the node is deliberately scrambled (sink first, then
+relay, then source) to make clear that dependencies -- not registration order
+-- drive the transition sequence.
+
 Validation
 ----------
 
@@ -68,6 +80,8 @@ Validation
 - [ ] Deactivate and cleanup run in reverse order.
 - [ ] Unknown dependency and cycle errors are typed and actionable.
 - [ ] Existing lifecycle tests continue to pass.
+- [ ] ``examples/composed_ordered_pipeline.py`` imports cleanly and the node
+  configures, activates, deactivates, and cleans up without errors.
 
 ---
 

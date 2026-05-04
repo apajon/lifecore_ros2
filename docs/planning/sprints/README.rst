@@ -36,6 +36,7 @@ Sprint roadmap
    sprint_4_lifecycle_comparison
    sprint_4_5_state_component_example
    sprint_5_internal_cascade
+   sprint_5_1_composition_surface
    sprint_6_callback_gating
    sprint_7_cleanup_api
    sprint_8_concurrency
@@ -60,6 +61,7 @@ Condensed View
    S4: Lifecycle comparison example (product proof)
    S4.5: State-only component example (core teaching pattern)
    S5: Internal component cascade (deterministic ordering)
+   S5.1: Composition surface (API and teaching follow-up)
    S6: Centralized callback gating (consistency)
    S7: Cleanup and ownership API (explicit resources)
    S8: Clean concurrency (multi-threaded use)
@@ -99,6 +101,8 @@ Sprint Dependencies
       v
    S5 (internal cascade)
       v
+   S5.1 (composition surface)
+      v
    S6 (callback gating)
       v
    S7 (cleanup ownership)
@@ -119,10 +123,11 @@ Sprint Dependencies
 
 1. S4 before any major new API - prove the product value.
 2. S5 next - deliver the main internal differentiator.
-3. S6-S9 harden runtime behavior before diagnostic-facing surfaces.
-4. S10 then S11 expose health before observing it automatically.
-5. S12-S14 remain advanced surfaces, after the deterministic core.
-6. S15 only after stabilization - generate code from solid conventions.
+3. S5.1 immediately after S5 - API and teaching follow-up for composition.
+4. S6-S9 harden runtime behavior before diagnostic-facing surfaces.
+5. S10 then S11 expose health before observing it automatically.
+6. S12-S14 remain advanced surfaces, after the deterministic core.
+7. S15 only after stabilization - generate code from solid conventions.
 
 ---
 
