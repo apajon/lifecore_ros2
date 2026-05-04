@@ -46,6 +46,7 @@ dev = [
 
 [dependency-groups]
 dev = [
+    "numpy>=2.4.4",
     "twine>=6.2.0",
 ]
 docs = [
