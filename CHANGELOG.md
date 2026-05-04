@@ -2,6 +2,92 @@
 
 <!-- version list -->
 
+## v0.7.0 (2026-05-04)
+
+### Bug Fixes
+
+- **examples**: Add _on_configure to reset note in minimal_state_component docstring
+  ([`b7c1aff`](https://github.com/apajon/lifecore_ros2/commit/b7c1affbf3b9cbcfb43fb5ea97d4ec4ed968e4a5))
+
+### Chores
+
+- Add twine dev dependency
+  ([`f0af8e5`](https://github.com/apajon/lifecore_ros2/commit/f0af8e58dd55e0434f208f85be9bd68d34447eb4))
+
+### Code Style
+
+- Format PyPI publish workflow
+  ([`b9ca5b7`](https://github.com/apajon/lifecore_ros2/commit/b9ca5b794594d09227569319a540ab2dadf77478))
+
+### Continuous Integration
+
+- Add TestPyPI publish workflow
+  ([`b859f3b`](https://github.com/apajon/lifecore_ros2/commit/b859f3b1bd1e999c4eabae581bc77bc192670d5e))
+
+- Default PyPI publish to latest release
+  ([`560cdce`](https://github.com/apajon/lifecore_ros2/commit/560cdce4e98e6e98e4845122954725b965952502))
+
+- Make TestPyPI preview versions unique
+  ([`f5c1046`](https://github.com/apajon/lifecore_ros2/commit/f5c10464bfda2e753197a98b47e969589ff1359d))
+
+- Publish PyPI releases manually after TestPyPI
+  ([`55a5ecb`](https://github.com/apajon/lifecore_ros2/commit/55a5ecb307f88bc44b4553842259d2674ec08a19))
+
+- Publish to PyPI from tag-release workflow
+  ([`8ed4809`](https://github.com/apajon/lifecore_ros2/commit/8ed4809e4f7c08f63f48d8fee33813ccd8759510))
+
+- Resolve latest release without checkout
+  ([`528a088`](https://github.com/apajon/lifecore_ros2/commit/528a088d8bf369b7713d4e029d14a346d96f0808))
+
+- Strip local version for TestPyPI builds
+  ([`a049a1c`](https://github.com/apajon/lifecore_ros2/commit/a049a1cf166e9236770fea466e82000601a87795))
+
+- Trigger TestPyPI publish on workflow_dispatch only
+  ([`a00390d`](https://github.com/apajon/lifecore_ros2/commit/a00390dcf1166ce114d1800dbb84773792cddeac))
+
+- Use real setuptools-scm version for TestPyPI (strip local segment)
+  ([`7520cd3`](https://github.com/apajon/lifecore_ros2/commit/7520cd385d3410cfba26fc29983e232b8eb6301a))
+
+### Documentation
+
+- Add Sprint 4.5 for core state-only LifecycleComponent example
+  ([`4fe4825`](https://github.com/apajon/lifecore_ros2/commit/4fe4825ce0fa025bc9643beb8957d06cb9e3c304))
+
+- Add strategic planning roadmap
+  ([`6a80d89`](https://github.com/apajon/lifecore_ros2/commit/6a80d892e9ed1b6c69c31102ffd1fa69264ce54f))
+
+- Clarify core vs companion repo example strategy
+  ([`3cffb56`](https://github.com/apajon/lifecore_ros2/commit/3cffb561ac2a7988937490a4bf80c5e076a6ec80))
+
+- Document PyPI install path
+  ([`f21926d`](https://github.com/apajon/lifecore_ros2/commit/f21926d9260582323db9cbf92c2f21712b392931))
+
+- Expand Sprint 4 with detailed execution plan and acceptance criteria
+  ([`2abfa2b`](https://github.com/apajon/lifecore_ros2/commit/2abfa2b2c16feac2cdc3d2d4169c995e9facec10))
+
+- Normalize runtime introspection terminology
+  ([`deeaf00`](https://github.com/apajon/lifecore_ros2/commit/deeaf0069c1feeba6ad7097475b93db338500fa4))
+
+- Register minimal_state_component in examples index; close sprint 4.5
+  ([`713afba`](https://github.com/apajon/lifecore_ros2/commit/713afba998d575ee721310524e4556cc0a4de7cf))
+
+- Reprioritize sprint planning cards
+  ([`af6e720`](https://github.com/apajon/lifecore_ros2/commit/af6e72097c0ef8d9e0e7ff32536254b452062364))
+
+- **sprint-4.5**: Fix decisions and mark success signal as delivered
+  ([`20b1145`](https://github.com/apajon/lifecore_ros2/commit/20b114579ba9d5f4bda3c139f4c511fa1cf82d0b))
+
+### Features
+
+- **examples**: Add minimal_state_component example
+  ([`c2e788c`](https://github.com/apajon/lifecore_ros2/commit/c2e788c3abf7225532c2a534c51135d174f361ac))
+
+### Testing
+
+- **smoke**: Add parametrized import-safety test for core examples
+  ([`04122c3`](https://github.com/apajon/lifecore_ros2/commit/04122c3b3698a1d9a29e5ffd18a302384f497f02))
+
+
 ## v0.6.1 (2026-05-02)
 
 ### Bug Fixes
