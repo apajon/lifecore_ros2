@@ -63,13 +63,21 @@ Deliverable note
 ----------------
 
 ``examples/composed_ordered_pipeline.py`` ships as part of Sprint 5.  It
-demonstrates ``source -> relay -> sink`` ordering via explicit ``dependencies``
-on each component constructor.  ``priority`` is not used; the example is
-intentionally limited to dependencies so the first reading stays focused.
+demonstrates timer → publisher → subscriber ordering via explicit
+``dependencies`` on each component constructor.  ``priority`` is not used;
+the example is intentionally limited to dependencies so the first reading
+stays focused.
 
-Registration order in the node is deliberately scrambled (sink first, then
-relay, then source) to make clear that dependencies -- not registration order
--- drive the transition sequence.
+Registration order in the node is deliberately scrambled (sink first, timer
+second, publisher last) to make clear that dependencies -- not registration
+order -- drive the transition sequence.
+
+The framework-first rewrite of this example also demonstrated a concrete
+ergonomic benefit: by using ``LifecycleTimerComponent``,
+``LifecyclePublisherComponent``, and ``LifecycleSubscriberComponent`` as
+sibling components, no ``_on_activate`` or ``_on_deactivate`` overrides
+appear anywhere in the example.  The framework gates each component
+automatically based on activation state.
 
 Validation
 ----------

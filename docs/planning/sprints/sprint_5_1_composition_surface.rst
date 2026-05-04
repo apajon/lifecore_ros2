@@ -35,6 +35,14 @@ deferred:
    ``priority`` through its ``__init__``, the framework imposes a fragile
    boilerplate requirement on users.
 
+The Sprint 5 example rewrites also surfaced a related, already-solved benefit:
+using pre-built framework components as siblings eliminates ``_on_activate``
+and ``_on_deactivate`` overrides entirely.  The rewritten ``minimal_publisher.py``
+and ``composed_pipeline.py`` are shorter and clearer than their predecessors
+not because of dependency ordering, but because the framework components own
+the timer and topic lifecycle without any application hook code.  Sprint 5.1
+should preserve and extend this property.
+
 This sprint follows Sprint 5 and does not replace it.  The deterministic
 ordering model introduced in Sprint 5 stays unchanged.  Sprint 5.1 only
 refines where and how the metadata is expressed.

@@ -80,6 +80,16 @@ Components create and destroy ROS resources through explicit hooks.
 - Disable or gate runtime behavior during deactivate.
 - Release ROS resources during cleanup.
 
+For standard ROS resources, the pre-built framework components apply these
+rules automatically.  ``LifecycleTimerComponent``, ``LifecyclePublisherComponent``,
+``LifecycleSubscriberComponent``, and the service components each encapsulate
+the configure / activate / deactivate / cleanup plumbing internally.  A node
+that composes those components needs no ``_on_activate`` or ``_on_deactivate``
+overrides for those resources — the framework gates each one based on activation
+state without any application code.  Reserve the explicit hook overrides for
+resources that have no framework equivalent: hardware handles, custom sensor
+connections, or application-specific runtime state.
+
 .. raw:: html
 
    <div class="state-box">
