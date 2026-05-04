@@ -59,39 +59,39 @@ Decisions already made
 
 ---
 
-To decide during sprint planning
---------------------------------
+Decisions made during sprint planning
+--------------------------------------
 
-- Final example filename and class names.
-- Whether deactivation should reset state in this teaching example, or whether
-  reset should stay limited to cleanup, shutdown, and error.
-- Whether the example should include one tiny helper component to call
-  ``update()``, or keep the mutation visible in the node for maximum brevity.
-- Exact expected log lines documented in the module docstring.
+- Filename: ``examples/minimal_state_component.py``.
+- Classes: ``CounterStateComponent`` (component), ``StateComponentDemoNode`` (node).
+- Deactivation does **not** reset state (Option A): count preserved across deactivate / re-activate.
+- Mutation visible in the node (Option A): ``StateComponentDemoNode.on_activate`` calls
+  ``self._counter.update(1)`` after ``super().on_activate(state)`` succeeds.
+- Expected log lines documented in the module docstring.
 
 ---
 
 Execution plan
 --------------
 
-- [ ] Review existing core examples for naming, module docstring, and runnable
+- [x] Review existing core examples for naming, module docstring, and runnable
   ``main()`` style.
-- [ ] Add the minimal state-only component example in ``examples/``.
-- [ ] Keep the example import-safe for smoke tests.
-- [ ] Add or update focused smoke coverage for the new example.
-- [ ] Update docs or example indexes if the repository lists core examples.
-- [ ] Run targeted validation for the touched example and tests.
+- [x] Add the minimal state-only component example in ``examples/``.
+- [x] Keep the example import-safe for smoke tests.
+- [x] Add or update focused smoke coverage for the new example.
+- [x] Update docs or example indexes if the repository lists core examples.
+- [x] Run targeted validation for the touched example and tests.
 
 ---
 
 Validation
 ----------
 
-- [ ] ``uv run ruff check examples tests`` passes for the touched scope.
-- [ ] ``uv run pyright`` reports no new errors.
-- [ ] ``uv run pytest`` passes any tests touched or added by the example.
-- [ ] The example can be imported without starting ROS side effects.
-- [ ] The component resets its state on cleanup, shutdown, and error.
+- [x] ``uv run ruff check examples tests`` passes for the touched scope.
+- [x] ``uv run pyright`` reports no new errors.
+- [x] ``uv run pytest`` passes any tests touched or added by the example.
+- [x] The example can be imported without starting ROS side effects.
+- [x] The component resets its state on cleanup, shutdown, and error.
 
 ---
 

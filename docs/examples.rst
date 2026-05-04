@@ -50,6 +50,10 @@ Example map
      - Smallest ``LifecycleComponentNode`` plus one explicit component hook.
      - Start here if you want the base transition flow without topic resources.
      - ``uv run python examples/minimal_node.py``
+   * - `minimal_state_component.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_state_component.py>`_
+     - Lifecycle-managed state with no ROS resource ownership.
+     - Read after the node example to see lifecycle management applied to owned state rather than ROS resources.
+     - ``uv run python examples/minimal_state_component.py``
    * - `minimal_publisher.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_publisher.py>`_
      - Framework-owned publisher plus component-owned timer.
      - Read after the node example to see ``configure`` versus ``activate`` for publishing.
@@ -87,6 +91,7 @@ Suggested reading path
 ----------------------
 
 - Start with ``minimal_node.py`` for the smallest ownership boundary.
+- Continue with ``minimal_state_component.py`` to see lifecycle management applied to owned state with no ROS resources.
 - Move to publisher, subscriber, and timer examples to see activation gating on long-lived ROS resources.
 - Continue with service server and client examples to compare inbound versus outbound gating behavior.
 - Finish with ``telemetry_publisher.py`` and ``composed_pipeline.py`` for full lifecycle separation across multiple responsibilities.
@@ -116,6 +121,25 @@ What to look for
 - The node owns the component; the component does not manage node lifetime.
 - ``activate`` and ``deactivate`` succeed with the native silent base behavior.
 - No topics or ROS resources are created, retained, or released in this example.
+
+Minimal State Component
+-----------------------
+
+Source: `examples/minimal_state_component.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_state_component.py>`_
+
+What it demonstrates
+~~~~~~~~~~~~~~~~~~~~
+
+A ``LifecycleComponent`` that owns lifecycle-managed state with no ROS resource ownership.
+The node calls ``update()`` on the component after each activation to demonstrate external mutation.
+
+What to look for
+~~~~~~~~~~~~~~~~
+
+- ``configure`` resets the counter to ``0``; cleanup, shutdown, and error also reset it.
+- ``deactivate`` preserves the counter so accumulated state survives a deactivate / re-activate cycle.
+- The component owns its state; the node calls ``update()`` — the component does not push state outward.
+- No publishers, subscriptions, or timers are created; the lifecycle contract is purely about state.
 
 Minimal Publisher
 -----------------
