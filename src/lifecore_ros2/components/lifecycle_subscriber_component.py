@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from collections.abc import Sequence
 from typing import final
 
 from rclpy.callback_groups import CallbackGroup
@@ -44,6 +45,8 @@ class LifecycleSubscriberComponent[MsgT](TopicComponent[MsgT]):
         qos_profile: QoSProfile | int = 10,
         *,
         callback_group: CallbackGroup | None = None,
+        dependencies: Sequence[str] = (),
+        priority: int = 0,
     ) -> None:
         """Initialize the lifecycle subscriber component.
 
@@ -60,6 +63,10 @@ class LifecycleSubscriberComponent[MsgT](TopicComponent[MsgT]):
                 forwarded to ``create_subscription`` on configure. Lifetime is owned by
                 the caller; the component never destroys it. ``None`` selects the node
                 default group.
+            dependencies: Names of other components that must be transitioned before
+                this one. Forwarded to ``LifecycleComponent``.
+            priority: Tie-breaking ordering hint when dependencies do not impose a
+                strict order. Forwarded to ``LifecycleComponent``.
         """
         super().__init__(
             name=name,
@@ -67,6 +74,8 @@ class LifecycleSubscriberComponent[MsgT](TopicComponent[MsgT]):
             msg_type=msg_type,
             qos_profile=qos_profile,
             callback_group=callback_group,
+            dependencies=dependencies,
+            priority=priority,
         )
         self._subscription: Subscription | None = None  # type: ignore[type-arg]  # rclpy Subscription is not generic
 

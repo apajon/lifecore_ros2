@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import abstractmethod
+from collections.abc import Sequence
 from typing import final
 
 from rclpy.callback_groups import CallbackGroup
@@ -43,6 +44,8 @@ class LifecycleTimerComponent(LifecycleComponent):
         *,
         autostart: bool = True,
         callback_group: CallbackGroup | None = None,
+        dependencies: Sequence[str] = (),
+        priority: int = 0,
     ) -> None:
         """Initialize the lifecycle timer component.
 
@@ -58,11 +61,15 @@ class LifecycleTimerComponent(LifecycleComponent):
                 forwarded to ``create_timer`` on configure. Lifetime is owned by the
                 caller; the component never destroys it. ``None`` selects the node
                 default group.
+            dependencies: Names of other components that must be transitioned before
+                this one. Forwarded to ``LifecycleComponent``.
+            priority: Tie-breaking ordering hint when dependencies do not impose a
+                strict order. Forwarded to ``LifecycleComponent``.
 
         Raises:
             ValueError: If ``period`` is not strictly positive.
         """
-        super().__init__(name=name, callback_group=callback_group)
+        super().__init__(name=name, callback_group=callback_group, dependencies=dependencies, priority=priority)
         period_sec = period.nanoseconds / 1e9 if isinstance(period, Duration) else float(period)
         if period_sec <= 0.0:
             raise ValueError(f"Timer '{name}' period must be > 0 seconds, got {period_sec}")

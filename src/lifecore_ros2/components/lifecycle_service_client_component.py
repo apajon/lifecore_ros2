@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from collections.abc import Sequence
 from typing import Any
 
 from rclpy.callback_groups import CallbackGroup
@@ -47,6 +48,8 @@ class LifecycleServiceClientComponent[SrvT](ServiceComponent[SrvT]):
         *,
         qos_profile: QoSProfile | None = None,
         callback_group: CallbackGroup | None = None,
+        dependencies: Sequence[str] = (),
+        priority: int = 0,
     ) -> None:
         """Initialize the lifecycle service client component.
 
@@ -63,6 +66,10 @@ class LifecycleServiceClientComponent[SrvT](ServiceComponent[SrvT]):
                 forwarded to ``create_client`` on configure. Lifetime is owned by the
                 caller; the component never destroys it. ``None`` selects the node
                 default group.
+            dependencies: Names of other components that must be transitioned before
+                this one. Forwarded to ``LifecycleComponent``.
+            priority: Tie-breaking ordering hint when dependencies do not impose a
+                strict order. Forwarded to ``LifecycleComponent``.
         """
         super().__init__(
             name=name,
@@ -70,6 +77,8 @@ class LifecycleServiceClientComponent[SrvT](ServiceComponent[SrvT]):
             srv_type=srv_type,
             qos_profile=qos_profile,
             callback_group=callback_group,
+            dependencies=dependencies,
+            priority=priority,
         )
         self._client: Client | None = None  # type: ignore[type-arg]  # rclpy Client is not generic
 

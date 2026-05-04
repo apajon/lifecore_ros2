@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from typing import Any, cast
 
 import std_msgs.msg
@@ -37,6 +37,8 @@ class FakeComponent(LifecycleComponent):
         self,
         name: str = "fake_component",
         *,
+        dependencies: Sequence[str] = (),
+        priority: int = 0,
         fail_at_hook: str | None = None,
         exception: Exception | None = None,
         failure_return: TransitionCallbackReturn = TransitionCallbackReturn.FAILURE,
@@ -45,6 +47,10 @@ class FakeComponent(LifecycleComponent):
 
         Args:
             name: Unique component name.
+            dependencies: Names of components this one depends on; forwarded to
+                ``LifecycleComponent``.
+            priority: Higher value means earlier in the resolved transition order;
+                forwarded to ``LifecycleComponent``.
             fail_at_hook: Hook name that should fail. Accepts ``configure`` or
                 protected-style names such as ``_on_configure``.
             exception: Optional exception to raise at ``fail_at_hook``. If omitted,
@@ -52,7 +58,7 @@ class FakeComponent(LifecycleComponent):
             failure_return: Transition result returned by the failing hook when
                 ``exception`` is not set.
         """
-        super().__init__(name=name)
+        super().__init__(name=name, dependencies=dependencies, priority=priority)
         self.calls: list[str] = []
         self.states: dict[str, list[LifecycleState]] = {hook_name: [] for hook_name in _HOOK_NAMES}
         self._fail_at_hook = _normalize_hook_name(fail_at_hook) if fail_at_hook is not None else None

@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC
+from collections.abc import Sequence
 
 from rclpy.callback_groups import CallbackGroup
 from rclpy.qos import QoSProfile
@@ -34,6 +35,8 @@ class TopicComponent[MsgT](LifecycleComponent, ABC):
         qos_profile: QoSProfile | int = 10,
         *,
         callback_group: CallbackGroup | None = None,
+        dependencies: Sequence[str] = (),
+        priority: int = 0,
     ) -> None:
         """Initialize the topic component.
 
@@ -51,13 +54,17 @@ class TopicComponent[MsgT](LifecycleComponent, ABC):
                 forwarded to the underlying publisher or subscription. Lifetime is owned
                 by the caller; the component never destroys it. ``None`` selects the
                 node default group.
+            dependencies: Names of other components that must be transitioned before
+                this one. Forwarded to ``LifecycleComponent``.
+            priority: Tie-breaking ordering hint when dependencies do not impose a
+                strict order. Forwarded to ``LifecycleComponent``.
 
         Raises:
             TypeError: if ``msg_type`` cannot be resolved (neither passed nor
                 inferred from the generic parameter), or if the explicit value
                 conflicts with the inferred one.
         """
-        super().__init__(name=name, callback_group=callback_group)
+        super().__init__(name=name, callback_group=callback_group, dependencies=dependencies, priority=priority)
         self._topic_name = topic_name
         self._msg_type: type[MsgT] = _resolve_iface_type(
             type(self),
