@@ -2,8 +2,6 @@
 
 from __future__ import annotations
 
-from unittest.mock import patch
-
 import pytest
 
 from lifecore_ros2.core import LifecycleComponentNode
@@ -66,57 +64,3 @@ class TestRegressionRegistrationGuard:
     def test_registration_open_flag_initially_true(self, node: LifecycleComponentNode) -> None:
         # Guard: the flag must default to True for fresh nodes.
         assert node._registration_open is True
-
-
-# ---------------------------------------------------------------------------
-# Fix 2 — Atomic add_component with rollback
-# ---------------------------------------------------------------------------
-
-
-class TestRegressionAtomicAddComponent:
-    """add_component must roll back attach on add_managed_entity failure."""
-
-    def test_rollback_detaches_component_on_failure(self, node: LifecycleComponentNode) -> None:
-        # Regression: if add_managed_entity raised, the component stayed
-        # attached (_node set) but was never registered in _components,
-        # leaving it in a broken state that prevented re-attachment.
-        # Expected: _detach() is called, _node is reset to None.
-
-        comp = FakeComponent("rollback_test")
-
-        with patch.object(node, "add_managed_entity", side_effect=RuntimeError("injected")):
-            with pytest.raises(RuntimeError, match="injected"):
-                node.add_component(comp)
-
-        # After rollback: component must be fully detached
-        assert comp._node is None
-
-    def test_rollback_component_not_in_registry(self, node: LifecycleComponentNode) -> None:
-        # Regression: partial registration left ghost entries in _components.
-        # Expected: failed component must not appear in the registry.
-
-        comp = FakeComponent("ghost_check")
-
-        with patch.object(node, "add_managed_entity", side_effect=RuntimeError("injected")):
-            with pytest.raises(RuntimeError, match="injected"):
-                node.add_component(comp)
-
-        assert "ghost_check" not in [c.name for c in node.components]
-        assert comp.name not in node._components
-
-    def test_rollback_allows_reattach(self, node: LifecycleComponentNode) -> None:
-        # Regression: after a failed add_component, the component was stuck
-        # in "already attached" state and could not be registered elsewhere.
-        # Expected: component can be re-added after rollback.
-
-        comp = FakeComponent("reattach_test")
-
-        # First attempt: fail
-        with patch.object(node, "add_managed_entity", side_effect=RuntimeError("injected")):
-            with pytest.raises(RuntimeError, match="injected"):
-                node.add_component(comp)
-
-        # Second attempt: succeed (no monkeypatch → real add_managed_entity)
-        node.add_component(comp)
-        assert comp._node is node
-        assert comp.name in [c.name for c in node.components]

@@ -13,7 +13,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 from rclpy.lifecycle import TransitionCallbackReturn
-from rclpy.lifecycle.node import LifecycleNode, LifecycleState
+from rclpy.lifecycle.node import LifecycleState
 
 from lifecore_ros2.core import LifecycleComponentNode
 from lifecore_ros2.core.exceptions import ConcurrentTransitionError, RegistrationClosedError
@@ -113,13 +113,13 @@ class TestRegressionConcurrentTransitions:
         assert node._in_transition is False
 
     def test_concurrent_transition_flag_cleared_after_failure(self, node: LifecycleComponentNode) -> None:
-        # Regression: an exception inside super().on_configure bypassed _end_transition,
+        # Regression: an exception inside _propagate_forward bypassed _end_transition,
         # permanently locking the node against further transitions.
         # Expected: finally block clears the flag; second on_configure does not raise
         # ConcurrentTransitionError.
 
         side_effects = [RuntimeError("injected"), TransitionCallbackReturn.SUCCESS]
-        with patch.object(LifecycleNode, "on_configure", side_effect=side_effects):
+        with patch.object(LifecycleComponentNode, "_propagate_forward", side_effect=side_effects):
             with pytest.raises(RuntimeError, match="injected"):
                 node.on_configure(DUMMY_STATE)
 

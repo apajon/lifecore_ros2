@@ -230,3 +230,43 @@ class TestCallbackGroupPropagation:
         positional_args: tuple[Any, ...] = ("kw_pub", "/cb_test", MagicMock, 10, cg)
         with pytest.raises(TypeError):
             LifecyclePublisherComponent(*positional_args)
+
+
+# ---------------------------------------------------------------------------
+# dependencies / priority pass-through — topic component family
+# ---------------------------------------------------------------------------
+
+
+class TestDependenciesAndPriorityTopicFamily:
+    """Regression: dependencies and priority must be accepted and stored by publisher/subscriber."""
+
+    def test_publisher_accepts_dependencies_and_priority(self) -> None:
+        pub = LifecyclePublisherComponent[Any](
+            name="dep_pub",
+            topic_name="/dep_test",
+            msg_type=MagicMock,
+            dependencies=("other",),
+            priority=3,
+        )
+        assert pub._dependencies == ("other",)
+        assert pub._priority == 3
+
+    def test_subscriber_accepts_dependencies_and_priority(self) -> None:
+        class _MinimalSub(LifecycleSubscriberComponent[Any]):
+            def on_message(self, msg: Any) -> None:
+                pass
+
+        sub = _MinimalSub(
+            name="dep_sub",
+            topic_name="/dep_test",
+            msg_type=MagicMock,
+            dependencies=("source",),
+            priority=1,
+        )
+        assert sub._dependencies == ("source",)
+        assert sub._priority == 1
+
+    def test_defaults_are_empty_and_zero(self) -> None:
+        pub = StubPublisher()
+        assert pub._dependencies == ()
+        assert pub._priority == 0

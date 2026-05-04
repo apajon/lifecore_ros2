@@ -275,3 +275,29 @@ class TestFourPrimitiveActivationGatingConsistency:
                 assert sub.received == [], "on_message must not be called while inactive"
             else:
                 assert not server.handler_called, "on_service_request must not be called while inactive"
+
+
+# ---------------------------------------------------------------------------
+# dependencies / priority pass-through -- service component family
+# ---------------------------------------------------------------------------
+
+
+class TestServiceDependenciesAndPriority:
+    """Regression: service server and client constructors must accept and store dependencies/priority."""
+
+    def test_server_accepts_dependencies_and_priority(self) -> None:
+        server = _TriggerServer(dependencies=("source",), priority=2)
+        assert server._dependencies == ("source",)
+        assert server._priority == 2
+
+    def test_client_accepts_dependencies_and_priority(self) -> None:
+        from tests.components._service_stubs import _TriggerClient
+
+        client = _TriggerClient(dependencies=("server",), priority=1)
+        assert client._dependencies == ("server",)
+        assert client._priority == 1
+
+    def test_defaults_are_empty_and_zero(self) -> None:
+        server = _TriggerServer()
+        assert server._dependencies == ()
+        assert server._priority == 0

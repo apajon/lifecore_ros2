@@ -244,3 +244,32 @@ class TestTimerControls:
             timer.stop()
         with pytest.raises(ComponentNotConfiguredError):
             timer.reset()
+
+
+# ---------------------------------------------------------------------------
+# dependencies / priority pass-through
+# ---------------------------------------------------------------------------
+
+
+class _DepTimer(LifecycleTimerComponent):
+    """Timer stub with explicit dependencies and priority."""
+
+    def __init__(self, dependencies: tuple[str, ...] = (), priority: int = 0) -> None:
+        super().__init__(name="dep_timer", period=0.1, dependencies=dependencies, priority=priority)
+
+    def on_tick(self) -> None:
+        pass
+
+
+class TestTimerDependenciesAndPriority:
+    """Regression: LifecycleTimerComponent must accept and store dependencies and priority."""
+
+    def test_accepts_dependencies_and_priority(self) -> None:
+        timer = _DepTimer(dependencies=("source",), priority=5)
+        assert timer._dependencies == ("source",)
+        assert timer._priority == 5
+
+    def test_defaults_are_empty_and_zero(self) -> None:
+        timer = StubTimer()
+        assert timer._dependencies == ()
+        assert timer._priority == 0
