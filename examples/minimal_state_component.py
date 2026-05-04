@@ -4,8 +4,8 @@ Single idea: lifecycle management applies to domain state, not only to ROS resou
 The counter resets on configure, cleanup, shutdown, and error; it is preserved across deactivate
 so accumulated state survives a deactivate / re-activate cycle.
 
-Note: the state reset in ``_on_cleanup``, ``_on_shutdown``, and ``_on_error`` is a choice made
-by ``CounterStateComponent``, not a framework rule.
+Note: the state reset in ``_on_configure``, ``_on_cleanup``, ``_on_shutdown``, and ``_on_error``
+is a choice made by ``CounterStateComponent``, not a framework rule.
 
 Drive it::
 
