@@ -52,8 +52,8 @@ Decisions already made
   allocate ROS resources.
 - The component owns its state; other components may depend on it but should not
   mutate its internals directly.
-- Cleanup, shutdown, and error transitions reset the state in the minimal
-  example.
+- Configure, cleanup, shutdown, and error transitions reset the state in the
+  minimal example.
 - The core example teaches one abstraction: lifecycle-managed state.
 - Concrete uses of this pattern remain in the companion examples repository.
 
@@ -143,8 +143,8 @@ Out of scope:
 Success signal
 --------------
 
-- [ ] A reader can understand that ``LifecycleComponent`` may own plain Python
+- [x] A reader can understand that ``LifecycleComponent`` may own plain Python
   state, not only ROS resources.
-- [ ] The example clearly shows where state is updated and where it is reset.
-- [ ] The core/companion example boundary remains clear.
-- [ ] Ruff, Pyright, and pytest are green for the touched scope.
+- [x] The example clearly shows where state is updated and where it is reset.
+- [x] The core/companion example boundary remains clear.
+- [x] Ruff, Pyright, and pytest are green for the touched scope.
