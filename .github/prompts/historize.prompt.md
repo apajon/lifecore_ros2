@@ -3,16 +3,7 @@ description: "Persist important conversation insights to mempalace. Use when: en
 name: "Historize to MemPalace"
 argument-hint: "Optional: focus on a specific topic (e.g., 'lifecycle regression', 'component contract')"
 agent: "agent"
-tools:
-  - mcp_mempalace_mempalace_add_drawer
-  - mcp_mempalace_mempalace_check_duplicate
-  - mcp_mempalace_mempalace_search
-  - mcp_mempalace_mempalace_kg_add
-  - mcp_mempalace_mempalace_kg_query
-  - mcp_mempalace_mempalace_get_taxonomy
-  - mcp_mempalace_mempalace_list_wings
-  - mcp_mempalace_mempalace_list_rooms
-  - mcp_mempalace_mempalace_diary_write
+tools: [mempalace/*]
 ---
 
 # MemPalace Historization — Conversation Review
