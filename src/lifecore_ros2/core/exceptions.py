@@ -14,6 +14,9 @@ Hierarchy::
     ├── ComponentNotConfiguredError (RuntimeError)
     ├── InvalidLifecycleTransitionError (RuntimeError)
     ├── ConcurrentTransitionError (RuntimeError)
+    ├── ComponentDependencyError  (ValueError)
+    │   ├── UnknownDependencyError
+    │   └── CyclicDependencyError
     ├── LifecycleHookError        (RuntimeError)
     └── _InterfaceTypeNotResolvedError (TypeError)  [internal — not re-exported]
 """
@@ -52,6 +55,18 @@ class InvalidLifecycleTransitionError(LifecoreError, RuntimeError):
 
 class ConcurrentTransitionError(LifecoreError, RuntimeError):
     """Raised when a lifecycle transition is attempted concurrently with an in-progress transition."""
+
+
+class ComponentDependencyError(LifecoreError, ValueError):
+    """Base class for dependency-resolution errors during component ordering."""
+
+
+class UnknownDependencyError(ComponentDependencyError):
+    """Raised when a component declares a dependency on a name that is not registered."""
+
+
+class CyclicDependencyError(ComponentDependencyError):
+    """Raised when the declared component dependencies contain a cycle."""
 
 
 class LifecycleHookError(LifecoreError, RuntimeError):

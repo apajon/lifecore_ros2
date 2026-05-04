@@ -7,7 +7,13 @@ from typing import Any
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleNode, LifecycleState
 
-from .exceptions import ConcurrentTransitionError, DuplicateComponentError, RegistrationClosedError
+from .exceptions import (
+    ConcurrentTransitionError,
+    CyclicDependencyError,
+    DuplicateComponentError,
+    RegistrationClosedError,
+    UnknownDependencyError,
+)
 from .lifecycle_component import LifecycleComponent, _worst_of
 
 
@@ -18,8 +24,8 @@ class LifecycleComponentNode(LifecycleNode):
         - The registry of attached ``LifecycleComponent`` instances.
         - Component registration gate: open before first transition, closed after.
         - Thread-safe access to the component registry and registration gate.
-        - Propagation of ROS 2 lifecycle transitions to registered components via the
-          native ``ManagedEntity`` mechanism.
+        - Propagation of ROS 2 lifecycle transitions to registered components in
+          dependency-resolved order via ``_resolved_order``.
 
     Does not own:
         - Component-level resource allocation or release.
@@ -33,9 +39,11 @@ class LifecycleComponentNode(LifecycleNode):
         - Do not override ``add_component``, ``add_components``, or ``_close_registration``.
 
     Note:
-        Each component is registered as a ``ManagedEntity`` so the native ``LifecycleNode``
-        propagates transitions automatically. ``add_component`` raises ``RuntimeError``
-        once the first lifecycle transition has started.
+        Transition order is resolved at the first lifecycle transition via ``_resolved_order``,
+        applying Kahn's topological sort on declared ``dependencies`` with ``priority`` as the
+        primary tiebreaker and registration order as the stable fallback.
+        ``add_component`` raises ``RegistrationClosedError`` once the first lifecycle
+        transition has started.
     """
 
     # Any: passthrough to rclpy LifecycleNode.__init__; rclpy does not expose a typed kwargs signature
@@ -46,6 +54,7 @@ class LifecycleComponentNode(LifecycleNode):
         self._in_transition: bool = False
         self._managed_transition_name: str | None = None
         self._lock: threading.RLock = threading.RLock()
+        self._resolved_order: tuple[LifecycleComponent, ...] = ()
 
     @property
     def components(self) -> tuple[LifecycleComponent, ...]:
@@ -69,11 +78,6 @@ class LifecycleComponentNode(LifecycleNode):
                 raise DuplicateComponentError(f"Component name already registered: {component.name}")
 
             component._attach(self)  # pyright: ignore[reportPrivateUsage]
-            try:
-                self.add_managed_entity(component)
-            except Exception:
-                component._detach()  # pyright: ignore[reportPrivateUsage]
-                raise
             self._components[component.name] = component
 
         self.get_logger().info(f"Registered component '{component.name}'")
@@ -129,7 +133,67 @@ class LifecycleComponentNode(LifecycleNode):
     def _close_registration(self) -> None:
         """Framework-internal. Do not call from user code."""
         with self._lock:
+            if not self._registration_open:
+                return
             self._registration_open = False
+        self._resolved_order = self._resolve_order()
+
+    def _resolve_order(self) -> tuple[LifecycleComponent, ...]:
+        """Framework-internal. Do not call from user code."""
+        for comp_name, component in self._components.items():
+            for dep in component._dependencies:  # pyright: ignore[reportPrivateUsage]
+                if dep not in self._components:
+                    raise UnknownDependencyError(f"Component '{comp_name}' declares unknown dependency '{dep}'")
+
+        insertion_index = {name: i for i, name in enumerate(self._components)}
+        successors: dict[str, list[str]] = {name: [] for name in self._components}
+        in_degree: dict[str, int] = {name: 0 for name in self._components}
+
+        for comp_name, component in self._components.items():
+            for dep in set(component._dependencies):  # pyright: ignore[reportPrivateUsage]
+                successors[dep].append(comp_name)
+                in_degree[comp_name] += 1
+
+        def sort_key(name: str) -> tuple[int, int]:
+            return (-self._components[name]._priority, insertion_index[name])  # pyright: ignore[reportPrivateUsage]
+
+        ready: list[str] = sorted(
+            (n for n, deg in in_degree.items() if deg == 0),
+            key=sort_key,
+        )
+        resolved: list[LifecycleComponent] = []
+
+        while ready:
+            name = ready.pop(0)
+            resolved.append(self._components[name])
+            new_ready: list[str] = []
+            for succ in successors[name]:
+                in_degree[succ] -= 1
+                if in_degree[succ] == 0:
+                    new_ready.append(succ)
+            if new_ready:
+                ready = sorted(ready + new_ready, key=sort_key)
+
+        if len(resolved) != len(self._components):
+            raise CyclicDependencyError("Cyclic dependency detected among registered components")
+
+        return tuple(resolved)
+
+    def _propagate_forward(self, callback_name: str, state: LifecycleState) -> TransitionCallbackReturn:
+        """Framework-internal. Do not call from user code."""
+        for component in self._resolved_order:
+            result: TransitionCallbackReturn = getattr(component, callback_name)(state)
+            if result != TransitionCallbackReturn.SUCCESS:
+                return result
+        return TransitionCallbackReturn.SUCCESS
+
+    def _propagate_reverse(self, callback_name: str, state: LifecycleState) -> TransitionCallbackReturn:
+        """Framework-internal. Do not call from user code."""
+        for component in reversed(self._resolved_order):
+            result: TransitionCallbackReturn = getattr(component, callback_name)(state)
+            if result != TransitionCallbackReturn.SUCCESS:
+                return result
+        return TransitionCallbackReturn.SUCCESS
 
     def _begin_transition(self, name: str) -> None:
         """Framework-internal. Do not call from user code.
@@ -215,7 +279,7 @@ class LifecycleComponentNode(LifecycleNode):
             self._close_registration()
             self._begin_managed_transition("configure")
             try:
-                result = super().on_configure(state)
+                result = self._propagate_forward("on_configure", state)
             finally:
                 self._end_managed_transition()
             if result != TransitionCallbackReturn.SUCCESS:
@@ -238,7 +302,7 @@ class LifecycleComponentNode(LifecycleNode):
         try:
             self._begin_managed_transition("activate")
             try:
-                return super().on_activate(state)
+                return self._propagate_forward("on_activate", state)
             finally:
                 self._end_managed_transition()
         finally:
@@ -257,7 +321,7 @@ class LifecycleComponentNode(LifecycleNode):
         try:
             self._begin_managed_transition("deactivate")
             try:
-                return super().on_deactivate(state)
+                return self._propagate_reverse("on_deactivate", state)
             finally:
                 self._end_managed_transition()
         finally:
@@ -276,7 +340,7 @@ class LifecycleComponentNode(LifecycleNode):
         try:
             self._begin_managed_transition("cleanup")
             try:
-                return super().on_cleanup(state)
+                return self._propagate_reverse("on_cleanup", state)
             finally:
                 self._end_managed_transition()
         finally:
@@ -296,11 +360,19 @@ class LifecycleComponentNode(LifecycleNode):
             self._close_registration()
             self._begin_managed_transition("shutdown")
             try:
-                return super().on_shutdown(state)
+                return self._propagate_reverse("on_shutdown", state)
             finally:
                 self._end_managed_transition()
         finally:
             self._end_transition()
+
+    def on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
+        """Propagate error to all components in reverse order.
+
+        Not guarded by ``_begin_transition`` — error recovery must remain
+        reachable during active transitions.
+        """
+        return self._propagate_reverse("on_error", state)
 
     def trigger_configure(self) -> TransitionCallbackReturn:
         return self._run_trigger("configure", super().trigger_configure)

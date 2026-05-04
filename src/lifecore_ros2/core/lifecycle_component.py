@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import traceback
 from abc import ABC
-from collections.abc import Callable
+from collections.abc import Callable, Sequence
 from functools import wraps
 from logging import getLogger
 from typing import TYPE_CHECKING, Any, Protocol, cast, final, overload
@@ -157,17 +157,30 @@ class LifecycleComponent(ManagedEntity, ABC):
           manage lifecycle invariants and delegate to the ``_on_*`` hooks.
     """
 
-    def __init__(self, name: str, *, callback_group: CallbackGroup | None = None) -> None:
+    def __init__(
+        self,
+        name: str,
+        *,
+        callback_group: CallbackGroup | None = None,
+        dependencies: Sequence[str] = (),
+        priority: int = 0,
+    ) -> None:
         """Initialize the lifecycle component.
 
         Args:
             name: Unique name for this component within the node.
             callback_group: Optional CallbackGroup borrowed from the application; lifetime owned
                 by the caller. None selects the node default group.
+            dependencies: Names of other components that must be transitioned before this one.
+                Used by ``LifecycleComponentNode`` to resolve the transition order.
+            priority: Tie-breaking value for ordering when dependencies do not impose a strict
+                ordering; higher values are resolved earlier.
         """
         super().__init__()
         self._name: str = name
         self._callback_group: CallbackGroup | None = callback_group
+        self._dependencies: tuple[str, ...] = tuple(dependencies)
+        self._priority: int = priority
         self._node: LifecycleComponentNode | None = None
         self._is_configured: bool = False
         self._needs_cleanup: bool = False

@@ -10,9 +10,11 @@ from .components import (
     TopicComponent,
 )
 from .core import (
+    ComponentDependencyError,
     ComponentNotAttachedError,
     ComponentNotConfiguredError,
     ConcurrentTransitionError,
+    CyclicDependencyError,
     DuplicateComponentError,
     InvalidLifecycleTransitionError,
     LifecoreError,
@@ -20,6 +22,7 @@ from .core import (
     LifecycleComponentNode,
     LifecycleHookError,
     RegistrationClosedError,
+    UnknownDependencyError,
     when_active,
 )
 
@@ -42,4 +45,7 @@ __all__ = [
     "ComponentNotConfiguredError",
     "InvalidLifecycleTransitionError",
     "ConcurrentTransitionError",
+    "ComponentDependencyError",
+    "UnknownDependencyError",
+    "CyclicDependencyError",
 ]
