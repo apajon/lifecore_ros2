@@ -100,7 +100,6 @@ Decisions made during sprint
 Validation
 ----------
 
-- [ ] A node author can declare ordering metadata without subclassing
 - [x] A node author can declare ordering metadata without subclassing
   ``LifecycleComponent`` and overriding ``__init__``.
 - [x] Deterministic ordering from Sprint 5 continues to work correctly.
