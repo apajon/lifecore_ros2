@@ -66,23 +66,48 @@ README comparison update
 **Rationale:** README should sell the concrete pain and point to the proof, not
 become the technical reference.
 
-Internal component cascade
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+Internal component cascade — *shipped in Sprint 5 (2026-05-04)*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Sprint mapping: :doc:`sprints/sprint_5_internal_cascade`.
 
-* [ ] Add component dependency metadata, likely by component name.
-* [ ] Add component priority metadata only as a secondary ordering hint.
-* [ ] Resolve transition order with dependencies first, priority second, and
+* [x] Add component dependency metadata, likely by component name.
+* [x] Add component priority metadata only as a secondary ordering hint.
+* [x] Resolve transition order with dependencies first, priority second, and
   registration order as the stable fallback.
-* [ ] Apply normal order for configure / activate and reverse order for
+* [x] Apply normal order for configure / activate and reverse order for
   deactivate / cleanup.
-* [ ] Reject duplicate names, unknown dependencies, and dependency cycles with
+* [x] Reject duplicate names, unknown dependencies, and dependency cycles with
   typed errors.
+
+``dependencies`` and ``priority`` are keyword arguments on ``LifecycleComponent``
+and forwarded through every framework component subclass.  Typed errors
+(``UnknownDependencyError``, ``CyclicDependencyError``) are exported from the
+public surface.  See :doc:`sprints/sprint_5_internal_cascade` for the full
+delivery note.
 
 **Rationale:** Deterministic internal lifecycle ordering is the main
 differentiator after activation gating. Keep this inside one node; do not turn it
 into a system orchestrator.
+
+Composition surface ergonomics
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sprint mapping: :doc:`sprints/sprint_5_1_composition_surface`.
+
+* [ ] Let a node author declare ordering metadata at the registration site
+  without modifying each component's ``__init__``.
+* [ ] Eliminate the constructor pass-through requirement for ``dependencies``
+  and ``priority`` in application component subclasses.
+* [ ] Keep the framework-first ergonomic property: a node that uses pre-built
+  framework components needs no ``_on_activate`` or ``_on_deactivate`` overrides.
+* [ ] Update or add a composition example that teaches the pattern without raw
+  ``create_*`` calls.
+
+**Rationale:** Sprint 5 proved that dependency ordering works.  The
+constructor pass-through model is a usability friction point: metadata is
+scattered across component definitions rather than visible at the assembly
+site.  Sprint 5.1 addresses this without changing the ordering algorithm.
 
 Cleanup and resource ownership API
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -179,12 +204,13 @@ Lifecycle policies
 
 **Rationale:** Anticipates the question of component ordering and bootstrap automation already surfacing in user discussions.
 
-Component dependencies and cascade
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Component dependencies and cascade — *core shipped in Sprint 5 (2026-05-04)*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* [ ] See the near-term internal component cascade item above.
-* [ ] Keep broader lifecycle policies deferred until the cascade contract proves
-  useful in examples.
+* [x] Basic ``dependencies`` and ``priority`` metadata shipped in Sprint 5.
+* [ ] Registration-site declaration (visible at node assembly) tracked in Sprint 5.1.
+* [ ] Keep broader lifecycle policies deferred until the Sprint 5.1 ergonomic
+  surface is proven in examples.
 * [ ] Do not add before/after policy variants unless dependency names and
   priority are insufficient.
 

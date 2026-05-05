@@ -50,12 +50,19 @@ Decisions already made
 - Registration order remains the stable fallback.
 - Reverse order is required for deactivate and cleanup.
 
-To decide during sprint planning
---------------------------------
+Decisions made during sprint
+----------------------------
 
-- The exact public spelling of dependency and priority metadata.
-- The error type names for unknown dependencies and cycles.
-- Whether ordering resolution is exposed for introspection or kept internal.
+- Dependencies: ``dependencies=("name",)`` keyword argument on ``LifecycleComponent.__init__``,
+  forwarded through the full component hierarchy (``TopicComponent``, ``ServiceComponent``,
+  ``LifecycleTimerComponent``, and all concrete subclasses).
+- Priority: ``priority: int = 0`` keyword argument; higher value means earlier in the resolved
+  order. Default 0.
+- Error types: ``ComponentDependencyError`` (base, ``ValueError``), ``UnknownDependencyError``
+  (unknown dependency name), ``CyclicDependencyError`` (cycle detected). All exported from the
+  public package surface.
+- Ordering resolution is kept internal: ``_resolved_order`` on ``LifecycleComponentNode`` is
+  private and not exposed for introspection in this sprint.
 
 ---
 
@@ -82,13 +89,13 @@ automatically based on activation state.
 Validation
 ----------
 
-- [ ] Components transition in dependency order.
-- [ ] Priority only applies when dependencies do not decide order.
-- [ ] Registration order is stable as the final fallback.
-- [ ] Deactivate and cleanup run in reverse order.
-- [ ] Unknown dependency and cycle errors are typed and actionable.
-- [ ] Existing lifecycle tests continue to pass.
-- [ ] ``examples/composed_ordered_pipeline.py`` imports cleanly and the node
+- [x] Components transition in dependency order.
+- [x] Priority only applies when dependencies do not decide order.
+- [x] Registration order is stable as the final fallback.
+- [x] Deactivate and cleanup run in reverse order.
+- [x] Unknown dependency and cycle errors are typed and actionable.
+- [x] Existing lifecycle tests continue to pass.
+- [x] ``examples/composed_ordered_pipeline.py`` imports cleanly and the node
   configures, activates, deactivates, and cleans up without errors.
 
 ---
@@ -96,7 +103,10 @@ Validation
 Success signal
 --------------
 
-- [ ] A node with subscriber, processor, and publisher components can declare
+- [x] A node with subscriber, processor, and publisher components can declare
   its internal order explicitly.
-- [ ] The implementation reads as deterministic ordering, not a hidden state
+- [x] The implementation reads as deterministic ordering, not a hidden state
   machine.
+
+*Delivered 2026-05-04.  All validation items green.  Ruff, Pyright, and pytest
+(158 tests) pass.*
