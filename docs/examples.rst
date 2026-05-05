@@ -83,8 +83,8 @@ Example map
      - Read after the timer example to see three framework components composing in one node.
      - ``uv run python examples/composed_pipeline.py``
    * - `composed_ordered_pipeline.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/composed_ordered_pipeline.py>`_
-     - Three sibling components with explicit internal dependencies inside one node.
-     - Read after ``composed_pipeline.py`` to see the same shape with explicit dependency-driven ordering.
+     - Three sibling components with explicit internal dependencies declared at registration time inside one node.
+     - Read after ``composed_pipeline.py`` to see the same shape with dependency-driven ordering kept visible in the node assembly code.
      - ``uv run python examples/composed_ordered_pipeline.py``
 
 After launching an example, drive it with ``ros2 lifecycle set /<node_name> configure``, then
@@ -99,7 +99,7 @@ Suggested reading path
 - Move to timer, publisher, and subscriber examples to see activation gating on long-lived ROS resources.
 - Continue with service server and client examples to compare inbound versus outbound gating behavior.
 - Finish with ``telemetry_publisher.py``, ``composed_pipeline.py``, and ``composed_ordered_pipeline.py`` for full lifecycle separation across multiple responsibilities.
-- Read ``composed_ordered_pipeline.py`` after ``telemetry_publisher.py`` to see how ``dependencies`` impose a guaranteed transition order across independently managed components.
+- Read ``composed_ordered_pipeline.py`` after ``telemetry_publisher.py`` to see how ``dependencies`` declared at ``add_component(...)`` impose a guaranteed transition order across independently managed components.
 
 Companion Comparison
 --------------------
@@ -291,18 +291,22 @@ What it demonstrates
 ~~~~~~~~~~~~~~~~~~~~
 
 A timer, publisher, and subscriber component wired with explicit ``dependencies``
-so the framework resolves transition order from those declarations, not from
-registration order.  No ``_on_activate`` or ``_on_deactivate`` overrides are
-needed — the framework gates each component automatically.
+declared at ``add_component(...)`` so the framework resolves transition order
+from those declarations, not from registration order. No ``_on_activate`` or
+``_on_deactivate`` overrides are needed — the framework gates each component
+automatically.
 
 What to look for
 ~~~~~~~~~~~~~~~~
 
 - Components are registered in a deliberately scrambled order (sink first, timer
-  second, publisher last).  Dependencies drive the resolved order: publisher is
+  second, publisher last). Dependencies are declared at the registration site,
+  so ordering intent is visible where the node is assembled. Publisher is
   configured first because both timer and sink depend on it.
 - ``SineTimer`` holds a direct reference to ``SinePublisher`` and calls
   ``emit_next()`` in ``on_tick`` — no raw ``create_timer`` or ``create_publisher``
   call appears anywhere in the example.
+- ``SineTimer`` and ``LoggingSink`` do not expose pass-through ordering kwargs in
+  their constructors; ``dependencies`` stay on the node side of the composition boundary.
 - ``deactivate`` and ``cleanup`` propagate in reverse dependency order: timer
   and sink before publisher.

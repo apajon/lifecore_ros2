@@ -53,11 +53,14 @@ Decisions already made
 Decisions made during sprint
 ----------------------------
 
-- Dependencies: ``dependencies=("name",)`` keyword argument on ``LifecycleComponent.__init__``,
-  forwarded through the full component hierarchy (``TopicComponent``, ``ServiceComponent``,
-  ``LifecycleTimerComponent``, and all concrete subclasses).
+- Dependencies: at Sprint 5 delivery, ``dependencies=("name",)`` was a keyword argument on
+  ``LifecycleComponent.__init__``, forwarded through the full component hierarchy
+  (``TopicComponent``, ``ServiceComponent``, ``LifecycleTimerComponent``, and all concrete
+  subclasses). Sprint 5.1 later added the additive registration-site form on
+  ``LifecycleComponentNode.add_component(...)`` without changing the ordering model.
 - Priority: ``priority: int = 0`` keyword argument; higher value means earlier in the resolved
-  order. Default 0.
+  order. Default 0. Sprint 5.1 later allowed the same metadata to be declared at the
+  registration site.
 - Error types: ``ComponentDependencyError`` (base, ``ValueError``), ``UnknownDependencyError``
   (unknown dependency name), ``CyclicDependencyError`` (cycle detected). All exported from the
   public package surface.
@@ -69,11 +72,10 @@ Decisions made during sprint
 Deliverable note
 ----------------
 
-``examples/composed_ordered_pipeline.py`` ships as part of Sprint 5.  It
-demonstrates timer → publisher → subscriber ordering via explicit
-``dependencies`` on each component constructor.  ``priority`` is not used;
-the example is intentionally limited to dependencies so the first reading
-stays focused.
+``examples/composed_ordered_pipeline.py`` still demonstrates timer → publisher →
+subscriber ordering, but the current version was updated in Sprint 5.1 to place
+``dependencies`` at ``add_component(...)``. ``priority`` is not used; the example
+remains intentionally limited to dependencies so the first reading stays focused.
 
 Registration order in the node is deliberately scrambled (sink first, timer
 second, publisher last) to make clear that dependencies -- not registration

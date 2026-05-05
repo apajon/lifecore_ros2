@@ -52,18 +52,23 @@ The relationship is one-to-many: one node, any number of named components.
     │
     └── drives: propagates on_configure / on_activate / on_deactivate
                          / on_cleanup / on_shutdown / on_error
-                to each component in registration order
+                to each component in dependency-resolved order
 
 Key ownership rules:
 
-- Components are registered by name via ``add_component(component)``. Names must be unique.
+- Components are registered by name via
+  ``add_component(component, *, dependencies=None, priority=None)``. Names must be unique.
 - Registration is closed after the first lifecycle transition. Any subsequent call to
   ``add_component()`` raises ``RegistrationClosedError``.
+- Ordering metadata may be declared on the component constructor or at the registration site.
+  Dependencies are resolved first, ``priority`` breaks ties, and registration order remains the
+  stable fallback.
 - Each component holds a back-reference to its parent node (``component.node``).
   Accessing ``node`` before attachment raises ``ComponentNotAttachedError``.
-- The node calls each component's lifecycle hooks in registration order.
-  If one component returns ``FAILURE`` or ``ERROR``, the node's transition result reflects
-  the worst outcome across all components.
+- ``configure`` and ``activate`` run in resolved order. ``deactivate``, ``cleanup``,
+  ``shutdown``, and ``error`` run in the reverse of that resolved order.
+- If one component returns ``FAILURE`` or ``ERROR``, the node's transition result reflects the
+  worst outcome across all components.
 
 .. raw:: html
 
@@ -92,8 +97,10 @@ the first transition. Components added after ``on_configure`` has been called ra
 
 .. note::
 
-   The lock is reentrant (``RLock``), so application code that calls ``add_component``
-   inside a node's own ``__init__`` or ``on_configure`` override is safe.
+  The lock is reentrant (``RLock``), so application code that calls ``add_component``
+  inside a node's own ``__init__`` is safe. Inside ``on_configure``, registration remains
+  possible only before calling ``super().on_configure(state)``; after ``super()`` closes the
+  registration gate, ``add_component`` raises ``RegistrationClosedError``.
 
 Transition Sequence
 -------------------
@@ -110,7 +117,7 @@ into the transition; component hooks are called inside it.
         │
         ├── closes registration (no more add_component after this)
         │
-        ├── for each component in registration order:
+        ├── for each component in resolved configure/activate order:
         │       component.on_configure(state)           ← @final; calls _guarded_call
         │           └── _guarded_call(component._on_configure, state)
         │                   catches exceptions → TransitionCallbackReturn.ERROR
@@ -120,7 +127,8 @@ into the transition; component hooks are called inside it.
 
 The same pattern repeats for ``on_activate``, ``on_deactivate``, ``on_cleanup``,
 ``on_shutdown``, and ``on_error``. Each uses ``_guarded_call`` so exceptions from hook
-code never escape to the rclpy executor.
+code never escape to the rclpy executor. ``on_deactivate``, ``on_cleanup``,
+``on_shutdown``, and ``on_error`` traverse the reverse of the resolved order.
 
 Read the sequence as a lifecycle pipeline: node entry, registration gate, ordered hook calls,
 result aggregation, then a single return to ``rclpy``.

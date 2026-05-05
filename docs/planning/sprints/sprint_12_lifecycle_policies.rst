@@ -27,7 +27,7 @@ Component ordering remains the most likely first policy area.
 
 Ordering builds on the focused internal cascade instead of replacing it:
 
-- registration order remains the default
+- registration order remains the final stable fallback beneath explicit dependencies and priority
 - explicit dependencies may define required order
 - priority may be a secondary ordering hint
 - deactivate and cleanup may run in reverse order when ownership requires it

@@ -5,7 +5,7 @@ The first public release scope is implemented. What remains is split into
 strategic near-term work, future feature candidates, and deliberately deferred
 ideas.
 
-See :doc:`../../ROADMAP` for the public-facing scope and :doc:`../../CHANGELOG` for shipped changes.
+See `ROADMAP.md <https://github.com/apajon/lifecore_ros2/blob/main/ROADMAP.md>`_ for the public-facing scope and `CHANGELOG.md <https://github.com/apajon/lifecore_ros2/blob/main/CHANGELOG.md>`_ for shipped changes.
 
 See :doc:`strategy` for the product cap that explains why the backlog is ordered this way.
 
@@ -80,11 +80,14 @@ Sprint mapping: :doc:`sprints/sprint_5_internal_cascade`.
 * [x] Reject duplicate names, unknown dependencies, and dependency cycles with
   typed errors.
 
-``dependencies`` and ``priority`` are keyword arguments on ``LifecycleComponent``
-and forwarded through every framework component subclass.  Typed errors
+``dependencies`` and ``priority`` remain available on ``LifecycleComponent``.
+Sprint 5.1 later added the registration-site form
+``add_component(component, *, dependencies=None, priority=None)`` so node authors
+can keep ordering intent visible without constructor pass-through. Typed errors
 (``UnknownDependencyError``, ``CyclicDependencyError``) are exported from the
-public surface.  See :doc:`sprints/sprint_5_internal_cascade` for the full
-delivery note.
+public surface. See :doc:`sprints/sprint_5_internal_cascade` for the internal
+ordering model and :doc:`sprints/sprint_5_1_composition_surface` for the
+composition-surface follow-up.
 
 **Rationale:** Deterministic internal lifecycle ordering is the main
 differentiator after activation gating. Keep this inside one node; do not turn it
@@ -95,19 +98,25 @@ Composition surface ergonomics
 
 Sprint mapping: :doc:`sprints/sprint_5_1_composition_surface`.
 
-* [ ] Let a node author declare ordering metadata at the registration site
+* [x] Let a node author declare ordering metadata at the registration site
   without modifying each component's ``__init__``.
-* [ ] Eliminate the constructor pass-through requirement for ``dependencies``
+* [x] Eliminate the constructor pass-through requirement for ``dependencies``
   and ``priority`` in application component subclasses.
-* [ ] Keep the framework-first ergonomic property: a node that uses pre-built
+* [x] Keep the framework-first ergonomic property: a node that uses pre-built
   framework components needs no ``_on_activate`` or ``_on_deactivate`` overrides.
-* [ ] Update or add a composition example that teaches the pattern without raw
+* [x] Update or add a composition example that teaches the pattern without raw
   ``create_*`` calls.
 
 **Rationale:** Sprint 5 proved that dependency ordering works.  The
 constructor pass-through model is a usability friction point: metadata is
 scattered across component definitions rather than visible at the assembly
-site.  Sprint 5.1 addresses this without changing the ordering algorithm.
+site. Sprint 5.1 addresses this without changing the ordering algorithm.
+
+**Delivered:** ``LifecycleComponentNode.add_component(...)`` now accepts
+``dependencies`` and ``priority`` as optional registration-site metadata.
+Conflicts between constructor-declared and registration-declared non-default
+values raise ``TypeError``. ``add_components(...)`` remains intentionally
+limited to bare components.
 
 Cleanup and resource ownership API
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -322,7 +331,7 @@ Binding layer
 **Rationale:** Prevents premature abstraction; surfaces only if component hierarchy grows unwieldy.
 
 Companion examples repo
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 * [ ] See :doc:`examples_repo` for full planning.
 

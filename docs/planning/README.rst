@@ -12,4 +12,4 @@ adoption hardening.
    adoption_hardening
    examples_repo
 
-**For the public roadmap,** see :doc:`ROADMAP.md <../../ROADMAP>` at the repository root.
+**For the public roadmap,** see `ROADMAP.md <https://github.com/apajon/lifecore_ros2/blob/main/ROADMAP.md>`_ at the repository root.

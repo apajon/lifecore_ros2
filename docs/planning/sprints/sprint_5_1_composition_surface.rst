@@ -11,6 +11,8 @@ one place, close to the registration site.  The first ordered composition
 example in the framework repository teaches this pattern in a framework-first
 way.
 
+**Status.** Delivered 2026-05-05.
+
 ---
 
 Why this sprint exists
@@ -52,21 +54,16 @@ refines where and how the metadata is expressed.
 Scope
 -----
 
-Investigate and decide one ergonomic path for declaring composition metadata
-without requiring constructor pass-through.
+Implemented approach: registration-site declaration on
+``LifecycleComponentNode.add_component(...)``.
 
-Candidates to evaluate during planning (not pre-decided):
+Delivered API shape::
 
-- Registration-site declaration: metadata passed at the
-  ``register_component`` call site in the node.
-- Descriptor or class-level annotation: metadata attached to the component
-  class without touching ``__init__``.
-- Dedicated composition helper: a small structure that pairs a component
-  instance with its ordering metadata.
+    node.add_component(component, *, dependencies=None, priority=None)
 
 The first ordered composition example (``examples/composed_ordered_pipeline.py``)
-may be updated to reflect the chosen approach.  It should stay framework-first
-and not teach composition through raw ROS ``create_*`` calls.
+was updated in place to reflect this approach. It stays framework-first and
+does not teach composition through raw ROS ``create_*`` calls.
 
 ---
 
@@ -88,18 +85,15 @@ Decisions already made
 
 ---
 
-To decide during sprint planning
-----------------------------------
+Decisions made during sprint
+----------------------------
 
-- Exact API shape for expressing composition metadata at the registration site
-  or an equivalent surface.
-- Whether the existing ``composed_ordered_pipeline.py`` example is updated in
-  place or superseded by a new example.
-- Whether the subclass burden fix requires a breaking API change or can be
-  additive.
-- Error behavior when metadata conflicts with constructor-declared metadata.
-- Whether ordering introspection surfaces need to be updated to reflect the
-  new declaration site.
+- API shape: ``LifecycleComponentNode.add_component(component, *, dependencies=None, priority=None)``.
+- Compatibility: additive only; constructor-declared metadata remains supported.
+- Conflict rule: if the constructor and the registration site both declare a non-default value
+  for the same field, ``TypeError`` is raised immediately.
+- Example strategy: ``examples/composed_ordered_pipeline.py`` was updated in place.
+- Batch API: ``add_components(...)`` remains unchanged and accepts bare components only.
 
 ---
 
@@ -107,16 +101,17 @@ Validation
 ----------
 
 - [ ] A node author can declare ordering metadata without subclassing
+- [x] A node author can declare ordering metadata without subclassing
   ``LifecycleComponent`` and overriding ``__init__``.
-- [ ] Deterministic ordering from Sprint 5 continues to work correctly.
-- [ ] The updated or new composition example imports cleanly and the node
+- [x] Deterministic ordering from Sprint 5 continues to work correctly.
+- [x] The updated or new composition example imports cleanly and the node
   configures, activates, deactivates, and cleans up without errors.
-- [ ] The example does not use raw ROS ``create_*`` calls to demonstrate
+- [x] The example does not use raw ROS ``create_*`` calls to demonstrate
   composition.
-- [ ] Existing lifecycle and ordering tests pass without modification.
-- [ ] ``uv run ruff check .`` passes for all touched files.
-- [ ] ``uv run pyright`` reports no new errors.
-- [ ] ``uv run pytest`` is green.
+- [x] Existing lifecycle and ordering tests pass without modification.
+- [x] ``uv run ruff check .`` passes for all touched files.
+- [x] ``uv run pyright`` reports no new errors.
+- [x] ``uv run pytest`` is green.
 
 ---
 

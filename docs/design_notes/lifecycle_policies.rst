@@ -16,14 +16,17 @@ As applications grow, the question of "component ordering" emerges:
 - Should the node be considered "fully active" only when all components have activated?
 - Can startup be automated, or is explicit orchestration required?
 
-Currently, the framework does not enforce or guide ordering. This design note reserves the design space to prevent order-based bugs from becoming implicit.
+The framework now enforces deterministic intra-node ordering through explicit
+``dependencies``, ``priority``, and registration order as the stable fallback.
+This design note reserves the remaining design space for higher-level policies
+so order-based behavior does not become implicit again.
 
 ---
 
 Key questions
 --------------
 
-1. **Configure order**: Should components configure sequentially (in registration order) or in parallel? Can one component's configure block a sibling's?
+1. **Configure order**: Should components configure sequentially in the existing resolved order or in parallel? Can one component's configure block a sibling's?
 2. **Activate order**: Same question for activate.
 3. **Full-activation semantics**: Is the node considered "active" as soon as it enters the ``active`` state, or only after all components are active?
 4. **Deactivate order**: Reverse-order deactivation (last-registered first) or same order as activate?
