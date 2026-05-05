@@ -1,8 +1,8 @@
 """Three framework components with explicit dependencies inside one lifecycle node.
 
-Demonstrates: timer, publisher, and subscriber components declared with
-``dependencies`` so the framework transitions them in the correct order
-regardless of registration order.
+Demonstrates: timer, publisher, and subscriber components composed with
+``dependencies`` declared at the registration site — not in each component's
+constructor — so ordering intent is visible at a single glance in the node.
 
 Dependency graph::
 
@@ -24,7 +24,6 @@ Drive it::
 from __future__ import annotations
 
 import math
-from collections.abc import Sequence
 
 from std_msgs.msg import Float64
 
@@ -57,8 +56,8 @@ class SinePublisher(LifecyclePublisherComponent[Float64]):
 class SineTimer(LifecycleTimerComponent):
     """Drives ``SinePublisher`` at 1 Hz while active."""
 
-    def __init__(self, *, name: str, source: SinePublisher, dependencies: Sequence[str] = ()) -> None:
-        super().__init__(name=name, period=_PERIOD, dependencies=dependencies)
+    def __init__(self, *, name: str, source: SinePublisher) -> None:
+        super().__init__(name=name, period=_PERIOD)
         self._source = source
 
     def on_tick(self) -> None:
@@ -68,8 +67,8 @@ class SineTimer(LifecycleTimerComponent):
 class LoggingSink(LifecycleSubscriberComponent[Float64]):
     """Logs values received on ``/ordered/raw``."""
 
-    def __init__(self, *, name: str, dependencies: Sequence[str] = ()) -> None:
-        super().__init__(name=name, topic_name=_TOPIC, msg_type=Float64, dependencies=dependencies)
+    def __init__(self, *, name: str) -> None:
+        super().__init__(name=name, topic_name=_TOPIC, msg_type=Float64)
 
     def on_message(self, msg: Float64) -> None:
         self.node.get_logger().info(f"[{self.name}] value={msg.data:.4f}")
@@ -79,12 +78,13 @@ class OrderedPipelineNode(LifecycleComponentNode):
     def __init__(self) -> None:
         super().__init__("ordered_pipeline_node")
         publisher = SinePublisher(name="publisher")
-        timer = SineTimer(name="timer", source=publisher, dependencies=("publisher",))
-        sink = LoggingSink(name="sink", dependencies=("publisher",))
-        # Registration order is intentionally scrambled.
-        # Dependencies -- not registration order -- drive the transition sequence.
-        self.add_component(sink)
-        self.add_component(timer)
+        timer = SineTimer(name="timer", source=publisher)
+        sink = LoggingSink(name="sink")
+        # Ordering intent is declared here, at the assembly site.
+        # Registration order is intentionally scrambled to confirm that
+        # dependencies -- not registration order -- drive the transition sequence.
+        self.add_component(sink, dependencies=("publisher",))
+        self.add_component(timer, dependencies=("publisher",))
         self.add_component(publisher)
 
 
