@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 import threading
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Sequence
 from typing import Any
 
 from rclpy.lifecycle import TransitionCallbackReturn
@@ -41,7 +41,8 @@ class LifecycleComponentNode(LifecycleNode):
     Note:
         Transition order is resolved at the first lifecycle transition via ``_resolved_order``,
         applying Kahn's topological sort on declared ``dependencies`` with ``priority`` as the
-        primary tiebreaker and registration order as the stable fallback.
+        primary tiebreaker and registration order as the stable fallback. Metadata may be
+        declared on the component constructor or at ``add_component(...)``.
         ``add_component`` raises ``RegistrationClosedError`` once the first lifecycle
         transition has started.
     """
@@ -61,13 +62,33 @@ class LifecycleComponentNode(LifecycleNode):
         with self._lock:
             return tuple(self._components.values())
 
-    def add_component(self, component: LifecycleComponent) -> None:
+    def add_component(
+        self,
+        component: LifecycleComponent,
+        *,
+        dependencies: Sequence[str] | None = None,
+        priority: int | None = None,
+    ) -> None:
         """Register a component as a managed entity.
+
+        Ordering metadata (``dependencies``, ``priority``) may be declared here instead of in
+        the component's constructor.  Declaring the same field in both places raises ``TypeError``.
+
+        Args:
+            component: The component to register.
+            dependencies: Names of other components that must be transitioned before this one.
+                ``None`` leaves the component's constructor value unchanged.
+            priority: Tie-breaking value for ordering when dependencies do not impose a strict
+                order; higher values are resolved earlier.  ``None`` leaves the component's
+                constructor value unchanged.
 
         Raises:
             RegistrationClosedError: If lifecycle transitions have already started.
             DuplicateComponentError: If a component with the same name is already registered.
+            TypeError: If both the component and the registration site declare a non-default
+                value for the same metadata field.
         """
+        component._apply_registration_metadata(dependencies, priority)  # pyright: ignore[reportPrivateUsage]
         with self._lock:
             if not self._registration_open:
                 raise RegistrationClosedError(
@@ -83,6 +104,12 @@ class LifecycleComponentNode(LifecycleNode):
         self.get_logger().info(f"Registered component '{component.name}'")
 
     def add_components(self, components: Iterable[LifecycleComponent]) -> None:
+        """Register a batch of components.
+
+        This convenience method accepts bare components only. When different components need
+        registration-site ordering metadata, call ``add_component(...)`` for each item so the
+        metadata stays explicit at the assembly site.
+        """
         for component in components:
             self.add_component(component)
 

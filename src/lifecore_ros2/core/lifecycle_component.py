@@ -140,6 +140,9 @@ class LifecycleComponent(ManagedEntity, ABC):
           ``_on_shutdown``, and ``_on_error``. Subclasses do not need to call it.
         - Exceptions in hooks are caught and converted to ``TransitionCallbackReturn.ERROR``.
         - Invalid return values from hooks are caught and converted to ERROR.
+                - Ordering metadata may be declared either here or at
+                    ``LifecycleComponentNode.add_component(...)``. Prefer the registration site when you
+                    want composition intent visible where the node assembles components.
 
     Subclass extension points (override these):
         - ``_on_configure``: allocate ROS resources. Default returns SUCCESS.
@@ -172,9 +175,11 @@ class LifecycleComponent(ManagedEntity, ABC):
             callback_group: Optional CallbackGroup borrowed from the application; lifetime owned
                 by the caller. None selects the node default group.
             dependencies: Names of other components that must be transitioned before this one.
-                Used by ``LifecycleComponentNode`` to resolve the transition order.
+                Used by ``LifecycleComponentNode`` to resolve the transition order. May also be
+                declared later at ``LifecycleComponentNode.add_component(...)``.
             priority: Tie-breaking value for ordering when dependencies do not impose a strict
-                ordering; higher values are resolved earlier.
+                ordering; higher values are resolved earlier. May also be declared later at
+                ``LifecycleComponentNode.add_component(...)``.
         """
         super().__init__()
         self._name: str = name
@@ -234,6 +239,42 @@ class LifecycleComponent(ManagedEntity, ABC):
     def _detach(self) -> None:
         """Framework-internal. Do not call from user code."""
         self._node = None
+
+    def _apply_registration_metadata(
+        self,
+        dependencies: Sequence[str] | None,
+        priority: int | None,
+    ) -> None:
+        """Framework-internal. Apply composition metadata declared at the registration site.
+
+        Called by ``LifecycleComponentNode.add_component`` before the component is attached.
+        Validates that the same field is not set non-default in both the constructor and the
+        registration site.  Applies whichever site provides a non-``None`` value.
+
+        Args:
+            dependencies: Dependency names to apply, or ``None`` to leave unchanged.
+            priority: Priority value to apply, or ``None`` to leave unchanged.
+
+        Raises:
+            TypeError: If both the constructor and the registration site declare a non-default
+                value for the same field.
+        """
+        if dependencies is not None and self._dependencies != ():
+            raise TypeError(
+                f"Component '{self._name}' declares dependencies={self._dependencies!r} in its constructor "
+                f"and dependencies={tuple(dependencies)!r} at the registration site; "
+                "provide the value in one place only"
+            )
+        if priority is not None and self._priority != 0:
+            raise TypeError(
+                f"Component '{self._name}' declares priority={self._priority!r} in its constructor "
+                f"and priority={priority!r} at the registration site; "
+                "provide the value in one place only"
+            )
+        if dependencies is not None:
+            self._dependencies = tuple(dependencies)
+        if priority is not None:
+            self._priority = priority
 
     # -- logger resolution ------------------------------------------------
 
