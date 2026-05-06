@@ -4,6 +4,7 @@ import logging
 
 import pytest
 
+from lifecore_ros2.core import LifecycleComponentNode
 from lifecore_ros2.testing import (
     DUMMY_STATE,
     FakeComponent,
@@ -18,7 +19,7 @@ from lifecore_ros2.testing import (
 )
 
 
-def test_activate_component_configures_and_activates(lifecycle_node_fixture) -> None:
+def test_activate_component_configures_and_activates(lifecycle_node_fixture: LifecycleComponentNode) -> None:
     component = FakeComponent("component_a")
     lifecycle_node_fixture.add_component(component)
 
@@ -29,7 +30,7 @@ def test_activate_component_configures_and_activates(lifecycle_node_fixture) -> 
     assert_component_state(lifecycle_node_fixture, "component_a", "active")
 
 
-def test_deactivate_component_deactivates_and_cleans_up(lifecycle_node_fixture) -> None:
+def test_deactivate_component_deactivates_and_cleans_up(lifecycle_node_fixture: LifecycleComponentNode) -> None:
     component = FakeComponent("component_a")
     lifecycle_node_fixture.add_component(component)
     activate_component(lifecycle_node_fixture, "component_a")

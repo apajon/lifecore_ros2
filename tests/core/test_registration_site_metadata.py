@@ -9,6 +9,7 @@ Covers:
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from typing import Any
 
 import pytest
@@ -44,9 +45,9 @@ class RecordingComponent(LifecycleComponent):
 
 
 @pytest.fixture()
-def node() -> LifecycleComponentNode:
+def node() -> Generator[LifecycleComponentNode, None, None]:
     n = LifecycleComponentNode("test_regsite_node")
-    yield n  # type: ignore[misc]
+    yield n
     n.destroy_node()
 
 

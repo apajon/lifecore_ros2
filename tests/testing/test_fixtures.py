@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+from lifecore_ros2.core import LifecycleComponentNode
 from lifecore_ros2.testing import FakeComponent, NodeWithComponents
 
 
-def test_lifecycle_node_fixture_creates_node(lifecycle_node_fixture) -> None:
+def test_lifecycle_node_fixture_creates_node(lifecycle_node_fixture: LifecycleComponentNode) -> None:
     assert lifecycle_node_fixture.get_name() == "lifecore_test_node"
 
 

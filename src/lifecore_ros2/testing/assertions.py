@@ -51,10 +51,7 @@ def assert_activation_gated(component: ActivationGatedFake) -> None:
     if isinstance(component, FakeServiceComponent):
         _assert_service_gated(component)
         return
-    if isinstance(component, FakeClientComponent):
-        _assert_client_gated(component)
-        return
-    raise TypeError(f"Unsupported component type for activation gating assertion: {type(component).__name__}")
+    _assert_client_gated(component)
 
 
 def _assert_publisher_gated(component: FakePublisherComponent) -> None:
