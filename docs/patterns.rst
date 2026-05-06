@@ -133,9 +133,9 @@ Recommended Patterns
   - Passing ``None`` selects the node's default group; this is the recommended choice
     when no specific concurrency policy is required.
   - The borrow contract holds across the whole lifecycle: configure / activate /
-    deactivate / cleanup all see the same reference. ``cleanup`` releases the ROS
-    publisher or subscription that referenced the group; it never touches the group
-    itself.
+    deactivate / cleanup / shutdown / error all see the same reference.
+    ``cleanup``, ``shutdown``, and ``error`` release the ROS publisher or
+    subscription that referenced the group; they never touch the group itself.
 
   .. code-block:: python
 
@@ -154,8 +154,8 @@ Recommended Patterns
           callback_group=cb_group,
       )
 
-  Invariant upheld: **cleanup** — components release only what they allocated; borrowed
-  handles outlive the component instance.
+  Invariant upheld: **cleanup / shutdown / error** — components release only what they
+  allocated; borrowed handles outlive the component instance.
 
 Anti-Patterns
 -------------

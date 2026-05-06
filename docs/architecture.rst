@@ -138,7 +138,10 @@ whose hook returned ``SUCCESS``. ``on_deactivate`` clears it only on ``SUCCESS``
 ``on_cleanup``, ``on_shutdown``, and ``on_error`` each clear ``_is_active = False``
 **unconditionally before the hook runs**, then call ``_release_resources``
 after the hook, regardless of the hook's return value, and propagate the worst of the
-two results.
+two results. After that release attempt, ``component._needs_cleanup`` is cleared even
+if resource release reported ``ERROR`` so the component returns to a reconfigurable
+state instead of remaining cleanup-pending forever. Borrowed constructor inputs such
+as ``callback_group`` are not part of ``_release_resources`` and remain application-owned.
 
 Concurrency Contract
 --------------------
