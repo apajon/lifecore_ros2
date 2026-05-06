@@ -136,7 +136,9 @@ class LifecycleComponent(ManagedEntity, ABC):
           For ``_on_cleanup``, ``_on_shutdown``, and ``_on_error``, ``_is_active`` is
           cleared unconditionally before the hook runs. Subclasses never manage this flag.
         - ``_release_resources()`` is called automatically after ``_on_cleanup``,
-          ``_on_shutdown``, and ``_on_error``. Subclasses do not need to call it.
+                    ``_on_shutdown``, and ``_on_error``. Subclasses do not need to call it.
+                - ``_needs_cleanup`` is cleared after each cleanup, shutdown, or error release
+                    attempt, even if resource release reports ``ERROR``.
         - Exceptions in hooks are caught and converted to ``TransitionCallbackReturn.ERROR``.
         - Invalid return values from hooks are caught and converted to ERROR.
                 - Ordering metadata may be declared either here or at
@@ -446,9 +448,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         self._is_configured = False
         result = self._guarded_call("on_cleanup", self._on_cleanup, state)
         release_result = self._safe_release_resources()
-        if release_result == TransitionCallbackReturn.SUCCESS:
-            self._is_configured = False
-            self._needs_cleanup = False
+        self._needs_cleanup = False
         return _worst_of(result, release_result)
 
     @final
@@ -459,9 +459,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         self._is_configured = False
         result = self._guarded_call("on_shutdown", self._on_shutdown, state)
         release_result = self._safe_release_resources()
-        if release_result == TransitionCallbackReturn.SUCCESS:
-            self._is_configured = False
-            self._needs_cleanup = False
+        self._needs_cleanup = False
         return _worst_of(result, release_result)
 
     @final
@@ -472,9 +470,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         self._is_configured = False
         result = self._guarded_call("on_error", self._on_error, state)
         release_result = self._safe_release_resources()
-        if release_result == TransitionCallbackReturn.SUCCESS:
-            self._is_configured = False
-            self._needs_cleanup = False
+        self._needs_cleanup = False
         return _worst_of(result, release_result)
 
     # -- protected extension points (override these in subclasses) -----------
@@ -512,7 +508,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         return TransitionCallbackReturn.SUCCESS
 
     def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-        """Extension point. Override for custom cleanup before resource release.
+        """Extension point. Override for custom cleanup before automatic resource release.
 
         The framework calls ``_release_resources()`` automatically after this hook.
 
@@ -522,7 +518,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         return TransitionCallbackReturn.SUCCESS
 
     def _on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
-        """Extension point. Override for custom shutdown logic.
+        """Extension point. Override for custom shutdown logic before automatic resource release.
 
         The framework calls ``_release_resources()`` automatically after this hook.
 
@@ -532,7 +528,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         return TransitionCallbackReturn.SUCCESS
 
     def _on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
-        """Extension point. Override for custom error handling.
+        """Extension point. Override for custom error handling before automatic resource release.
 
         The framework calls ``_release_resources()`` automatically after this hook.
 
@@ -545,7 +541,8 @@ class LifecycleComponent(ManagedEntity, ABC):
         """Extension point. Override to release ROS resources owned by this component.
 
         Called automatically by the framework during cleanup, shutdown, and error
-        transitions. Destroy publishers, subscriptions, timers, etc. here.
+        transitions. Destroy publishers, subscriptions, timers, etc. here. Do not
+        mutate borrowed handles such as ``callback_group`` here.
 
         Implementations must be idempotent. Call ``super()._release_resources()`` last
         when overriding in a subclass chain.
