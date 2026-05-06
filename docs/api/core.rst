@@ -15,3 +15,10 @@ Core API
    :members:
    :undoc-members:
    :show-inheritance:
+
+.. rubric:: Activation-gating primitive
+
+.. automodule:: lifecore_ros2.core.activation_gating
+   :members:
+   :undoc-members:
+   :show-inheritance:

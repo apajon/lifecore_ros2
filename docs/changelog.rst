@@ -51,6 +51,22 @@ What this release provides
 See :doc:`design_notes/error_handling_contract` and the
 *Error Policy* section of :doc:`architecture` for the authoritative matrix.
 
+**Unified activation-gating primitive** (Sprint 6):
+
+- New module ``lifecore_ros2.core.activation_gating`` exposes
+  ``require_active(is_active, *, component_name)`` — the single shared check used
+  by all activation-gating paths in the framework.
+- ``LifecycleComponent.require_active()`` — new public method; a façade over the
+  primitive. Use it in ``_on_*`` extension points or ``try/except`` handlers that
+  need component-specific inactive behavior.
+- ``@when_active`` default-raise path refactored to delegate to the same primitive;
+  error message and behavior are unchanged.
+- ``LifecycleServiceServerComponent._on_request_wrapper`` refactored to call
+  ``self.require_active()`` via ``try/except RuntimeError``; warning log and
+  annotated default response are preserved exactly.
+- No raw ``if not self._is_active:`` check remains in component files outside
+  ``LifecycleComponent`` internals.
+
 **Examples**: ``examples/minimal_node.py``, ``examples/minimal_publisher.py``,
 ``examples/minimal_subscriber.py``, ``examples/telemetry_publisher.py``.
 
