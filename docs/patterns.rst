@@ -45,19 +45,32 @@ Recommended Patterns
      :doc:`architecture` — Member Convention table for the ``super()._on_configure`` call
      contract on ``LifecyclePublisherComponent``.
 
-**Gate runtime behavior with ``is_active`` or ``@when_active``**
+**Prefer framework activation-gating primitives**
 
-  Any method that performs work driven by the node (timers, callbacks, periodic outputs) must
-  be guarded by activation state. Use ``@when_active`` for application-level outbound calls
-  or check ``self.is_active`` explicitly in timer callbacks.
+  Any component-level operation or callback boundary that depends on activation must use the
+  framework gating primitives rather than an ad hoc state check.
+
+  - Use ``@when_active`` when the inactive policy is one of the framework defaults:
+    raise for outbound operations, or silent drop for inbound middleware-driven callbacks.
+  - Use ``self.require_active()`` when the component needs a custom inactive policy but should
+    still rely on the same shared activation check.
+  - Keep ``self.is_active`` for broader application branching when needed; do not use it as a
+    replacement for framework gating at component callback boundaries.
 
   .. code-block:: python
 
-      def _tick(self) -> None:
-          if not self.is_active:
-              return
-          # publish only while active
-          self.publish(build_message())
+      def _on_request_wrapper(self, request, response):
+          try:
+              self.require_active()
+          except RuntimeError:
+              response.success = False
+              response.message = "component inactive"
+              return response
+          return self.on_service_request(request, response)
+
+  ``LifecycleTimerComponent.on_tick()`` and ``LifecycleSubscriberComponent.on_message()`` are
+  already invoked behind framework-owned wrappers, so subclasses do not need to re-check the
+  activation state inside those extension points.
 
   Invariant upheld: **Activation gating**.
 

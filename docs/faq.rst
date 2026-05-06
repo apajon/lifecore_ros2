@@ -45,9 +45,10 @@ What belongs in this repository and what belongs in an application repository?
 This repository ships reusable, lifecycle-native primitives only:
 ``LifecycleComponentNode``, ``LifecycleComponent``, ``TopicComponent``, the
 publisher/subscriber/timer components, ``ServiceComponent`` and the service
-server/client components, ``when_active``, and typed errors. Domain-specific
-components, multi-node topologies, ``/diagnostics`` integrations, and applied
-examples belong in application repositories — or in the companion
+server/client components, ``when_active``, the shared activation-gating
+contract exposed via ``LifecycleComponent.require_active()``, and typed errors.
+Domain-specific components, multi-node topologies, ``/diagnostics``
+integrations, and applied examples belong in application repositories — or in the companion
 ``lifecore_ros2_examples`` repository for teaching examples that depend on more than
 ``rclpy`` and ``std_msgs``.
 

@@ -92,6 +92,11 @@ activation boundary, not the details of a real ROS transport handle.
    def test_publisher_is_activation_gated():
        assert_activation_gated(FakePublisherComponent())
 
+  For component-specific inactive policies, test the handled boundary directly:
+  ``LifecycleComponent.require_active()`` and ``@when_active`` share the same
+  ``RuntimeError`` contract, while wrappers such as the service-server callback can
+  catch that error and convert it into a component-specific fallback.
+
 Failure Paths
 -------------
 
