@@ -104,7 +104,9 @@ class LifecycleServiceServerComponent[SrvT](ServiceComponent[SrvT]):
         with diagnostic annotations if supported. While active: delegates to
         ``on_service_request`` and never propagates exceptions into the rclpy executor.
         """
-        if not self._is_active:
+        try:
+            self.require_active()
+        except RuntimeError:
             self._resolve_logger().warning(
                 f"[{self._name}] request received while inactive on '{self._service_name}'; returning default response"
             )
