@@ -2,6 +2,84 @@
 
 <!-- version list -->
 
+## v0.8.0 (2026-05-06)
+
+### Chores
+
+- Add numpy to dev dependencies
+  ([`53a15a3`](https://github.com/apajon/lifecore_ros2/commit/53a15a316460b3c79f411838db66ed39753014ee))
+
+- **sprint**: Mark Sprint 6 activation-gating as complete
+  ([`3030f63`](https://github.com/apajon/lifecore_ros2/commit/3030f637718f3a966b4bd9b9816995d62887536e))
+
+### Continuous Integration
+
+- Remove redundant numpy install step
+  ([`7584301`](https://github.com/apajon/lifecore_ros2/commit/75843019cf2fbcb7143c2cb6890fb1c78b300c68))
+
+### Documentation
+
+- Add activation_gating to API reference and Sprint 6 changelog
+  ([`c8bcb5c`](https://github.com/apajon/lifecore_ros2/commit/c8bcb5c30184589ba8607f43d94fd14b7f6ef042))
+
+- Capture framework-first ergonomic benefit — no override required for standard ROS resources
+  ([`eb8ba60`](https://github.com/apajon/lifecore_ros2/commit/eb8ba6040ca9f3c65a56363f2c99d67e05dbea13))
+
+- Extend Rule C to document shared activation-gating primitive
+  ([`274eceb`](https://github.com/apajon/lifecore_ros2/commit/274eceb29dafbbf39813a61c89220b191a2b123d))
+
+- Prefer framework activation-gating primitives in user guides
+  ([`f06fcf9`](https://github.com/apajon/lifecore_ros2/commit/f06fcf9c3937b91ca8b26c5c07f76f9c139d2fb8))
+
+- Update examples.rst, patterns.rst, and api_friction_audit.rst for framework-first
+  ([`ed97ba9`](https://github.com/apajon/lifecore_ros2/commit/ed97ba98192b13dd24dd3239ab2e5f369c1862f1))
+
+- **composition**: Align documentation with registration-site metadata feature
+  ([`ebaaedb`](https://github.com/apajon/lifecore_ros2/commit/ebaaedb504640599f929205281290dd6c22bddf8))
+
+- **example**: Refactor composed_ordered_pipeline to use registration-site dependencies
+  ([`4b7faea`](https://github.com/apajon/lifecore_ros2/commit/4b7faea14b755a0fff54132cae3843dbd633e276))
+
+- **planning**: Close Sprint 5 and add Sprint 5.1 to backlog
+  ([`8f5c937`](https://github.com/apajon/lifecore_ros2/commit/8f5c93724c5857d63c9d1db1d4a31255d4fe7dc6))
+
+- **planning**: Sprint 5 deliverable note and Sprint 5.1 spec
+  ([`55cc40b`](https://github.com/apajon/lifecore_ros2/commit/55cc40bee4d1b4f93dc5814a2f49b20d5bdf9867))
+
+### Features
+
+- **components**: Propagate dependencies and priority through component hierarchy
+  ([`a1e4feb`](https://github.com/apajon/lifecore_ros2/commit/a1e4febac6b4161c171fb43d99bb4ff3a47f5081))
+
+- **composition**: Add registration-site metadata for add_component
+  ([`84a392b`](https://github.com/apajon/lifecore_ros2/commit/84a392bfc97fae073e04df2ae32cd404d60dfa92))
+
+- **core**: Add shared activation-gating primitive
+  ([`d5314b0`](https://github.com/apajon/lifecore_ros2/commit/d5314b0494529b1487cba83ffcce270f6e928df4))
+
+- **core**: Sprint 5 — dependency-resolved transition ordering
+  ([`59d7dd5`](https://github.com/apajon/lifecore_ros2/commit/59d7dd5aa8b0b8725780eaed48e136d9546a2a44))
+
+### Refactoring
+
+- **components**: Service server uses shared activation-gating
+  ([`26e580b`](https://github.com/apajon/lifecore_ros2/commit/26e580b351334bb3b386e5827639e4f6c51061e2))
+
+- **core**: Unify activation-gating to shared primitive
+  ([`269432f`](https://github.com/apajon/lifecore_ros2/commit/269432faed2ff0843b5c4fb6d961fffb594a3491))
+
+### Testing
+
+- Sprint 5 cascade ordering, regression updates, component pass-through
+  ([`88813d2`](https://github.com/apajon/lifecore_ros2/commit/88813d29a791e87de47661f813fa73e4bdab3069))
+
+- **composition**: Add regression tests for registration-site metadata
+  ([`4fa17a1`](https://github.com/apajon/lifecore_ros2/commit/4fa17a182b4887de10794d1716429491bf88a795))
+
+- **core**: Add activation-gating primitive and facade tests
+  ([`9e0c50b`](https://github.com/apajon/lifecore_ros2/commit/9e0c50b6f62af8e23d2ff45c3760b735b458c876))
+
+
 ## v0.7.0 (2026-05-04)
 
 ### Bug Fixes
