@@ -17,6 +17,7 @@ from rclpy.lifecycle.node import LifecycleState
 
 from lifecore_ros2.components import LifecyclePublisherComponent, LifecycleSubscriberComponent
 from lifecore_ros2.core import LifecycleComponentNode
+from lifecore_ros2.core.activation_gating import require_active
 from lifecore_ros2.core.lifecycle_component import LifecycleComponent, when_active
 from lifecore_ros2.testing import DUMMY_STATE
 
@@ -25,7 +26,36 @@ from lifecore_ros2.testing import DUMMY_STATE
 # ---------------------------------------------------------------------------
 
 # ---------------------------------------------------------------------------
-# Instrumented subclasses — real hooks, mock ROS transport
+# TestRequireActivePrimitive
+# ---------------------------------------------------------------------------
+
+
+class TestRequireActivePrimitive:
+    """Unit tests for the shared ``require_active`` primitive in activation_gating.py."""
+
+    def test_raises_when_inactive(self) -> None:
+        # Regression: primitive must raise RuntimeError when is_active is False.
+        # Expected: RuntimeError with component name in message.
+        with pytest.raises(RuntimeError, match="Component 'my_comp' is not active"):
+            require_active(False, component_name="my_comp")
+
+    def test_returns_none_when_active(self) -> None:
+        # Guard: primitive must return cleanly when is_active is True.
+        result = require_active(True, component_name="my_comp")
+        assert result is None
+
+    def test_error_message_contains_component_name(self) -> None:
+        # Regression: error message must embed the component name for diagnosis.
+        with pytest.raises(RuntimeError, match="sensor_node"):
+            require_active(False, component_name="sensor_node")
+
+    def test_error_is_runtime_error_not_subclass(self) -> None:
+        # Guard: callers catching RuntimeError must not need to know about subclasses.
+        with pytest.raises(RuntimeError) as exc_info:
+            require_active(False, component_name="x")
+        assert type(exc_info.value) is RuntimeError
+
+
 # ---------------------------------------------------------------------------
 
 
@@ -416,3 +446,62 @@ class TestWhenActiveDecorator:
         result = comp.gated()
         assert result == "executed"
         assert side_effects == []
+
+
+# ---------------------------------------------------------------------------
+# TestRequireActiveFacade
+# ---------------------------------------------------------------------------
+
+
+class TestRequireActiveFacade:
+    """Test LifecycleComponent.require_active() as a façade over the shared primitive."""
+
+    def test_raises_when_component_inactive(self, decorator_comp: DecoratorTestComponent) -> None:
+        # Regression: require_active() must raise when component is not active.
+        # Expected: RuntimeError with component name in message.
+        assert not decorator_comp.is_active
+        with pytest.raises(RuntimeError, match="not active"):
+            decorator_comp.require_active()
+
+    def test_returns_none_when_component_active(self, decorator_comp: DecoratorTestComponent) -> None:
+        # Guard: require_active() must return cleanly when component is active.
+        decorator_comp.on_configure(DUMMY_STATE)
+        decorator_comp.on_activate(DUMMY_STATE)
+
+        assert decorator_comp.is_active
+        result = decorator_comp.require_active()
+        assert result is None
+
+    def test_error_message_contains_component_name(self, decorator_comp: DecoratorTestComponent) -> None:
+        # Regression: error message must embed the component name for diagnosis.
+        # Expected: "decorator_test" appears in the RuntimeError message.
+        with pytest.raises(RuntimeError, match="decorator_test"):
+            decorator_comp.require_active()
+
+    def test_require_active_matches_when_active_error_message(self, decorator_comp: DecoratorTestComponent) -> None:
+        # Regression: require_active() and @when_active default-raise must produce
+        # the same error message, proving they share the same primitive.
+        facade_msg: str = ""
+        decorator_msg: str = ""
+
+        try:
+            decorator_comp.require_active()
+        except RuntimeError as exc:
+            facade_msg = str(exc)
+
+        try:
+            decorator_comp.gated_default()
+        except RuntimeError as exc:
+            decorator_msg = str(exc)
+
+        assert facade_msg == decorator_msg
+
+    def test_raises_after_deactivate(self, decorator_comp: DecoratorTestComponent) -> None:
+        # Regression: deactivate must re-gate require_active().
+        decorator_comp.on_configure(DUMMY_STATE)
+        decorator_comp.on_activate(DUMMY_STATE)
+        decorator_comp.on_deactivate(DUMMY_STATE)
+
+        assert not decorator_comp.is_active
+        with pytest.raises(RuntimeError, match="not active"):
+            decorator_comp.require_active()
