@@ -127,14 +127,14 @@ Final contract table
 Validation
 ----------
 
-- [ ] ``on_cleanup`` resets ``_needs_cleanup = False`` even when ``_release_resources()`` returns ERROR.
-- [ ] ``on_shutdown`` and ``on_error`` apply the same ``_needs_cleanup`` reset policy.
-- [ ] Cleanup releases owned ROS handles for each component type.
-- [ ] Deactivate gates behavior without destroying resources.
-- [ ] Cleanup is idempotent (double call raises no exception).
-- [ ] Borrowed callback groups are not nulled or destroyed by components.
-- [ ] ``Timer.start()`` / ``stop()`` / ``reset()`` raise ``ComponentNotConfiguredError`` after cleanup.
-- [ ] ``Owns:`` / ``Does not own:`` docstring sections are present on all five component types.
+- [x] ``on_cleanup`` resets ``_needs_cleanup = False`` even when ``_release_resources()`` returns ERROR.
+- [x] ``on_shutdown`` and ``on_error`` apply the same ``_needs_cleanup`` reset policy.
+- [x] Cleanup releases owned ROS handles for each component type.
+- [x] Deactivate gates behavior without destroying resources.
+- [x] Cleanup is idempotent (double call raises no exception).
+- [x] Borrowed callback groups are not nulled or destroyed by components.
+- [x] ``Timer.start()`` / ``stop()`` / ``reset()`` raise ``ComponentNotConfiguredError`` after cleanup.
+- [x] ``Owns:`` / ``Does not own:`` docstring sections are present on all five component types.
 
 Required tests (minimum)
 -------------------------
@@ -162,6 +162,34 @@ sufficient; no heavy battery unless the example owns external resources.
 Success signal
 --------------
 
-- [ ] A user can answer "who owns this resource?" from the component docstring alone.
-- [ ] Concurrency and health planning can assume cleanup behavior is explicit and tested.
-- [ ] No component leaves ``_needs_cleanup = True`` after a cleanup/shutdown/error transition.
+- [x] A user can answer "who owns this resource?" from the component docstring alone.
+- [x] Concurrency and health planning can assume cleanup behavior is explicit and tested.
+- [x] No component leaves ``_needs_cleanup = True`` after a cleanup/shutdown/error transition.
+
+---
+
+Shipped — 2026-05-06
+====================
+
+Test coverage: 38 tests (5 core policy + 33 component ownership across all transitions).
+
+**Decisions locked:**
+
+- Q1: ``_needs_cleanup`` reset unconditionally after release attempt (not only on SUCCESS)
+- Q2: Ownership contract in docstrings + architecture docs (no new public API)
+- Q3: Timer methods raise ``ComponentNotConfiguredError`` after cleanup
+
+**Commitments:**
+
+- ``src/lifecore_ros2/core/lifecycle_component.py``: Fixed ``on_cleanup``/``on_shutdown``/``on_error`` to reset ``_needs_cleanup`` after ``_safe_release_resources()``
+- ``tests/core/test_cleanup_policy.py``: 5 regression tests for Q1 policy
+- ``tests/components/test_cleanup_ownership.py``: 33 tests across 5 component types
+- All 5 component docstrings: ``Owns:``/``Does not own:`` clarified
+- ``docs/architecture.rst``: _needs_cleanup reset semantics, lifecycle state machine notes
+- ``docs/patterns.rst``: Callback group borrow contract extended to all transitions
+
+**Next phases ready for:**
+
+- Concurrency module (knows cleanup is deterministic and tested)
+- Health watchdog (can assume resource cleanup predictable)
+- Advanced task composition (can rely on owned/borrowed contract)
