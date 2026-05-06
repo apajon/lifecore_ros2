@@ -118,16 +118,20 @@ Conflicts between constructor-declared and registration-declared non-default
 values raise ``TypeError``. ``add_components(...)`` remains intentionally
 limited to bare components.
 
-Cleanup and resource ownership API
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Cleanup and resource ownership API — *shipped in Sprint 7 (2026-05-06)*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Sprint mapping: :doc:`sprints/sprint_7_cleanup_api`.
 
-* [ ] Audit topic, timer, service, and client components for consistent cleanup
+* [x] Audit topic, timer, service, and client components for consistent cleanup
   semantics.
-* [ ] Clarify borrowed-vs-owned resources in API docs and docstrings.
-* [ ] Add focused helpers only if repeated cleanup code remains visible after
-  the audit.
+* [x] Clarify borrowed-vs-owned resources in API docs and docstrings.
+* [x] No focused helpers needed; guard pattern is ``if x is not None`` / explicit raise.
+
+**Delivered:** All 5 components have explicit cleanup semantics. ``_needs_cleanup``
+reset unconditionally after cleanup/shutdown/error (even if release fails). Ownership
+contract (owned ROS resources, borrowed callback_group/clock/executor) documented in
+component docstrings and architecture. 38 regression tests lock the contract.
 
 **Rationale:** Cleanup must stay predictable before adding health or watchdog
 behavior. ROS resources should be created in configure and released in cleanup;
