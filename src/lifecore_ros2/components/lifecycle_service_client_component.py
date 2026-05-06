@@ -18,7 +18,8 @@ from .service_component import ServiceComponent
 class LifecycleServiceClientComponent[SrvT](ServiceComponent[SrvT]):
     """Service client component that creates a ROS client and gates calls through the lifecycle.
 
-    The client is created on configure and destroyed automatically on cleanup.
+    The client is created on configure, kept across deactivate, and destroyed
+    automatically during cleanup, shutdown, or error.
     Outbound calls (``call``, ``call_async``, ``wait_for_service``) raise ``RuntimeError``
     while the component is inactive.
 
@@ -26,7 +27,8 @@ class LifecycleServiceClientComponent[SrvT](ServiceComponent[SrvT]):
         Futures from ``call_async`` are not cancelled on deactivate; the application owns them.
 
     Owns:
-        - The ROS ``Client`` instance (created on configure, released automatically on cleanup).
+        - The ROS ``Client`` instance (created on configure, kept across deactivate,
+          released automatically during cleanup, shutdown, or error).
 
     Does not own:
         - The service name, service type, or QoS profile (inherited from ``ServiceComponent``).

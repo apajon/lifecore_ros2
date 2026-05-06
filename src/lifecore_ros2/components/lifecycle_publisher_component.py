@@ -17,7 +17,8 @@ class LifecyclePublisherComponent[MsgT](TopicComponent[MsgT]):
     """Publisher component that creates and gates a ROS publisher through the lifecycle.
 
     Owns:
-        - The ROS ``Publisher`` instance (created on configure, released automatically on cleanup).
+        - The ROS ``Publisher`` instance (created on configure, kept across deactivate,
+          released automatically during cleanup, shutdown, or error).
         - ``publish``: the activation-gated publication method.
 
     Does not own:

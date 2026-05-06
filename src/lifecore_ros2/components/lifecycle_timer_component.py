@@ -16,12 +16,14 @@ from lifecore_ros2.core.lifecycle_component import LifecycleComponent, when_acti
 class LifecycleTimerComponent(LifecycleComponent):
     """Timer component that creates a periodic ROS timer and gates ticks through the lifecycle.
 
-    The timer is created on configure and destroyed automatically on cleanup.
+    The timer is created on configure, kept across deactivate, and destroyed
+    automatically during cleanup, shutdown, or error.
     Ticks are silently dropped while the component is inactive,
     and routed to ``on_tick`` when active.
 
     Owns:
-        - The ROS ``Timer`` instance (created on configure, released automatically on cleanup).
+        - The ROS ``Timer`` instance (created on configure, kept across deactivate,
+          released automatically during cleanup, shutdown, or error).
         - ``_on_timer_wrapper``: the ``@when_active``-gated internal callback.
         - The autostart flag and the explicit ``start`` / ``stop`` / ``reset`` controls.
 

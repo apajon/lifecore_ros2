@@ -17,12 +17,14 @@ from .topic_component import TopicComponent
 class LifecycleSubscriberComponent[MsgT](TopicComponent[MsgT]):
     """Subscriber component that creates a ROS subscription and gates message delivery through the lifecycle.
 
-    The subscription is created on configure and destroyed automatically on cleanup.
+    The subscription is created on configure, kept across deactivate, and destroyed
+    automatically during cleanup, shutdown, or error.
     Incoming messages are silently dropped while the component is inactive,
     and routed to ``on_message`` when active.
 
     Owns:
-        - The ROS ``Subscription`` instance (created on configure, released automatically on cleanup).
+        - The ROS ``Subscription`` instance (created on configure, kept across deactivate,
+          released automatically during cleanup, shutdown, or error).
         - ``_on_message_wrapper``: the ``@when_active``-gated internal callback.
 
     Does not own:

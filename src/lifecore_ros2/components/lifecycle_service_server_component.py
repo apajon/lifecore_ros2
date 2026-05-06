@@ -15,13 +15,15 @@ from .service_component import ServiceComponent
 class LifecycleServiceServerComponent[SrvT](ServiceComponent[SrvT]):
     """Service server component that creates a ROS service and gates request handling through the lifecycle.
 
-    The service is created on configure and destroyed automatically on cleanup.
+    The service is created on configure, kept across deactivate, and destroyed
+    automatically during cleanup, shutdown, or error.
     Incoming requests while the component is inactive are not silently dropped:
     a warning is logged and a default-constructed response is returned, optionally
     annotated with diagnostic fields (``success=False``, ``message="component inactive"``).
 
     Owns:
-        - The ROS ``Service`` instance (created on configure, released automatically on cleanup).
+        - The ROS ``Service`` instance (created on configure, kept across deactivate,
+          released automatically during cleanup, shutdown, or error).
         - ``_on_request_wrapper``: the framework-internal callback registered with rclpy.
 
     Does not own:
