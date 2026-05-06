@@ -9,46 +9,72 @@ components.
 
 ---
 
-Decisions already made
-----------------------
+Decisions locked (planning complete)
+-------------------------------------
 
-- Activation gating is a shared framework concern, not duplicated per
-  component.
-- Outgoing operations should keep their stricter inactive behavior, while
-  incoming callbacks keep component-specific inactive behavior.
-- Shared helpers may centralize state checks and log context, but each component
-  keeps responsibility for its return value or exception policy.
-- The sprint is behavior-preserving unless a mismatch is found and explicitly
-  documented.
+**Architecture:**
+
+- New module ``lifecore_ros2/core/activation_gating.py`` holds the shared
+  primitive::
+
+      def require_active(is_active: bool, *, component_name: str) -> None:
+          """Raise RuntimeError if not active."""
+
+- ``LifecycleComponent.require_active()`` is a convenience façade that calls
+  the primitive with ``self._is_active`` and ``self._name``.  No logic of its
+  own.
+- ``@when_active`` default-raise path is refactored to call the primitive
+  instead of its own inline raise.  Drop paths (``when_not_active=None`` and
+  ``when_not_active=callable``) are unchanged.
+- ``LifecycleServiceServerComponent._on_request_wrapper`` replaces its
+  ``if not self._is_active:`` guard with
+  ``try: self.require_active() / except RuntimeError:``.  Warning log and
+  annotated default response are preserved exactly.
+- No raw ``if not self._is_active:`` check remains in any component file
+  outside ``LifecycleComponent`` internals.
+- ``is_active`` remains the existing property.  No ``is_active()`` method added.
+- Node-level "fully active" terminology stays out of scope.
+
+**Inactive policy per site (preserved exactly):**
+
++--------------------------------------------------+----------------------------------+
+| Site                                             | Inactive policy                  |
++==================================================+==================================+
+| ``publish``                                      | ``RuntimeError``                 |
++--------------------------------------------------+----------------------------------+
+| ``call`` / ``call_async`` / ``wait_for_service`` | ``RuntimeError``                 |
++--------------------------------------------------+----------------------------------+
+| ``_on_message_wrapper``                          | silent drop + debug log          |
++--------------------------------------------------+----------------------------------+
+| ``_on_timer_wrapper``                            | silent drop + debug log          |
++--------------------------------------------------+----------------------------------+
+| ``_on_request_wrapper``                          | warning log + default response   |
++--------------------------------------------------+----------------------------------+
 
 Components covered
 ------------------
 
-Apply shared gating to:
+All five gating sites delegate to the shared primitive:
 
 - ``LifecyclePublisherComponent`` publish path
 - ``LifecycleSubscriberComponent`` message callback
-- service server callback
-- service client calls
+- ``LifecycleServiceServerComponent`` request callback
+- ``LifecycleServiceClientComponent`` call / call_async / wait_for_service
 - ``LifecycleTimerComponent`` tick callback
-
-To decide during sprint planning
---------------------------------
-
-- Exact helper names and module placement.
-- Whether a context manager, decorator, or direct function calls are clearest.
-- How much node-level "fully active" terminology belongs in the first version.
 
 ---
 
 Validation
 ----------
 
-- [ ] ``is_active()`` returns the current activation state.
-- [ ] ``require_active()`` raises if inactive and returns cleanly if active.
-- [ ] Gated callbacks do not execute while inactive.
-- [ ] Existing activation gating behavior remains unchanged.
-- [ ] Logs are consistent across component types.
+- [x] ``require_active(False, component_name="x")`` raises ``RuntimeError("Component 'x' is not active")``.
+- [x] ``require_active(True, component_name="x")`` returns ``None``.
+- [x] ``LifecycleComponent.require_active()`` delegates to the primitive without added logic.
+- [x] ``@when_active`` default-raise path produces the same error message as before.
+- [x] No raw ``if not self._is_active:`` check remains in component files.
+- [x] Service-server inactive behavior (warning log + annotated default response) is preserved.
+- [x] Gated callbacks (subscriber, timer) silently drop when inactive.
+- [x] Existing tests pass without semantic changes.
 
 ---
 
@@ -78,14 +104,20 @@ Scope boundaries
 
 In scope:
 
-- shared gating helpers
-- component refactor to use those helpers
-- behavior-preserving tests
+- ``core/activation_gating.py`` with the ``require_active`` primitive
+- ``LifecycleComponent.require_active()`` façade
+- ``@when_active`` default-raise path refactored to the primitive
+- ``LifecycleServiceServerComponent._on_request_wrapper`` refactored to
+  ``try/except RuntimeError`` on ``self.require_active()``
+- behavior-preserving unit and regression tests
 
 Out of scope:
 
-- new gating modes
-- conditional application-specific gating
+- node-level "fully active" terminology
+- ``is_active()`` method (``is_active`` remains a property)
+- new gating modes or conditional application-specific gating
+- changes to ``when_not_active=None`` / ``when_not_active=callable`` paths
+- example updates (public lifecycle semantics unchanged)
 - performance work unless a regression is measured
 
 ---
@@ -93,7 +125,9 @@ Out of scope:
 Success signal
 --------------
 
-- [ ] Gating behavior is uniform across all component types.
-- [ ] Duplicate gating logic is removed or clearly justified.
-- [ ] Existing tests pass without semantic changes.
-- [ ] Ruff, Pyright, and pytest are green.
+- [x] ``require_active()``, ``@when_active``, and the service-server inactive
+  handler all rely on the same shared activation check.
+- [x] Each component preserves its existing inactive policy.
+- [x] No raw ``if not self._is_active:`` remains outside ``LifecycleComponent``
+  internals.
+- [x] Ruff, Pyright, and pytest are green.
