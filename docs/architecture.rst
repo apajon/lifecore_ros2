@@ -494,6 +494,15 @@ The framework enforces one coherent error policy across four axes.
     with the exception type and message, and dropped. They never propagate to the
     executor. See the *Handle on_message exceptions inside the method* entry in
     :doc:`patterns` for guidance.
+  - **Shared primitive**: all activation checks across the framework funnel through
+    ``require_active(is_active, *, component_name)`` in
+    ``lifecore_ros2.core.activation_gating``. ``LifecycleComponent.require_active()``
+    is a convenience façade over it. ``@when_active`` default-raise path delegates to
+    the same primitive. Components with custom inactive policies (e.g.
+    ``LifecycleServiceServerComponent._on_request_wrapper``) call
+    ``self.require_active()`` and catch the resulting ``RuntimeError`` to apply their
+    policy. No raw ``if not self._is_active:`` check appears in component files outside
+    ``LifecycleComponent`` internals.
 
 **Rule D — Error entry points and worst-result propagation**
 
