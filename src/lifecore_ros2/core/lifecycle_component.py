@@ -12,6 +12,7 @@ from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.managed_entity import ManagedEntity
 from rclpy.lifecycle.node import LifecycleState
 
+from .activation_gating import require_active as _require_active
 from .exceptions import ComponentNotAttachedError, InvalidLifecycleTransitionError, LifecycleHookError
 
 if TYPE_CHECKING:
@@ -85,7 +86,8 @@ def when_active[F: Callable[..., Any]](
 ) -> F | Callable[[F], F]:
     """Gate a method so it only executes when the component is active.
 
-    Default behavior raises ``RuntimeError``.  Pass a callable to
+    Default behavior raises ``RuntimeError`` via the same shared primitive as
+    ``LifecycleComponent.require_active()``. Pass a callable to
     ``when_not_active`` to customise, or ``None`` for a silent no-op.
 
     Usage::
@@ -100,16 +102,13 @@ def when_active[F: Callable[..., Any]](
         def do_something(self): ...
     """
 
-    def _default_raise(self: LifecycleComponent) -> None:
-        raise RuntimeError(f"Component '{self.name}' is not active")
-
     def decorator(fn: F) -> F:
         @wraps(fn)
         # Any: standard callable-preserving decorator pattern; cast(F, wrapper) restores the wrapped signature for callers
         def wrapper(self: LifecycleComponent, *args: Any, **kwargs: Any) -> Any:
             if not self._is_active:  # pyright: ignore[reportPrivateUsage]
                 if when_not_active is _SENTINEL:
-                    _default_raise(self)
+                    _require_active(self._is_active, component_name=self._name)  # pyright: ignore[reportPrivateUsage]
                 elif when_not_active is not None:
                     cast(Callable[[], Any], when_not_active)()
                 else:
@@ -200,6 +199,18 @@ class LifecycleComponent(ManagedEntity, ABC):
     def is_active(self) -> bool:
         """Whether the component is in the active state."""
         return self._is_active
+
+    def require_active(self) -> None:
+        """Raise ``RuntimeError`` if this component is not active.
+
+        Façade over the shared ``activation_gating.require_active`` primitive.
+        Use this in component extension points or ``try/except`` handlers that
+        need component-specific inactive behavior.
+
+        Raises:
+            RuntimeError: If the component is not active.
+        """
+        _require_active(self._is_active, component_name=self._name)
 
     @property
     def callback_group(self) -> CallbackGroup | None:
