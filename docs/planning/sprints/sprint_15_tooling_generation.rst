@@ -61,7 +61,7 @@ Out of scope:
 
 - runtime AI behavior
 - direct MCP integration in the core library
-- config-driven application framework
+- config-driven application platform
 - plugin loading
 
 ---

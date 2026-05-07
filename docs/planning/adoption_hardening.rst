@@ -18,10 +18,10 @@ Every item below is validated against this principle. If a proposed change incre
 
 ---
 
-1. Positioning — frame the repo as a framework
+1. Positioning — frame the repo as a library
 ------------------------------------------------
 
-**Intent.** Stop presenting lifecore_ros2 as "a ROS 2 project" and state clearly that it is a minimal composition framework for lifecycle-managed ROS 2 components.
+**Intent.** Stop presenting lifecore_ros2 as "a ROS 2 project" and state clearly that it is a minimal lifecycle composition library for ROS 2 components.
 
 **In-scope.**
 
@@ -32,7 +32,7 @@ Every item below is validated against this principle. If a proposed change incre
 **Out-of-scope.**
 
 - Marketing copy, logos, branding assets
-- Comparison matrix against unrelated frameworks
+- Comparison matrix against unrelated libraries or middleware
 
 **Success signal.** A reader who lands on the repo understands in < 30 s what the library is for and who it targets.
 
@@ -123,16 +123,16 @@ Every item below is validated against this principle. If a proposed change incre
 
 - Replacing native ROS 2 lifecycle semantics with a parallel state machine
 
-**Success signal.** A test suite covers every invalid transition and asserts the framework rejects it deterministically.
+**Success signal.** A test suite covers every invalid transition and asserts the library rejects it deterministically.
 
-**Status.** ✓ Shipped in v0.4.0: invalid transitions table in ``docs/architecture.rst``, framework logging, rollback on failure.
+**Status.** ✓ Shipped in v0.4.0: invalid transitions table in ``docs/architecture.rst``, library logging, rollback on failure.
 
 ---
 
 6. Test coverage — close the critical gap
 ------------------------------------------
 
-**Intent.** Raise test coverage from "nominal paths work" to "framework is trustworthy under stress".
+**Intent.** Raise test coverage from "nominal paths work" to "the library is trustworthy under stress".
 
 **In-scope.**
 
@@ -205,11 +205,11 @@ Every item below is validated against this principle. If a proposed change incre
 - Stable public API (promote to 1.0.0 only when sections 4, 5, 6 are green)
 - Solid docs (Sphinx + README + examples in sync)
 - Bulletproof tests (see §6)
-- Becomes: (a) a base for modular robots, (b) an internal team framework, (c) a recognised ROS 2 package
+- Becomes: (a) a base for modular robots, (b) an internal team library, (c) a recognised ROS 2 package
 
 **Explicit non-goals.**
 
-- Full application framework with service orchestration or task scheduling
+- Full application platform with service orchestration or task scheduling
 - Domain components, plugin system, or config-driven runtime (deferred)
 
 **Status.** ✓ Shipped in v0.4.0: long-term vision documented, non-goals explicit, 1.0.0 promotion gate defined in backlog.

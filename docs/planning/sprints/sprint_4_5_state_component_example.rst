@@ -48,7 +48,7 @@ multi-component applied scenario.
 Decisions already made
 ----------------------
 
-- State-only components are valid framework components even when they do not
+- State-only components are valid library components even when they do not
   allocate ROS resources.
 - The component owns its state; other components may depend on it but should not
   mutate its internals directly.
@@ -102,7 +102,7 @@ Risks and mitigation
 on the state component itself. Move applied behavior to the companion examples
 repository.
 
-**Risk: reset semantics imply a framework rule that does not exist.** Make the
+**Risk: reset semantics imply a library rule that does not exist.** Make the
 example explicit that cleanup, shutdown, and error reset state because this
 component chooses to do so.
 
@@ -133,7 +133,7 @@ In scope:
 
 Out of scope:
 
-- new framework APIs
+- new library APIs
 - dependency graph or priority behavior
 - watchdog, sensor, or pipeline scenarios
 - companion repository changes

@@ -5,7 +5,7 @@ Sprint 14 - Minimal factory and registry
 and examples justify it.
 
 **Deliverable.** Components can be instantiated from a small registry without
-introducing a plugin framework.
+introducing a plugin system.
 
 ---
 
@@ -93,4 +93,4 @@ Success signal
 --------------
 
 - [ ] Dynamic creation reduces boilerplate without hiding component ownership.
-- [ ] The registry remains a simple tool, not a second framework.
+- [ ] The registry remains a simple tool, not a second abstraction layer.

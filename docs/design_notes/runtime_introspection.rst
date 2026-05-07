@@ -51,7 +51,7 @@ read-only and side-effect free.
        def get_component_state(self, name: str) -> State:
            """Return the rclpy lifecycle ``State`` of the named component.
 
-           Reads through to ``rclpy``; never returns a framework-cached value.
+           Reads through to ``rclpy``; never returns a library-cached value.
            Raises ``ComponentNotFoundError`` if the name is unknown.
            """
 
@@ -84,7 +84,7 @@ Return-type discipline
   internal collection.
 * No live handles. ``describe_resources`` returns descriptions
   (strings / dataclasses), never the rclpy publisher or subscriber object.
-* Lifecycle state is **always** read from rclpy at call time. No framework
+* Lifecycle state is **always** read from rclpy at call time. No library
   field shadows the node's lifecycle state machine.
 
 Invariants preserved

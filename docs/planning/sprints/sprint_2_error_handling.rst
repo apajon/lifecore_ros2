@@ -115,7 +115,7 @@ Risks and mitigation
 
 - **Problem**: ``_on_configure`` fails after allocating resource X; ``_release_resources`` not called or incomplete.
 - **Mitigation**:
-  - Framework calls ``_release_resources`` on failure (before returning)
+  - Library calls ``_release_resources`` on failure (before returning)
   - Test explicitly: allocate in ``_on_configure``, raise exception, verify ``_release_resources`` called
 
 **Risk 3: Retry infinite loop**
@@ -123,14 +123,14 @@ Risks and mitigation
 - **Problem**: If a hook is not idempotent, retrying configure could cause issues.
 - **Mitigation**:
   - Document: "hooks are called exactly once per transition; application is responsible for making them idempotent if needed"
-  - Do not auto-retry in framework
+  - Do not auto-retry in the library
 
 **Risk 4: Exception leak to application**
 
 - **Problem**: Unhandled exception in hook bubbles up to user code.
 - **Mitigation**:
   - All hook invocations wrapped in try/catch
-  - Return ``FAILURE`` or raise a typed ``LifecycleHookError`` (framework-controlled exception)
+  - Return ``FAILURE`` or raise a typed ``LifecycleHookError`` (library-controlled exception)
   - Test that user code never sees raw hook exception
 
 ---

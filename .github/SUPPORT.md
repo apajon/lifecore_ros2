@@ -6,7 +6,7 @@ Use GitHub issues for:
 
 - reproducible bugs
 - documentation errors or gaps
-- framework-level feature requests for this repository
+- library-level feature requests for this repository
 
 Before opening a feature request, check ROADMAP.md and docs/planning/backlog.rst.
 
@@ -16,7 +16,7 @@ Use the public GitHub issue tracker for normal questions, bugs, and feature requ
 
 Use a private contact path only for sensitive topics:
 
-- email: 7260230+apajon@users.noreply.github.com
+- email: [7260230+apajon@users.noreply.github.com](mailto:7260230+apajon@users.noreply.github.com)
 - GitHub private vulnerability reporting, if it is enabled for this repository
 
 For security issues, follow SECURITY.md rather than opening a public issue.

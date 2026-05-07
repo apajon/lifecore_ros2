@@ -27,7 +27,7 @@ Define a small, stable observability surface for ``lifecore_ros2``:
    transition starts, ends, failures, and rejections, so external code can
    record traces or feed dashboards without polling.
 
-Goal: turn the framework into a *passive observer* of native rclpy lifecycle
+Goal: turn the library into a *passive observer* of native rclpy lifecycle
 behavior. Never own the state machine; never duplicate it.
 
 Proposed contract
@@ -203,7 +203,7 @@ Non-goals
   on the node instance. ROS-graph publication is user adapter code.
 * **No third-party tracing dependency.** OpenTelemetry, ``tracetools``,
   ``ros2_tracing`` integration — out of scope. Stay rclpy-only.
-* **No metric counters.** No framework-side aggregation (counts,
+* **No metric counters.** No library-side aggregation (counts,
   histograms). Observability stays event-shaped.
 * **No on-message-hot-path events.** Activation gating drops stay at
   ``debug``; nothing is added on the per-message path.

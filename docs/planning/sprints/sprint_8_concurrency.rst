@@ -12,7 +12,7 @@ choreography beyond documented ROS 2 callback-group choices.
 Decisions already made
 ----------------------
 
-- The framework should support ROS 2 callback groups without hiding ROS 2
+- The library should support ROS 2 callback groups without hiding ROS 2
   executor semantics.
 - Callback groups are borrowed resources when supplied by the application.
 - Component lifecycle state must remain coherent when callbacks and lifecycle

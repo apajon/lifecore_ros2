@@ -58,7 +58,7 @@ README comparison update
 ^^^^^^^^^^^^^^^^^^^^^^^^
 
 * [ ] Add a concise comparison section after the example exists.
-* [ ] Lead with "build predictable ROS 2 nodes" instead of a generic framework
+* [ ] Lead with "build predictable ROS 2 nodes" instead of a generic toolkit
   claim.
 * [ ] Link to the full comparison instead of duplicating long explanations in
   README.
@@ -102,8 +102,8 @@ Sprint mapping: :doc:`sprints/sprint_5_1_composition_surface`.
   without modifying each component's ``__init__``.
 * [x] Eliminate the constructor pass-through requirement for ``dependencies``
   and ``priority`` in application component subclasses.
-* [x] Keep the framework-first ergonomic property: a node that uses pre-built
-  framework components needs no ``_on_activate`` or ``_on_deactivate`` overrides.
+* [x] Keep the library-first ergonomic property: a node that uses pre-built
+  library components needs no ``_on_activate`` or ``_on_deactivate`` overrides.
 * [x] Update or add a composition example that teaches the pattern without raw
   ``create_*`` calls.
 
@@ -266,7 +266,7 @@ Testing utilities
 * [ ] Fake components for transition tests
 * [ ] Helpers for callback gating tests
 
-**Rationale:** Accelerates adoption and reduces friction for framework-based testing across applications.
+**Rationale:** Accelerates adoption and reduces friction for library-based testing across applications.
 
 Observability
 ^^^^^^^^^^^^^
@@ -313,7 +313,7 @@ Callback group management
 * [ ] Helper for ``LifecycleComponentNode`` to create and track ``CallbackGroup`` instances per component
 * [ ] Optional: provide convenience constructors for common patterns (e.g., ``create_exclusive_group_for_component(name)``)
 
-**Rationale:** Applications currently create callback groups manually. Framework support awaits clarified threading model (see Adoption Hardening §4).
+**Rationale:** Applications currently create callback groups manually. Library support awaits clarified threading model (see Adoption Hardening §4).
 
 See :doc:`../design_notes/callback_groups` for the design placeholder.
 

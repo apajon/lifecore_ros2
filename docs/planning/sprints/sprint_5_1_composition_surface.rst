@@ -3,12 +3,12 @@ Sprint 5.1 - Composition surface
 
 **Objective.** Make composition metadata visible and accessible at the point
 where a node assembles its components, without requiring constructor
-pass-through across every framework component subclass.
+pass-through across every library component subclass.
 
 **Deliverable.** A minimal API surface lets a node author express composition
 intent (ordering hints, dependency declarations, or equivalent metadata) in
 one place, close to the registration site.  The first ordered composition
-example in the framework repository teaches this pattern in a framework-first
+example in the core repository teaches this pattern in a library-first
 way.
 
 **Status.** Delivered 2026-05-05.
@@ -32,16 +32,16 @@ deferred:
    intent without tracing each component class.
 
 2. **Subclass burden.** Adding composition metadata must not require
-   constructor pass-through across every framework component subclass.  If
+  constructor pass-through across every library component subclass.  If
    every ``LifecycleComponent`` subclass must propagate ``dependencies`` and
-   ``priority`` through its ``__init__``, the framework imposes a fragile
+  ``priority`` through its ``__init__``, the library imposes a fragile
    boilerplate requirement on users.
 
 The Sprint 5 example rewrites also surfaced a related, already-solved benefit:
-using pre-built framework components as siblings eliminates ``_on_activate``
+using pre-built library components as siblings eliminates ``_on_activate``
 and ``_on_deactivate`` overrides entirely.  The rewritten ``minimal_publisher.py``
 and ``composed_pipeline.py`` are shorter and clearer than their predecessors
-not because of dependency ordering, but because the framework components own
+not because of dependency ordering, but because the library components own
 the timer and topic lifecycle without any application hook code.  Sprint 5.1
 should preserve and extend this property.
 
@@ -62,7 +62,7 @@ Delivered API shape::
     node.add_component(component, *, dependencies=None, priority=None)
 
 The first ordered composition example (``examples/composed_ordered_pipeline.py``)
-was updated in place to reflect this approach. It stays framework-first and
+was updated in place to reflect this approach. It stays library-first and
 does not teach composition through raw ROS ``create_*`` calls.
 
 ---
@@ -77,8 +77,8 @@ Decisions already made
 - Composition metadata should be visible where the node assembles components,
   not only inside each component's constructor.
 - Adding composition metadata must not require constructor pass-through across
-  every framework component subclass.
-- The framework example for ordered composition stays framework-first: it must
+  every library component subclass.
+- The library example for ordered composition stays library-first: it must
   not teach users to assemble components by calling raw ROS ``create_*``
   methods directly.
 - ``LifecycleComponent`` itself stays minimal; no implicit behavior is added.
@@ -153,7 +153,7 @@ In scope:
 - API surface for expressing composition metadata at or near the registration
   site.
 - Subclass burden reduction for ``LifecycleComponent`` subclasses.
-- Update or replacement of the first ordered composition framework example.
+- Update or replacement of the first ordered composition library example.
 - Focused tests for the new declaration surface.
 
 Out of scope:
@@ -173,6 +173,6 @@ Success signal
   readable location without modifying each component's constructor.
 - A reader unfamiliar with the internals can understand component ordering
   intent from the node assembly code alone.
-- The ordered composition example teaches the framework pattern without
+- The ordered composition example teaches the library pattern without
   exposing raw ROS resource creation.
 - Sprint 5 tests remain green with no regression.

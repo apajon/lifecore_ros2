@@ -1,7 +1,7 @@
 Sprint 3 — Testing infrastructure
 ==================================
 
-**Objective.** Provide reusable test utilities to accelerate framework and application testing.
+**Objective.** Provide reusable test utilities to accelerate library and application testing.
 
 **Deliverable.** "Application tests can verify lifecycle behavior without boilerplate."
 
@@ -146,7 +146,7 @@ Scope boundaries
 
 **Out-of-scope:**
 
-- Full mock/patch framework (use ``unittest.mock`` if needed)
+- Full mock/patch system (use ``unittest.mock`` if needed)
 - Property-based testing (use Hypothesis if needed)
 - Performance benchmarking utilities
 - CI-specific tooling

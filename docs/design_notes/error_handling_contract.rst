@@ -13,7 +13,7 @@ source for the decisions below. The propagation matrix is reproduced in
 Propagation matrix
 ------------------
 
-.. list-table:: Hook outcome → framework action
+.. list-table:: Hook outcome → library action
    :header-rows: 1
    :widths: 30 20 20 15 15
 
@@ -86,7 +86,7 @@ Decision 3 — Strict mode is the default and is non-configurable
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 Any ``_on_*`` hook that returns a value outside ``{SUCCESS, FAILURE, ERROR}`` is
-treated as ``ERROR`` immediately. The framework logs the component name, hook name,
+treated as ``ERROR`` immediately. The library logs the component name, hook name,
 ``type(value).__name__``, ``repr(value)``, and a message stating that
 ``TransitionCallbackReturn`` was expected. There is no lenient mode, no
 ``strict=False`` flag, and no per-component override.
@@ -98,7 +98,7 @@ them immediately with an actionable error log.
 Decision 4 — ``_on_error`` is driven only by native rclpy ``ERROR_PROCESSING``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The framework never synthesises a call to ``_on_error`` in response to a caught
+The library never synthesises a call to ``_on_error`` in response to a caught
 exception. The native rclpy flow is:
 
 .. code-block:: text
@@ -110,11 +110,11 @@ exception. The native rclpy flow is:
         → on_error propagates to each component's on_error entry point
         → @final on_error clears _is_active, calls _on_error, calls _release_resources
 
-This path is complete and correct. Adding a framework-side ``_on_error`` invocation
+This path is complete and correct. Adding a library-side ``_on_error`` invocation
 would duplicate the call, violating the idempotence contract.
 
 **Rationale.** Staying on the native rclpy ``ErrorProcessing`` path preserves
-standard lifecycle semantics and keeps the framework free of a hidden parallel state
+standard lifecycle semantics and keeps the library free of a hidden parallel state
 machine.
 
 ---

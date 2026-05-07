@@ -3,14 +3,14 @@ Callback groups and concurrency utilities
 
 **Status**: Design note (pre-implementation placeholder).
 
-**Purpose**: Define framework support for callback group management and lifecycle-aware concurrency patterns.
+**Purpose**: Define library support for callback group management and lifecycle-aware concurrency patterns.
 
 ---
 
 Background
 ----------
 
-Currently, applications must manually create and assign ``CallbackGroup`` instances via ``node.create_callback_group()``. As component counts grow and callback sequencing matters, the framework could offer:
+Currently, applications must manually create and assign ``CallbackGroup`` instances via ``node.create_callback_group()``. As component counts grow and callback sequencing matters, the library could offer:
 
 - Scoped callback group creation per component
 - Activation-gating for callbacks (prevent execution while inactive)

@@ -16,7 +16,7 @@ As applications grow, the question of "component ordering" emerges:
 - Should the node be considered "fully active" only when all components have activated?
 - Can startup be automated, or is explicit orchestration required?
 
-The framework now enforces deterministic intra-node ordering through explicit
+The library now enforces deterministic intra-node ordering through explicit
 ``dependencies``, ``priority``, and registration order as the stable fallback.
 This design note reserves the remaining design space for higher-level policies
 so order-based behavior does not become implicit again.

@@ -81,11 +81,11 @@ Registration order in the node is deliberately scrambled (sink first, timer
 second, publisher last) to make clear that dependencies -- not registration
 order -- drive the transition sequence.
 
-The framework-first rewrite of this example also demonstrated a concrete
+The library-first rewrite of this example also demonstrated a concrete
 ergonomic benefit: by using ``LifecycleTimerComponent``,
 ``LifecyclePublisherComponent``, and ``LifecycleSubscriberComponent`` as
 sibling components, no ``_on_activate`` or ``_on_deactivate`` overrides
-appear anywhere in the example.  The framework gates each component
+appear anywhere in the example.  The library gates each component
 automatically based on activation state.
 
 Validation

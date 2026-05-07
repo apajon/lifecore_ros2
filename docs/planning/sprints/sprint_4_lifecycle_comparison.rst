@@ -2,7 +2,7 @@ Sprint 4 - Lifecycle comparison example
 =======================================
 
 **Objective.** Prove the value proposition with one concrete example before
-adding more framework surface.
+adding more library surface.
 
 **Deliverable.** A reader can compare plain ROS 2, classic ROS 2 lifecycle, and
 ``lifecore_ros2`` in the same sensor watchdog scenario.
@@ -53,7 +53,7 @@ Decisions already made
 ----------------------
 
 - The comparison belongs in the companion examples repository because it is an
-  applied, scenario-driven example rather than a minimal framework primitive.
+  applied, scenario-driven example rather than a minimal library primitive.
 - The first scenario is a single-node sensor watchdog, because it exercises the
   lifecycle boundary without requiring domain-specific dependencies.
 - The example must compare structure and lifecycle behavior, not performance or
@@ -239,7 +239,7 @@ Out of scope:
 - performance, latency, or CPU benchmarking
 - shared helper code that hides structural differences between variants
 - public API changes in ``lifecore_ros2`` unless the implementation exposes a
-  concrete framework gap
+  concrete library gap
 - core-repo implementation for this scenario
 
 ---

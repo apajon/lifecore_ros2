@@ -19,7 +19,7 @@ Host **concrete, scenario-driven examples** that demonstrate lifecore_ros2
 patterns under conditions too applied, too multi-file, or too workflow-oriented
 to belong in the core repo's ``examples/`` directory.
 
-The core repo keeps simple/minimal examples that teach one framework abstraction
+The core repo keeps simple/minimal examples that teach one library abstraction
 at a time. The companion repo owns concrete examples that show how those
 abstractions work together in realistic ROS 2 scenarios.
 
@@ -250,7 +250,7 @@ Phase 1 — Next applied example: sensor-fusion pipeline
 
 **Context.** Concrete examples are validated in the companion repo by default.
 The core repo remains reserved for small, dependency-light examples that teach
-one framework abstraction at a time.
+one library abstraction at a time.
 
 This later example focuses on **sensor-fusion pipeline** — fan-in multi-sensor integration:
 - [ ] Two simulated heterogeneous sensors as ``LifecyclePublisherComponent`` instances
@@ -282,7 +282,7 @@ Phase 4 — Second example (post-Phase-3)
 
 - [ ] Choose between *lifecycle-aware diagnostics* and *multi-node orchestration* based on user feedback
 - [ ] Apply the same module-docstring discipline (one teaching axis, expected output)
-- [ ] Avoid expanding into a domain framework — each example remains followable in isolation
+- [ ] Avoid expanding into a domain platform — each example remains followable in isolation
 
 ---
 

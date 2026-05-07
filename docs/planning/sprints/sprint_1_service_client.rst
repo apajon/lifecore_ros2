@@ -30,7 +30,7 @@ consistent activation semantics, behind a uniform two-layer
      analogous to ``LifecycleSubscriberComponent``.
 
    This keeps naming symmetric, intent-explicit, and aligned with the
-   framework convention ``Lifecycle<Capability>Component`` for concrete
+  library naming convention ``Lifecycle<Capability>Component`` for concrete
    managed entities (see ``.github/instructions/naming-conventions``).
 
 ---
@@ -56,7 +56,7 @@ ServiceComponent (abstract base)
   - the ROS service or client object — those belong to concrete subclasses
   - any ``_on_*`` lifecycle hook implementation
 
-- Not intended to be subclassed directly outside the framework. Application
+- Not intended to be subclassed directly outside the library. Application
   code subclasses ``LifecycleServiceServerComponent`` or
   ``LifecycleServiceClientComponent``.
 
@@ -184,13 +184,13 @@ Risks and mitigation
 - **Problem**: A request arriving while INACTIVE must be handled
   deterministically. Returning the default-constructed ``Response``
   silently looks like success.
-- **Decision**: the framework applies a single inactive-response policy:
+- **Decision**: the library applies a single inactive-response policy:
 
   - Log a warning identifying the component, service name, and current
     lifecycle state.
   - Return the default-constructed ``Response``. If the response message
     defines a diagnostic-style field (e.g. ``success``, ``message``), the
-    framework populates it to flag the inactive state; otherwise the
+    library populates it to flag the inactive state; otherwise the
     default response is returned as-is.
   - In-flight handlers triggered before deactivation run to completion;
     deactivation does not cancel them. Documented in the docstring.
@@ -278,7 +278,7 @@ Scope boundaries
 
 - Async request handlers on the server (deferred).
 - Service pooling or multiplexing.
-- Framework-level timeout policies (timeout remains a parameter to
+- Library-level timeout policies (timeout remains a parameter to
   ``call()``).
 - Action components (different semantics, separate sprint).
 - Parameter components (separate sprint).
@@ -315,7 +315,7 @@ Server minimal implementation::
            self,
            request: std_srvs.srv.Empty.Request,
        ) -> std_srvs.srv.Empty.Response:
-           # Called by the framework only when the component is ACTIVE.
+           # Called by the library only when the component is ACTIVE.
            return std_srvs.srv.Empty.Response()
 
 Client minimal implementation::

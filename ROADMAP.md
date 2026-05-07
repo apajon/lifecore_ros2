@@ -31,7 +31,7 @@ Before pursuing new features, the project is focused on making the library adopt
 - Rich test coverage for confidence
 - Strategic design notes for future extensions
 
-**See [Adoption & Hardening Roadmap](docs/planning/adoption_hardening.rst)** for the nine-concern framework.
+**See [Adoption & Hardening Roadmap](docs/planning/adoption_hardening.rst)** for the nine-concern roadmap.
 
 Current status: ✓ all adoption items complete (v0.4.0). The core library is usable and documented for professional evaluation, while API stability remains experimental until `1.0.0`.
 
@@ -106,6 +106,7 @@ See [Architecture](docs/architecture.rst) for the lifecycle model, component con
 See [Naming Conventions](.github/instructions/naming-conventions.instructions.md) for stable naming rules.
 
 See **Design Notes** under [docs/design_notes/](docs/design_notes/) for detailed decisions on:
+
 - Runtime introspection
 - Dynamic components
 - Observability
@@ -122,6 +123,7 @@ The project uses [Conventional Commits](https://www.conventionalcommits.org/) an
 **Current status:** version is in the `0.x` series and package metadata uses `Development Status :: 3 - Alpha`. This signals that the public API is not yet considered stable. Experimental adoption is welcome; breaking changes may still occur on minor bumps.
 
 **Rules in effect:**
+
 - `allow_zero_version = true` — semantic-release stays in `0.x` and does not force a `1.0.0` bump automatically
 - `major_on_zero = false` — breaking changes (BREAKING CHANGE commits) increment the minor version while in `0.x`, not the major
 - `tag_format = "v{version}"` — tags are prefixed with `v`

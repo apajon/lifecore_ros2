@@ -22,7 +22,7 @@ Intent
 
 Allow ``add_component`` and ``remove_component`` to be called at runtime,
 i.e. **after the first lifecycle transition has occurred**, while keeping
-the framework's core invariants intact:
+the library's core invariants intact:
 
 * native ``rclpy`` lifecycle semantics stay in control,
 * no parallel hidden state machine,
@@ -74,7 +74,7 @@ transition callbacks return ``SUCCESS`` as a silent no-op. This is the
 
 The same TODO file documents that runtime removal is not safe under Option B
 because rclpy still owns the entity reference, and that **Option C**
-(framework-driven propagation) is the path forward:
+(library-driven propagation) is the path forward:
 
    *Option C (future): take over propagation from rclpy, iterate
    ``_components.values()`` directly in each ``on_*`` method. Enables true
@@ -102,7 +102,7 @@ Why Option B is insufficient post-transition
 Proposed contract — Option C
 ----------------------------
 
-The framework takes over lifecycle propagation. ``rclpy``'s native
+The library takes over lifecycle propagation. ``rclpy``'s native
 managed-entity propagation is bypassed for components; transitions iterate
 ``_components.values()`` directly. This unlocks both runtime removal
 (release resources cleanly) and runtime add (replay missed transitions).
@@ -128,7 +128,7 @@ API surface
        def remove_component(self, name: str) -> None:
            """Unregister a component.
 
-           Pre-transition: as today. Post-transition: the framework drives
+           Pre-transition: as today. Post-transition: the library drives
            the component down to ``Unconfigured`` through the lifecycle
            (``_on_deactivate`` if active, then ``_on_cleanup``), releasing
            resources via the normal ``_release_resources`` path. The
@@ -191,7 +191,7 @@ Mirror of the existing add anti-pattern:
   *and* its resources are released.
 * **Remove failure of a teardown hook** — component is still removed from
   ``_components`` and detached (forced); the failure is reported via the
-  observer event (``outcome=error``). This is the only place the framework
+  observer event (``outcome=error``). This is the only place the library
   proceeds past a hook failure to preserve the "no ghost" invariant.
 
 Typed exceptions
@@ -278,7 +278,7 @@ To be answered in the implementation PR, not silently in code.
    given via ``add_managed_entity``. Do we (a) keep them in rclpy's list
    inert, (b) remove them via a private rclpy API, or (c) never call
    ``add_managed_entity`` in the first place? *Tentative*: (c) — Option
-   C means the framework owns propagation end to end; passing components
+  C means the library owns propagation end to end; passing components
    to rclpy is what created Option B's ghost problem. Verify this is
    actually possible without breaking rclpy lifecycle node assumptions.
 6. **Concurrent runtime add and remove.** Two threads call

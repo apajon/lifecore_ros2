@@ -5,7 +5,7 @@
 This is a small, abstract lifecycle composition library for ROS 2 Jazzy.
 Contributions should remain narrow and reviewable.
 
-A change belongs here if it is **framework-level and message-type-agnostic**.
+A change belongs here if it is **library-level and message-type-agnostic**.
 Domain-specific patterns (sensors, actuators, multi-node orchestration) belong in
 the companion repository `lifecore_ros2_examples` instead.
 
@@ -80,7 +80,7 @@ messages — non-conforming messages are silently ignored at release time.
 Common prefixes:
 
 | Prefix | When to use |
-|--------|-------------|
+| ------ | ----------- |
 | `feat:` | New public behavior or API addition |
 | `fix:` | Bug fix in existing behavior |
 | `docs:` | Documentation-only change |

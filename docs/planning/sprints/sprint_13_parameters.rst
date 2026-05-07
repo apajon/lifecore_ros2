@@ -5,7 +5,7 @@ Sprint 13 - Parameters and runtime configuration
 requires it.
 
 **Deliverable.** Parameters can be managed as lifecycle-aware component concerns
-without turning the framework into a config system.
+without turning the library into a config system.
 
 ---
 

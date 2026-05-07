@@ -9,7 +9,7 @@ discussion baseline, not an implementation contract.
 Positioning
 -----------
 
-``lifecore_ros2`` is a Python framework for structuring ROS 2 lifecycle nodes
+``lifecore_ros2`` is a Python library for structuring ROS 2 lifecycle nodes
 with a component-oriented approach.
 
 Its level is **inside the node**:
@@ -101,7 +101,7 @@ Do not expand into these areas until a concrete user need forces the discussion:
 - plugin loading or config-driven applications before the core API proves it
 
 These may become tooling or companion-repository concerns later. They should not
-move into the core framework prematurely.
+move into the core library prematurely.
 
 ---
 
@@ -133,7 +133,7 @@ Roadmap thesis
 --------------
 
 Sprint numbers encode priority order. The strategic comparison example becomes
-Sprint 4 because it is the next proof point before additional framework surface.
+Sprint 4 because it is the next proof point before additional library surface.
 Some new cards intentionally move ahead of older advanced surfaces when they are
 closer to the product differentiator.
 

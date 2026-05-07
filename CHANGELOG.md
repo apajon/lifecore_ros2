@@ -22,16 +22,16 @@
 - Add activation_gating to API reference and Sprint 6 changelog
   ([`c8bcb5c`](https://github.com/apajon/lifecore_ros2/commit/c8bcb5c30184589ba8607f43d94fd14b7f6ef042))
 
-- Capture framework-first ergonomic benefit — no override required for standard ROS resources
+- Capture library-first ergonomic benefit — no override required for standard ROS resources
   ([`eb8ba60`](https://github.com/apajon/lifecore_ros2/commit/eb8ba6040ca9f3c65a56363f2c99d67e05dbea13))
 
 - Extend Rule C to document shared activation-gating primitive
   ([`274eceb`](https://github.com/apajon/lifecore_ros2/commit/274eceb29dafbbf39813a61c89220b191a2b123d))
 
-- Prefer framework activation-gating primitives in user guides
+- Prefer library activation-gating primitives in user guides
   ([`f06fcf9`](https://github.com/apajon/lifecore_ros2/commit/f06fcf9c3937b91ca8b26c5c07f76f9c139d2fb8))
 
-- Update examples.rst, patterns.rst, and api_friction_audit.rst for framework-first
+- Update examples.rst, patterns.rst, and api_friction_audit.rst for library-first
   ([`ed97ba9`](https://github.com/apajon/lifecore_ros2/commit/ed97ba98192b13dd24dd3239ab2e5f369c1862f1))
 
 - **composition**: Align documentation with registration-site metadata feature

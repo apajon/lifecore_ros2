@@ -46,7 +46,7 @@ All decisions below are final for Sprint 7.
 
 ``_needs_cleanup`` must be reset to ``False`` after the release *attempt*, regardless of
 whether ``_release_resources()`` succeeded or failed. The flag reflects whether the
-framework should attempt a lifecycle cleanup, not whether the component is in a
+library should attempt a lifecycle cleanup, not whether the component is in a
 perfectly clean memory state.
 
 Preferred pattern::
