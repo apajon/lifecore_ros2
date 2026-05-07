@@ -63,10 +63,10 @@ class TestComponentAttach:
 
     def test_double_attach_raises(self, node: LifecycleComponentNode) -> None:
         comp = FakeComponent("once")
-        comp._attach(node)
+        comp._attach(node)  # pyright: ignore[reportPrivateUsage]
 
         with pytest.raises(RuntimeError, match="already attached"):
-            comp._attach(node)
+            comp._attach(node)  # pyright: ignore[reportPrivateUsage]
 
 
 # ---------------------------------------------------------------------------
@@ -87,9 +87,9 @@ class TestManagedNodeNominal:
         assert comp_b in result
 
     def test_registration_open_initially(self, node: LifecycleComponentNode) -> None:
-        assert node._registration_open is True
+        assert node._registration_open is True  # pyright: ignore[reportPrivateUsage]
 
     def test_registration_closed_after_configure(self, node: LifecycleComponentNode) -> None:
         node.add_component(FakeComponent("pre"))
         node.on_configure(DUMMY_STATE)
-        assert node._registration_open is False
+        assert node._registration_open is False  # pyright: ignore[reportPrivateUsage]

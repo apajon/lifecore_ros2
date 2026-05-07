@@ -9,6 +9,7 @@ Coverage:
 
 from __future__ import annotations
 
+from collections.abc import Generator
 from unittest.mock import patch
 
 import pytest
@@ -19,9 +20,9 @@ from lifecore_ros2.testing import DUMMY_STATE, FakeComponent
 
 
 @pytest.fixture()
-def node() -> LifecycleComponentNode:
+def node() -> Generator[LifecycleComponentNode, None, None]:
     n = LifecycleComponentNode("cleanup_policy_test_node")
-    yield n  # type: ignore[misc]
+    yield n
     n.destroy_node()
 
 

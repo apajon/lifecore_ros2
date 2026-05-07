@@ -111,12 +111,12 @@ class TestFakeServiceComponents:
         request = std_srvs.srv.Trigger.Request()
 
         service.on_configure(DUMMY_STATE)
-        inactive_response = service._on_request_wrapper(request, std_srvs.srv.Trigger.Response())
+        inactive_response = service._on_request_wrapper(request, std_srvs.srv.Trigger.Response())  # pyright: ignore[reportPrivateUsage]
         assert inactive_response.success is False
         assert service.requests == []
 
         service.on_activate(DUMMY_STATE)
-        active_response = service._on_request_wrapper(request, std_srvs.srv.Trigger.Response())
+        active_response = service._on_request_wrapper(request, std_srvs.srv.Trigger.Response())  # pyright: ignore[reportPrivateUsage]
         assert active_response.success is True
         assert active_response.message == "ready"
         assert service.requests == [request]
