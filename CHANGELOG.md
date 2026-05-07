@@ -2,6 +2,53 @@
 
 <!-- version list -->
 
+## v0.8.1 (2026-05-07)
+
+### Bug Fixes
+
+- **testing**: Remove redundant isinstance check in assert_activation_gated
+  ([`008ab11`](https://github.com/apajon/lifecore_ros2/commit/008ab11b696c0595e3d9c07450ccee3ec880f577))
+
+### Chores
+
+- **prompts**: Add logical-commits prompt for conventional commits workflow
+  ([`746c97a`](https://github.com/apajon/lifecore_ros2/commit/746c97af51ea2e2fa66c242e0e6e0458367ad991))
+
+### Documentation
+
+- **architecture**: Clarify _needs_cleanup reset and borrowed callback_group ownership
+  ([`72f5bfb`](https://github.com/apajon/lifecore_ros2/commit/72f5bfb2732b2a2f93b654692cc2872c4694b3e8))
+
+- **backlog**: Move Sprint 7 cleanup/ownership to shipped
+  ([`1428a67`](https://github.com/apajon/lifecore_ros2/commit/1428a672b80ee61f874335cd07ed79619ba73f93))
+
+- **components**: Align docstrings with cleanup/shutdown/error semantics
+  ([`a2cb2a4`](https://github.com/apajon/lifecore_ros2/commit/a2cb2a465a6efe1c4e39ceff1d1cf193064fb8e6))
+
+- **planning**: Replace "framework" with "library" in planning notes and meta files
+  ([`d0debe6`](https://github.com/apajon/lifecore_ros2/commit/d0debe6d43774591a4bc4277326f3939c3e49a53))
+
+- **readme**: Add hook sentence, 30-second view, and non-goals
+  ([`d8eb9b8`](https://github.com/apajon/lifecore_ros2/commit/d8eb9b873fb0088da4332f1d331b242dd1249a0f))
+
+- **sphinx**: Replace "framework" with "library" across public Sphinx docs
+  ([`8960b6b`](https://github.com/apajon/lifecore_ros2/commit/8960b6b6e0eb0fe1640c46c9ffcab92b86df2322))
+
+- **sprint**: Mark Sprint 7 cleanup/ownership API complete
+  ([`c983368`](https://github.com/apajon/lifecore_ros2/commit/c9833683b5b45acfc601b3d8c068c6dd91835531))
+
+- **sprint**: Mark Sprint 7 cleanup/ownership API shipped (2026-05-06)
+  ([`6598c46`](https://github.com/apajon/lifecore_ros2/commit/6598c4634676c2181839737476a3cd9e8645ddbc))
+
+### Testing
+
+- **components**: Add cleanup ownership semantics regression tests
+  ([`81bdd80`](https://github.com/apajon/lifecore_ros2/commit/81bdd806b8f80aac76e7bda5fb8cc40048d7ca30))
+
+- **core**: Add _needs_cleanup reset policy regression tests
+  ([`352ffa2`](https://github.com/apajon/lifecore_ros2/commit/352ffa257320208659f92dd7fd7c8265c38b599a))
+
+
 ## v0.8.0 (2026-05-06)
 
 ### Chores
