@@ -6,7 +6,7 @@ API Friction Audit
 This page records the ergonomics audit required by
 the Adoption & Hardening Roadmap (``docs/planning/adoption_hardening.rst`` §2). The goal is to count the steps a developer
 must take to produce a useful component, identify any steps that exist only for
-framework bookkeeping, and designate a canonical "shortest path" example.
+library bookkeeping, and designate a canonical "shortest path" example.
 
 Audit date: 2026-04-24.
 
@@ -40,7 +40,7 @@ Additional steps beyond the publish-on-demand case:
 6. Implement ``on_tick()``: call the publisher's emit method or ``publish(msg)``.
 
 **Total: 6 steps.**  No ``_on_activate``, ``_on_deactivate``, ``create_timer``, or
-``destroy_timer`` call required.  Both components are gated by the framework
+``destroy_timer`` call required.  Both components are gated by the library
 automatically.  See ``examples/minimal_publisher.py`` for the canonical form.
 
 .. note::
@@ -48,7 +48,7 @@ automatically.  See ``examples/minimal_publisher.py`` for the canonical form.
    Before ``LifecycleTimerComponent`` was used as a sibling component, timer-driven
    publication required overriding ``_on_activate`` and ``_on_deactivate`` with manual
    ``create_timer`` / ``destroy_timer`` calls — 7 steps total.  That path remains valid
-   for resources without a framework equivalent but should not be used for timers.
+  for resources without a library equivalent but should not be used for timers.
 
 Minimal ``LifecycleSubscriberComponent``
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -71,7 +71,7 @@ After both components are defined:
 2. In ``__init__``: call ``super().__init__(node_name)``.
 3. Call ``self.add_component(comp_a)`` and ``self.add_component(comp_b)``.
 
-**Total: 3 steps.**  No framework-only overhead.
+**Total: 3 steps.**  No library-only overhead.
 
 ---
 
@@ -99,12 +99,12 @@ as the generic parameter ``[String]`` and once as the constructor argument
                 qos_profile=10,
             )
 
-The duplication came from Python's runtime type erasure: the framework had to
+The duplication came from Python's runtime type erasure: the library had to
 recover the concrete generic argument at ``__init__`` time before handing the
 resolved type to ``rclpy``.
 
 **Initial decision (2026-04-24):** the current duplication is a Python
-limitation, not a framework design choice.  Making ``msg_type`` optional
+limitation, not a library design choice.  Making ``msg_type`` optional
 (via ``__orig_bases__`` introspection) is feasible but was deferred to a
 dedicated investigation.  See issue
 `#1 <https://github.com/apajon/lifecore_ros2/issues/1>`_.
@@ -169,7 +169,7 @@ across current and future components.
 that type either via the generic parameter of the class
 (``Component[InterfaceT]``) or via an explicit constructor argument.  The
 two sources are reconciled by a single transverse utility.  When neither is
-available, or when both are available and disagree, the framework raises a
+available, or when both are available and disagree, the library raises a
 typed boundary exception at ``__init__`` time.
 
 **Rationale.** Avoids the "stated twice" friction documented above without
@@ -211,7 +211,7 @@ Status
 - Tracker: Adoption & Hardening §2 is closed and ``docs/patterns.rst``
   documents the generic-only form.
 
-No other framework-bookkeeping-only steps were found.  All remaining steps
+No other library-bookkeeping-only steps were found.  All remaining steps
 either carry clear functional justification or belong to application logic
 (timer management, message construction).
 
@@ -224,7 +224,7 @@ Canonical shortest-path example
 
 Rationale: the subscriber requires only a three-step setup (import, subclass +
 ``__init__``, ``on_message``) and imposes zero timer lifecycle overhead.  It
-demonstrates activation gating — the primary differentiator of the framework —
+demonstrates activation gating — the primary differentiator of the library —
 without incidental complexity.
 
 **Regression snapshot (2026-04-24):**
@@ -255,7 +255,7 @@ Conclusions
 -----------
 
 - Publisher path (3 steps / 7 with timer): clean.  Timer management is
-  application logic, not framework overhead.
+  application logic, not library overhead.
 - Subscriber path (3 steps): minimal.  ``on_message`` is the sole mandatory
   override.
 - Composition path (3 steps): straightforward.

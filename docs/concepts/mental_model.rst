@@ -12,12 +12,12 @@ Mental Model
      <div>
        <p class="lifecycle-signature__eyebrow">Lifecycle interface</p>
        <p class="lifecycle-signature__title">Core lifecycle for modular robotics systems</p>
-       <p class="lifecycle-signature__text">The framework stays readable when each concept is tied to an explicit lifecycle phase.</p>
+       <p class="lifecycle-signature__text">The library stays readable when each concept is tied to an explicit lifecycle phase.</p>
      </div>
    </div>
 
 Read this page before the API reference.
-It describes the intended mental model of the framework.
+It describes the intended mental model of the library.
 
 Lifecycle Flow
 --------------
@@ -67,7 +67,7 @@ The node drives lifecycle transitions.
 Configure, activate, deactivate, cleanup, shutdown, and error handling enter through the node.
 The node then propagates the transition to each registered component.
 
-This matters because the framework does not create a second control plane.
+This matters because the library does not create a second control plane.
 The lifecycle entry point stays explicit and centralized.
 
 Resource Management Happens In Hooks
@@ -80,14 +80,14 @@ Components create and destroy ROS resources through explicit hooks.
 - Disable or gate runtime behavior during deactivate.
 - Release ROS resources during cleanup.
 
-For standard ROS resources, the pre-built framework components apply these
+For standard ROS resources, the pre-built library components apply these
 rules automatically.  ``LifecycleTimerComponent``, ``LifecyclePublisherComponent``,
 ``LifecycleSubscriberComponent``, and the service components each encapsulate
 the configure / activate / deactivate / cleanup plumbing internally.  A node
 that composes those components needs no ``_on_activate`` or ``_on_deactivate``
-overrides for those resources — the framework gates each one based on activation
+overrides for those resources — the library gates each one based on activation
 state without any application code.  Reserve the explicit hook overrides for
-resources that have no framework equivalent: hardware handles, custom sensor
+resources that have no library equivalent: hardware handles, custom sensor
 connections, or application-specific runtime state.
 
 .. raw:: html
@@ -98,7 +98,7 @@ connections, or application-specific runtime state.
    </div>
 
 Do not treat ``__init__`` as the place where runtime ROS resources become live.
-The framework is designed so resource lifetime follows lifecycle transitions.
+The library is designed so resource lifetime follows lifecycle transitions.
 
 Activation Must Stay Explicit
 -----------------------------
@@ -106,7 +106,7 @@ Activation Must Stay Explicit
 Activation state must be explicit and predictable.
 If a component is inactive, that fact must be reflected in its behavior.
 
-The framework favors visible gating over implicit background behavior.
+The library favors visible gating over implicit background behavior.
 When code becomes active or inactive, that change should follow the lifecycle transition directly.
 
 No Hidden State Machine
@@ -131,4 +131,4 @@ Good components usually own one responsibility:
 This keeps lifecycle behavior readable, testable, and predictable.
 If one class starts owning many unrelated resources and rules, the lifecycle model becomes harder to follow.
 
-In practice, the framework works best when the node is the owner and coordinator, and each component stays narrow.
+In practice, the library works best when the node is the owner and coordinator, and each component stays narrow.

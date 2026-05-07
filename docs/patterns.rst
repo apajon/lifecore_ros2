@@ -13,11 +13,11 @@ Recommended Patterns
   This keeps the component's constructor free of runtime dependencies and aligns with the
   **configure** invariant: resources exist if and only if a successful configure has run.
 
-  For standard ROS resources, prefer the dedicated framework components over raw
+  For standard ROS resources, prefer the dedicated library components over raw
   ``create_*`` calls: ``LifecyclePublisherComponent``, ``LifecycleSubscriberComponent``,
   ``LifecycleTimerComponent``, ``LifecycleServiceServerComponent``, and
   ``LifecycleServiceClientComponent`` each encapsulate the configure / cleanup plumbing
-  automatically.  Reserve the ``_on_configure`` override for resources without a framework
+  automatically.  Reserve the ``_on_configure`` override for resources without a library
   equivalent — for example, a hardware handle or a custom sensor connection.
 
   .. code-block:: python
@@ -27,7 +27,7 @@ Recommended Patterns
               result = super()._on_configure(state)  # creates the ROS publisher
               if result != TransitionCallbackReturn.SUCCESS:
                   return result
-              # Acquire a custom resource not covered by a framework component.
+              # Acquire a custom resource not covered by a library component.
               self._sensor = open_sensor_connection(self._port)
               return TransitionCallbackReturn.SUCCESS
 
@@ -45,17 +45,17 @@ Recommended Patterns
      :doc:`architecture` — Member Convention table for the ``super()._on_configure`` call
      contract on ``LifecyclePublisherComponent``.
 
-**Prefer framework activation-gating primitives**
+**Prefer library activation-gating primitives**
 
   Any component-level operation or callback boundary that depends on activation must use the
-  framework gating primitives rather than an ad hoc state check.
+  library gating primitives rather than an ad hoc state check.
 
-  - Use ``@when_active`` when the inactive policy is one of the framework defaults:
+  - Use ``@when_active`` when the inactive policy is one of the library defaults:
     raise for outbound operations, or silent drop for inbound middleware-driven callbacks.
   - Use ``self.require_active()`` when the component needs a custom inactive policy but should
     still rely on the same shared activation check.
   - Keep ``self.is_active`` for broader application branching when needed; do not use it as a
-    replacement for framework gating at component callback boundaries.
+    replacement for library gating at component callback boundaries.
 
   .. code-block:: python
 
@@ -69,7 +69,7 @@ Recommended Patterns
           return self.on_service_request(request, response)
 
   ``LifecycleTimerComponent.on_tick()`` and ``LifecycleSubscriberComponent.on_message()`` are
-  already invoked behind framework-owned wrappers, so subclasses do not need to re-check the
+  already invoked behind library-owned wrappers, so subclasses do not need to re-check the
   activation state inside those extension points.
 
   Invariant upheld: **Activation gating**.
@@ -82,7 +82,7 @@ Recommended Patterns
   ``LifecycleServiceServerComponent[SrvT]``, or
   ``LifecycleServiceClientComponent[SrvT]``, omit the corresponding
   ``msg_type=...`` / ``srv_type=...`` keyword in the constructor call. The
-  framework infers the ROS interface type from the generic argument at
+  library infers the ROS interface type from the generic argument at
   ``__init__`` time, through the same transverse resolver for both topic and
   service components.
 
@@ -164,7 +164,7 @@ Anti-Patterns
 
   Creating publishers or subscriptions in the constructor bypasses the lifecycle
   contract entirely. The resource exists before configure, persists through cleanup,
-  and cannot be released by the framework.
+  and cannot be released by the library.
 
   .. code-block:: python
 
@@ -199,7 +199,7 @@ Anti-Patterns
 
   Adding a component-level state variable that shadows or diverges from ``_is_active`` creates
   a second lifecycle model. This is the core anti-pattern lifecore_ros2 exists to prevent.
-  The framework's ``_is_active`` flag is the only lifecycle-adjacent state a component should
+  The library's ``_is_active`` flag is the only lifecycle-adjacent state a component should
   track. Additional "ready", "running", or "initialized" flags that are not driven by the
   lifecycle transitions are symptoms of this pattern.
 
@@ -228,7 +228,7 @@ Anti-Patterns
 
 **Calling ``_release_resources`` manually inside ``_on_cleanup``**
 
-  The framework calls ``_release_resources`` automatically after ``_on_cleanup`` returns,
+  The library calls ``_release_resources`` automatically after ``_on_cleanup`` returns,
   regardless of the hook's return value (Rule D). Calling it inside the hook causes a
   double-release, which may destroy already-destroyed handles.
 
@@ -236,7 +236,7 @@ Anti-Patterns
 
       # WRONG: double release
       def _on_cleanup(self, state: LifecycleState) -> TransitionCallbackReturn:
-          self._release_resources()   # framework will call this again automatically
+          self._release_resources()   # library will call this again automatically
           return TransitionCallbackReturn.SUCCESS
 
   Invariant violated: **cleanup** (``_release_resources`` is called automatically).
@@ -245,7 +245,7 @@ Anti-Patterns
 
 **Letting exceptions propagate from ``on_message``**
 
-  Exceptions raised inside ``on_message`` are caught by the framework's
+  Exceptions raised inside ``on_message`` are caught by the library's
   ``_on_message_wrapper`` and logged at ``ERROR`` level, but the message is silently
   dropped and processing continues. Raising is therefore not a reliable error-signaling
   channel — the node stays active, the error is logged, and the next message arrives

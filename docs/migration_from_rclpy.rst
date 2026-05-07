@@ -53,7 +53,7 @@ Problems with this pattern at scale:
 - ``_active`` is a hand-rolled flag that shadows the lifecycle state but is not
   connected to it. A missed ``super()`` call or an exception in a hook desynchronises it.
   ``lifecore_ros2`` removes both failure modes: activation gating is owned by the
-  framework, and uncaught hook exceptions are wrapped in
+    library, and uncaught hook exceptions are wrapped in
   :class:`~lifecore_ros2.LifecycleHookError`, mapped to
   ``TransitionCallbackReturn.ERROR``, and routed through rclpy's native
   ``ErrorProcessing`` (see :doc:`design_notes/error_handling_contract`).
@@ -90,7 +90,7 @@ The same behavior expressed with ``LifecycleSubscriberComponent``:
 
 What changed:
 
-- ``_active`` is gone. The framework tracks activation state via ``_is_active`` and drops
+- ``_active`` is gone. The library tracks activation state via ``_is_active`` and drops
   inbound messages automatically when the component is not active.
 - ``_sub`` creation and destruction are handled by ``TopicComponent._on_configure`` and
   ``_release_resources``. No explicit ``destroy_subscription`` call needed.

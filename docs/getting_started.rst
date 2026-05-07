@@ -12,7 +12,7 @@ Getting Started
        <div>
           <p class="lifecycle-signature__eyebrow">Lifecycle interface</p>
           <p class="lifecycle-signature__title">Core lifecycle for modular robotics systems</p>
-          <p class="lifecycle-signature__text">Start from the shortest runnable path, then follow the same lifecycle vocabulary used by the framework.</p>
+          <p class="lifecycle-signature__text">Start from the shortest runnable path, then follow the same lifecycle vocabulary used by the library.</p>
        </div>
     </div>
 
@@ -105,7 +105,7 @@ The generated HTML output is written to docs/_build/html.
 
     <div class="state-box transition">
        <strong>Lifecycle reading path.</strong>
-       The onboarding flow mirrors the framework vocabulary: configure the environment, activate tooling, run validation, then transition into the mental model before you rely on API details.
+   The onboarding flow mirrors the library vocabulary: configure the environment, activate tooling, run validation, then transition into the mental model before you rely on API details.
     </div>
 
 Repository Concepts

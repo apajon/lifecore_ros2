@@ -55,7 +55,7 @@ See :doc:`design_notes/error_handling_contract` and the
 
 - New module ``lifecore_ros2.core.activation_gating`` exposes
   ``require_active(is_active, *, component_name)`` — the single shared check used
-  by all activation-gating paths in the framework.
+  by all activation-gating paths in the library.
 - ``LifecycleComponent.require_active()`` — new public method; a façade over the
   primitive. Use it in ``_on_*`` extension points or ``try/except`` handlers that
   need component-specific inactive behavior.
@@ -72,7 +72,7 @@ See :doc:`design_notes/error_handling_contract` and the
 
 **Testing utilities** (Sprint 3): ``lifecore_ros2.testing`` provides lifecycle
 fakes, pytest-compatible fixtures, assertion helpers, log helpers, and small
-concurrency probes for framework and application tests. The standard fakes use
+concurrency probes for library and application tests. The standard fakes use
 ``std_msgs.msg.String`` and ``std_srvs.srv.Trigger`` to stay concrete while
 keeping test setup compact.
 

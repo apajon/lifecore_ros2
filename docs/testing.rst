@@ -5,7 +5,7 @@ Testing Utilities
 exercise lifecycle behavior without re-declaring the same components and states
 in every file.
 
-The package is intentionally small: it uses the framework's public lifecycle
+The package is intentionally small: it uses the library's public lifecycle
 APIs, concrete ROS 2 interface types, and pytest-compatible fixtures. It does
 not add a second lifecycle model or a general mocking framework.
 
@@ -31,14 +31,14 @@ The package contains four groups of helpers.
   ``FakeComponent`` records lifecycle hook calls, stores the state passed to
   each hook, and can return a controlled failure or raise from a selected hook.
   ``FailingComponent`` is the shortcut for exception-path tests: by default it
-  raises from the selected hook and lets the framework hook guard map that to
+  raises from the selected hook and lets the library hook guard map that to
   ``TransitionCallbackReturn.ERROR``.
 
 **Topic, timer, service, and client fakes**
   ``FakePublisherComponent``, ``FakeSubscriberComponent``, ``FakeTimerComponent``,
   ``FakeServiceComponent``, and ``FakeClientComponent`` use concrete ROS 2
   types: ``std_msgs.msg.String`` and ``std_srvs.srv.Trigger``. They preserve the
-  same activation gating expectations as the framework components while avoiding
+  same activation gating expectations as the library components while avoiding
   repeated ROS resource boilerplate in tests.
 
 **Fixtures and assertions**
@@ -81,7 +81,7 @@ Then use the fixtures directly in tests.
 Testing Activation Gating
 -------------------------
 
-The built-in fakes are useful when a test only needs to verify the framework's
+The built-in fakes are useful when a test only needs to verify the library's
 activation boundary, not the details of a real ROS transport handle.
 
 .. code-block:: python
@@ -92,17 +92,17 @@ activation boundary, not the details of a real ROS transport handle.
    def test_publisher_is_activation_gated():
        assert_activation_gated(FakePublisherComponent())
 
-  For component-specific inactive policies, test the handled boundary directly:
-  ``LifecycleComponent.require_active()`` and ``@when_active`` share the same
-  ``RuntimeError`` contract, while wrappers such as the service-server callback can
-  catch that error and convert it into a component-specific fallback.
+For component-specific inactive policies, test the handled boundary directly:
+``LifecycleComponent.require_active()`` and ``@when_active`` share the same
+``RuntimeError`` contract, while wrappers such as the service-server callback can
+catch that error and convert it into a component-specific fallback.
 
 Failure Paths
 -------------
 
 Use ``fail_at_hook`` when the test needs a hook to return
 ``TransitionCallbackReturn.FAILURE``. Use ``FailingComponent`` when the test
-needs the framework hook guard to convert an exception into
+needs the library hook guard to convert an exception into
 ``TransitionCallbackReturn.ERROR``.
 
 .. code-block:: python

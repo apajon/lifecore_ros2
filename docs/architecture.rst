@@ -1,7 +1,7 @@
 Architecture
 ============
 
-This page is the contract surface for how the framework behaves during lifecycle transitions.
+This page is the contract surface for how the library behaves during lifecycle transitions.
 Read it after :doc:`Mental Model <concepts/mental_model>` and before treating the API reference as authoritative lookup.
 
 .. raw:: html
@@ -20,6 +20,8 @@ Overview
 .. Canonical positioning sentence — keep in sync with pyproject.toml project.description.
 
 lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.
+
+The node still owns the native ROS 2 lifecycle. The library adds a small composition layer so reusable components can follow the same lifecycle contract.
 
 The architecture is centered on two layers:
 
@@ -147,7 +149,7 @@ Concurrency Contract
 --------------------
 
 This section exists to keep the lifecycle readable under pressure.
-The framework allows thread-safe registration before the first transition, but it does not normalize concurrent transition execution as a supported runtime pattern.
+The library allows thread-safe registration before the first transition, but it does not normalize concurrent transition execution as a supported runtime pattern.
 
 .. rubric:: ADR — Threading model: single-threaded executor with thread-safe registration
 
@@ -168,7 +170,7 @@ calling ``rclpy.spin``.
 **Consequences:**
 Application code that runs ``LifecycleComponentNode`` under a
 ``MultiThreadedExecutor`` must not trigger lifecycle transitions concurrently. The
-framework enforces this with ``ConcurrentTransitionError``, described below.
+library enforces this with ``ConcurrentTransitionError``, described below.
 
 Thread-safety guarantees
 ~~~~~~~~~~~~~~~~~~~~~~~~
@@ -201,7 +203,7 @@ Forbidden concurrent transitions
 
 Calling any lifecycle hook (``on_configure``, ``on_activate``, ``on_deactivate``,
 ``on_cleanup``, ``on_shutdown``) while another transition is already running is a
-programming error. The framework detects this via an internal ``_in_transition`` flag
+programming error. The library detects this via an internal ``_in_transition`` flag
 guarded by ``_lock`` and raises :exc:`~lifecore_ros2.ConcurrentTransitionError`:
 
 .. code-block:: text
@@ -234,7 +236,7 @@ start of ``on_configure`` and ``on_shutdown``.
 Component destruction during active callbacks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The framework does not manage component lifetime beyond the lifecycle transitions it
+The library does not manage component lifetime beyond the lifecycle transitions it
 drives. If application code destroys a component object while a subscription or timer
 callback is executing on that component, the result is undefined. The contract is:
 
@@ -266,15 +268,15 @@ If resource lifetime is unclear in an implementation, check it against this sect
     destroy subscription
     _release_resources() called automatically
 
-The only state the framework tracks is ``_is_active``. There is no secondary resource-ready
+The only state the library tracks is ``_is_active``. There is no secondary resource-ready
 flag. Whether a resource exists at runtime is determined entirely by whether ``_on_configure``
 has run and ``_on_cleanup`` / ``_release_resources`` has not yet been called.
 
 .. note::
 
-   The framework does not own or start timers. The ``start timers`` and ``stop timers``
+  The library does not own or start timers. The ``start timers`` and ``stop timers``
    entries above represent application code running inside ``_on_activate`` and
-   ``_on_deactivate``. The framework has no built-in timer management.
+  ``_on_deactivate``. The library has no built-in timer management.
 
 Lifecycle Design
 ----------------
@@ -311,7 +313,7 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
 
 **activate**
   Enable runtime behavior. Start publishing, accept message callbacks.
-  Do not call ``super()._on_activate(state)`` — the framework sets ``_is_active = True``
+  Do not call ``super()._on_activate(state)`` — the library sets ``_is_active = True``
   automatically after the hook returns SUCCESS.
   Do not allocate new ROS resources here.
 
@@ -323,7 +325,7 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
 
 **cleanup**
   Release all ROS resources allocated during configure.
-  ``_release_resources()`` is called automatically by the framework after ``_on_cleanup`` returns.
+  ``_release_resources()`` is called automatically by the library after ``_on_cleanup`` returns.
   No explicit call is needed in the override.
 
 **shutdown / error**
@@ -332,7 +334,7 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
 **No parallel lifecycle**
   No component may introduce an internal state machine that diverges from or shadows
   the node lifecycle. ``_is_active`` is the only lifecycle-adjacent flag. It is
-  managed exclusively by the ``@final`` framework entry points:
+  managed exclusively by the ``@final`` library entry points:
 
   - ``on_activate`` sets ``_is_active = True`` after ``_on_activate`` returns ``SUCCESS``.
   - ``on_deactivate`` clears ``_is_active = False`` after ``_on_deactivate`` returns ``SUCCESS``.
@@ -341,15 +343,15 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
 
   Subclasses must not read or write ``_is_active`` directly. Do not call
   ``super()._on_activate()`` or ``super()._on_deactivate()`` to manage the flag —
-  the framework handles it.
+  the library handles it.
 
 **Strict direct-call contract**
-  ``LifecycleComponent.on_*`` remains framework-owned. When a component hook entry point is
+  ``LifecycleComponent.on_*`` remains library-owned. When a component hook entry point is
   called directly in an invalid order, lifecore_ros2 now raises
   ``InvalidLifecycleTransitionError`` instead of silently accepting the sequence.
 
   The node-driven path stays lifecycle-native: invalid node transitions are still rejected by
-  the native rclpy state machine, and the framework logs the attempted transition, current node
+  the native rclpy state machine, and the library logs the attempted transition, current node
   state, and attached components before re-raising the native error. The extra component-side
   bookkeeping is limited to boundary checks for direct calls plus a cleanup-needed flag used to
   prevent direct reconfigure before resources are released. This is not an independent lifecycle
@@ -404,14 +406,14 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
 Naming Conventions
 ------------------
 
-Framework type names are stable and must not be changed or aliased.
+Library type names are stable and must not be changed or aliased.
 
 **Fixed names:**
 
 - ``LifecycleComponent`` — the core reusable abstraction for a lifecycle-aware modular unit.
-- ``LifecycleComponentNode`` — the framework base node that owns and drives registered components.
+- ``LifecycleComponentNode`` — the library base node that owns and drives registered components.
 
-**Application node names** must use domain/business names, not framework names:
+**Application node names** must use domain/business names, not library names:
 
 .. code-block:: python
 
@@ -419,10 +421,10 @@ Framework type names are stable and must not be changed or aliased.
     class CameraNode(LifecycleComponentNode): ...
     class NavigationNode(LifecycleComponentNode): ...
 
-    # Wrong — do not embed framework terms in application class names
+    # Wrong — do not embed library terms in application class names
     class LifecycleCameraNode(LifecycleComponentNode): ...
 
-**Framework-provided components** follow the pattern ``Lifecycle<Capability>Component``:
+  **Library-provided components** follow the pattern ``Lifecycle<Capability>Component``:
 
 - ``LifecyclePublisherComponent``
 - ``LifecycleSubscriberComponent``
@@ -443,7 +445,7 @@ must include an explicit justification in the PR description.
 Error Policy
 ------------
 
-The framework enforces one coherent error policy across four axes.
+The library enforces one coherent error policy across four axes.
 
 **Rule A — Boundary violations raise**
   Misuse of the public API by application code raises a typed subclass of
@@ -469,7 +471,7 @@ The framework enforces one coherent error policy across four axes.
        - ``RuntimeError``
        - ``publish()`` called before ``_on_configure`` created the publisher
 
-  Catch ``LifecoreError`` to handle any framework misuse in one place.
+  Catch ``LifecoreError`` to handle any library misuse in one place.
 
 **Rule B — Inside lifecycle hooks: never raise outward**
   ``_guarded_call`` wraps every ``_on_*`` hook invocation. Uncaught exceptions and
@@ -480,7 +482,7 @@ The framework enforces one coherent error policy across four axes.
   - Return ``ERROR`` or raise — transition fails, node enters ``ErrorProcessing``.
   - Return ``SUCCESS`` — transition proceeds.
 
-  The framework never lets an exception escape from a lifecycle hook into rclpy.
+  The library never lets an exception escape from a lifecycle hook into rclpy.
 
 **Rule C — Activation gating: outbound raises, inbound drops**
   - **Outbound calls** initiated by application code (e.g. ``publish()``) raise
@@ -497,7 +499,7 @@ The framework enforces one coherent error policy across four axes.
     with the exception type and message, and dropped. They never propagate to the
     executor. See the *Handle on_message exceptions inside the method* entry in
     :doc:`patterns` for guidance.
-  - **Shared primitive**: all activation checks across the framework funnel through
+  - **Shared primitive**: all activation checks across the library funnel through
     ``require_active(is_active, *, component_name)`` in
     ``lifecore_ros2.core.activation_gating``. ``LifecycleComponent.require_active()``
     is a convenience façade over it. ``@when_active`` default-raise path delegates to
@@ -511,7 +513,7 @@ The framework enforces one coherent error policy across four axes.
 
   *When does rclpy call ``on_error``?*
   Any lifecycle transition that returns ``ERROR`` (or whose hook raises an uncaught
-  exception, which the framework converts to ``ERROR`` via ``_guarded_call``) moves
+  exception, which the library converts to ``ERROR`` via ``_guarded_call``) moves
   the node into the ``ErrorProcessing`` state. rclpy then calls ``on_error`` on the
   node, which in turn calls each component's ``on_error`` entry point.
 
@@ -522,8 +524,8 @@ The framework enforces one coherent error policy across four axes.
   - ``FAILURE`` or ``ERROR`` — node transitions to ``Finalized`` (terminal state;
     the process must be restarted to reuse the node).
 
-  *How the framework handles the error entry point:*
-  For each component, the framework's ``@final on_error`` entry point:
+  *How the library handles the error entry point:*
+  For each component, the library's ``@final on_error`` entry point:
 
   1. Clears ``_is_active = False`` **unconditionally** (before the hook runs).
   2. Calls ``_on_error`` via ``_guarded_call`` (catches exceptions, converts to ``ERROR``).
@@ -546,7 +548,7 @@ The framework enforces one coherent error policy across four axes.
   The following table is the authoritative propagation matrix for all ``_on_*`` hooks.
   See :doc:`design_notes/error_handling_contract` for the full rationale.
 
-  .. list-table:: Hook outcome → framework action
+  .. list-table:: Hook outcome → library action
      :header-rows: 1
      :widths: 30 20 20 15 15
 
@@ -586,13 +588,13 @@ The framework enforces one coherent error policy across four axes.
   1. **Rollback policy B — all-or-nothing.** A composite transition fails as soon as one
      component fails. The node returns ``FAILURE``; siblings that already transited are not
      externalised as partial. No reverse replay of ``_on_cleanup`` hooks.
-  2. **``LifecycleHookError`` wraps caught hook exceptions.** The framework creates a
+  2. **``LifecycleHookError`` wraps caught hook exceptions.** The library creates a
      :class:`~lifecore_ros2.LifecycleHookError` (``__cause__`` set to the original exception)
      for logging context. It is never propagated to ``trigger_*`` callers.
   3. **Strict mode is the default and is non-configurable.** Any ``_on_*`` hook that returns
      a value outside ``{SUCCESS, FAILURE, ERROR}`` is logged at ``ERROR`` and treated as
      ``ERROR``. There is no lenient mode.
-  4. **``_on_error`` is driven only by native rclpy ``ERROR_PROCESSING``.** The framework
+  4. **``_on_error`` is driven only by native rclpy ``ERROR_PROCESSING``.** The library
      never synthesises an extra call to ``_on_error`` on caught exceptions. The native flow
      (exception → wrapper returns ``ERROR`` → rclpy enters ``ErrorProcessing`` → ``on_error``
      → ``_release_resources``) provides the full guarantee.
@@ -614,7 +616,7 @@ of four buckets. This is the authoritative guide for contributors and subclasser
   ``_on_activate``, ``_on_deactivate``, ``_on_cleanup``, ``_on_shutdown``, ``_on_error``,
   ``_release_resources``. Rendered in API docs.
 
-**Bucket 3 — Framework-controlled entry points**
+**Bucket 3 — Library-controlled entry points**
   Implement the ``rclpy`` ``ManagedEntity`` / ``LifecycleNode`` protocol. Decorated with
   ``@typing.final`` on ``LifecycleComponent`` so pyright catches accidental overrides.
   On ``LifecycleComponentNode``, ``on_configure`` and ``on_shutdown`` are not sealed because
@@ -622,9 +624,9 @@ of four buckets. This is the authoritative guide for contributors and subclasser
   "override with super" contract in their docstring. Examples: ``LifecycleComponent.on_configure``,
   ``on_activate``, ``on_deactivate``, ``on_cleanup``, ``on_shutdown``, ``on_error``.
 
-**Bucket 4 — Framework-internal**
+**Bucket 4 — Library-internal**
   Implementation details with no user contract. Single leading underscore. Docstring starts
-  with ``Framework-internal. Do not call from user code.`` Excluded from API docs.
+  with ``Library-internal. Do not call from user code.`` Excluded from API docs.
   Examples: ``_attach``, ``_detach``, ``_guarded_call``, ``_safe_release_resources``,
   ``_resolve_logger``, ``_close_registration``, ``_on_message_wrapper``.
 

@@ -22,7 +22,7 @@ How is this different from writing a custom state machine?
 
 It is not a state machine. ``LifecycleComponentNode`` is a ROS 2 lifecycle node and
 ``LifecycleComponent`` instances are driven by its transitions. Transitions,
-transition names, and return codes stay those of ``rclpy.lifecycle``. The framework
+transition names, and return codes stay those of ``rclpy.lifecycle``. The library
 adds composition, activation gating, and typed boundary errors — nothing else. There
 is no parallel state model, no hidden transitions, and no orchestration layer.
 
