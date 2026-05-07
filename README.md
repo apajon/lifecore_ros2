@@ -7,6 +7,34 @@
 <!-- Canonical positioning sentence — keep in sync with pyproject.toml project.description. See CONTRIBUTING.md. -->
 lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.
 
+ROS 2 lifecycle works well for nodes. lifecore_ros2 makes it practical for reusable components.
+
+## 30-second view
+
+```text
+Raw rclpy lifecycle:
+LifecycleNode
+ ├── publishers
+ ├── subscriptions
+ ├── timers
+ └── lifecycle logic mixed into one class
+
+lifecore_ros2:
+LifecycleComponentNode
+ ├── LifecyclePublisherComponent
+ ├── LifecycleSubscriberComponent
+ └── LifecycleTimerComponent
+```
+
+The node still owns the native ROS 2 lifecycle. The library adds a small composition layer so reusable components can follow the same lifecycle contract.
+
+## What this is not
+
+- not a second lifecycle state machine
+- not a plugin system or ROS 2 component container replacement
+- not a behavior tree system, orchestration middleware, or launch replacement
+- not a replacement for native ROS 2 lifecycle semantics
+
 ## Installation warning: ROS 2 Jazzy required
 
 lifecore_ros2 requires a working ROS 2 Jazzy Python environment. Install and source ROS 2 before importing this package:
@@ -34,8 +62,6 @@ uv add lifecore-ros2
 - reusable lifecycle-aware building blocks are awkward in raw `rclpy` because the lifecycle contract is on the node, not on reusable sub-units
 
 lifecore_ros2 solves these four problems with a small, explicit composition layer. It does not replace or extend the ROS 2 lifecycle state machine — it makes the lifecycle contract expressible at the component level.
-
-**Non-goals.** It is not a full application framework, not a plugin system, and not a replacement for native ROS 2 lifecycle semantics.
 
 ## Architecture at a glance
 
@@ -68,11 +94,11 @@ A small set of lifecycle-aware building blocks:
 | `LifecoreError` and subclasses | Typed exceptions for boundary violations |
 | `lifecore_ros2.testing` | Reusable fakes, fixtures, assertions, and helpers for lifecycle-focused tests |
 
-## Design rules and non-goals
+## Design rules
 
-The framework stays lifecycle-native, keeps ownership in `LifecycleComponentNode`, and treats component hooks as explicit extension points rather than hidden orchestration.
+The library stays lifecycle-native, keeps ownership in `LifecycleComponentNode`, and treats component hooks as explicit extension points rather than hidden orchestration.
 
-When sibling components need deterministic ordering, prefer declaring `dependencies` and `priority` at `add_component(...)` so composition intent stays visible in the node assembly code. [examples/composed_ordered_pipeline.py](examples/composed_ordered_pipeline.py) shows this pattern without constructor pass-through on framework components.
+When sibling components need deterministic ordering, prefer declaring `dependencies` and `priority` at `add_component(...)` so composition intent stays visible in the node assembly code. [examples/composed_ordered_pipeline.py](examples/composed_ordered_pipeline.py) shows this pattern without constructor pass-through on library components.
 
 See [docs/architecture.rst](docs/architecture.rst) for lifecycle design rules, [docs/patterns.rst](docs/patterns.rst) for usage patterns, and [ROADMAP.md](ROADMAP.md) for non-goals and deferred scope.
 See [Examples Repository Plan](docs/planning/examples_repo.rst) for the companion repository planning.
@@ -115,7 +141,7 @@ For the full walkthrough, see [docs/quickstart.rst](docs/quickstart.rst). For va
 
 ## Lifecycle reading path
 
-The documentation now follows the same lifecycle vocabulary as the framework:
+The documentation now follows the same lifecycle vocabulary as the library:
 
 - Configure: environment, prerequisites, ROS resource creation model
 - Activate: runtime enablement and activation gating

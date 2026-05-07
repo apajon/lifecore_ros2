@@ -18,6 +18,8 @@ Explicit lifecycle composition for ROS 2 Jazzy
 
     lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no hidden state machine.
 
+  ROS 2 lifecycle works well for nodes. lifecore_ros2 makes it practical for reusable components.
+
   It provides a small composition layer for building lifecycle-managed ROS 2 nodes from explicit, reusable
   components. Instead of concentrating lifecycle behavior in one large ``rclpy`` node class, it lets a lifecycle
   node own named components and drive their hooks through the native ROS 2 transition flow.
@@ -38,9 +40,32 @@ Explicit lifecycle composition for ROS 2 Jazzy
      <div class="lifecycle-step"><strong>■ Shutdown</strong><p>Keep cleanup and release semantics in view so resources never outlive the lifecycle that created them.</p></div>
    </div>
 
+.. code-block:: text
+
+   Raw rclpy lifecycle:
+   LifecycleNode
+    ├── publishers
+    ├── subscriptions
+    ├── timers
+    └── lifecycle logic mixed into one class
+
+   lifecore_ros2:
+   LifecycleComponentNode
+    ├── LifecyclePublisherComponent
+    ├── LifecycleSubscriberComponent
+    └── LifecycleTimerComponent
+
 The library exists to make raw ``rclpy`` lifecycle code easier to structure and verify. Resource creation, activation,
-deactivation, and cleanup stay explicit; component boundaries stay testable; and the framework does not add a second
+deactivation, and cleanup stay explicit; component boundaries stay testable; and the library does not add a second
 state machine behind ROS 2 lifecycle semantics.
+
+What this is not
+----------------
+
+- A second lifecycle state machine.
+- A plugin system or ROS 2 component container replacement.
+- A behavior tree system, orchestration middleware, or launch replacement.
+- A replacement for native ROS 2 lifecycle semantics.
 
 Why lifecore_ros2?
 ------------------
@@ -63,7 +88,7 @@ Start here
 ----------
 
 Begin with the guides below.
-They explain the framework's lifecycle model, ownership rules, and recommended usage before you jump into symbol-level API details.
+They explain the library's lifecycle model, ownership rules, and recommended usage before you jump into symbol-level API details.
 
 .. raw:: html
 
@@ -81,7 +106,7 @@ They explain the framework's lifecycle model, ownership rules, and recommended u
    * - :doc:`Getting Started <getting_started>`
      - Review prerequisites, validation commands, and reference setup details after the quickstart.
    * - :doc:`Mental Model <concepts/mental_model>`
-     - Build the right framework intuition before diving into lifecycle internals and extension points.
+     - Build the right lifecycle composition intuition before diving into lifecycle internals and extension points.
    * - :doc:`Architecture <architecture>`
      - Read the lifecycle ownership model, transition rules, and component contracts.
    * - :doc:`Recommended Patterns and Anti-Patterns <patterns>`
@@ -91,7 +116,7 @@ They explain the framework's lifecycle model, ownership rules, and recommended u
    * - :doc:`Examples <examples>`
      - Walk through runnable publisher, subscriber, and composed node examples.
    * - :doc:`Migration from Raw rclpy <migration_from_rclpy>`
-     - Compare the framework approach with direct lifecycle code in ``rclpy``.
+     - Compare the library approach with direct lifecycle code in ``rclpy``.
 
 .. raw:: html
 
