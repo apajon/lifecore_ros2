@@ -429,6 +429,97 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
   All four behaviors are intentional and consistent with explicit activation
   semantics.
 
+Structured Lifecycle Logging
+----------------------------
+
+The library emits structured log messages at well-defined points in every lifecycle
+transition. All messages use ``key='value'`` fields separated by spaces for stable
+operator filtering. No external dependency is introduced; messages are emitted via
+the rclpy node logger (or the Python stdlib logger for unattached components).
+
+**Component-level hook logs (DEBUG)**
+
+Each ``_guarded_call`` invocation emits two ``DEBUG`` messages: one before the hook
+runs, one after it returns.
+
+Before::
+
+    component='<name>' hook='<hook_name>' action='start'
+
+After::
+
+    component='<name>' hook='<hook_name>' result='<SUCCESS|FAILURE|ERROR>' duration_ms=<N.N>
+
+``duration_ms`` is always present in the after-message. Whether it appears in production
+depends only on the logger level — no flag, no extra API surface (Option B).
+
+If the hook raises an uncaught exception, the existing ``ERROR`` traceback log from
+``_guarded_call`` is emitted instead of the after-message; it is never duplicated.
+
+**Release-resources log (DEBUG)**
+
+Before ``_release_resources`` is called::
+
+    component='<name>' action='release_resources'
+
+**Node-level transition logs**
+
+Before propagation to components (``DEBUG``)::
+
+    transition='<name>' component_count=<N>
+
+After successful propagation (``INFO``)::
+
+    transition='<name>' result='SUCCESS'
+
+For ``error_processing``, the node emits a ``WARNING`` before propagation and
+either ``INFO`` (success) or ``ERROR`` (non-SUCCESS result) after.
+
+**Activation-gating drop log (DEBUG)**
+
+When ``@when_active(when_not_active=None)`` silently drops a call::
+
+    component='<name>' method='<method_name>' action='dropped' reason='not_active'
+
+**Log level summary**
+
+.. list-table::
+   :header-rows: 1
+   :widths: 40 20 40
+
+   * - Event
+     - Level
+     - Required fields
+   * - Hook start
+     - ``DEBUG``
+     - ``component=``, ``hook=``, ``action='start'``
+   * - Hook end (normal)
+     - ``DEBUG``
+     - ``component=``, ``hook=``, ``result=``, ``duration_ms=``
+   * - Hook end (exception)
+     - ``ERROR``
+     - message from ``_guarded_call`` (existing)
+   * - Release resources
+     - ``DEBUG``
+     - ``component=``, ``action='release_resources'``
+   * - Node transition start
+     - ``DEBUG``
+     - ``transition=``, ``component_count=``
+   * - Node transition success
+     - ``INFO``
+     - ``transition=``, ``result='SUCCESS'``
+   * - Error processing start
+     - ``WARNING``
+     - ``transition='error_processing'``, ``component_count=``
+   * - Error processing result
+     - ``INFO`` / ``ERROR``
+     - ``transition='error_processing'``, ``result=``
+   * - Activation-gating drop
+     - ``DEBUG``
+     - ``component=``, ``method=``, ``action='dropped'``, ``reason='not_active'``
+
+Withdrawn components emit no logs.
+
 Naming Conventions
 ------------------
 
