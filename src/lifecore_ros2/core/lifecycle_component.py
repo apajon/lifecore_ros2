@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import threading
 import traceback
 from abc import ABC
 from collections.abc import Callable, Sequence
@@ -106,9 +107,11 @@ def when_active[F: Callable[..., Any]](
         @wraps(fn)
         # Any: standard callable-preserving decorator pattern; cast(F, wrapper) restores the wrapped signature for callers
         def wrapper(self: LifecycleComponent, *args: Any, **kwargs: Any) -> Any:
-            if not self._is_active:  # pyright: ignore[reportPrivateUsage]
+            with self._active_lock:  # pyright: ignore[reportPrivateUsage]
+                _is_active = self._is_active  # pyright: ignore[reportPrivateUsage]
+            if not _is_active:
                 if when_not_active is _SENTINEL:
-                    _require_active(self._is_active, component_name=self._name)  # pyright: ignore[reportPrivateUsage]
+                    _require_active(_is_active, component_name=self._name)  # pyright: ignore[reportPrivateUsage]
                 elif when_not_active is not None:
                     cast(Callable[[], Any], when_not_active)()
                 else:
@@ -135,15 +138,19 @@ class LifecycleComponent(ManagedEntity, ABC):
           and cleared to ``False`` after a successful ``_on_deactivate`` hook.
           For ``_on_cleanup``, ``_on_shutdown``, and ``_on_error``, ``_is_active`` is
           cleared unconditionally before the hook runs. Subclasses never manage this flag.
+        - ``_is_active`` is protected by an internal ``threading.Lock`` (``_active_lock``).
+          All reads via ``is_active``, ``require_active()``, and ``@when_active`` and all
+          writes in the framework entry points hold this lock. The contract does not depend
+          on the CPython GIL.
         - ``_release_resources()`` is called automatically after ``_on_cleanup``,
-                    ``_on_shutdown``, and ``_on_error``. Subclasses do not need to call it.
-                - ``_needs_cleanup`` is cleared after each cleanup, shutdown, or error release
-                    attempt, even if resource release reports ``ERROR``.
+          ``_on_shutdown``, and ``_on_error``. Subclasses do not need to call it.
+        - ``_needs_cleanup`` is cleared after each cleanup, shutdown, or error release
+          attempt, even if resource release reports ``ERROR``.
         - Exceptions in hooks are caught and converted to ``TransitionCallbackReturn.ERROR``.
         - Invalid return values from hooks are caught and converted to ERROR.
-                - Ordering metadata may be declared either here or at
-                    ``LifecycleComponentNode.add_component(...)``. Prefer the registration site when you
-                    want composition intent visible where the node assembles components.
+        - Ordering metadata may be declared either here or at
+          ``LifecycleComponentNode.add_component(...)``. Prefer the registration site when you
+          want composition intent visible where the node assembles components.
 
     Subclass extension points (override these):
         - ``_on_configure``: allocate ROS resources. Default returns SUCCESS.
@@ -191,6 +198,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         self._is_configured: bool = False
         self._needs_cleanup: bool = False
         self._is_active: bool = False
+        self._active_lock: threading.Lock = threading.Lock()
         self._withdrawn: bool = False
 
     @property
@@ -200,7 +208,8 @@ class LifecycleComponent(ManagedEntity, ABC):
     @property
     def is_active(self) -> bool:
         """Whether the component is in the active state."""
-        return self._is_active
+        with self._active_lock:
+            return self._is_active
 
     def require_active(self) -> None:
         """Raise ``RuntimeError`` if this component is not active.
@@ -212,7 +221,9 @@ class LifecycleComponent(ManagedEntity, ABC):
         Raises:
             RuntimeError: If the component is not active.
         """
-        _require_active(self._is_active, component_name=self._name)
+        with self._active_lock:
+            is_active = self._is_active
+        _require_active(is_active, component_name=self._name)
 
     @property
     def callback_group(self) -> CallbackGroup | None:
@@ -394,7 +405,8 @@ class LifecycleComponent(ManagedEntity, ABC):
     def _rollback_failed_configure(self) -> TransitionCallbackReturn:
         """Framework-internal. Do not call from user code."""
         self._is_configured = False
-        self._is_active = False
+        with self._active_lock:
+            self._is_active = False
         release_result = self._safe_release_resources()
         if release_result == TransitionCallbackReturn.SUCCESS:
             self._needs_cleanup = False
@@ -426,7 +438,8 @@ class LifecycleComponent(ManagedEntity, ABC):
         self._assert_transition_allowed("activate")
         result = self._guarded_call("on_activate", self._on_activate, state)
         if result == TransitionCallbackReturn.SUCCESS:
-            self._is_active = True
+            with self._active_lock:
+                self._is_active = True
         return result
 
     @final
@@ -436,7 +449,8 @@ class LifecycleComponent(ManagedEntity, ABC):
         self._assert_transition_allowed("deactivate")
         result = self._guarded_call("on_deactivate", self._on_deactivate, state)
         if result == TransitionCallbackReturn.SUCCESS:
-            self._is_active = False
+            with self._active_lock:
+                self._is_active = False
         return result
 
     @final
@@ -444,7 +458,8 @@ class LifecycleComponent(ManagedEntity, ABC):
         if self._withdrawn:
             return TransitionCallbackReturn.SUCCESS
         self._assert_transition_allowed("cleanup")
-        self._is_active = False
+        with self._active_lock:
+            self._is_active = False
         self._is_configured = False
         result = self._guarded_call("on_cleanup", self._on_cleanup, state)
         release_result = self._safe_release_resources()
@@ -455,7 +470,8 @@ class LifecycleComponent(ManagedEntity, ABC):
     def on_shutdown(self, state: LifecycleState) -> TransitionCallbackReturn:
         if self._withdrawn:
             return TransitionCallbackReturn.SUCCESS
-        self._is_active = False
+        with self._active_lock:
+            self._is_active = False
         self._is_configured = False
         result = self._guarded_call("on_shutdown", self._on_shutdown, state)
         release_result = self._safe_release_resources()
@@ -466,7 +482,8 @@ class LifecycleComponent(ManagedEntity, ABC):
     def on_error(self, state: LifecycleState) -> TransitionCallbackReturn:
         if self._withdrawn:
             return TransitionCallbackReturn.SUCCESS
-        self._is_active = False
+        with self._active_lock:
+            self._is_active = False
         self._is_configured = False
         result = self._guarded_call("on_error", self._on_error, state)
         release_result = self._safe_release_resources()
@@ -500,7 +517,13 @@ class LifecycleComponent(ManagedEntity, ABC):
         """Extension point. Override to disable runtime behavior.
 
         The framework clears ``_is_active`` only after this hook returns SUCCESS.
-        All ``@when_active``-gated methods stop executing after SUCCESS is returned.
+        All ``@when_active``-gated methods stop accepting new calls after SUCCESS is returned.
+
+        In-flight callback policy: a callback thread that already passed the
+        ``@when_active`` gate before this hook committed will complete its current
+        execution. It will not be re-invoked afterward. The framework provides no
+        runtime fence beyond the gate snapshot — concurrent completion of in-flight
+        work is the application's responsibility if stricter isolation is required.
 
         Returns:
             TransitionCallbackReturn: SUCCESS, FAILURE, or ERROR.

@@ -4,6 +4,7 @@ import threading
 from collections.abc import Callable, Iterable, Sequence
 from typing import Any
 
+from rclpy.callback_groups import CallbackGroup, MutuallyExclusiveCallbackGroup
 from rclpy.lifecycle import TransitionCallbackReturn
 from rclpy.lifecycle.node import LifecycleNode, LifecycleState
 
@@ -22,8 +23,11 @@ class LifecycleComponentNode(LifecycleNode):
 
     Owns:
         - The registry of attached ``LifecycleComponent`` instances.
+        - The callback group registry keyed by component name
+          (``get_or_create_callback_group``).
         - Component registration gate: open before first transition, closed after.
-        - Thread-safe access to the component registry and registration gate.
+        - Thread-safe access to the component registry, callback group registry, and
+          registration gate via a shared internal ``threading.RLock``.
         - Propagation of ROS 2 lifecycle transitions to registered components in
           dependency-resolved order via ``_resolved_order``.
 
@@ -31,6 +35,7 @@ class LifecycleComponentNode(LifecycleNode):
         - Component-level resource allocation or release.
         - Component activation state.
         - Application-level business logic.
+        - Callback groups supplied directly to component constructors (caller-owned).
 
     Override points:
         - Override ``on_configure``, ``on_activate``, ``on_deactivate``, ``on_cleanup``,
@@ -51,6 +56,7 @@ class LifecycleComponentNode(LifecycleNode):
     def __init__(self, node_name: str, *, namespace: str | None = None, **kwargs: Any) -> None:
         super().__init__(node_name, namespace=namespace, **kwargs)
         self._components: dict[str, LifecycleComponent] = {}
+        self._callback_groups: dict[str, CallbackGroup] = {}
         self._registration_open: bool = True
         self._in_transition: bool = False
         self._managed_transition_name: str | None = None
@@ -154,6 +160,51 @@ class LifecycleComponentNode(LifecycleNode):
             component._detach()  # pyright: ignore[reportPrivateUsage]
 
         self.get_logger().info(f"Unregistered component '{name}'")
+
+    # -- callback group helper ---------------------------------------------------
+
+    def get_or_create_callback_group(
+        self,
+        component_name: str,
+        group_type: type[CallbackGroup] | None = None,
+    ) -> CallbackGroup:
+        """Return an existing callback group for ``component_name``, or create one.
+
+        Groups are keyed by ``component_name``. Multiple calls with the same name
+        and compatible type return the same instance (idempotent). Requesting a
+        different type for an already-registered name raises ``TypeError``.
+
+        The caller-owned pattern remains fully supported: components constructed
+        with an explicit ``callback_group`` use that group as-is; this helper is
+        not invoked.
+
+        Args:
+            component_name: Logical key used to look up or store the group.
+            group_type: Callback group class to instantiate on first call.
+                Defaults to ``MutuallyExclusiveCallbackGroup`` when ``None``.
+                Must match the type already stored for ``component_name`` if an
+                entry already exists.
+
+        Returns:
+            The existing or newly created ``CallbackGroup`` instance.
+
+        Raises:
+            TypeError: If ``component_name`` is already registered with a
+                different group type.
+        """
+        resolved_type = group_type if group_type is not None else MutuallyExclusiveCallbackGroup
+        with self._lock:
+            existing = self._callback_groups.get(component_name)
+            if existing is not None:
+                if type(existing) is not resolved_type:
+                    raise TypeError(
+                        f"Callback group '{component_name}' was registered as "
+                        f"{type(existing).__name__!r} but {resolved_type.__name__!r} was requested"
+                    )
+                return existing
+            group: CallbackGroup = resolved_type()
+            self._callback_groups[component_name] = group
+            return group
 
     # -- registration gate -------------------------------------------------------
 
