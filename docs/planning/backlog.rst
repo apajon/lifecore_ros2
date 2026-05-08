@@ -137,6 +137,25 @@ component docstrings and architecture. 38 regression tests lock the contract.
 behavior. ROS resources should be created in configure and released in cleanup;
 borrowed resources remain application-owned.
 
+Concurrency infrastructure — *shipped in Sprint 8 (2026-05-08)*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sprint mapping: :doc:`sprints/sprint_8_concurrency`.
+
+* [x] Implement ``LifecycleComponentNode.get_or_create_callback_group(component_name, group_type=None)``.
+* [x] Default group type is ``MutuallyExclusiveCallbackGroup``; ``ReentrantCallbackGroup`` must be requested explicitly.
+* [x] Protect ``_is_active`` with ``_active_lock: threading.Lock`` on every ``LifecycleComponent``.
+* [x] Document the in-flight callback policy ("drop at next gate") in docstrings and architecture docs.
+* [x] 13 new concurrency regression tests.
+
+**Delivered:** ``get_or_create_callback_group`` helper on the node (idempotent, RLock-protected).
+``_is_active`` reads and writes are GIL-independent. In-flight policy documented.
+Thread-safety table in ``docs/architecture.rst`` extended. New pattern entry in
+``docs/patterns.rst``.
+
+**Rationale:** A documented, test-backed concurrency contract is required before
+observability, health, or watchdog work can safely assume coherent state reads.
+
 Publication gate
 ^^^^^^^^^^^^^^^^
 
@@ -307,15 +326,17 @@ Factory and registry
 
 **Rationale:** Maturity marker; enable once specifications and use cases are validated.
 
-Callback group management
-^^^^^^^^^^^^^^^^^^^^^^^^^
+Callback group management — *shipped in Sprint 8 (2026-05-08)*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* [ ] Helper for ``LifecycleComponentNode`` to create and track ``CallbackGroup`` instances per component
-* [ ] Optional: provide convenience constructors for common patterns (e.g., ``create_exclusive_group_for_component(name)``)
+* [x] ``get_or_create_callback_group(component_name, group_type=None)`` on ``LifecycleComponentNode`` — idempotent, ``threading.RLock``-protected.
+* [x] ``MutuallyExclusiveCallbackGroup`` default; ``ReentrantCallbackGroup`` explicit.
+* [x] Caller-owned constructor pattern preserved unchanged.
+* [x] ``_is_active`` reads and writes GIL-independent (``_active_lock``).
+* [x] In-flight callback policy documented.
 
-**Rationale:** Applications currently create callback groups manually. Library support awaits clarified threading model (see Adoption Hardening §4).
-
-See :doc:`../design_notes/callback_groups` for the design placeholder.
+See :doc:`sprints/sprint_8_concurrency` for the implementation record and
+:doc:`../design_notes/callback_groups` for the original design placeholder.
 
 Additional components
 ^^^^^^^^^^^^^^^^^^^^^

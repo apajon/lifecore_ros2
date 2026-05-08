@@ -42,21 +42,45 @@ implicit best effort.
 To decide during sprint planning
 --------------------------------
 
-- Exact callback-group helper API, if any helper is needed.
-- Whether callback-group storage belongs on the node or stays purely caller-owned.
-- The precise policy for in-flight callbacks during deactivate and cleanup.
+Decisions resolved (2026-05-07):
+
+**C1 — Callback-group helper API.**
+``LifecycleComponentNode.get_or_create_callback_group(component_name, group_type=None)``
+is implemented. The helper is idempotent per ``(component_name, group_type)`` pair.
+The caller-owned pattern remains fully supported: a component constructed with an
+explicit ``callback_group`` uses that group as-is.
+
+**C2 — Default group type.**
+``MutuallyExclusiveCallbackGroup`` is the default. ``ReentrantCallbackGroup`` must be
+requested explicitly. Rationale: the default must protect component-internal state
+against accidental reentrancy under ``MultiThreadedExecutor``; intra-component
+parallelism is an application decision, not a framework surprise.
+
+**C3 — ``_is_active`` locking.**
+``_is_active`` is protected by ``_active_lock: threading.Lock`` on every
+``LifecycleComponent`` instance. All reads in the public API (``is_active`` property,
+``require_active()``, ``@when_active`` gate) and all writes in the framework entry
+points (``on_activate``, ``on_deactivate``, ``on_cleanup``, ``on_shutdown``,
+``on_error``, ``_rollback_failed_configure``) acquire ``_active_lock``.
+The concurrency contract does not depend on CPython's GIL.
+
+**In-flight callback policy.**
+At the ``@when_active`` gate, ``_is_active`` is snapshotted under ``_active_lock``
+at gate entry. A callback in flight when deactivation commits will complete its
+current execution but will not be re-invoked. No runtime fence is provided; this
+is a "drop at next gate" policy, documented here and in component docstrings.
 
 ---
 
 Validation
 ----------
 
-- [ ] Callback group creation is idempotent per component name.
-- [ ] Different component names receive distinct groups when requested.
-- [ ] Component constructors pass callback groups to ROS resource creation.
-- [ ] Concurrent lifecycle transitions fail with the expected typed error.
-- [ ] Component activation state remains coherent across threads.
-- [ ] Deactivate prevents new gated callbacks while respecting in-flight work.
+- [x] Callback group creation is idempotent per component name.
+- [x] Different component names receive distinct groups when requested.
+- [x] Component constructors pass callback groups to ROS resource creation.
+- [x] Concurrent lifecycle transitions fail with the expected typed error.
+- [x] Component activation state remains coherent across threads.
+- [x] Deactivate prevents new gated callbacks while respecting in-flight work.
 
 ---
 
@@ -105,6 +129,48 @@ Out of scope:
 Success signal
 --------------
 
-- [ ] Multi-threaded use has a documented, test-backed contract.
-- [ ] Callback groups are easier to wire without hiding ROS 2 semantics.
-- [ ] Existing lifecycle guarantees remain intact.
+- [x] Multi-threaded use has a documented, test-backed contract.
+- [x] Callback groups are easier to wire without hiding ROS 2 semantics.
+- [x] Existing lifecycle guarantees remain intact.
+
+---
+
+Shipped — 2026-05-08
+====================
+
+Test coverage: 13 new tests (10 callback-group helper + 3 ``_is_active`` thread-safety
+regressions), on top of 6 pre-existing concurrent-transition tests.
+
+**Decisions locked:**
+
+- C1: ``LifecycleComponentNode.get_or_create_callback_group(component_name, group_type=None)``
+  — idempotent per ``(name, type)`` pair, protected by the existing ``threading.RLock``.
+- C2: Default group type is ``MutuallyExclusiveCallbackGroup``; ``ReentrantCallbackGroup``
+  must be requested explicitly.
+- C3: ``_is_active`` protected by ``_active_lock: threading.Lock`` on every
+  ``LifecycleComponent``; contract is GIL-independent.
+- In-flight policy: "drop at next gate" — a callback that passed the ``@when_active``
+  gate before deactivation commits completes its current execution and is not re-invoked.
+
+**Commitments:**
+
+- ``src/lifecore_ros2/core/lifecycle_component_node.py``: ``_callback_groups`` registry,
+  ``get_or_create_callback_group`` helper.
+- ``src/lifecore_ros2/core/lifecycle_component.py``: ``_active_lock``, all
+  ``_is_active`` read/write sites wrapped, ``@when_active`` gate snapshot,
+  ``_on_deactivate`` in-flight policy documented in docstring.
+- ``tests/core/test_callback_group_helper.py``: 10 helper tests (idempotency, type
+  conflict, thread safety).
+- ``tests/core/test_regression_active_lock.py``: 3 tests (in-flight visibility,
+  post-deactivate coherence, post-cleanup coherence).
+- ``docs/architecture.rst``: thread-safety table extended, new
+  ``_is_active`` thread safety and in-flight policy subsection, invariant entries
+  updated.
+- ``docs/patterns.rst``: new ``get_or_create_callback_group`` pattern entry.
+- Class docstrings updated on both ``LifecycleComponentNode`` and ``LifecycleComponent``.
+
+**Next phases ready for:**
+
+- Observability (Sprint 9) — concurrency contract is now explicit and tested.
+- Health status (Sprint 10) — ``_is_active`` reads are thread-safe.
+- Any ``MultiThreadedExecutor`` application — callback group contract is documented.

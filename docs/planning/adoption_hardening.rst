@@ -105,6 +105,7 @@ Every item below is validated against this principle. If a proposed change incre
 **Success signal.** A reader can answer "can I call ``add_component`` from a callback?" by reading one paragraph in the docs.
 
 **Status.** ✓ Shipped in v0.4.0: single-threaded executor + ``RLock`` model, concurrency contract documented in ``docs/architecture.rst``, ``ConcurrentTransitionError`` enforcement.
+✓ Extended in Sprint 8 (2026-05-08): ``get_or_create_callback_group`` helper, ``_active_lock`` on every ``LifecycleComponent`` (GIL-independent), in-flight callback policy documented.
 
 ---
 

@@ -5,13 +5,16 @@ lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no 
 
 ---
 
-## Current status — 0.4.0
+## Current status — 0.4.0 + Sprint 8
 
 The first public release is shipped. The core library provides:
 
 - `LifecycleComponentNode` and `LifecycleComponent` base classes
 - `TopicComponent`, `LifecyclePublisherComponent`, `LifecycleSubscriberComponent` implementations
 - `when_active` decorator for activation gating
+- `get_or_create_callback_group` helper for node-owned, idempotent callback group creation
+- `_is_active` protected by `_active_lock` — concurrency contract is GIL-independent
+- In-flight callback policy documented ("drop at next gate")
 - Concurrency safety via RLock and reentrant-call detection
 - Strict lifecycle contract with error handling and rollback
 - Comprehensive test coverage (unit, concurrency, integration)
@@ -81,7 +84,7 @@ ideas that remain deliberately deferred until there is a concrete user need.
 - Parameters and runtime configuration
 - Config and specs (application-level configuration)
 - Factory and registry (dynamic component loading)
-- Callback group management (per-component groups, concurrency utilities)
+- ~~Callback group management (per-component groups, concurrency utilities)~~ **Shipped Sprint 8**
 - Additional components (`ActionComponent`, parameter components)
 - Binding layer (if component hierarchy becomes overloaded)
 - Release status metadata (`Development Status :: 4 - Beta` promotion gate)
