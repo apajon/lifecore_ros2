@@ -197,6 +197,12 @@ Thread-safety guarantees
    * - Component hook execution (``_on_configure``, etc.)
      - Single-thread only
      - Called synchronously inside the transition; no cross-thread dispatch
+   * - ``get_or_create_callback_group``
+     - Yes
+     - ``threading.RLock`` (same ``_lock`` as the component registry)
+   * - ``is_active`` property, ``require_active()``, ``@when_active`` gate
+     - Yes (read)
+     - ``threading.Lock`` (``_active_lock`` on each ``LifecycleComponent``)
 
 Forbidden concurrent transitions
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -232,6 +238,23 @@ Calling ``add_component`` from within a lifecycle hook is safe (the ``RLock`` is
 reentrant), but any component added after ``_close_registration`` has run will be
 rejected with ``RegistrationClosedError``. ``_close_registration`` is called at the
 start of ``on_configure`` and ``on_shutdown``.
+
+``_is_active`` thread safety and in-flight callback policy
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``_is_active`` is protected by a per-component ``threading.Lock`` (``_active_lock``).
+Every read via ``is_active``, ``require_active()``, or the ``@when_active`` gate and
+every write in the framework entry points (``on_activate``, ``on_deactivate``,
+``on_cleanup``, ``on_shutdown``, ``on_error``, ``_rollback_failed_configure``) hold
+this lock. The contract does not depend on the CPython GIL and is safe under
+free-threaded Python runtimes.
+
+**In-flight callback policy.** ``@when_active`` snapshots ``_is_active`` under
+``_active_lock`` at gate entry. A callback that already passed the gate before
+``on_deactivate`` committed will complete its current execution. It will not be
+re-invoked afterward. The framework provides no runtime fence beyond the gate
+snapshot; completing in-flight work concurrently is the application's responsibility
+if stricter isolation is required.
 
 Component destruction during active callbacks
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -314,13 +337,16 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
 **activate**
   Enable runtime behavior. Start publishing, accept message callbacks.
   Do not call ``super()._on_activate(state)`` — the library sets ``_is_active = True``
-  automatically after the hook returns SUCCESS.
+  automatically under ``_active_lock`` after the hook returns SUCCESS.
   Do not allocate new ROS resources here.
 
 **deactivate**
   Disable runtime behavior. Stop publishing, ignore incoming messages.
-  ``_is_active`` is cleared to ``False`` only after ``_on_deactivate`` returns SUCCESS.
-  A FAILURE or ERROR result leaves ``_is_active`` unchanged — the component stays active.
+  ``_is_active`` is cleared to ``False`` under ``_active_lock`` only after
+  ``_on_deactivate`` returns SUCCESS. A FAILURE or ERROR result leaves
+  ``_is_active`` unchanged — the component stays active.
+  A callback that already passed the ``@when_active`` gate will complete its
+  current execution before the gate stops re-admitting calls.
   Do not release ROS resources here — that is cleanup's responsibility.
 
 **cleanup**
@@ -336,9 +362,9 @@ The following invariants are binding for all ``LifecycleComponent`` subclasses.
   the node lifecycle. ``_is_active`` is the only lifecycle-adjacent flag. It is
   managed exclusively by the ``@final`` library entry points:
 
-  - ``on_activate`` sets ``_is_active = True`` after ``_on_activate`` returns ``SUCCESS``.
-  - ``on_deactivate`` clears ``_is_active = False`` after ``_on_deactivate`` returns ``SUCCESS``.
-  - ``on_cleanup``, ``on_shutdown``, and ``on_error`` each clear ``_is_active = False``
+  - ``on_activate`` sets ``_is_active = True`` under ``_active_lock`` after ``_on_activate`` returns ``SUCCESS``.
+  - ``on_deactivate`` clears ``_is_active = False`` under ``_active_lock`` after ``_on_deactivate`` returns ``SUCCESS``.
+  - ``on_cleanup``, ``on_shutdown``, and ``on_error`` each clear ``_is_active = False`` under ``_active_lock``
     **unconditionally before** the ``_on_*`` hook runs, regardless of its return value.
 
   Subclasses must not read or write ``_is_active`` directly. Do not call

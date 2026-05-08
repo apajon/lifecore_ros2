@@ -157,6 +157,41 @@ Recommended Patterns
   Invariant upheld: **cleanup / shutdown / error** — components release only what they
   allocated; borrowed handles outlive the component instance.
 
+**Use ``get_or_create_callback_group`` to let the node own groups**
+
+  When a component needs a dedicated callback group but the application prefers to
+  keep group lifetime on the node rather than manage it separately,
+  ``LifecycleComponentNode.get_or_create_callback_group`` is the idiomatic alternative
+  to manual group construction. The method is keyed by component name and is idempotent:
+  multiple calls with the same name and compatible type return the same instance.
+
+  .. code-block:: python
+
+      class CameraNode(LifecycleComponentNode):
+          def __init__(self) -> None:
+              super().__init__("camera")
+              # Node owns the group; component borrows it via the helper.
+              cb_group = self.get_or_create_callback_group("image_sub")
+              self.add_component(
+                  LifecycleSubscriberComponent(
+                      name="image_sub",
+                      topic_name="/image_raw",
+                      msg_type=Image,
+                      callback_group=cb_group,
+                  )
+              )
+
+  Passing ``None`` as ``group_type`` (the default) creates a
+  ``MutuallyExclusiveCallbackGroup``. Pass ``ReentrantCallbackGroup`` explicitly when
+  intra-component parallelism is intentional. Requesting a different type for an already
+  registered name raises ``TypeError``.
+
+  The borrow contract still applies: the component stores the reference and forwards it
+  to ROS resource creation; it never creates, reassigns, or destroys the group.
+
+  Invariant upheld: **borrow-only contract** — groups owned by the node outlive their
+  components and are not destroyed during cleanup or shutdown.
+
 Anti-Patterns
 -------------
 
