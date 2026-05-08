@@ -2,6 +2,33 @@
 
 <!-- version list -->
 
+## v0.9.0 (2026-05-08)
+
+### Features
+
+- **core**: Sprint 9 — structured lifecycle logging
+  Add `DEBUG` logs before/after each component hook (`component=`, `hook=`, `result=`,
+  `duration_ms=`), `DEBUG` before `_release_resources`, node-level `DEBUG`/`INFO` for all
+  transition handlers, `WARNING`/`INFO`/`ERROR` for `error_processing`, and standardized
+  activation-gating drop log (`action='dropped'`, `method=`, `reason='not_active'`).
+  Hook timing is always emitted in the hook-end message; no flag required (Option B).
+  No new public API surface.
+
+### Testing
+
+- **core**: Add 15 regression tests for structured lifecycle log fields
+  (`tests/core/test_observability.py`). Tests assert field presence without brittle
+  full-message matching.
+
+### Documentation
+
+- **planning**: Mark Sprint 9 observability as delivered; update validation checklist
+  and scope boundaries.
+- **backlog**: Add Sprint 9 shipped entry; add `last_error` to Sprint 10 scope;
+  add `transition_history` as backlog candidate (issue #14).
+- **architecture**: Document structured lifecycle logging contract.
+
+
 ## v0.8.1 (2026-05-07)
 
 ### Bug Fixes
