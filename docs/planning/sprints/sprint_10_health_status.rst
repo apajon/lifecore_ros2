@@ -16,6 +16,9 @@ Decisions already made
 - The first value should stay small: a level plus a human-readable reason is the
   intended shape.
 - Node-level aggregation is optional and must remain obvious if included.
+- ``last_error`` from Sprint 9 observability is integrated as a field of
+  ``HealthStatus`` rather than as a standalone property. A component that has
+  faulted exposes the error reason through its health level and reason field.
 
 To decide during sprint planning
 --------------------------------
@@ -35,6 +38,7 @@ In scope:
 - component-level health/status reporting
 - optional node-level aggregation if it stays obvious
 - status values that help debugging and tests
+- ``last_error`` as a field of the health value object (level + human-readable reason)
 
 Out of scope:
 

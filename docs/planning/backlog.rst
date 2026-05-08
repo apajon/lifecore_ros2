@@ -137,6 +137,27 @@ component docstrings and architecture. 38 regression tests lock the contract.
 behavior. ROS resources should be created in configure and released in cleanup;
 borrowed resources remain application-owned.
 
+Minimal observability — *shipped in Sprint 9 (2026-05-08)*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Sprint mapping: :doc:`sprints/sprint_9_observability`.
+
+* [x] Structured ``DEBUG`` log before and after each component hook (``component=``, ``hook=``, ``result=``, ``duration_ms=``).
+* [x] ``DEBUG`` log before ``_release_resources`` (``component=``, ``action='release_resources'``).
+* [x] Node-level ``DEBUG`` before transition propagation (``transition=``, ``component_count=``).
+* [x] Node-level ``INFO`` after successful transitions; ``WARNING``/``INFO``/``ERROR`` for ``error_processing``.
+* [x] Standardized activation-gating drop log: ``action='dropped'``, ``method=``, ``reason='not_active'``.
+* [x] 15 regression tests asserting log field presence without brittle full-message matching.
+
+**Delivered:** Lifecycle behavior is diagnosable from logs alone without ``print`` statements.
+Hook timing (``duration_ms=``) is emitted unconditionally in the hook-end ``DEBUG`` message —
+no flag, zero overhead when the logger is above ``DEBUG`` level (Option B).
+``last_error`` deferred to Sprint 10 (as a ``HealthStatus`` field).
+``transition_history`` deferred to backlog (`issue #14 <https://github.com/apajon/lifecore_ros2/issues/14>`_).
+
+**Rationale:** Structured logs provide diagnosable lifecycle behavior for industrial debugging
+without adding external dependencies or new public API surface.
+
 Concurrency infrastructure — *shipped in Sprint 8 (2026-05-08)*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -179,12 +200,29 @@ Health / status API
 Sprint mapping: :doc:`sprints/sprint_10_health_status`.
 
 * [ ] Define a small ``HealthStatus`` value object with level and reason.
+* [ ] Integrate ``last_error`` as a field of ``HealthStatus`` (level + reason
+  from the last hook failure). See `GitHub issue
+  <https://github.com/apajon/lifecore_ros2/issues>`_ and Sprint 9 decisions.
 * [ ] Add ``component.health() -> HealthStatus`` or equivalent only after the
   state model is clear.
 * [ ] Keep the first version read-only.
 
 **Rationale:** Health is the base for diagnostics and watchdog behavior, but it
 should expose state before trying to repair anything.
+
+Transition history
+^^^^^^^^^^^^^^^^^^
+
+Tracked in `GitHub issue #14 <https://github.com/apajon/lifecore_ros2/issues/14>`_.
+
+* [ ] Bounded read-only history of lifecycle transitions per component or node.
+* [ ] Implement only when a concrete use case (watchdog, diagnostics, test
+  assertion) requires it.
+* [ ] Size and ordering to be decided at sprint planning time.
+
+**Rationale:** Logging covers the diagnostic need in Sprint 9. A structured
+history surface adds public API surface and test complexity with no current
+consumer. Deferred until a concrete use case arises.
 
 Lightweight watchdog
 ^^^^^^^^^^^^^^^^^^^^

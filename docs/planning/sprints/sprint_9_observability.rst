@@ -38,30 +38,50 @@ Optionally measure hook duration and include it in debug-level logs.
 Last error and transition history
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Candidate read-only surfaces:
+Deferred during sprint planning:
 
-- last component error
-- last transition result
-- bounded transition history
+- last component error → Sprint 10 as a ``HealthStatus`` field.
+- transition history → backlog, `issue #14 <https://github.com/apajon/lifecore_ros2/issues/14>`_.
 
-To decide during sprint planning
---------------------------------
+Decisions made during sprint planning
+--------------------------------------
 
-- Exact field names for structured log messages.
-- Whether last-error and transition-history surfaces are part of this sprint or
-  stay behind logging only.
-- The size and ordering of any bounded transition history.
+- **Hook timing (Option B):** timing is measured and logged only when the logger
+  is at DEBUG level. No flag, no extra API surface. Zero overhead in production.
+- **last-error surface:** out of scope for this sprint. Planned for Sprint 10 as
+  a field of the ``HealthStatus`` value object.
+- **transition-history surface:** out of scope and not planned. Candidate for a
+  future sprint if a concrete use case arises. Tracked in the backlog (GitHub
+  issue). Logging-only remains the contract for this sprint.
+
+---
+
+Delivered — *2026-05-08*
+------------------------
+
+- Structured ``DEBUG`` log before each component hook: ``component=``, ``hook=``, ``action='start'``.
+- Structured ``DEBUG`` log after each component hook: ``component=``, ``hook=``, ``result=``, ``duration_ms=``.
+  Duration is always emitted in the hook-end message; logging-level filtering controls
+  whether it appears in production (Option B — no flag, no extra API).
+- ``DEBUG`` log before ``_release_resources``: ``component=``, ``action='release_resources'``.
+- Node-level ``DEBUG`` before each transition propagation: ``transition=``, ``component_count=``.
+- Node-level ``INFO`` after each successful transition: ``transition=``, ``result='SUCCESS'``.
+- Node-level ``WARNING`` before ``error_processing`` propagation; ``INFO`` on success, ``ERROR`` on non-SUCCESS.
+- Standardized activation-gating drop: ``component=``, ``method=``, ``action='dropped'``, ``reason='not_active'``.
+- 15 regression tests in ``tests/core/test_observability.py`` asserting field presence
+  without brittle full-message matching.
+- No new public API surface. Observability is purely log-based.
 
 ---
 
 Validation
 ----------
 
-- [ ] Transition logs include target state and component count.
-- [ ] Hook logs include component name, hook name, result, and duration when enabled.
-- [ ] Gating logs include action and allowed/denied outcome.
-- [ ] Last error is captured and cleared according to the contract.
-- [ ] Transition history, if added, is bounded and deterministic.
+- [x] Transition logs include target state and component count.
+- [x] Hook logs include component name, hook name, result, and duration when enabled.
+- [x] Gating logs include action and allowed/denied outcome.
+- [ ] Last error is captured and cleared according to the contract. *(deferred to Sprint 10)*
+- [ ] Transition history, if added, is bounded and deterministic. *(deferred to backlog)*
 
 ---
 
@@ -92,10 +112,11 @@ In scope:
 
 - structured logs
 - optional hook timing
-- last error / transition history if small and testable
 
-Out of scope:
+Out of scope (deferred):
 
+- last error read-only surface (Sprint 10)
+- transition history (backlog, issue #14)
 - OpenTelemetry runtime dependency
 - Prometheus exporters
 - distributed tracing
@@ -106,6 +127,6 @@ Out of scope:
 Success signal
 --------------
 
-- [ ] A lifecycle failure can be diagnosed from logs and read-only state.
-- [ ] Observability stays lightweight and ROS 2 native.
-- [ ] Tests assert important log fields without brittle full-message matching.
+- [x] A lifecycle failure can be diagnosed from logs and read-only state.
+- [x] Observability stays lightweight and ROS 2 native.
+- [x] Tests assert important log fields without brittle full-message matching.
