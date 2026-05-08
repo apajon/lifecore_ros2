@@ -355,6 +355,7 @@ class LifecycleComponentNode(LifecycleNode):
         self._begin_transition("configure")
         try:
             self._close_registration()
+            self.get_logger().debug(f"transition='configure' component_count={len(self._resolved_order)}")
             self._begin_managed_transition("configure")
             try:
                 result = self._propagate_forward("on_configure", state)
@@ -363,6 +364,7 @@ class LifecycleComponentNode(LifecycleNode):
             if result != TransitionCallbackReturn.SUCCESS:
                 rollback_result = self._rollback_failed_configure()
                 return _worst_of(result, rollback_result)
+            self.get_logger().info("transition='configure' result='SUCCESS'")
             return result
         finally:
             self._end_transition()
@@ -378,11 +380,15 @@ class LifecycleComponentNode(LifecycleNode):
         """
         self._begin_transition("activate")
         try:
+            self.get_logger().debug(f"transition='activate' component_count={len(self._resolved_order)}")
             self._begin_managed_transition("activate")
             try:
-                return self._propagate_forward("on_activate", state)
+                result = self._propagate_forward("on_activate", state)
             finally:
                 self._end_managed_transition()
+            if result == TransitionCallbackReturn.SUCCESS:
+                self.get_logger().info("transition='activate' result='SUCCESS'")
+            return result
         finally:
             self._end_transition()
 
@@ -397,11 +403,15 @@ class LifecycleComponentNode(LifecycleNode):
         """
         self._begin_transition("deactivate")
         try:
+            self.get_logger().debug(f"transition='deactivate' component_count={len(self._resolved_order)}")
             self._begin_managed_transition("deactivate")
             try:
-                return self._propagate_reverse("on_deactivate", state)
+                result = self._propagate_reverse("on_deactivate", state)
             finally:
                 self._end_managed_transition()
+            if result == TransitionCallbackReturn.SUCCESS:
+                self.get_logger().info("transition='deactivate' result='SUCCESS'")
+            return result
         finally:
             self._end_transition()
 
@@ -416,11 +426,15 @@ class LifecycleComponentNode(LifecycleNode):
         """
         self._begin_transition("cleanup")
         try:
+            self.get_logger().debug(f"transition='cleanup' component_count={len(self._resolved_order)}")
             self._begin_managed_transition("cleanup")
             try:
-                return self._propagate_reverse("on_cleanup", state)
+                result = self._propagate_reverse("on_cleanup", state)
             finally:
                 self._end_managed_transition()
+            if result == TransitionCallbackReturn.SUCCESS:
+                self.get_logger().info("transition='cleanup' result='SUCCESS'")
+            return result
         finally:
             self._end_transition()
 
@@ -436,11 +450,15 @@ class LifecycleComponentNode(LifecycleNode):
         self._begin_transition("shutdown")
         try:
             self._close_registration()
+            self.get_logger().debug(f"transition='shutdown' component_count={len(self._resolved_order)}")
             self._begin_managed_transition("shutdown")
             try:
-                return self._propagate_reverse("on_shutdown", state)
+                result = self._propagate_reverse("on_shutdown", state)
             finally:
                 self._end_managed_transition()
+            if result == TransitionCallbackReturn.SUCCESS:
+                self.get_logger().info("transition='shutdown' result='SUCCESS'")
+            return result
         finally:
             self._end_transition()
 
@@ -450,7 +468,13 @@ class LifecycleComponentNode(LifecycleNode):
         Not guarded by ``_begin_transition`` — error recovery must remain
         reachable during active transitions.
         """
-        return self._propagate_reverse("on_error", state)
+        self.get_logger().warning(f"transition='error_processing' component_count={len(self._resolved_order)}")
+        result = self._propagate_reverse("on_error", state)
+        if result == TransitionCallbackReturn.SUCCESS:
+            self.get_logger().info("transition='error_processing' result='SUCCESS'")
+        else:
+            self.get_logger().error(f"transition='error_processing' result='{result.name}'")
+        return result
 
     def trigger_configure(self) -> TransitionCallbackReturn:
         return self._run_trigger("configure", super().trigger_configure)

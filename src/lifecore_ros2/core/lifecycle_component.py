@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import threading
+import time
 import traceback
 from abc import ABC
 from collections.abc import Callable, Sequence
@@ -116,7 +117,9 @@ def when_active[F: Callable[..., Any]](
                     cast(Callable[[], Any], when_not_active)()
                 else:
                     # Silent no-op — trace at debug level for diagnosis.
-                    self._resolve_logger().debug(f"[{self._name}] {fn.__name__} dropped: component not active")  # pyright: ignore[reportPrivateUsage]
+                    self._resolve_logger().debug(  # pyright: ignore[reportPrivateUsage]
+                        f"component='{self._name}' method='{fn.__name__}' action='dropped' reason='not_active'"
+                    )
                 return None
             return fn(self, *args, **kwargs)
 
@@ -318,6 +321,8 @@ class LifecycleComponent(ManagedEntity, ABC):
     ) -> TransitionCallbackReturn:
         """Framework-internal. Do not call from user code."""
         log = self._resolve_logger()
+        t0 = time.perf_counter()
+        log.debug(f"component='{self._name}' hook='{hook_name}' action='start'")
         try:
             result = hook(state)
             if result not in _VALID_RETURNS:
@@ -326,6 +331,10 @@ class LifecycleComponent(ManagedEntity, ABC):
                     f"got {type(result).__name__} {result!r}"
                 )
                 return TransitionCallbackReturn.ERROR
+            log.debug(
+                f"component='{self._name}' hook='{hook_name}' result='{result.name}'"
+                f" duration_ms={((time.perf_counter() - t0) * 1000):.1f}"
+            )
             return result
         except Exception as exc:
             hook_error = LifecycleHookError(f"[{self._name}.{hook_name}] raised {type(exc).__name__}: {exc}")
@@ -336,11 +345,12 @@ class LifecycleComponent(ManagedEntity, ABC):
 
     def _safe_release_resources(self) -> TransitionCallbackReturn:
         """Framework-internal. Do not call from user code."""
+        log = self._resolve_logger()
+        log.debug(f"component='{self._name}' action='release_resources'")
         try:
             self._release_resources()
             return TransitionCallbackReturn.SUCCESS
         except Exception as exc:
-            log = self._resolve_logger()
             log.error(f"[{self._name}._release_resources] {type(exc).__name__}: {exc}")
             log.error(traceback.format_exc())
             return TransitionCallbackReturn.ERROR
