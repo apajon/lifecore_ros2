@@ -194,21 +194,22 @@ announcement.
 Medium-term candidates
 ----------------------
 
-Health / status API
-^^^^^^^^^^^^^^^^^^^
+Health / status API — *shipped in Sprint 10 (2026-05-08)*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Sprint mapping: :doc:`sprints/sprint_10_health_status`.
+See :doc:`sprints/sprint_10_health_status`.
 
-* [ ] Define a small ``HealthStatus`` value object with level and reason.
-* [ ] Integrate ``last_error`` as a field of ``HealthStatus`` (level + reason
-  from the last hook failure). See `GitHub issue
-  <https://github.com/apajon/lifecore_ros2/issues>`_ and Sprint 9 decisions.
-* [ ] Add ``component.health() -> HealthStatus`` or equivalent only after the
-  state model is clear.
-* [ ] Keep the first version read-only.
+* [x] ``HealthStatus`` frozen dataclass with ``level: HealthLevel``, ``reason: str``,
+  ``last_error: str | None``.
+* [x] ``HealthLevel`` enum: ``UNKNOWN | OK | DEGRADED | ERROR``.
+* [x] ``last_error`` integrated as a field of ``HealthStatus``.
+* [x] ``LifecycleComponent.health`` read-only property; updated by ``_guarded_call``
+  and each ``on_*`` handler.
+* [x] ``LifecycleComponentNode.health`` — worst-of aggregation across all components.
+* [x] ``HealthStatus`` and ``HealthLevel`` exported from ``lifecore_ros2``.
 
-**Rationale:** Health is the base for diagnostics and watchdog behavior, but it
-should expose state before trying to repair anything.
+**Delivered:** Applications and watchdogs can read component and node health without
+accessing private state. Recovery behavior is out of scope.
 
 Transition history
 ^^^^^^^^^^^^^^^^^^
@@ -301,8 +302,8 @@ Component state and health
 ^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * [ ] Standard component state introspection
-* [ ] Component health/status reporting
-* [ ] Last error / last transition result per component
+* [x] Component health/status reporting — shipped Sprint 10
+* [x] Last error / last transition result per component — shipped Sprint 10 as ``HealthStatus.last_error``
 
 **Rationale:** Essential for industrial debugging and operations.
 

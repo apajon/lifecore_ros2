@@ -20,13 +20,18 @@ Decisions already made
   ``HealthStatus`` rather than as a standalone property. A component that has
   faulted exposes the error reason through its health level and reason field.
 
-To decide during sprint planning
---------------------------------
+Decisions finalised during sprint planning
+------------------------------------------
 
-- Exact Python type shape: dataclass, enum-backed value object, or another small
-  representation.
-- Exact level names and whether ``stale`` is a core level or a watchdog concern.
-- Whether the first API is component-only or also exposed through the node.
+- **Python type shape:** ``@dataclass(frozen=True)`` from stdlib — no new PyPI
+  dependencies. ``HealthStatus`` is immutable and hashable, enabling direct
+  equality assertions in tests.
+- **Level names:** ``UNKNOWN | OK | DEGRADED | ERROR``.
+  ``UNKNOWN`` = not yet configured. ``OK`` = last transition succeeded.
+  ``DEGRADED`` = hook returned ``FAILURE`` (controlled). ``ERROR`` = exception
+  captured by ``_guarded_call``. ``STALE`` is a watchdog concern, not a core level.
+- **API scope:** component-level + node-level aggregation. ``node.health`` returns
+  the worst-severity ``HealthStatus`` across all registered components.
 
 ---
 
@@ -36,7 +41,7 @@ Scope boundaries
 In scope:
 
 - component-level health/status reporting
-- optional node-level aggregation if it stays obvious
+- node-level aggregation: ``LifecycleComponentNode.health`` (worst-of across components)
 - status values that help debugging and tests
 - ``last_error`` as a field of the health value object (level + human-readable reason)
 
@@ -52,6 +57,22 @@ Out of scope:
 Success signal
 --------------
 
-- [ ] A watchdog can be designed as a consumer of health, not as a hidden part
+- [x] A watchdog can be designed as a consumer of health, not as a hidden part
   of every component.
-- [ ] The API improves observability without making recovery promises.
+- [x] The API improves observability without making recovery promises.
+
+---
+
+Delivery
+--------
+
+*Shipped in v0.10.0 (2026-05-08)*
+
+- ``src/lifecore_ros2/core/health.py`` — ``HealthLevel``, ``HealthStatus``,
+  ``HEALTH_UNKNOWN``.
+- ``LifecycleComponent.health`` property — updated by ``_guarded_call`` and each
+  ``on_*`` handler.
+- ``LifecycleComponentNode.health`` property — worst-of aggregation.
+- ``HealthStatus`` and ``HealthLevel`` exported from ``lifecore_ros2``.
+- 30 regression tests in ``tests/core/test_health.py``.
+- Example: ``examples/minimal_health_status.py``.
