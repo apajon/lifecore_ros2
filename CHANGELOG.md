@@ -2,6 +2,37 @@
 
 <!-- version list -->
 
+## v0.10.0 (2026-05-08)
+
+### Features
+
+- **core**: Sprint 10 — component and node health status API
+  Add `HealthLevel` enum (`UNKNOWN | OK | DEGRADED | ERROR`), `HealthStatus` frozen
+  dataclass (`level`, `reason`, `last_error`), and `HEALTH_UNKNOWN` sentinel.
+  `LifecycleComponent.health` is a read-only property updated by `_guarded_call` and
+  each `on_*` handler: SUCCESS → `OK`, FAILURE → `DEGRADED`, exception → `ERROR` with
+  `last_error` populated; cleanup resets to `HEALTH_UNKNOWN`; shutdown preserves `last_error`.
+  `LifecycleComponentNode.health` returns the worst-severity `HealthStatus` across all
+  registered components. `HealthStatus` and `HealthLevel` are exported from `lifecore_ros2`.
+
+### Testing
+
+- **core**: Add 30 regression tests for `HealthStatus` behavior across all lifecycle
+  transitions, node aggregation, and public import surface (`tests/core/test_health.py`).
+
+### Documentation
+
+- **planning**: Mark Sprint 10 as delivered; record final type/level/scope decisions in
+  `sprint_10_health_status.rst`.
+- **backlog**: Mark health/status items as shipped; update component-state checklist.
+- **api**: Add `lifecore_ros2.core.health` autodoc entry to `docs/api/core.rst`.
+
+### Examples
+
+- **examples**: Add `minimal_health_status.py` — demonstrates UNKNOWN → OK → DEGRADED →
+  ERROR progression and node-level worst-of aggregation.
+
+
 ## v0.9.0 (2026-05-08)
 
 ### Features
