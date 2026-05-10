@@ -16,6 +16,7 @@ from rclpy.lifecycle.node import LifecycleState
 
 from .activation_gating import require_active as _require_active
 from .exceptions import ComponentNotAttachedError, InvalidLifecycleTransitionError, LifecycleHookError
+from .health import HEALTH_UNKNOWN, HealthLevel, HealthStatus
 
 if TYPE_CHECKING:
     from .lifecycle_component_node import LifecycleComponentNode
@@ -203,6 +204,7 @@ class LifecycleComponent(ManagedEntity, ABC):
         self._is_active: bool = False
         self._active_lock: threading.Lock = threading.Lock()
         self._withdrawn: bool = False
+        self._health: HealthStatus = HEALTH_UNKNOWN
 
     @property
     def name(self) -> str:
@@ -213,6 +215,11 @@ class LifecycleComponent(ManagedEntity, ABC):
         """Whether the component is in the active state."""
         with self._active_lock:
             return self._is_active
+
+    @property
+    def health(self) -> HealthStatus:
+        """Current health snapshot of this component."""
+        return self._health
 
     def require_active(self) -> None:
         """Raise ``RuntimeError`` if this component is not active.
@@ -330,6 +337,11 @@ class LifecycleComponent(ManagedEntity, ABC):
                     f"[{self._name}.{hook_name}] expected TransitionCallbackReturn, "
                     f"got {type(result).__name__} {result!r}"
                 )
+                self._health = HealthStatus(
+                    level=HealthLevel.ERROR,
+                    reason=f"[{self._name}.{hook_name}] returned invalid type {type(result).__name__}",
+                    last_error=f"[{self._name}.{hook_name}] returned invalid type {type(result).__name__}",
+                )
                 return TransitionCallbackReturn.ERROR
             log.debug(
                 f"component='{self._name}' hook='{hook_name}' result='{result.name}'"
@@ -341,6 +353,11 @@ class LifecycleComponent(ManagedEntity, ABC):
             hook_error.__cause__ = exc
             log.error(str(hook_error))
             log.error(traceback.format_exc())
+            self._health = HealthStatus(
+                level=HealthLevel.ERROR,
+                reason=str(hook_error),
+                last_error=str(hook_error),
+            )
             return TransitionCallbackReturn.ERROR
 
     def _safe_release_resources(self) -> TransitionCallbackReturn:
@@ -436,9 +453,12 @@ class LifecycleComponent(ManagedEntity, ABC):
         if result == TransitionCallbackReturn.SUCCESS:
             self._is_configured = True
             self._needs_cleanup = True
+            self._health = HealthStatus(level=HealthLevel.OK, reason="")
         elif result in {TransitionCallbackReturn.FAILURE, TransitionCallbackReturn.ERROR}:
             self._is_configured = False
             self._needs_cleanup = True
+        if result == TransitionCallbackReturn.FAILURE:
+            self._health = HealthStatus(level=HealthLevel.DEGRADED, reason="configure hook returned FAILURE")
         return result
 
     @final
@@ -450,6 +470,9 @@ class LifecycleComponent(ManagedEntity, ABC):
         if result == TransitionCallbackReturn.SUCCESS:
             with self._active_lock:
                 self._is_active = True
+            self._health = HealthStatus(level=HealthLevel.OK, reason="")
+        elif result == TransitionCallbackReturn.FAILURE:
+            self._health = HealthStatus(level=HealthLevel.DEGRADED, reason="activate hook returned FAILURE")
         return result
 
     @final
@@ -461,6 +484,8 @@ class LifecycleComponent(ManagedEntity, ABC):
         if result == TransitionCallbackReturn.SUCCESS:
             with self._active_lock:
                 self._is_active = False
+        elif result == TransitionCallbackReturn.FAILURE:
+            self._health = HealthStatus(level=HealthLevel.DEGRADED, reason="deactivate hook returned FAILURE")
         return result
 
     @final
@@ -472,6 +497,10 @@ class LifecycleComponent(ManagedEntity, ABC):
             self._is_active = False
         self._is_configured = False
         result = self._guarded_call("on_cleanup", self._on_cleanup, state)
+        if result == TransitionCallbackReturn.SUCCESS:
+            self._health = HEALTH_UNKNOWN
+        elif result == TransitionCallbackReturn.FAILURE:
+            self._health = HealthStatus(level=HealthLevel.DEGRADED, reason="cleanup hook returned FAILURE")
         release_result = self._safe_release_resources()
         self._needs_cleanup = False
         return _worst_of(result, release_result)
@@ -484,6 +513,18 @@ class LifecycleComponent(ManagedEntity, ABC):
             self._is_active = False
         self._is_configured = False
         result = self._guarded_call("on_shutdown", self._on_shutdown, state)
+        if result == TransitionCallbackReturn.SUCCESS:
+            self._health = HealthStatus(
+                level=HealthLevel.UNKNOWN,
+                reason="shutdown",
+                last_error=self._health.last_error,
+            )
+        elif result == TransitionCallbackReturn.FAILURE:
+            self._health = HealthStatus(
+                level=HealthLevel.DEGRADED,
+                reason="shutdown hook returned FAILURE",
+                last_error=self._health.last_error,
+            )
         release_result = self._safe_release_resources()
         self._needs_cleanup = False
         return _worst_of(result, release_result)
@@ -496,6 +537,8 @@ class LifecycleComponent(ManagedEntity, ABC):
             self._is_active = False
         self._is_configured = False
         result = self._guarded_call("on_error", self._on_error, state)
+        if result == TransitionCallbackReturn.FAILURE and self._health.level != HealthLevel.ERROR:
+            self._health = HealthStatus(level=HealthLevel.DEGRADED, reason="error hook returned FAILURE")
         release_result = self._safe_release_resources()
         self._needs_cleanup = False
         return _worst_of(result, release_result)

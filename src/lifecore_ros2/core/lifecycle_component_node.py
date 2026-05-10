@@ -15,6 +15,7 @@ from .exceptions import (
     RegistrationClosedError,
     UnknownDependencyError,
 )
+from .health import HEALTH_UNKNOWN, HealthStatus, _worst_health
 from .lifecycle_component import LifecycleComponent, _worst_of
 
 
@@ -67,6 +68,19 @@ class LifecycleComponentNode(LifecycleNode):
     def components(self) -> tuple[LifecycleComponent, ...]:
         with self._lock:
             return tuple(self._components.values())
+
+    @property
+    def health(self) -> HealthStatus:
+        """Worst-severity health across all registered components.
+
+        Returns HEALTH_UNKNOWN if no components are registered.
+        """
+        if not self._resolved_order:
+            return HEALTH_UNKNOWN
+        result = HEALTH_UNKNOWN
+        for comp in self._resolved_order:
+            result = _worst_health(result, comp.health)
+        return result
 
     def add_component(
         self,

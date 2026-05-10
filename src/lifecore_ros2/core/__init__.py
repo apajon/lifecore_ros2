@@ -13,6 +13,7 @@ from .exceptions import (
     RegistrationClosedError,
     UnknownDependencyError,
 )
+from .health import HealthLevel, HealthStatus
 from .lifecycle_component import LifecycleComponent, when_active
 from .lifecycle_component_node import LifecycleComponentNode
 
@@ -20,6 +21,8 @@ __all__ = [
     "LifecycleComponentNode",
     "LifecycleComponent",
     "when_active",
+    "HealthStatus",
+    "HealthLevel",
     "LifecoreError",
     "LifecycleHookError",
     "RegistrationClosedError",
