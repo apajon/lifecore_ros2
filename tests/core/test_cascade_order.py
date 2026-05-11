@@ -20,16 +20,28 @@ from lifecore_ros2.testing import DUMMY_STATE
 class RecordingComponent(LifecycleComponent):
     """Minimal component that appends ``(name, hook_name)`` tuples to a shared recorder list."""
 
-    def __init__(self, name: str, recorder: list[tuple[str, str]], **kwargs: Any) -> None:
+    def __init__(
+        self,
+        name: str,
+        recorder: list[tuple[str, str]],
+        *,
+        fail_on: str | None = None,
+        **kwargs: Any,
+    ) -> None:
         super().__init__(name, **kwargs)
         self._recorder = recorder
+        self._fail_on = fail_on
 
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
         self._recorder.append((self.name, "on_configure"))
+        if self._fail_on == "configure":
+            return TransitionCallbackReturn.FAILURE
         return TransitionCallbackReturn.SUCCESS
 
     def _on_activate(self, state: LifecycleState) -> TransitionCallbackReturn:
         self._recorder.append((self.name, "on_activate"))
+        if self._fail_on == "activate":
+            return TransitionCallbackReturn.FAILURE
         return TransitionCallbackReturn.SUCCESS
 
     def _on_deactivate(self, state: LifecycleState) -> TransitionCallbackReturn:
@@ -123,18 +135,25 @@ class TestCascadeOrder:
     # -- 7. unknown dependency raises UnknownDependencyError from on_configure --
 
     def test_unknown_dependency_raises(self, node: LifecycleComponentNode) -> None:
-        node.add_component(RecordingComponent("a", [], dependencies=("ghost",)))
+        # Regression: unknown dependencies must not allow any component hook to run.
+        # Expected: order validation fails before transition propagation begins.
+        recorder: list[tuple[str, str]] = []
+        node.add_component(RecordingComponent("a", recorder, dependencies=("ghost",)))
         with pytest.raises(UnknownDependencyError, match="ghost"):
             node.on_configure(DUMMY_STATE)
+        assert recorder == []
 
     # -- 8. cyclic dependency raises CyclicDependencyError from on_configure --
 
     def test_cyclic_dependency_raises(self, node: LifecycleComponentNode) -> None:
+        # Regression: dependency cycles must not run a partial transition sequence.
+        # Expected: order validation fails before transition propagation begins.
         recorder: list[tuple[str, str]] = []
         node.add_component(RecordingComponent("a", recorder, dependencies=("b",)))
         node.add_component(RecordingComponent("b", recorder, dependencies=("a",)))
         with pytest.raises(CyclicDependencyError):
             node.on_configure(DUMMY_STATE)
+        assert recorder == []
 
     # -- 9. no-deps backward compat: registration order preserved --
 
@@ -145,3 +164,24 @@ class TestCascadeOrder:
         node.on_configure(DUMMY_STATE)
         configure_order = [name for name, hook in recorder if hook == "on_configure"]
         assert configure_order == ["x", "y", "z"]
+
+    def test_activate_failure_stops_order_without_compensation(self, node: LifecycleComponentNode) -> None:
+        # Regression: partial activation semantics were easy to read as automatic compensation.
+        # Expected: activation stops at the failing component; already-active siblings stay active.
+        recorder: list[tuple[str, str]] = []
+        first = RecordingComponent("first", recorder)
+        failing = RecordingComponent("failing", recorder, fail_on="activate")
+        skipped = RecordingComponent("skipped", recorder)
+        node.add_component(first)
+        node.add_component(failing, dependencies=("first",))
+        node.add_component(skipped, dependencies=("failing",))
+        node.on_configure(DUMMY_STATE)
+        recorder.clear()
+
+        result = node.on_activate(DUMMY_STATE)
+
+        assert result == TransitionCallbackReturn.FAILURE
+        assert recorder == [("first", "on_activate"), ("failing", "on_activate")]
+        assert first.is_active is True
+        assert failing.is_active is False
+        assert skipped.is_active is False
