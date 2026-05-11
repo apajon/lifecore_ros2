@@ -1,12 +1,15 @@
 """lifecore_ros2."""
 
 from .components import (
+    LifecycleParameter,
+    LifecycleParameterComponent,
     LifecyclePublisherComponent,
     LifecycleServiceClientComponent,
     LifecycleServiceServerComponent,
     LifecycleSubscriberComponent,
     LifecycleTimerComponent,
     LifecycleWatchdogComponent,
+    ParameterMutability,
     ServiceComponent,
     TopicComponent,
 )
@@ -33,6 +36,9 @@ __all__ = [
     "LifecycleComponentNode",
     "LifecycleComponent",
     "TopicComponent",
+    "LifecycleParameter",
+    "LifecycleParameterComponent",
+    "ParameterMutability",
     "LifecyclePublisherComponent",
     "LifecycleSubscriberComponent",
     "LifecycleTimerComponent",
