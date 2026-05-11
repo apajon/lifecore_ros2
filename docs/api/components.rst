@@ -40,3 +40,8 @@ Components API
    :members:
    :undoc-members:
    :show-inheritance:
+
+.. automodule:: lifecore_ros2.components.lifecycle_parameter_component
+   :members:
+   :undoc-members:
+   :show-inheritance:
