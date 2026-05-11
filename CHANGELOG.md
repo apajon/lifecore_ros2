@@ -2,6 +2,94 @@
 
 <!-- version list -->
 
+## v0.9.0 (2026-05-11)
+
+### Bug Fixes
+
+- **testing**: Correct fixture return type annotation for cleanup_policy test
+  ([`23d1ce1`](https://github.com/apajon/lifecore_ros2/commit/23d1ce1a566c6f6e4d692cb63d998c89e2c88140))
+
+### Chores
+
+- **changelog**: Add v0.10.0 entry
+  ([`a5f8488`](https://github.com/apajon/lifecore_ros2/commit/a5f8488aaf5658ecedb980a906feddcc64479dfd))
+
+- **changelog**: Remove unreleased entries ahead of git tags
+  ([`48004f6`](https://github.com/apajon/lifecore_ros2/commit/48004f650d70e159f1ab72c654578ea0a8326cc6))
+
+- **copilot**: Make frontmatter hook command portable
+  ([`e032cb0`](https://github.com/apajon/lifecore_ros2/commit/e032cb027983ef05b2e28b57a4636173c5748733))
+
+- **prompts**: Replace logical commits with smart session flow
+  ([`2b56227`](https://github.com/apajon/lifecore_ros2/commit/2b56227b4a34c9d1a0b9c790445a581b1055dbf3))
+
+### Documentation
+
+- **api**: Add core.health autodoc entry
+  ([`e1db951`](https://github.com/apajon/lifecore_ros2/commit/e1db951dc4702bbccd6cd45aa87de61099a7b827))
+
+- **api,examples,patterns**: Sync sphinx docs for watchdog
+  ([`0bbcdd8`](https://github.com/apajon/lifecore_ros2/commit/0bbcdd899d556338f7da453c2be4f64d46cce942))
+
+- **architecture**: Document Sprint 8 concurrency contract
+  ([`087e892`](https://github.com/apajon/lifecore_ros2/commit/087e892eb093f3db2fd0d8aa70a93560b415593c))
+
+- **architecture**: Document structured lifecycle logging contract
+  ([`187d458`](https://github.com/apajon/lifecore_ros2/commit/187d4589b0dec1f23dd4510c53727bdd0c82ce25))
+
+- **changelog**: Add v0.9.0 entry
+  ([`581f93e`](https://github.com/apajon/lifecore_ros2/commit/581f93ec274672a536f8733c735a7e1d245c88cf))
+
+- **examples**: Add minimal watchdog example
+  ([`84fcfd8`](https://github.com/apajon/lifecore_ros2/commit/84fcfd815ce441fa782ce7d9800fefd260bece75))
+
+- **planning**: Close sprint 9 and update sprint 10 scope
+  ([`1fda0ad`](https://github.com/apajon/lifecore_ros2/commit/1fda0ad0a178a728d0ac498f9a1f88d0ba5f673c))
+
+- **planning**: Mark Sprint 10 health status as delivered
+  ([`25e2803`](https://github.com/apajon/lifecore_ros2/commit/25e28033000ec6e175497ffff469d80dc051da76))
+
+- **planning**: Mark sprint 11 watchdog component as shipped
+  ([`1eeb130`](https://github.com/apajon/lifecore_ros2/commit/1eeb13042262ce35c477bad0373eaded1ad8f82d))
+
+- **planning**: Mark Sprint 8 as shipped (2026-05-08)
+  ([`5aa2ee4`](https://github.com/apajon/lifecore_ros2/commit/5aa2ee4da57412ccba43add1473e06055760aeaf))
+
+- **readme**: Add watchdog and health symbols
+  ([`bbbbee1`](https://github.com/apajon/lifecore_ros2/commit/bbbbee16be94dd872867e154bb64c8ae01dab3ca))
+
+### Features
+
+- **components**: Add LifecycleWatchdogComponent
+  ([`de2619f`](https://github.com/apajon/lifecore_ros2/commit/de2619f1f7bd6faa0a15fd24c456d3b8c3db1c1b))
+
+- **core**: Add callback group registry and _active_lock thread safety
+  ([`ca4518b`](https://github.com/apajon/lifecore_ros2/commit/ca4518bd4a5ce22acb07cda5d405a2ff91bfcc64))
+
+- **core**: Add HealthStatus and HealthLevel API
+  ([`34bffc8`](https://github.com/apajon/lifecore_ros2/commit/34bffc869b078289260cb4c1125aade452329d20))
+
+- **core**: Add structured lifecycle logging
+  ([`fcbe979`](https://github.com/apajon/lifecore_ros2/commit/fcbe979ec3617b0ec43e818b5d929694905a771e))
+
+- **examples**: Add minimal_health_status example
+  ([`e8c95a2`](https://github.com/apajon/lifecore_ros2/commit/e8c95a236307dfeed0f4875c4dbb75281403f56f))
+
+### Testing
+
+- **components**: Cover lifecycle watchdog behavior
+  ([`f1f726f`](https://github.com/apajon/lifecore_ros2/commit/f1f726fbedd3c21fcf31cfe29b42766b94b5dce2))
+
+- **core**: Add HealthStatus regression tests
+  ([`7e22754`](https://github.com/apajon/lifecore_ros2/commit/7e22754cb3e6794c83bd67547f985e76057e01ea))
+
+- **core**: Add regression tests for callback group helper and _active_lock
+  ([`a8adbf7`](https://github.com/apajon/lifecore_ros2/commit/a8adbf7c63b1c4aa48856849c3101d3e85d439ac))
+
+- **core**: Add regression tests for structured lifecycle log fields
+  ([`83ffc50`](https://github.com/apajon/lifecore_ros2/commit/83ffc50378828a03c162678a027ec95d39ab7b56))
+
+
 ## v0.8.1 (2026-05-07)
 
 ### Bug Fixes
