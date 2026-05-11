@@ -225,18 +225,29 @@ Tracked in `GitHub issue #14 <https://github.com/apajon/lifecore_ros2/issues/14>
 history surface adds public API surface and test complexity with no current
 consumer. Deferred until a concrete use case arises.
 
-Lightweight watchdog
-^^^^^^^^^^^^^^^^^^^^
+Lightweight watchdog — *shipped in Sprint 11 (2026-05-10)*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Sprint mapping: :doc:`sprints/sprint_11_watchdog_light`.
 
-* [ ] Observe health and lifecycle state.
-* [ ] Report stale, warning, and error conditions.
+* [x] Observe health and lifecycle state.
+* [x] Report stale, warning, and error conditions.
 * [ ] Optionally request a lifecycle transition through normal ROS 2 mechanisms.
-* [ ] Do not restart processes, kill nodes, or invent recovery workflows.
+* [x] Do not restart processes, kill nodes, or invent recovery workflows.
 
-**Rationale:** Watchdog behavior is useful but risky. Version 1 should observe
-and report before any automatic recovery is considered.
+**Delivered:** ``LifecycleWatchdogComponent`` polls one or more targets exposing a
+``.health`` property on a configurable interval. Logs ``DEGRADED`` at WARN level
+(with reason), ``ERROR`` at ERROR level (with ``last_error`` if set), and emits an
+additional WARN labelled ``STALE`` when a non-OK level persists beyond
+``stale_threshold`` seconds. Staleness is tracked via the node clock
+(``node.get_clock().now()``) for sim-time compatibility. Polling is
+activation-gated; no ticks fire while deactivated. The watchdog is purely
+read-only — it never triggers lifecycle transitions. ``LifecycleWatchdogComponent``
+is exported from ``lifecore_ros2``. 25 regression tests in
+``tests/components/test_watchdog_component.py`` and ``examples/minimal_watchdog.py``.
+
+**Rationale:** Watchdog behavior is useful but risky. Version 1 observes and
+reports; recovery and automatic transition requests remain deferred.
 
 ---
 

@@ -39,5 +39,5 @@ Explicitly out of scope:
 Success signal
 --------------
 
-- [ ] Users get better diagnostics without new failure modes.
-- [ ] The docs clearly separate internal component health from system orchestration.
+- [x] Users get better diagnostics without new failure modes.
+- [x] The docs clearly separate internal component health from system orchestration.
