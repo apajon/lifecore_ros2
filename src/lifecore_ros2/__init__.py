@@ -6,6 +6,7 @@ from .components import (
     LifecycleServiceServerComponent,
     LifecycleSubscriberComponent,
     LifecycleTimerComponent,
+    LifecycleWatchdogComponent,
     ServiceComponent,
     TopicComponent,
 )
@@ -35,6 +36,7 @@ __all__ = [
     "LifecyclePublisherComponent",
     "LifecycleSubscriberComponent",
     "LifecycleTimerComponent",
+    "LifecycleWatchdogComponent",
     "ServiceComponent",
     "LifecycleServiceServerComponent",
     "LifecycleServiceClientComponent",
