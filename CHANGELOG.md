@@ -2,64 +2,6 @@
 
 <!-- version list -->
 
-## v0.10.0 (2026-05-08)
-
-### Features
-
-- **core**: Sprint 10 — component and node health status API
-  Add `HealthLevel` enum (`UNKNOWN | OK | DEGRADED | ERROR`), `HealthStatus` frozen
-  dataclass (`level`, `reason`, `last_error`), and `HEALTH_UNKNOWN` sentinel.
-  `LifecycleComponent.health` is a read-only property updated by `_guarded_call` and
-  each `on_*` handler: SUCCESS → `OK`, FAILURE → `DEGRADED`, exception → `ERROR` with
-  `last_error` populated; cleanup resets to `HEALTH_UNKNOWN`; shutdown preserves `last_error`.
-  `LifecycleComponentNode.health` returns the worst-severity `HealthStatus` across all
-  registered components. `HealthStatus` and `HealthLevel` are exported from `lifecore_ros2`.
-
-### Testing
-
-- **core**: Add 30 regression tests for `HealthStatus` behavior across all lifecycle
-  transitions, node aggregation, and public import surface (`tests/core/test_health.py`).
-
-### Documentation
-
-- **planning**: Mark Sprint 10 as delivered; record final type/level/scope decisions in
-  `sprint_10_health_status.rst`.
-- **backlog**: Mark health/status items as shipped; update component-state checklist.
-- **api**: Add `lifecore_ros2.core.health` autodoc entry to `docs/api/core.rst`.
-
-### Examples
-
-- **examples**: Add `minimal_health_status.py` — demonstrates UNKNOWN → OK → DEGRADED →
-  ERROR progression and node-level worst-of aggregation.
-
-
-## v0.9.0 (2026-05-08)
-
-### Features
-
-- **core**: Sprint 9 — structured lifecycle logging
-  Add `DEBUG` logs before/after each component hook (`component=`, `hook=`, `result=`,
-  `duration_ms=`), `DEBUG` before `_release_resources`, node-level `DEBUG`/`INFO` for all
-  transition handlers, `WARNING`/`INFO`/`ERROR` for `error_processing`, and standardized
-  activation-gating drop log (`action='dropped'`, `method=`, `reason='not_active'`).
-  Hook timing is always emitted in the hook-end message; no flag required (Option B).
-  No new public API surface.
-
-### Testing
-
-- **core**: Add 15 regression tests for structured lifecycle log fields
-  (`tests/core/test_observability.py`). Tests assert field presence without brittle
-  full-message matching.
-
-### Documentation
-
-- **planning**: Mark Sprint 9 observability as delivered; update validation checklist
-  and scope boundaries.
-- **backlog**: Add Sprint 9 shipped entry; add `last_error` to Sprint 10 scope;
-  add `transition_history` as backlog candidate (issue #14).
-- **architecture**: Document structured lifecycle logging contract.
-
-
 ## v0.8.1 (2026-05-07)
 
 ### Bug Fixes
