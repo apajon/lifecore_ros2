@@ -1,11 +1,14 @@
 Sprint 12 - Lifecycle policies
 ==============================
 
-**Objective.** Make component ordering and activation semantics configurable
-without ad-hoc application code.
+**Objective.** Make the intra-node lifecycle ordering contract deterministic,
+documented, and test-backed without expanding ``lifecore_ros2`` into lifecycle
+orchestration.
 
-**Deliverable.** Applications can define simple ordering and bootstrap rules
-without introducing a hidden state machine.
+**Deliverable.** The existing ``dependencies`` + ``priority`` + registration
+order model is documented as the supported ordering policy, with focused tests
+covering order, reverse teardown, invalid rules, and partial activation
+semantics.
 
 ---
 
@@ -16,39 +19,51 @@ Decisions already made
   it.
 - Native ROS 2 lifecycle control remains the authority for node transitions.
 - Policy combinations must stay small enough to avoid a parallel state machine.
+- Sprint 12 starts with documentation and consolidation tests, not a new public
+  policy API.
+- A named policy API should be added only if tests or real usage reveal a gap in
+  the current ``dependencies`` + ``priority`` + registration order model.
 
 Policy areas
 ------------
 
-Activation and startup policies are candidates only when a concrete example
+Activation and startup policies remain out of scope until a concrete example
 shows repeated application code. Manual lifecycle control remains the baseline.
 
-Component ordering remains the most likely first policy area.
+Component ordering is the only Sprint 12 policy area.
 
 Ordering builds on the focused internal cascade instead of replacing it:
 
-- registration order remains the final stable fallback beneath explicit dependencies and priority
 - explicit dependencies may define required order
 - priority may be a secondary ordering hint
-- deactivate and cleanup may run in reverse order when ownership requires it
+- registration order remains the final stable fallback beneath explicit dependencies and priority
+- configure and activate run in resolved order
+- deactivate and cleanup run in reverse resolved order
+- invalid dependency rules fail before component transition hooks run
+- partial activation follows the existing error-handling contract; the sprint
+  clarifies the behavior but does not add automatic compensation
 
-To decide during sprint planning
---------------------------------
+Decided during sprint planning
+------------------------------
 
-- Whether this sprint introduces an API or only documents policy constraints.
-- Whether deferred activation belongs in scope.
-- Whether auto-configure or auto-activate are justified by real examples.
+- Deliver documentation and targeted consolidation tests first.
+- Do not add a public policy API by default.
+- Do not add deferred activation.
+- Do not add auto-configure or auto-activate.
+- Do not add a workflow engine, parallel state machine, or multi-node
+  orchestration.
 
 ---
 
 Validation
 ----------
 
-- [ ] Components activate in the documented order.
-- [ ] Deactivate and cleanup order are documented and tested.
-- [ ] Invalid ordering rules fail before transitions run.
-- [ ] Partial activation semantics are explicit and test-backed.
-- [ ] Policies and error handling interact predictably.
+- [x] Components configure and activate in the documented order.
+- [x] Deactivate and cleanup order are documented and tested.
+- [x] Invalid ordering rules fail before transitions run.
+- [x] Partial activation semantics are explicit and test-backed.
+- [x] Policies and error handling interact predictably without adding
+  compensation behavior.
 
 ---
 
@@ -61,6 +76,11 @@ control.
 
 **Risk: ordering and rollback conflict.** Define failure behavior before adding
 new knobs.
+
+**Mitigation.** Sprint 12 does not add new knobs. It documents the existing
+failure behavior: invalid ordering rules stop before hooks run, while runtime
+activation failures stop propagation and rely on the existing error-handling
+contract instead of reverse replay or compensation actions.
 
 ---
 
@@ -79,11 +99,14 @@ Scope boundaries
 In scope:
 
 - minimal ordering policy
-- activation policy discussion only when directly useful
+- partial activation documentation of the existing error-handling contract
 - tests for deterministic ordering
 
 Out of scope:
 
+- public policy API by default
+- deferred activation
+- auto-configure / auto-activate
 - workflow orchestration
 - multi-node lifecycle management
 - runtime policy changes
@@ -94,6 +117,6 @@ Out of scope:
 Success signal
 --------------
 
-- [ ] Ordering improves deterministic component lifecycle behavior.
-- [ ] Policy surface remains smaller than a custom state machine.
-- [ ] The docs clearly separate internal node ordering from system orchestration.
+- [x] Ordering improves deterministic component lifecycle behavior.
+- [x] Policy surface remains smaller than a custom state machine.
+- [x] The docs clearly separate internal node ordering from system orchestration.
