@@ -13,6 +13,7 @@ Covers:
 from __future__ import annotations
 
 import threading
+from collections.abc import Iterator
 
 import pytest
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup, ReentrantCallbackGroup
@@ -21,9 +22,9 @@ from lifecore_ros2.core import LifecycleComponentNode
 
 
 @pytest.fixture()
-def node() -> LifecycleComponentNode:
+def node() -> Iterator[LifecycleComponentNode]:
     n = LifecycleComponentNode("callback_group_test_node")
-    yield n  # type: ignore[misc]
+    yield n
     n.destroy_node()
 
 

@@ -16,7 +16,7 @@ from __future__ import annotations
 from unittest.mock import MagicMock, patch
 
 import pytest
-from rclpy.clock import ClockType
+from rclpy.clock_type import ClockType
 from rclpy.time import Time
 
 import lifecore_ros2

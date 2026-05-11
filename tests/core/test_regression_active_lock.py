@@ -17,6 +17,7 @@ Context:
 from __future__ import annotations
 
 import threading
+from collections.abc import Iterator
 
 import pytest
 from rclpy.lifecycle import TransitionCallbackReturn
@@ -27,9 +28,9 @@ from lifecore_ros2.testing import DUMMY_STATE, FakeComponent
 
 
 @pytest.fixture()
-def node() -> LifecycleComponentNode:
+def node() -> Iterator[LifecycleComponentNode]:
     n = LifecycleComponentNode("active_lock_test_node")
-    yield n  # type: ignore[misc]
+    yield n
     n.destroy_node()
 
 
