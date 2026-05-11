@@ -86,6 +86,14 @@ Example map
      - Three sibling components with explicit internal dependencies declared at registration time inside one node.
      - Read after ``composed_pipeline.py`` to see the same shape with dependency-driven ordering kept visible in the node assembly code.
      - ``uv run python examples/composed_ordered_pipeline.py``
+   * - `minimal_health_status.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_health_status.py>`_
+     - ``LifecycleComponent.health`` progressing through UNKNOWN → OK → DEGRADED → ERROR; node-level worst-of aggregation.
+     - Read when you want to see how lifecycle transitions update health state and how a watchdog can read it.
+     - ``uv run python examples/minimal_health_status.py``
+   * - `minimal_watchdog.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_watchdog.py>`_
+     - ``LifecycleWatchdogComponent`` observing a degraded sensor: DEGRADED WARN, STALE WARN, activation gating.
+     - Read after ``minimal_health_status.py`` to see a reusable watchdog registered alongside a faulting component.
+     - ``uv run python examples/minimal_watchdog.py``
 
 After launching an example, drive it with ``ros2 lifecycle set /<node_name> configure``, then
 ``activate``, ``deactivate``, and ``cleanup``. Each module docstring includes the expected output
@@ -100,6 +108,8 @@ Suggested reading path
 - Continue with service server and client examples to compare inbound versus outbound gating behavior.
 - Finish with ``telemetry_publisher.py``, ``composed_pipeline.py``, and ``composed_ordered_pipeline.py`` for full lifecycle separation across multiple responsibilities.
 - Read ``composed_ordered_pipeline.py`` after ``telemetry_publisher.py`` to see how ``dependencies`` declared at ``add_component(...)`` impose a guaranteed transition order across independently managed components.
+- Read ``minimal_health_status.py`` to see how lifecycle transitions update ``health.level`` in real time and how node-level aggregation works.
+- Read ``minimal_watchdog.py`` to see a ``LifecycleWatchdogComponent`` observing a faulting component and producing DEGRADED, ERROR, and STALE diagnostics.
 
 Companion Comparison
 --------------------
@@ -310,3 +320,51 @@ What to look for
   their constructors; ``dependencies`` stay on the node side of the composition boundary.
 - ``deactivate`` and ``cleanup`` propagate in reverse dependency order: timer
   and sink before publisher.
+
+Minimal Health Status
+---------------------
+
+Source: `examples/minimal_health_status.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_health_status.py>`_
+
+What it demonstrates
+~~~~~~~~~~~~~~~~~~~~
+
+Two components — ``sensor`` and ``heartbeat`` — whose ``health.level`` progresses
+through ``UNKNOWN`` → ``OK`` → ``DEGRADED`` → ``ERROR`` as lifecycle transitions are driven.
+Node-level aggregation via ``node.health`` (worst-of across registered components) is
+logged at each stage.
+
+What to look for
+~~~~~~~~~~~~~~~~
+
+- ``configure`` sets both components to ``OK``; ``node.health`` reports ``OK``.
+- ``activate`` on ``sensor`` returns ``FAILURE``; ``health.level`` becomes ``DEGRADED``;
+  ``node.health`` reflects the worst-of.
+- ``cleanup`` on ``sensor`` raises; ``health.level`` becomes ``ERROR`` with ``last_error`` populated;
+  ``heartbeat`` resets to ``UNKNOWN`` via a clean cleanup path.
+- ``node.health`` always returns the most severe level across all registered components.
+
+Minimal Watchdog
+----------------
+
+Source: `examples/minimal_watchdog.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_watchdog.py>`_
+
+What it demonstrates
+~~~~~~~~~~~~~~~~~~~~
+
+A ``LifecycleWatchdogComponent`` registered alongside a ``SensorComponent`` whose
+``_on_activate`` returns ``FAILURE`` (``DEGRADED`` health). The watchdog polls
+``sensor.health`` every second and logs WARN when the level is ``DEGRADED``, adding a
+STALE WARN after the configured threshold.
+
+What to look for
+~~~~~~~~~~~~~~~~
+
+- The watchdog has ``priority=10`` so it activates before the sensor (priority 0).
+  When the sensor then fails to activate, the watchdog is already polling.
+- Each tick while active: ``DEGRADED`` level → WARN log; ``ERROR`` → ERROR log with
+  ``last_error``; ``OK`` and ``UNKNOWN`` → silent.
+- After ``stale_threshold`` seconds of persistent non-OK level, an additional WARN
+  labelled ``STALE`` is emitted with elapsed time and threshold.
+- ``deactivate`` stops polling immediately; ``cleanup`` clears per-target tracking state.
+- The watchdog never calls any lifecycle transition method — it is purely read-only.

@@ -278,6 +278,43 @@ Anti-Patterns
 
 .. _patterns:on_message-exceptions:
 
+**Observe component health without triggering lifecycle transitions**
+
+  Use ``LifecycleWatchdogComponent`` (or read ``component.health`` / ``node.health`` directly)
+  to diagnose unhealthy components without side effects on the lifecycle graph.
+  The watchdog polls health on a timer, logs ``DEGRADED`` as WARN and ``ERROR`` as ERROR,
+  and emits an additional WARN labelled ``STALE`` when a non-OK level persists beyond a
+  configurable threshold.
+
+  .. code-block:: python
+
+      class MyNode(LifecycleComponentNode):
+          def __init__(self) -> None:
+              super().__init__("my_node")
+              self._sensor = SensorComponent()
+              self._watchdog = LifecycleWatchdogComponent(
+                  name="watchdog",
+                  targets=[self._sensor],
+                  poll_period=1.0,
+                  stale_threshold=10.0,
+                  priority=10,  # activate before watched targets
+              )
+              self.add_component(self._sensor)
+              self.add_component(self._watchdog)
+
+  The watchdog never calls ``configure``, ``activate``, ``deactivate``, or any other
+  lifecycle method on its targets — it only reads ``target.health``.
+  Restart, recovery, and process management are deliberately out of scope.
+
+  Invariant upheld: **no automatic recovery** — diagnostics and transitions are separate
+  concerns. The watchdog reports; the operator or a higher-level orchestrator decides.
+
+  .. seealso::
+
+     ``examples/minimal_watchdog.py`` for a runnable demonstration.
+     :class:`~lifecore_ros2.components.lifecycle_watchdog_component.LifecycleWatchdogComponent`
+     for the full API reference.
+
 **Letting exceptions propagate from ``on_message``**
 
   Exceptions raised inside ``on_message`` are caught by the library's
