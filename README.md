@@ -87,6 +87,9 @@ A small set of lifecycle-aware building blocks:
 | `LifecyclePublisherComponent` | Lifecycle-gated ROS publisher |
 | `LifecycleSubscriberComponent` | Lifecycle-gated ROS subscriber |
 | `LifecycleTimerComponent` | Lifecycle-gated ROS timer |
+| `LifecycleWatchdogComponent` | Lifecycle-gated health watchdog — polls targets and logs DEGRADED / ERROR / STALE |
+| `HealthLevel` | Severity enum: `UNKNOWN \| OK \| DEGRADED \| ERROR` |
+| `HealthStatus` | Frozen dataclass capturing component health (`level`, `reason`, `last_error`) |
 | `ServiceComponent` | Base class for service-oriented components (server/client) |
 | `LifecycleServiceServerComponent` | Lifecycle-gated ROS service server |
 | `LifecycleServiceClientComponent` | Lifecycle-gated ROS service client |
