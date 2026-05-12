@@ -6,6 +6,14 @@ Planning for the ``lifecore_ros2_examples`` companion repository.
 This file records planning context for the companion repository at
 ``apajon/lifecore_ros2_examples``.
 
+Status note
+-----------
+
+This page is planning context for the companion repository, not the current
+core sprint index. The initial sensor watchdog comparison baseline is already
+shipped in the companion repo; current adoption follow-up is tracked in
+:doc:`sprints/active/sprint_15_companion_adoption`.
+
 Bootstrap status: the repository exists and the initial foundation lives on the
 ``bootstrap/repo-foundation`` branch. Since ``lifecore_ros2`` is published on PyPI,
 the companion repository should resolve the core dependency from PyPI by default.
@@ -95,8 +103,8 @@ the same behavior across implementations. That makes it a better fit for
 ``lifecore_ros2_examples`` than for the core repo's minimal ``examples/``
 directory.
 
-Applied examples — after Sprint 4
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Applied examples — after the comparison baseline
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 These examples are candidates for later applied validation after the lifecycle
 comparison has proven the basic value proposition. They should start in the
@@ -181,7 +189,8 @@ Repository structure (planned)
    ├── tests/                        # smoke tests only, not a regression mirror
    └── docs/                         # optional, may stay README-only initially
 
-Layout is provisional. The first commit will lock it.
+The layout remains planning-oriented, but the repository now exists and uses
+this structure as its baseline.
 
 ---
 
@@ -209,8 +218,8 @@ Coupling to core releases
 Implementation phases
 ---------------------
 
-Strategic prerequisite — Sprint 4 lifecycle comparison in companion examples
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Strategic comparison baseline — shipped; follow-up in Sprint 15
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - [x] Build ``lifecore_ros2_examples/examples/lifecycle_comparison/``.
 - [x] Keep it dependency-light while still treating it as a concrete comparison
@@ -218,12 +227,16 @@ Strategic prerequisite — Sprint 4 lifecycle comparison in companion examples
 - [x] Include the shared plain ROS 2 sensor publisher as an external runtime
   stimulus for all watchdog variants.
 - [x] Complete the ``lifecore_ros2`` variant.
-- [ ] Add runtime tests that exercise publication, activation gating,
+- [x] Add runtime tests that exercise publication, activation gating,
    deactivation gating, and cleanup behavior.
-- [ ] Update core README/docs before broad public announcement.
+- [x] Update core README/docs before broad public announcement.
 
-Applied validation phase (after Sprint 4)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The remaining adoption-polish work now belongs to
+:doc:`sprints/active/sprint_15_companion_adoption`, not to the repository
+bootstrap checklist.
+
+Applied validation phase (after the comparison baseline)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 After the lifecycle comparison exists, additional concrete examples should be
 validated in ``lifecore_ros2_examples/examples/`` by default:
@@ -265,17 +278,17 @@ Phase 2 — Quality gates
 ^^^^^^^^^^^^^^^^^^^^^^^
 
 - [x] CI workflow: ``ruff check``, ``ruff format --check``, ``pyright``, ``pytest``
-- [ ] Smoke test that imports each example module without invoking ``rclpy.spin``
+- [x] Smoke test that imports each example module without invoking ``rclpy.spin``
 - [x] Document validation commands in the repo ``README.md``
 - [ ] Confirm install-from-scratch on a clean ROS 2 Jazzy environment
 
 Phase 3 — Signposting back to core
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- [ ] Update ``lifecore_ros2/README.md`` to link to the live companion repo URL
-- [ ] Update ``lifecore_ros2/docs/examples.rst`` to link to the live companion repo URL
+- [x] Update ``lifecore_ros2/README.md`` to link to the live companion repo URL
+- [x] Update ``lifecore_ros2/docs/examples.rst`` to link to the live companion repo URL
 - [ ] Move planning artifacts from core repo into the companion repo
-- [ ] Update ``lifecore_ros2/ROADMAP.md`` to mark the companion repo as published
+- [x] Update ``lifecore_ros2/ROADMAP.md`` to mark the companion repo as published
 
 Phase 4 — Second example (post-Phase-3)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

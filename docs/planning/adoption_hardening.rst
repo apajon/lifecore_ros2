@@ -5,6 +5,13 @@ Strategic roadmap for making lifecore_ros2 adoptable beyond the author.
 
 This roadmap addresses structural feedback on the 0.x baseline: the core release is shipped, but scaling adoption requires clear positioning, ergonomic APIs, concurrency safety, strict lifecycle contract, and strong test coverage.
 
+Status note
+-----------
+
+This adoption-hardening planning window is complete through Sprint 13 and is
+kept as a historical reference for that phase. Current sprint sequencing now
+lives in :doc:`sprints/README`, :doc:`roadmap`, and :doc:`backlog`.
+
 It is organised by nine concerns, each declaring **intent**, **in-scope**, **out-of-scope**, and **success signal**. Actionable items are tracked in the planning backlog.
 
 ---
@@ -219,6 +226,9 @@ Every item below is validated against this principle. If a proposed change incre
 
 Sequencing
 ----------
+
+The sequencing below is historical within the completed adoption-hardening
+window.
 
 The nine sections are not independent. Recommended order:
 

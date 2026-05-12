@@ -5,9 +5,9 @@ lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no 
 
 ---
 
-## Current status — post-Sprint 13
+## Current status — post-Sprint 14
 
-Sprint 13 is complete. The project is past the old Sprint 8 / 0.4.0 planning
+Sprint 14 is complete. The project is past the old Sprint 8 / 0.4.0 planning
 state; the core library is usable for professional evaluation while API
 stability remains experimental until `1.0.0`.
 
@@ -42,7 +42,8 @@ Before pursuing new features, the project is focused on making the library adopt
 
 **See [Adoption & Hardening Roadmap](docs/planning/adoption_hardening.rst)** for the nine-concern roadmap.
 
-Current status: adoption hardening is complete through Sprint 13. The next work
+Current status: adoption hardening is complete through Sprint 13, and Sprint 14
+closed the planning-alignment pass. The next work
 does not automatically have to extend the core package; companion examples,
 documentation, architecture RFCs, DX, and tooling can outrank core features when
 they reduce risk or improve adoption.
@@ -95,9 +96,9 @@ Priority model:
 
 ## Next planning window
 
-The recommended sequence after Sprint 13 is:
+Sprint 14 completed the planning-alignment pass. The recommended sequence after
+Sprint 14 is:
 
-- **Sprint 14 — Project Alignment and Roadmap Cleanup** (Core + product management + docs, P0): synchronize roadmap, backlog, planning docs, and deferred sprint status.
 - **Sprint 15 — Companion Adoption Examples** (Companion / Adoption, P1): strengthen concrete comparison examples and runtime proof.
 - **Sprint 16 — Test Ergonomics and Diagnostics Polish** (Core + DX, P1/P3): make lifecycle tests easier and failures clearer without large abstractions.
 - **Sprint 17 — lifecore_state Architecture RFC** (State Architecture / Research, P2): decide boundaries, naming, concepts, and go/no-go before coding.
@@ -144,7 +145,9 @@ Each item includes a rationale for deferral and placement notes for future imple
 
 **See [Examples Repository Plan](docs/planning/examples_repo.rst)** for the full planning.
 
-**Status**: repository exists and should host applied, domain-flavored, or multi-node examples that fall outside the core library's scope. After Sprint 13, companion adoption work is a high-priority track: a clear example can be more valuable than a new internal feature.
+**Status**: repository exists and already hosts the applied sensor watchdog comparison used as the first companion proof point. After Sprint 14, companion adoption work is a high-priority track: strengthening that proof can be more valuable than a new internal feature.
+
+Start with the [sensor watchdog lifecycle comparison](https://github.com/apajon/lifecore_ros2_examples/blob/main/examples/lifecycle_comparison/README.md) in the companion repository.
 
 ---
 

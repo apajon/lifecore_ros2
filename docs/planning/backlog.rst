@@ -1,7 +1,7 @@
 Planning backlog
 ================
 
-Sprint 13 is complete. The project is past the old Sprint 8 / 0.4.0 planning
+Sprint 14 is complete. The project is past the old Sprint 8 / 0.4.0 planning
 state; the core is mature enough to shift focus toward adoption, documentation,
 testing, diagnostics, and future architecture without automatically adding new
 core abstractions.
@@ -78,8 +78,6 @@ P5 — Advanced tooling, generation, and automation
 Recommended upcoming sprints
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Sprint 14 — :doc:`sprints/active/sprint_14_project_alignment` (Track A + docs, P0)
-* Sprint 15 — :doc:`sprints/planned/sprint_15_companion_adoption` (Track B, P1)
 * Sprint 16 — :doc:`sprints/planned/sprint_16_test_ergonomics_diagnostics` (Track A + D, P1/P3)
 * Sprint 17 — :doc:`sprints/planned/sprint_17_lifecore_state_rfc` (Track C + F, P2)
 * Sprint 18 — :doc:`sprints/planned/sprint_18_lifecore_state_msgs_abi` (Track C, P2 conditional)
@@ -423,33 +421,41 @@ These items are not post-1.0 by default. They are strategic candidates because
 they make the value proposition visible and testable. Sprint priority is now
 location-neutral; see :doc:`sprints/README`.
 
-Lifecycle comparison example
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Lifecycle comparison example — baseline shipped; follow-up in Sprint 15
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* [ ] Create ``lifecore_ros2_examples/examples/lifecycle_comparison/`` in the
+Sprint mapping: :doc:`sprints/archived/sprint_04_lifecycle_comparison` for the
+initial companion comparison baseline; :doc:`sprints/active/sprint_15_companion_adoption`
+for the current adoption-polish follow-up.
+
+* [x] Create ``lifecore_ros2_examples/examples/lifecycle_comparison/`` in the
   companion examples repository.
-* [ ] Implement the same sensor watchdog node three ways: plain ROS 2, classic
+* [x] Implement the same sensor watchdog node three ways: plain ROS 2, classic
   ROS 2 lifecycle, and ``lifecore_ros2``.
-* [ ] Keep the example dependency-light even though it lives in the companion
+* [x] Keep the example dependency-light even though it lives in the companion
   examples repo.
-* [ ] Show subscriber, publisher, and timer behavior across configure,
+* [x] Show subscriber, publisher, and timer behavior across configure,
   activate, deactivate, and cleanup.
-* [ ] Document the observable difference: plain is simple but fragile, classic
+* [x] Document the observable difference: plain is simple but fragile, classic
   lifecycle is controlled but verbose, ``lifecore_ros2`` is structured and
   lifecycle-native.
+* [ ] Tighten the shortest path so one new user can read and run the comparison
+  as the primary adoption proof without needing broader architecture context.
 
 **Rationale:** This is the strongest adoption asset. The project should not
 publish broadly to ROS Discourse before the comparison example makes the value
 obvious.
 
-README comparison update
-^^^^^^^^^^^^^^^^^^^^^^^^
+README and public signposting follow-up
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* [ ] Add a concise comparison section after the example exists.
-* [ ] Lead with "build predictable ROS 2 nodes" instead of a generic toolkit
-  claim.
-* [ ] Link to the full comparison instead of duplicating long explanations in
-  README.
+* [x] Link to the full comparison from core-facing README/docs surfaces instead
+  of duplicating the full walkthrough.
+* [ ] Decide whether ``README.md`` needs a dedicated concise comparison section
+  or whether the current signposting is sufficient.
+* [ ] Keep the adoption-facing message "build predictable ROS 2 nodes"
+  prominent in public material without turning README into the technical
+  reference.
 
 **Rationale:** README should sell the concrete pain and point to the proof, not
 become the technical reference.

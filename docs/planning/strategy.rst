@@ -138,10 +138,11 @@ without hiding lifecycle semantics.
 
 ---
 
-Roadmap thesis after Sprint 13
+Roadmap thesis after Sprint 14
 ------------------------------
 
-Sprint 13 completed the current core planning window. Future priority is
+Sprint 14 completed the planning-alignment pass after the current core planning
+window. Future priority is
 location-neutral: a sprint may target core, companion, docs, architecture,
 tooling, DX, external modules, or research. Priority is based on risk reduction,
 adoption leverage, architectural clarification, and strategic sequencing, not on
@@ -149,17 +150,16 @@ whether the sprint changes the ``lifecore_ros2`` package.
 
 Recommended mapping:
 
-1. Sprint 14: project alignment and roadmap cleanup.
-2. Sprint 15: companion adoption examples.
-3. Sprint 16: test ergonomics and diagnostics polish.
-4. Sprint 17: ``lifecore_state`` architecture RFC.
-5. Sprint 18: ``lifecore_state_msgs`` ABI prototype, conditional on Sprint 17.
-6. Sprint 19: minimal factory and registry, conditional on repeated real pain.
-7. Sprint 20+: tooling and generated nodes, conditional on stable conventions.
+1. Sprint 15: companion adoption examples.
+2. Sprint 16: test ergonomics and diagnostics polish.
+3. Sprint 17: ``lifecore_state`` architecture RFC.
+4. Sprint 18: ``lifecore_state_msgs`` ABI prototype, conditional on Sprint 17.
+5. Sprint 19: minimal factory and registry, conditional on repeated real pain.
+6. Sprint 20+: tooling and generated nodes, conditional on stable conventions.
 
-Historical Sprint 14 and Sprint 15 are no longer default next steps. Factory and
-tooling should follow proven adoption, stable conventions, and clear state
-architecture boundaries.
+The historical factory and tooling cards that once held Sprint 14 and Sprint 15
+numbering are no longer default next steps. Factory and tooling should follow
+proven adoption, stable conventions, and clear state architecture boundaries.
 
 The project wins when a ROS 2 developer sees the example and thinks: "this would
 have prevented lifecycle pain in my own node." It loses if the reaction is only:
