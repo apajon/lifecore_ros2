@@ -30,7 +30,7 @@ consistent activation semantics, behind a uniform two-layer
      analogous to ``LifecycleSubscriberComponent``.
 
    This keeps naming symmetric, intent-explicit, and aligned with the
-  library naming convention ``Lifecycle<Capability>Component`` for concrete
+   library naming convention ``Lifecycle<Capability>Component`` for concrete
    managed entities (see ``.github/instructions/naming-conventions``).
 
 ---

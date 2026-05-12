@@ -23,9 +23,9 @@ Minimal ``LifecyclePublisherComponent`` (publish-on-demand)
 
 1. Import ``LifecyclePublisherComponent`` and the ROS message type.
 2. Subclass ``LifecyclePublisherComponent[MsgT]``; implement ``__init__``
-  with named arguments ``name`` and ``topic_name``; ``qos_profile`` remains
-  optional (default: ``10``). ``msg_type`` is optional when the subclass is
-  parameterized with a concrete generic argument.
+   with named arguments ``name`` and ``topic_name``; ``qos_profile`` remains
+   optional (default: ``10``). ``msg_type`` is optional when the subclass is
+   parameterized with a concrete generic argument.
 3. Call ``self.publish(msg)`` from any callback or override.
 
 **Total: 3 steps.**  No override is mandatory.
@@ -55,9 +55,9 @@ Minimal ``LifecycleSubscriberComponent``
 
 1. Import ``LifecycleSubscriberComponent`` and the ROS message type.
 2. Subclass ``LifecycleSubscriberComponent[MsgT]``; implement ``__init__``
-  with named arguments ``name`` and ``topic_name``; ``qos_profile`` remains
-  optional (default: ``10``). ``msg_type`` is optional when the subclass is
-  parameterized with a concrete generic argument.
+   with named arguments ``name`` and ``topic_name``; ``qos_profile`` remains
+   optional (default: ``10``). ``msg_type`` is optional when the subclass is
+   parameterized with a concrete generic argument.
 3. Implement ``on_message(self, msg: MsgT) -> None``.
 
 **Total: 3 steps.**  ``on_message`` is the only mandatory user override.

@@ -115,7 +115,7 @@ Multi-publisher / multi-subscriber pipelines with a fan-in or fan-out shape.
 Teaches activation gating across a topology, configure-time resource acquisition for simulated or real sensor handles, and how ``LifecycleComponent`` composition scales past the minimal examples already shown in the core repo.
 
 Lifecycle-aware diagnostics
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Components that publish to ``/diagnostics``, react to lifecycle transitions of *other* nodes, or aggregate health signals from sibling components. Teaches inter-component contracts, ``_on_error`` semantics, and graceful deactivation under partial failure.
 
@@ -236,7 +236,7 @@ validated in ``lifecore_ros2_examples/examples/`` by default:
    repo first
 
 Phase 0 — Repository bootstrap
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - [x] Create ``apajon/lifecore_ros2_examples`` on GitHub
 - [x] Add ``LICENSE`` (Apache-2.0)
@@ -262,7 +262,7 @@ This later example focuses on **sensor-fusion pipeline** — fan-in multi-sensor
 - [ ] Add ``examples/sensor_fusion/README.md`` explaining the topology
 
 Phase 2 — Quality gates
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 - [x] CI workflow: ``ruff check``, ``ruff format --check``, ``pyright``, ``pytest``
 - [ ] Smoke test that imports each example module without invoking ``rclpy.spin``
@@ -270,7 +270,7 @@ Phase 2 — Quality gates
 - [ ] Confirm install-from-scratch on a clean ROS 2 Jazzy environment
 
 Phase 3 — Signposting back to core
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - [ ] Update ``lifecore_ros2/README.md`` to link to the live companion repo URL
 - [ ] Update ``lifecore_ros2/docs/examples.rst`` to link to the live companion repo URL
@@ -278,7 +278,7 @@ Phase 3 — Signposting back to core
 - [ ] Update ``lifecore_ros2/ROADMAP.md`` to mark the companion repo as published
 
 Phase 4 — Second example (post-Phase-3)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - [ ] Choose between *lifecycle-aware diagnostics* and *multi-node orchestration* based on user feedback
 - [ ] Apply the same module-docstring discipline (one teaching axis, expected output)

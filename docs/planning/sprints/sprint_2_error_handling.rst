@@ -180,4 +180,4 @@ Success signal
 Related design notes
 --------------------
 
-- :doc:`../design_notes/error_handling_contract` — future reference for advanced policies
+- :doc:`../../design_notes/error_handling_contract` — future reference for advanced policies
