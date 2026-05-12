@@ -15,10 +15,11 @@ Recommended Patterns
 
   For standard ROS resources, prefer the dedicated library components over raw
   ``create_*`` calls: ``LifecyclePublisherComponent``, ``LifecycleSubscriberComponent``,
-  ``LifecycleTimerComponent``, ``LifecycleServiceServerComponent``, and
-  ``LifecycleServiceClientComponent`` each encapsulate the configure / cleanup plumbing
-  automatically.  Reserve the ``_on_configure`` override for resources without a library
-  equivalent — for example, a hardware handle or a custom sensor connection.
+  ``LifecycleTimerComponent``, ``LifecycleParameterComponent``,
+  ``LifecycleServiceServerComponent``, and ``LifecycleServiceClientComponent``
+  each encapsulate the configure / cleanup plumbing automatically. Reserve the
+  ``_on_configure`` override for resources without a library equivalent — for
+  example, a hardware handle or a custom sensor connection.
 
   .. code-block:: python
 
@@ -348,7 +349,7 @@ Anti-Patterns
 **Destroying a borrowed ``callback_group`` from inside a component**
 
   The ``callback_group`` passed to a component is borrowed (see
-  :ref:`patterns:borrow-only-contract`). Destroying it, reassigning it, or treating it as
+  :ref:`borrow-only contract <patterns:borrow-only-contract>`). Destroying it, reassigning it, or treating it as
   component-owned state breaks the contract: other components or node-level callbacks may
   still hold the same reference, and the application has no way to know the group has
   been invalidated.

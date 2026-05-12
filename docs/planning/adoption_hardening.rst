@@ -236,7 +236,7 @@ Promotion to 1.0.0 is gated on §4, §5, §6 being complete and §1, §2, §8 be
 Related documents
 -----------------
 
-- :doc:`../../ROADMAP` — 0.x release scope and out-of-scope items
+- `ROADMAP.md <https://github.com/apajon/lifecore_ros2/blob/main/ROADMAP.md>`_ — 0.x release scope and out-of-scope items
 - :doc:`backlog` — planning backlog
 - `.github/instructions/naming-conventions.instructions.md` — naming rules
 - `CONTRIBUTING.md` — PR checklist including naming and regression discipline

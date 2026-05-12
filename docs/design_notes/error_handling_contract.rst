@@ -6,7 +6,7 @@ Error handling contract
 **Purpose**: Define error propagation semantics and rollback policy for ``LifecycleComponent``
 hooks. This note supersedes the pre-implementation placeholder and is the single authoritative
 source for the decisions below. The propagation matrix is reproduced in
-:ref:`architecture:Error Policy` for quick reference.
+:ref:`Error Policy <architecture-error-policy>` for quick reference.
 
 ---
 

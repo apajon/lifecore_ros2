@@ -31,13 +31,7 @@ def _worst_health(a: HealthStatus, b: HealthStatus) -> HealthStatus:
 
 @dataclass(frozen=True)
 class HealthStatus:
-    """Immutable health snapshot for a lifecycle component.
-
-    Attributes:
-        level: Severity level of the component's current health.
-        reason: Human-readable description of the health state.
-        last_error: Last captured error message, if any.
-    """
+    """Immutable health snapshot for a lifecycle component."""
 
     level: HealthLevel
     reason: str

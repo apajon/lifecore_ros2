@@ -1,4 +1,5 @@
 # lifecore_ros2
+
 ![lifecore_ros2 logo](https://raw.githubusercontent.com/apajon/lifecore_ros2/main/docs/_static/Logo_main_light_HD.png)
 
 [![CI](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml) [![Docs](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml) [![Release](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml)
@@ -23,7 +24,8 @@ lifecore_ros2:
 LifecycleComponentNode
  ├── LifecyclePublisherComponent
  ├── LifecycleSubscriberComponent
- └── LifecycleTimerComponent
+ ├── LifecycleTimerComponent
+ └── LifecycleParameterComponent
 ```
 
 The node still owns the native ROS 2 lifecycle. The library adds a small composition layer so reusable components can follow the same lifecycle contract.
@@ -80,13 +82,16 @@ flowchart LR
 A small set of lifecycle-aware building blocks:
 
 | Symbol | Role |
-|---|---|
+| --- | --- |
 | `LifecycleComponentNode` | Lifecycle node that owns and drives registered `LifecycleComponent` instances |
 | `LifecycleComponent` | Base class for a lifecycle-aware managed entity (abstract by convention — override `_on_*` hooks) |
 | `TopicComponent` | Base class for topic-oriented components (pub/sub) |
 | `LifecyclePublisherComponent` | Lifecycle-gated ROS publisher |
 | `LifecycleSubscriberComponent` | Lifecycle-gated ROS subscriber |
 | `LifecycleTimerComponent` | Lifecycle-gated ROS timer |
+| `LifecycleParameter` | Frozen parameter definition used by `LifecycleParameterComponent` |
+| `LifecycleParameterComponent` | Lifecycle-aware owner for node parameters scoped to one component |
+| `ParameterMutability` | Runtime mutability policy for component-owned parameters |
 | `LifecycleWatchdogComponent` | Lifecycle-gated health watchdog — polls targets and logs DEGRADED / ERROR / STALE |
 | `HealthLevel` | Severity enum: `UNKNOWN \| OK \| DEGRADED \| ERROR` |
 | `HealthStatus` | Frozen dataclass capturing component health (`level`, `reason`, `last_error`) |
@@ -140,7 +145,7 @@ ros2 lifecycle set /minimal_lifecore_node configure
 ros2 lifecycle set /minimal_lifecore_node activate
 ```
 
-For the full walkthrough, see [docs/quickstart.rst](docs/quickstart.rst). For validation and documentation commands, see [docs/getting_started.rst](docs/getting_started.rst). For the activation-gated subscriber example, continue with [examples/minimal_subscriber.py](examples/minimal_subscriber.py) or [docs/examples.rst](docs/examples.rst).
+For the full walkthrough, see [docs/quickstart.rst](docs/quickstart.rst). For validation and documentation commands, see [docs/getting_started.rst](docs/getting_started.rst). For the activation-gated subscriber example, continue with [examples/minimal_subscriber.py](examples/minimal_subscriber.py). For lifecycle-aware parameter ownership, run [examples/minimal_parameter.py](examples/minimal_parameter.py). The full example map lives in [docs/examples.rst](docs/examples.rst).
 
 ## Lifecycle reading path
 
@@ -187,6 +192,21 @@ Messages appear only after `activate`. Deactivation stops them.
 
 For the subscriber path, use the quickstart above or the full example walkthrough in [docs/examples.rst](docs/examples.rst).
 
+## Parameter example
+
+Run the parameter example to see component-scoped parameter declaration, active-only writes, and validation hooks:
+
+```bash
+uv run python examples/minimal_parameter.py
+# in another terminal:
+ros2 lifecycle set /parameter_demo_node configure
+ros2 lifecycle set /parameter_demo_node activate
+ros2 param set /parameter_demo_node sensor_params.gain 5.0
+ros2 param set /parameter_demo_node sensor_params.mode raw
+```
+
+`sensor_params.gain` is writable only while the component is active and must stay positive. `sensor_params.mode` is static and rejects runtime writes.
+
 ## Public API overview
 
 All exported symbols and their stability levels are documented in [ROADMAP.md](ROADMAP.md#public-api-and-extension-model).
@@ -205,7 +225,7 @@ This project is licensed under the Apache-2.0 License — see [LICENSE](LICENSE)
 
 ## Documentation
 
-Documentation: https://apajon.github.io/lifecore_ros2/
+Documentation: [https://apajon.github.io/lifecore_ros2/](https://apajon.github.io/lifecore_ros2/)
 
 Full documentation lives under `docs/` and is built with Sphinx:
 
@@ -215,6 +235,7 @@ uv run --group docs python -m sphinx -b html docs docs/_build/html
 ```
 
 Key pages:
+
 - `docs/getting_started.rst` — setup and validation commands
 - `docs/architecture.rst` — lifecycle design rules, error policy, member conventions
 - `docs/patterns.rst` — recommended patterns and anti-patterns

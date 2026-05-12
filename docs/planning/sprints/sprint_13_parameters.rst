@@ -31,24 +31,25 @@ Update policy candidates:
 - active-only
 - inactive-only
 
-To decide during sprint planning
---------------------------------
+Sprint outcome
+--------------
 
-- Whether this is a component base class, helper mixin, or plain utility.
-- Exact validation-hook shape.
-- Parameter namespace convention.
-- Which update policies are needed for the first implementation.
+- Implemented as ``LifecycleParameterComponent``.
+- Validation surface: ``validate_parameter_update(...)`` for per-parameter rules,
+  with ``on_validate_owned_parameters(...)`` available for batch validation.
+- Parameter names are scoped as ``<component_name>.<parameter_name>``.
+- First implementation ships two update policies: ``STATIC`` and ``ACTIVE``.
 
 ---
 
 Validation
 ----------
 
-- [ ] Parameters are declared during configure.
-- [ ] Values can be retrieved through a documented API.
-- [ ] Validation blocks invalid updates.
-- [ ] Update policy is enforced across lifecycle states.
-- [ ] Cleanup clears component-owned parameter tracking.
+- [x] Parameters are declared during configure.
+- [x] Values can be retrieved through a documented API.
+- [x] Validation blocks invalid updates.
+- [x] Update policy is enforced across lifecycle states.
+- [x] Cleanup clears component-owned parameter tracking.
 
 ---
 
@@ -92,5 +93,5 @@ Out of scope:
 Success signal
 --------------
 
-- [ ] Parameter behavior follows component lifecycle state.
-- [ ] The API does not become a general application configuration layer.
+- [x] Parameter behavior follows component lifecycle state.
+- [x] The API does not become a general application configuration layer.

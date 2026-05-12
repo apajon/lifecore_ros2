@@ -22,6 +22,6 @@ Reference Sections
    * - :doc:`Core <api/core>`
      - Lifecycle node, component base class, lifecycle hooks, and typed exceptions.
    * - :doc:`Components <api/components>`
-     - Topic, timer, service server, and service client component APIs.
+     - Topic, timer, service, watchdog, and parameter component APIs.
    * - :doc:`Testing <api/testing>`
      - Testing fakes, fixtures, assertions, helpers, and concurrency utilities.
