@@ -53,7 +53,8 @@ Explicit lifecycle composition for ROS 2 Jazzy
    LifecycleComponentNode
     ├── LifecyclePublisherComponent
     ├── LifecycleSubscriberComponent
-    └── LifecycleTimerComponent
+    ├── LifecycleTimerComponent
+    └── LifecycleParameterComponent
 
 The library exists to make raw ``rclpy`` lifecycle code easier to structure and verify. Resource creation, activation,
 deactivation, and cleanup stay explicit; component boundaries stay testable; and the library does not add a second
@@ -114,7 +115,7 @@ They explain the library's lifecycle model, ownership rules, and recommended usa
    * - :doc:`Testing Utilities <testing>`
      - Reuse fakes, fixtures, assertions, and helpers for lifecycle-focused tests.
    * - :doc:`Examples <examples>`
-     - Walk through runnable publisher, subscriber, and composed node examples.
+     - Walk through runnable publisher, subscriber, parameter, service, watchdog, and composed node examples.
    * - :doc:`Migration from Raw rclpy <migration_from_rclpy>`
      - Compare the library approach with direct lifecycle code in ``rclpy``.
 

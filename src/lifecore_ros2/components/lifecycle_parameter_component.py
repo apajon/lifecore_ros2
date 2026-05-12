@@ -18,7 +18,9 @@ class ParameterMutability(Enum):
     """Runtime mutability model for component-owned parameters."""
 
     STATIC = "static"
+    """Parameter cannot be changed at runtime; any write is rejected regardless of lifecycle state."""
     ACTIVE = "active"
+    """Parameter can be written only while the owning component is active."""
 
 
 @dataclass(frozen=True)
@@ -53,6 +55,11 @@ class LifecycleParameterComponent(LifecycleComponent):
     parameters reject all runtime writes. Parameters not owned by this component
     are ignored so multiple parameter components can attach callbacks to the
     same node safely.
+
+    Owned ROS 2 parameters are declared on the parent node during configure and
+    are **not undeclared during cleanup or shutdown**. A subsequent configure
+    cycle reuses the existing node-level value. Parameter names are scoped as
+    ``<component_name>.<parameter_name>`` to avoid collisions across components.
     """
 
     def __init__(
@@ -139,14 +146,29 @@ class LifecycleParameterComponent(LifecycleComponent):
         return self._parameter_values[name]
 
     def on_pre_set_owned_parameters(self, parameters: list[Parameter]) -> list[Parameter]:
-        """Hook for transforming active owned parameter updates before validation."""
+        """Transform owned parameter updates before validation.
+
+        Called only when the component is active and at least one owned parameter
+        is being written. ``parameters`` contains only the owned subset of the
+        original batch. The returned list replaces those entries before the
+        validation callbacks run.
+
+        The default implementation returns ``parameters`` unchanged.
+        """
         return parameters
 
     def on_validate_owned_parameters(self, parameters: list[Parameter]) -> SetParametersResult:
-        """Validate active owned parameter updates.
+        """Validate active owned parameter updates as a batch.
 
-        This batch hook is authoritative. The default implementation delegates
-        each owned parameter to ``validate_parameter_update``.
+        Called only when the component is active and at least one owned parameter
+        passes pre-filtering. By the time this hook runs, type compatibility and
+        mutability (``STATIC`` rejection) have already been checked by the
+        framework. This hook handles application-level constraints.
+
+        The default implementation delegates each parameter to
+        ``validate_parameter_update``. Override this method directly only for
+        cross-parameter validation; prefer ``validate_parameter_update`` for
+        per-parameter rules.
         """
         for parameter in parameters:
             local_name = self._local_parameter_name(parameter.name)
@@ -166,7 +188,12 @@ class LifecycleParameterComponent(LifecycleComponent):
         return None
 
     def on_post_set_owned_parameters(self, parameters: list[Parameter]) -> None:
-        """Hook called after successful active owned parameter updates."""
+        """React to successful active owned parameter updates.
+
+        Called after the component's internal value tracking has been updated.
+        ``get_parameter_value`` already reflects the new values when this hook
+        runs. ``parameters`` carries the scoped names (``<component>.<name>``).
+        """
 
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:
         """Declare and read owned ROS 2 parameters on the parent node."""
@@ -182,7 +209,13 @@ class LifecycleParameterComponent(LifecycleComponent):
         return TransitionCallbackReturn.SUCCESS
 
     def _release_resources(self) -> None:
-        """Clear runtime parameter tracking and remove callbacks when possible."""
+        """Clear runtime tracking and remove parameter callbacks.
+
+        Clears ``_parameter_values`` and ``_configured_parameters``. Does **not**
+        call ``node.undeclare_parameter``; ROS 2 parameters remain on the parent
+        node across cleanup cycles so that a subsequent configure reuses their
+        values (see ``_declare_or_read_parameter``).
+        """
         self._remove_parameter_callbacks()
         self._parameter_values.clear()
         self._configured_parameters.clear()

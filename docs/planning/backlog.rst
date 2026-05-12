@@ -349,10 +349,10 @@ Observability
 Parameters and runtime configuration
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* [ ] ``ParameterComponent``
-* [ ] Parameter declaration helper
-* [ ] Parameter validation hook
-* [ ] Optional lifecycle-aware parameter update policy
+* [x] ``LifecycleParameterComponent`` — shipped; component-scoped parameter ownership with namespaced node parameters
+* [x] Parameter declaration helper — delivered via ``declare_lifecycle_parameter(...)``
+* [x] Parameter validation hook — delivered via ``validate_parameter_update(...)`` and ``on_validate_owned_parameters(...)``
+* [x] Lifecycle-aware parameter update policy — first implementation ships ``STATIC`` and ``ACTIVE`` mutability modes
 
 **Rationale:** Parameters are a first-class runtime concern, not just another component type.
 

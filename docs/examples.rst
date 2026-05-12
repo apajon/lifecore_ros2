@@ -66,6 +66,10 @@ Example map
      - Activation-gated delivery with a managed subscription.
      - Read when you want to see inactive message drops and subscriber ownership.
      - ``uv run python examples/minimal_subscriber.py``
+   * - `minimal_parameter.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_parameter.py>`_
+     - ``LifecycleParameterComponent`` with active-only writes, static parameters, and validation hooks.
+     - Read after the subscriber example to see lifecycle-aware parameter ownership without turning the node into a config system.
+     - ``uv run python examples/minimal_parameter.py``
    * - `minimal_service_server.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_service_server.py>`_
      - ``LifecycleServiceServerComponent`` with activation-gated request handling.
      - Read when you want to see how inactive requests are answered with a default response.
@@ -105,6 +109,7 @@ Suggested reading path
 - Start with ``minimal_node.py`` for the smallest ownership boundary.
 - Continue with ``minimal_state_component.py`` to see lifecycle management applied to owned state with no ROS resources.
 - Move to timer, publisher, and subscriber examples to see activation gating on long-lived ROS resources.
+- Continue with ``minimal_parameter.py`` to see lifecycle-aware parameter ownership and runtime update policy.
 - Continue with service server and client examples to compare inbound versus outbound gating behavior.
 - Finish with ``telemetry_publisher.py``, ``composed_pipeline.py``, and ``composed_ordered_pipeline.py`` for full lifecycle separation across multiple responsibilities.
 - Read ``composed_ordered_pipeline.py`` after ``telemetry_publisher.py`` to see how ``dependencies`` declared at ``add_component(...)`` impose a guaranteed transition order across independently managed components.
@@ -213,6 +218,26 @@ What to look for
 - The node owns one subscriber component; ``on_message`` is the component contract.
 - ``activate`` allows delivery; ``deactivate`` silently drops messages by design.
 - ``cleanup`` releases the subscription and removes the topic from the subscriber graph.
+
+Minimal Parameter
+-----------------
+
+Source: `examples/minimal_parameter.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_parameter.py>`_
+
+What it demonstrates
+~~~~~~~~~~~~~~~~~~~~
+
+A ``LifecycleParameterComponent`` that owns component-scoped node parameters.
+One parameter is writable only while active (``gain``), one is static
+(``mode``), and the validation hook rejects invalid active updates.
+
+What to look for
+~~~~~~~~~~~~~~~~
+
+- ``configure`` declares ``sensor_params.gain`` and ``sensor_params.mode`` on the parent node if they do not already exist.
+- ``activate`` enables runtime writes for ``gain`` only; ``mode`` remains read-only for the full lifecycle.
+- Invalid active writes are rejected by ``validate_parameter_update`` with a clear reason.
+- ``cleanup`` clears the component's runtime tracking and callback registration, but the ROS 2 parameters stay declared on the node and are reused on the next configure.
 
 Minimal Service Server
 ----------------------
