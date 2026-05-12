@@ -173,3 +173,54 @@ class TestLifecycleParameterComponent:
         assert _set_parameter(node, "active_params.gain", 2)
         assert active_component.get_parameter_value("gain") == 2
         assert inactive_component.get_parameter_value("gain") == 10
+
+    def test_pre_set_hook_transforms_owned_parameter_before_storage(self, node: LifecycleComponentNode) -> None:
+        class ClampingParameters(LifecycleParameterComponent):
+            def on_pre_set_owned_parameters(self, parameters: list[Parameter]) -> list[Parameter]:
+                result = []
+                for p in parameters:
+                    if p.name == "clamped.gain" and isinstance(p.value, float) and p.value > 3.0:
+                        result.append(Parameter("clamped.gain", value=3.0))
+                    else:
+                        result.append(p)
+                return result
+
+        component = ClampingParameters("clamped")
+        component.declare_lifecycle_parameter("gain", 1.0, mutability=ParameterMutability.ACTIVE)
+        node.add_component(component)
+        component.on_configure(DUMMY_STATE)
+        component.on_activate(DUMMY_STATE)
+
+        assert _set_parameter(node, "clamped.gain", 5.0)
+        assert component.get_parameter_value("gain") == 3.0
+
+    def test_configure_partial_failure_leaves_clean_state_after_cleanup(self, node: LifecycleComponentNode) -> None:
+        node.declare_parameter("params.mode", 99)  # int is incompatible with default "filtered" (str)
+        component = LifecycleParameterComponent("params")
+        component.declare_lifecycle_parameter("gain", 1)
+        component.declare_lifecycle_parameter("mode", "filtered")
+        node.add_component(component)
+
+        result = component.on_configure(DUMMY_STATE)
+
+        assert result == TransitionCallbackReturn.ERROR
+
+        cleanup_result = component.on_cleanup(DUMMY_STATE)
+
+        assert cleanup_result == TransitionCallbackReturn.SUCCESS
+        assert component.has_parameter("gain")
+        assert component.has_parameter("mode")
+        with pytest.raises(ComponentNotConfiguredError):
+            component.get_parameter_value("gain")
+
+    def test_get_parameter_value_raises_key_error_for_unknown_name(self) -> None:
+        component = LifecycleParameterComponent("params")
+
+        with pytest.raises(KeyError, match="unknown"):
+            component.get_parameter_value("unknown")
+
+    def test_declare_lifecycle_parameter_rejects_empty_name(self) -> None:
+        component = LifecycleParameterComponent("params")
+
+        with pytest.raises(ValueError, match="must not be empty"):
+            component.declare_lifecycle_parameter("", 1)
