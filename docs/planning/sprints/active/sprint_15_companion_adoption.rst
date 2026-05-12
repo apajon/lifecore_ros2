@@ -1,14 +1,20 @@
 Sprint 15 - Companion adoption examples
 =======================================
 
-**Track.** Companion / Adoption.
+Status:
+  Active
 
-**Branch.** ``sprint/15-companion-adoption``.
+Branch:
+  sprint/15-companion-adoption
 
-**Priority.** P1 - usage proof and adoption.
+Track:
+  Companion / Adoption
 
-**Objective.** Strengthen proof of value with concrete, readable, testable
-examples.
+Priority:
+  P1
+
+Goal:
+  Strengthen proof of value with concrete, readable, testable examples.
 
 Scope
 -----

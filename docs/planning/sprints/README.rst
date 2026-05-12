@@ -8,8 +8,7 @@ available, but they do not drive current planning directly.
    :maxdepth: 1
    :hidden:
 
-   active/sprint_14_project_alignment
-   planned/sprint_15_companion_adoption
+  active/sprint_15_companion_adoption
    planned/sprint_16_test_ergonomics_diagnostics
    planned/sprint_17_lifecore_state_rfc
    planned/sprint_18_lifecore_state_msgs_abi
@@ -30,18 +29,16 @@ available, but they do not drive current planning directly.
    archived/sprint_11_watchdog_light
    archived/sprint_12_lifecycle_policies
    archived/sprint_13_parameters
+  archived/sprint_14_project_alignment
 
-Current sprint
---------------
+Active sprint
+------------
 
-- Sprint 14 - Project Alignment and Roadmap Cleanup
-  Location: :doc:`active/sprint_14_project_alignment`
+- Sprint 15 - Companion Adoption Examples
+  Location: :doc:`active/sprint_15_companion_adoption`
 
 Next planned sprints
 --------------------
-
-- Sprint 15 - Companion Adoption Examples
-  Location: :doc:`planned/sprint_15_companion_adoption`
 
 - Sprint 16 - Test Ergonomics and Diagnostics Polish
   Location: :doc:`planned/sprint_16_test_ergonomics_diagnostics`
@@ -64,14 +61,13 @@ Deferred / conditional sprints
 Archived sprints
 ----------------
 
-- Sprint 1 to Sprint 13 are archived under ``archived/``.
+- Sprint 1 to Sprint 14 are archived under ``archived/``.
 
 Important note
 --------------
 
-The previous Sprint 14 and Sprint 15 plans were reclassified as deferred after
-Sprint 13. The active sprint numbering continues with the revised Sprint 14
-roadmap.
+Sprint 14 project alignment is archived. The historical factory and tooling
+cards that once occupied Sprint 14 and Sprint 15 numbering remain deferred.
 
 Sprint status values
 --------------------
