@@ -1,6 +1,19 @@
 Sprint 4 - Lifecycle comparison example
 =======================================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 **Objective.** Prove the value proposition with one concrete example before
 adding more library surface.
 

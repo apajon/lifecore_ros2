@@ -1,6 +1,19 @@
 Sprint 13 - Parameters and runtime configuration
 ================================================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 **Objective.** Add lifecycle-aware parameter management when a concrete use case
 requires it.
 

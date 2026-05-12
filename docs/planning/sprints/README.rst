@@ -1,173 +1,106 @@
-Sprint planning
-===============
+Sprint Planning Index
+=====================
 
-Structured sprints for extending lifecore_ros2 without architectural drift.
-
-Each sprint = **concrete + stable + testable deliverable**.
-
-Sprint cards stay at framing level: they document decisions already made,
-constraints, risks, and success criteria. Exact signatures, commit breakdown,
-final internal names, and execution details are decided at the beginning of the
-sprint during planning.
-
----
-
-Principles
-----------
-
-- **No sprint mixing.** Each sprint stays isolated, reviewable, and backportable.
-- **No premature coupling.** ServiceComponent does not know Factory; Factory knows Registry.
-- **Definition of Done.** Each sprint has a clear definition: code + tests + docs.
-- **Named risks.** Pitfalls are identified and mitigated before coding.
-- **No premature design.** A card may name an agreed direction, but it does not
-   freeze an API that still needs sprint planning.
-
----
-
-Sprint roadmap
---------------
+This index shows the current planning state. Historical sprint files remain
+available, but they do not drive current planning directly.
 
 .. toctree::
    :maxdepth: 1
+   :hidden:
 
-   sprint_1_service_client
-   sprint_2_error_handling
-   sprint_3_testing_infrastructure
-   sprint_4_lifecycle_comparison
-   sprint_4_5_state_component_example
-   sprint_5_internal_cascade
-   sprint_5_1_composition_surface
-   sprint_6_callback_gating
-   sprint_7_cleanup_api
-   sprint_8_concurrency
-   sprint_9_observability
-   sprint_10_health_status
-   sprint_11_watchdog_light
-   sprint_12_lifecycle_policies
-   sprint_13_parameters
-   sprint_14_factory
-   sprint_15_tooling_generation
+   active/sprint_14_project_alignment
+   planned/sprint_15_companion_adoption
+   planned/sprint_16_test_ergonomics_diagnostics
+   planned/sprint_17_lifecore_state_rfc
+   planned/sprint_18_lifecore_state_msgs_abi
+   deferred/former_sprint_14_factory_registry
+   deferred/former_sprint_15_tooling_codegen
+   archived/sprint_01_service_client
+   archived/sprint_02_error_handling
+   archived/sprint_03_testing_infrastructure
+   archived/sprint_04_lifecycle_comparison
+   archived/sprint_04_5_state_component_example
+   archived/sprint_05_internal_cascade
+   archived/sprint_05_1_composition_surface
+   archived/sprint_06_callback_gating
+   archived/sprint_07_cleanup_api
+   archived/sprint_08_concurrency
+   archived/sprint_09_observability
+   archived/sprint_10_health_status
+   archived/sprint_11_watchdog_light
+   archived/sprint_12_lifecycle_policies
+   archived/sprint_13_parameters
 
----
-
-Condensed View
+Current sprint
 --------------
 
-::
+- Sprint 14 - Project Alignment and Roadmap Cleanup
+  Location: :doc:`active/sprint_14_project_alignment`
 
-   S1: Service/Client components (ROS 2 primitives)
-   S2: Solid error handling (lifecycle reliability)
-   S3: Testing infrastructure (acceleration)
-   S4: Lifecycle comparison example (product proof)
-   S4.5: State-only component example (core teaching pattern)
-   S5: Internal component cascade (deterministic ordering)
-   S5.1: Composition surface (API and teaching follow-up)
-   S6: Centralized callback gating (consistency)
-   S7: Cleanup and ownership API (explicit resources)
-   S8: Clean concurrency (multi-threaded use)
-   S9: Minimal observability (debugging)
-   S10: Health status API (readable observability)
-   S11: Lightweight watchdog (observer/report)
-   S12: Lifecycle policies (ordering and activation)
-   S13: Parameters (runtime configuration)
-   S14: Minimal factory (dynamic instantiation)
-   S15: Tooling and generated nodes (scaffolding)
+Next planned sprints
+--------------------
 
----
+- Sprint 15 - Companion Adoption Examples
+  Location: :doc:`planned/sprint_15_companion_adoption`
 
-Outside the Immediate Roadmap
------------------------------
+- Sprint 16 - Test Ergonomics and Diagnostics Polish
+  Location: :doc:`planned/sprint_16_test_ergonomics_diagnostics`
 
-**Do not include in these sprints:**
+- Sprint 17 - lifecore_state Architecture RFC
+  Location: :doc:`planned/sprint_17_lifecore_state_rfc`
 
-- SpecModel / AppSpec
-- ActionComponent (after S1)
-- Binding layer (if ever needed)
-- Advanced robot control (outside core scope)
-- MCP runtime or direct AI behavior in the library
+- Sprint 18 - lifecore_state_msgs ABI Prototype
+  Location: :doc:`planned/sprint_18_lifecore_state_msgs_abi`
 
----
+Deferred / conditional sprints
+------------------------------
 
-Sprint Dependencies
--------------------
+- Former Sprint 14 - Minimal Factory and Registry
+  Location: :doc:`deferred/former_sprint_14_factory_registry`
 
-::
+- Former Sprint 15 - Tooling and Generated Nodes
+  Location: :doc:`deferred/former_sprint_15_tooling_codegen`
 
-   S1-S3 (foundation)
-      v
-   S4 (comparison example)
-      v
-   S4.5 (state-only component example)
-      v
-   S5 (internal cascade)
-      v
-   S5.1 (composition surface)
-      v
-   S6 (callback gating)
-      v
-   S7 (cleanup ownership)
-      v
-   S8 (concurrency)
-      v
-   S9 (observability)
-      v
-   S10 (health status)
-      v
-   S11 (watchdog light)
-      v
-   S12-S14 (policies, parameters, factory)
-      v
-   S15 (tooling / generation)
+Archived sprints
+----------------
 
-**Recommended sequencing:**
+- Sprint 1 to Sprint 13 are archived under ``archived/``.
 
-1. S4 before any major new API - prove the product value.
-2. S5 next - deliver the main internal differentiator.
-3. S5.1 immediately after S5 - API and teaching follow-up for composition.
-4. S6-S9 harden runtime behavior before diagnostic-facing surfaces.
-5. S10 then S11 expose health before observing it automatically.
-6. S12-S14 remain advanced surfaces, after the deterministic core.
-7. S15 only after stabilization - generate code from solid conventions.
+Important note
+--------------
 
----
+The previous Sprint 14 and Sprint 15 plans were reclassified as deferred after
+Sprint 13. The active sprint numbering continues with the revised Sprint 14
+roadmap.
 
-Definition of Done (All Sprints)
---------------------------------
+Sprint status values
+--------------------
 
-Each sprint must satisfy:
+Use the following status values:
 
-- ✓ Code with Google-style docstrings
-- ✓ Unit tests (nominal + edge cases)
-- ✓ Integration tests (with other components when applicable)
-- ✓ Regression tests for bug fixes
-- ✓ Ruff + Pyright + Pytest green
-- ✓ Documentation (docstrings + design notes for architecture changes)
-- ✓ CONTRIBUTING.md updated for new patterns
-- ✓ Example(s) for user-facing surfaces
+Active
+  Currently being executed.
 
----
+Planned
+  Approved or likely upcoming work.
 
-Sprint Card Format
-------------------
+Completed
+  Finished but not yet archived.
 
-Each sprint file contains:
+Archived
+  Historical completed sprint. Not part of active planning.
 
-- **Objective** - what should be true at the end
-- **Decisions already made** - invariants, limits, agreed behavior
-- **To decide during planning** - exact API, breakdown, implementation order
-- **Validation** - observable criteria and expected tests
-- **Risks** - named pitfalls and mitigations
-- **Dependencies** - what must be done first
-- **Scope boundaries** - what is intentionally excluded
-- **Success signal** - how to validate that the sprint worked
+Deferred
+  Valid idea, but intentionally postponed.
 
----
+Conditional
+  Requires explicit launch conditions before execution.
 
-Execution Notes
----------------
+Superseded
+  Replaced by a newer plan.
 
-- Each sprint = one branch or a logical set of commits.
-- Review by sprint, not line by line in isolation.
-- If a sprint reveals a needed decoupling, schedule a small refactor before or
-   after the sprint instead of hiding it inside the sprint.
-- Do not add incidental architecture improvements to a sprint; record them for a dedicated sprint.
+Cancelled
+  No longer relevant.
+
+Prefer the smallest useful set of statuses. Do not create a complex
+issue-tracking system inside the documentation.

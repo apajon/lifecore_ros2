@@ -5,9 +5,13 @@ lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no 
 
 ---
 
-## Current status — 0.4.0 + Sprint 8
+## Current status — post-Sprint 13
 
-The first public release is shipped. The core library provides:
+Sprint 13 is complete. The project is past the old Sprint 8 / 0.4.0 planning
+state; the core library is usable for professional evaluation while API
+stability remains experimental until `1.0.0`.
+
+The core library provides:
 
 - `LifecycleComponentNode` and `LifecycleComponent` base classes
 - `TopicComponent`, `LifecyclePublisherComponent`, `LifecycleSubscriberComponent` implementations
@@ -17,6 +21,8 @@ The first public release is shipped. The core library provides:
 - In-flight callback policy documented ("drop at next gate")
 - Concurrency safety via RLock and reentrant-call detection
 - Strict lifecycle contract with error handling and rollback
+- Health/status reporting and lightweight watchdog observation
+- Lifecycle-aware parameter ownership and runtime mutability policies
 - Comprehensive test coverage (unit, concurrency, integration)
 - Complete documentation and examples
 
@@ -36,7 +42,10 @@ Before pursuing new features, the project is focused on making the library adopt
 
 **See [Adoption & Hardening Roadmap](docs/planning/adoption_hardening.rst)** for the nine-concern roadmap.
 
-Current status: ✓ all adoption items complete (v0.4.0). The core library is usable and documented for professional evaluation, while API stability remains experimental until `1.0.0`.
+Current status: adoption hardening is complete through Sprint 13. The next work
+does not automatically have to extend the core package; companion examples,
+documentation, architecture RFCs, DX, and tooling can outrank core features when
+they reduce risk or improve adoption.
 
 ---
 
@@ -50,18 +59,54 @@ It is not a launcher, not a Nav2-style lifecycle manager, and not a replacement 
 
 **See [Strategic Cap](docs/planning/strategy.rst)** for the working product thesis, boundaries, adoption sequence, and publication gate.
 
+The core should remain a small, explicit, ROS-native lifecycle runtime and
+component composition helper. Event buses, ECS ideas, state stores, codegen,
+DSLs, plugin systems, and advanced tooling may become separate modules or
+companion work; they should not be absorbed into `lifecore_ros2` by default.
+
+The future distributed typed state model should be developed as a separate
+`lifecore_state` track. This keeps lifecycle orchestration separate from state as
+source of truth and prevents the lifecycle core from becoming a monolithic
+runtime framework.
+
 ---
+
+## Planning tracks
+
+A sprint may target core, companion, docs, architecture, tooling, DX, external
+modules, or research. Priority is based on risk reduction, adoption leverage,
+architectural clarification, and strategic sequencing, not package location.
+
+- **Track A — Core lifecore_ros2:** maintain, harden, document, fix, and improve ergonomics without broad scope expansion.
+- **Track B — Companion / Adoption:** comparative examples, tutorials, demonstrations, onboarding, and user-facing docs.
+- **Track C — State Architecture:** prepare a separate `lifecore_state` model without polluting the lifecycle core.
+- **Track D — DX / Testing / Diagnostics:** fixtures, fake components, activation helpers, diagnostics, and lightweight developer support.
+- **Track E — Tooling / Codegen:** scripts, templates, scaffolding, and CLI work after conventions stabilize.
+- **Track F — Research / RFC:** decision documents, disposable prototypes, architectural framing, and risk analysis.
+
+Priority model:
+
+- **P0:** Project coherence and roadmap debt
+- **P1:** Usage proof and adoption
+- **P2:** Separate future architecture
+- **P3:** API hardening, tests, and diagnostics
+- **P4:** New core abstractions
+- **P5:** Advanced tooling, generation, and automation
 
 ## Next planning window
 
-The recommended sequence after the current foundation is tracked by sprint
-number. Sprint numbers encode priority order:
+The recommended sequence after Sprint 13 is:
 
-1. **Lifecycle comparison example** — implement the same sensor watchdog node as plain ROS 2, classic ROS 2 lifecycle, and `lifecore_ros2`.
-2. **Internal component cascade** — move deterministic intra-node ordering directly after the comparison because it is the main differentiator.
-3. **Runtime hardening** — callback gating, cleanup ownership, concurrency, and observability before recovery-facing APIs.
-4. **Health and watchdog** — expose health before adding watchdog behavior.
-5. **Advanced surfaces** — lifecycle policies, parameters, factory/registry, then tooling/generation.
+- **Sprint 14 — Project Alignment and Roadmap Cleanup** (Core + product management + docs, P0): synchronize roadmap, backlog, planning docs, and deferred sprint status.
+- **Sprint 15 — Companion Adoption Examples** (Companion / Adoption, P1): strengthen concrete comparison examples and runtime proof.
+- **Sprint 16 — Test Ergonomics and Diagnostics Polish** (Core + DX, P1/P3): make lifecycle tests easier and failures clearer without large abstractions.
+- **Sprint 17 — lifecore_state Architecture RFC** (State Architecture / Research, P2): decide boundaries, naming, concepts, and go/no-go before coding.
+- **Sprint 18 — lifecore_state_msgs ABI Prototype** (State Architecture / ROS ABI, P2 conditional): prototype minimal ROS messages only if Sprint 17 validates the direction.
+- **Sprint 19 — Minimal Factory and Registry** (Core Extension, P4 conditional): launch only after repeated real pain proves manual instantiation is insufficient.
+- **Sprint 20+ — Tooling and Generated Nodes** (Tooling / Codegen, P5 conditional): generate only after examples, conventions, API, and state boundaries stabilize.
+
+The historical Sprint 14 and Sprint 15 cards are now deferred/conditional. They
+are no longer the default next steps.
 
 **See [Sprint Planning](docs/planning/sprints/README.rst)** for the execution plan.
 
@@ -82,8 +127,9 @@ ideas that remain deliberately deferred until there is a concrete user need.
 - Testing utilities (fixtures, fake components)
 - Observability (structured logging, tracing)
 - Parameters and runtime configuration
-- Config and specs (application-level configuration)
-- Factory and registry (dynamic component loading)
+- Config and specs (application-level configuration, deferred)
+- Factory and registry (dynamic component loading, conditional Sprint 19+)
+- Tooling and generated nodes (conditional Sprint 20+)
 - ~~Callback group management (per-component groups, concurrency utilities)~~ **Shipped Sprint 8**
 - Additional components (`ActionComponent`, parameter components)
 - Binding layer (if component hierarchy becomes overloaded)
@@ -98,7 +144,20 @@ Each item includes a rationale for deferral and placement notes for future imple
 
 **See [Examples Repository Plan](docs/planning/examples_repo.rst)** for the full planning.
 
-**Status**: repository exists and should host applied, domain-flavored, or multi-node examples that fall outside the core library's scope. The strategic lifecycle comparison example should be proven in the core repo first, then extended in the companion repo only if it needs applied scenarios or extra dependencies.
+**Status**: repository exists and should host applied, domain-flavored, or multi-node examples that fall outside the core library's scope. After Sprint 13, companion adoption work is a high-priority track: a clear example can be more valuable than a new internal feature.
+
+---
+
+## Do not do now
+
+- no full `AppSpec` system now
+- no generated nodes now
+- no plugin framework now
+- no ECS framework in core
+- no general EventBus in core
+- no StateStore in core
+- no complex recovery automation now
+- no factory until repeated pain is proven
 
 ---
 

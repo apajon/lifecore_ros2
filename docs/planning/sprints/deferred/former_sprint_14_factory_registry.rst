@@ -1,5 +1,28 @@
-Sprint 14 - Minimal factory and registry
-========================================
+Sprint 19 - Minimal factory and registry (conditional)
+======================================================
+
+Status:
+  Deferred / Conditional
+
+Reason:
+  Deferred after Sprint 13 because factory and registry work should only start
+  after repeated-instantiation pain is proven by concrete examples.
+
+Launch condition:
+  At least two concrete use cases must show that manual component instantiation
+  creates repeated maintenance pain.
+
+**Historical status.** This card used to be Sprint 14. It is now deferred and
+conditional. It is not the default next sprint after Sprint 13.
+
+**Track.** Core Extension.
+
+**Priority.** P4 conditional - new core abstraction.
+
+**Condition.** Start only if at least two real use cases prove that manual
+component instantiation is repeated pain. Do not start this sprint just because
+``src/lifecore_ros2/spec/spec_model.py`` exists or because a factory looks
+elegant.
 
 **Objective.** Enable dynamic component instantiation only after concrete specs
 and examples justify it.
@@ -57,6 +80,10 @@ Risks and mitigation
 **Risk: premature schema binding.** Keep specs free-form until real examples
 show the shape.
 
+**Risk: declarative-runtime creep.** A premature factory can pull the project
+toward ``AppSpec``, ``ComponentSpec``, ``SpecLoader``, Pydantic, codegen, and a
+configuration-driven runtime before the needs are proven.
+
 **Risk: plugin-system creep.** Registry and factory stay local and explicit; no
 dynamic plugin loading.
 
@@ -85,6 +112,9 @@ Out of scope:
 - plugin loading
 - schema validation
 - full application spec model
+- ``AppSpec`` / ``ComponentSpec`` / ``SpecLoader``
+- codegen
+- coupling with ``lifecore_state``
 - runtime component removal
 
 ---
@@ -93,4 +123,7 @@ Success signal
 --------------
 
 - [ ] Dynamic creation reduces boilerplate without hiding component ownership.
+- [ ] The factory simplifies at least two real examples.
+- [ ] Manual APIs remain the reference path.
+- [ ] Lifecycle transitions remain inspectable and explicit.
 - [ ] The registry remains a simple tool, not a second abstraction layer.

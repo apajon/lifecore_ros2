@@ -1,6 +1,19 @@
 Sprint 12 - Lifecycle policies
 ==============================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 **Objective.** Make the intra-node lifecycle ordering contract deterministic,
 documented, and test-backed without expanding ``lifecore_ros2`` into lifecycle
 orchestration.

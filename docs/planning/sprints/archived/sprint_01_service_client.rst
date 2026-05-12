@@ -1,6 +1,19 @@
 Sprint 1 — Service server and Service client components
 ========================================================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 .. note:: **Status: DELIVERED** — All implementation, tests, examples, and
    quality gates completed. See *Advancements* section below for a full
    delivery log.

@@ -1,6 +1,19 @@
 Sprint 7 - Cleanup and ownership API
 ====================================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 **Objective.** Make resource ownership and cleanup behavior boringly clear
 before concurrency, health, or watchdog behavior depend on it.
 

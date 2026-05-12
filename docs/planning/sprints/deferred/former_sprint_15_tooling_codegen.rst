@@ -1,5 +1,26 @@
-Sprint 15 - Tooling and generated nodes
-=======================================
+Sprint 20+ - Tooling and generated nodes (conditional)
+======================================================
+
+Status:
+  Deferred / Conditional
+
+Reason:
+  Deferred after Sprint 13 because tooling and code generation should follow
+  stabilized conventions, not define them prematurely.
+
+Launch condition:
+  Only start after examples, conventions, core API boundaries, and
+  ``lifecore_state`` boundaries are stable.
+
+**Historical status.** This card used to be Sprint 15. It is now deferred and
+conditional. It is not the default next sprint after Sprint 13.
+
+**Track.** Tooling / Codegen.
+
+**Priority.** P5 conditional - advanced tooling, generation, and automation.
+
+**Condition.** Start only after examples, conventions, the core API, the
+``lifecore_state`` boundary, and real generation needs are stable.
 
 **Objective.** Explore scaffolding once the core patterns are stable enough to
 generate safely.
@@ -13,6 +34,7 @@ Decisions already made
 ----------------------
 
 - Tooling waits until the runtime conventions are stable enough to generate.
+- Codegen follows mature conventions; it does not discover the architecture.
 - Generated code must follow naming, cleanup, lifecycle, and gating
   conventions.
 - MCP remains outside the runtime library.
@@ -40,11 +62,11 @@ Prerequisites
 
 Do not start this sprint until these are stable:
 
-- lifecycle comparison example
-- internal cascade contract
-- cleanup ownership contract
-- health/status API
-- watchdog scope
+- adoption examples and documentation
+- lifecycle conventions
+- core API
+- ``lifecore_state`` boundary
+- real generation needs
 
 ---
 
@@ -63,6 +85,8 @@ Out of scope:
 - direct MCP integration in the core library
 - config-driven application platform
 - plugin loading
+- magic runtime behavior
+- hard dependency on an immature spec format
 
 ---
 
@@ -70,4 +94,6 @@ Success signal
 --------------
 
 - [ ] Generated skeletons look like code a maintainer would accept.
+- [ ] Generated code remains readable and testable.
 - [ ] Tooling reduces setup friction without expanding runtime scope.
+- [ ] Tooling is optional; the framework remains usable without it.

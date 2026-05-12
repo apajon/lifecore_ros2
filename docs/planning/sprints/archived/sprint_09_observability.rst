@@ -1,6 +1,19 @@
 Sprint 9 - Minimal observability
 ================================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 **Objective.** Add structured logging and lifecycle tracing for industrial
 debugging.
 

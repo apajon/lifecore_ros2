@@ -1,6 +1,19 @@
 Sprint 6 - Unified callback gating
 ==================================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 **Objective.** Extract activation-gating logic into a shared, reusable utility.
 Remove duplication across publisher, subscriber, service, client, and timer
 components.

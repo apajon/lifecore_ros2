@@ -106,6 +106,12 @@ A small set of lifecycle-aware building blocks:
 
 The library stays lifecycle-native, keeps ownership in `LifecycleComponentNode`, and treats component hooks as explicit extension points rather than hidden orchestration.
 
+Post-Sprint 13 planning keeps the core deliberately small: companion examples,
+documentation, architecture RFCs, DX, or tooling work can outrank new core
+features when they reduce risk or improve adoption. Factory, generated nodes,
+state-store concepts, EventBus, ECS, and plugin frameworks remain deferred unless
+real use cases prove the need.
+
 When sibling components need deterministic ordering, prefer declaring `dependencies` and `priority` at `add_component(...)` so composition intent stays visible in the node assembly code. [examples/composed_ordered_pipeline.py](examples/composed_ordered_pipeline.py) shows this pattern without constructor pass-through on library components.
 
 See [docs/architecture.rst](docs/architecture.rst) for lifecycle design rules, [docs/patterns.rst](docs/patterns.rst) for usage patterns, and [ROADMAP.md](ROADMAP.md) for non-goals and deferred scope.
