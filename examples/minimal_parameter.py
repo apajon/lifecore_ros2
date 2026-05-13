@@ -72,6 +72,12 @@ class SensorParameters(LifecycleParameterComponent):
 
     ``gain`` is writable while active and must be strictly positive.
     ``mode`` is fixed for the full configure/active/deactivate span.
+
+    This example chooses ``validate_parameter_update`` as the simplest
+    per-parameter hook. ``LifecycleParameterComponent`` also exposes
+    ``on_pre_set_owned_parameters``, ``on_validate_owned_parameters``, and
+    ``on_post_set_owned_parameters`` when a component needs transform,
+    batch-validation, or accepted-write side effects.
     """
 
     def __init__(self) -> None:

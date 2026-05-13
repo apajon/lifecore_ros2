@@ -198,7 +198,10 @@ class LifecycleParameterObserverComponent(LifecycleComponent):
             node_name: Full name of the remote node that owns the parameter (e.g. ``"/sensor_node"``).
             parameter_name: Name of the parameter on the remote node.
             read_initial: If ``True``, attempt to read the current value during configure.
-            callback: Optional callable invoked for each observed change while active.
+            callback: Optional per-watch callable invoked for this specific
+                node/parameter pair while the component is active. Use
+                ``on_observed_parameter_event`` instead when one component-wide
+                hook should handle all observed parameters.
 
         Returns:
             A :class:`ParameterWatchHandle` identifying the registered watch.
@@ -257,7 +260,14 @@ class LifecycleParameterObserverComponent(LifecycleComponent):
         """React to an observed parameter change while active.
 
         Called for every watched parameter that changes while the component is
-        active. The default is a no-op; override in subclasses for active behavior.
+        active. This is the component-wide hook: unlike ``callback=...`` on
+        ``watch_parameter``, it is not tied to one watch. Override it when the
+        same reaction should apply across all observed parameters owned by this
+        component instance.
+
+        If a watch-specific callback was registered with ``watch_parameter``,
+        that callback runs first for the matching watch and this hook runs
+        afterward. The default implementation is a no-op.
 
         Args:
             node_name: Full name of the remote node that owns the parameter.
@@ -362,7 +372,8 @@ class LifecycleParameterObserverComponent(LifecycleComponent):
         """Handle incoming ``/parameter_events`` messages.
 
         Updates snapshots for all matching watches regardless of activation state.
-        Calls user callbacks and ``on_observed_parameter_event`` only while active.
+        Calls watch-specific callbacks first and
+        ``on_observed_parameter_event`` second, but only while active.
         """
         node_name: str = msg.node
         affected: dict[str, Any] = {p.name: p for p in [*msg.new_parameters, *msg.changed_parameters]}

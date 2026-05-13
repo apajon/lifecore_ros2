@@ -61,6 +61,10 @@ class RateObserver(LifecycleParameterObserverComponent):
     """Observes the ``rate`` parameter on ``/parameter_blackboard``.
 
     Logs every observed change while active.
+
+    This example chooses the per-watch ``callback=...`` style because it keeps
+    the minimal case explicit. Override ``on_observed_parameter_event`` instead
+    when one hook should handle all parameters observed by the component.
     """
 
     def __init__(self) -> None:
@@ -73,6 +77,12 @@ class RateObserver(LifecycleParameterObserverComponent):
         )
 
     def _on_rate_changed(self, event: ObservedParameterEvent) -> None:
+        """Handle one observed parameter change for this specific watch.
+
+        This is the per-watch callback passed to ``watch_parameter``. Override
+        ``on_observed_parameter_event`` instead when one component-wide hook
+        should react to every observed parameter.
+        """
         self.node.get_logger().info(
             f"[{self.name}] observed '{event.node_name}/{event.parameter_name}' changed"
             f"  previous={event.previous_value!r}  new={event.value!r}  source={event.source}"

@@ -48,7 +48,11 @@ class PeriodicPublisher(LifecyclePublisherComponent[String]):
         self._counter: int = 0
 
     def emit_next(self) -> None:
-        """Publish one message and increment the counter."""
+        """Publish one message and increment the counter.
+
+        This is the application-facing publish step used by the timer example;
+        the framework still owns publisher creation and lifecycle gating.
+        """
         msg = String()
         msg.data = f"hello #{self._counter}"
         self._counter += 1
@@ -64,6 +68,11 @@ class PublisherTimer(LifecycleTimerComponent):
         self._publisher = publisher
 
     def on_tick(self) -> None:
+        """Handle one timer tick while active by delegating to ``emit_next``.
+
+        ``on_tick`` remains the public timer hook; this example keeps publish
+        logic in the publisher component so the timer stays orchestration-only.
+        """
         self._publisher.emit_next()
 
 
