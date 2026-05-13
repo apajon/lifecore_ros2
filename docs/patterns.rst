@@ -16,6 +16,7 @@ Recommended Patterns
   For standard ROS resources, prefer the dedicated library components over raw
   ``create_*`` calls: ``LifecyclePublisherComponent``, ``LifecycleSubscriberComponent``,
   ``LifecycleTimerComponent``, ``LifecycleParameterComponent``,
+  ``LifecycleParameterObserverComponent``,
   ``LifecycleServiceServerComponent``, and ``LifecycleServiceClientComponent``
   each encapsulate the configure / cleanup plumbing automatically. Reserve the
   ``_on_configure`` override for resources without a library equivalent — for

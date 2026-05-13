@@ -547,6 +547,7 @@ Library type names are stable and must not be changed or aliased.
 - ``LifecycleSubscriberComponent``
 - ``LifecycleTimerComponent``
 - ``LifecycleParameterComponent``
+- ``LifecycleParameterObserverComponent``
 - ``LifecycleServiceServerComponent``
 - ``LifecycleServiceClientComponent``
 

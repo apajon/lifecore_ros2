@@ -8,28 +8,28 @@ available, but they do not drive current planning directly.
    :maxdepth: 1
    :hidden:
 
-   active/sprint_13_1_parameter_observer
-   active/sprint_15_companion_adoption
-   planned/sprint_16_test_ergonomics_diagnostics
-   planned/sprint_17_lifecore_state_rfc
-   planned/sprint_18_lifecore_state_msgs_abi
-   deferred/former_sprint_14_factory_registry
-   deferred/former_sprint_15_tooling_codegen
-   archived/sprint_01_service_client
-   archived/sprint_02_error_handling
-   archived/sprint_03_testing_infrastructure
-   archived/sprint_04_lifecycle_comparison
-   archived/sprint_04_5_state_component_example
-   archived/sprint_05_internal_cascade
-   archived/sprint_05_1_composition_surface
-   archived/sprint_06_callback_gating
-   archived/sprint_07_cleanup_api
-   archived/sprint_08_concurrency
-   archived/sprint_09_observability
-   archived/sprint_10_health_status
-   archived/sprint_11_watchdog_light
-   archived/sprint_12_lifecycle_policies
-   archived/sprint_13_parameters
+  active/sprint_13_1_parameter_observer
+  active/sprint_15_companion_adoption
+  planned/sprint_16_test_ergonomics_diagnostics
+  planned/sprint_17_lifecore_state_rfc
+  planned/sprint_18_lifecore_state_msgs_abi
+  deferred/former_sprint_14_factory_registry
+  deferred/former_sprint_15_tooling_codegen
+  archived/sprint_01_service_client
+  archived/sprint_02_error_handling
+  archived/sprint_03_testing_infrastructure
+  archived/sprint_04_lifecycle_comparison
+  archived/sprint_04_5_state_component_example
+  archived/sprint_05_internal_cascade
+  archived/sprint_05_1_composition_surface
+  archived/sprint_06_callback_gating
+  archived/sprint_07_cleanup_api
+  archived/sprint_08_concurrency
+  archived/sprint_09_observability
+  archived/sprint_10_health_status
+  archived/sprint_11_watchdog_light
+  archived/sprint_12_lifecycle_policies
+  archived/sprint_13_parameters
   archived/sprint_14_project_alignment
 
 Active sprints

@@ -61,6 +61,11 @@ Decisions already made
 - The observer never declares remote parameters.
 - The observer never owns remote parameters.
 - The observer never validates or rejects remote parameter updates.
+- ``configure()`` does not fail by default when an initial read cannot find the
+  remote node or remote parameter.
+- Initial-read outcomes are recorded as explicit, testable watch state:
+  ``UNKNOWN_NODE``, ``UNKNOWN_PARAMETER``, ``UNAVAILABLE``, or
+  ``VALUE_AVAILABLE``.
 - Event processing or user observer callbacks must be lifecycle-gated.
 - Cleanup, shutdown, and error release event/client tracking owned by the
   component.
@@ -74,6 +79,38 @@ Guiding rule:
    configure initializes observation
    active observes
    cleanup forgets
+
+Authority rule:
+
+::
+
+   observe facts already accepted by the remote node
+   validate nothing
+   block nothing
+   correct nothing
+   own nothing
+
+---
+
+Initial-read availability policy
+--------------------------------
+
+When ``read_initial=True`` and the remote node or parameter is absent,
+``configure()`` must not fail by default. A remote observer does not own remote
+availability, and failing local configuration would create a misleading
+lifecycle dependency between the observer and the remote node.
+
+The component must instead record an explicit state for each watch:
+
+- ``UNKNOWN_NODE`` when the remote node cannot be identified as available.
+- ``UNKNOWN_PARAMETER`` when the remote node is reachable but the watched
+  parameter is absent or not returned.
+- ``UNAVAILABLE`` when the initial read cannot complete for a transport,
+  timeout, or other non-authoritative availability reason.
+- ``VALUE_AVAILABLE`` when an initial value is read and stored.
+
+These states must be queryable and testable. Logging may explain the condition,
+but warnings are not the state contract.
 
 ---
 
@@ -127,6 +164,8 @@ Configure
 - create required remote client or event-handler plumbing
 - optionally read initial remote values
 - store initial observed values if available
+- record explicit watch state for missing nodes, missing parameters, and
+  unavailable initial reads without failing by default
 - do not call user event hooks as active runtime behavior
 - handle missing remote node or parameter explicitly
 
@@ -192,9 +231,14 @@ General multi-node shape:
            node_name: str,
            parameter_name: str,
            read_initial: bool = True,
-       ) -> None: ...
+           callback: Callable[[ObservedParameterEvent], None] | None = None,
+       ) -> ParameterWatchHandle: ...
 
-       def get_observed_parameter_value(self, node_name: str, parameter_name: str) -> Any: ...
+       def get_observed_parameter(
+           self,
+           node_name: str,
+           parameter_name: str,
+       ) -> ObservedParameterSnapshot | None: ...
 
        def on_observed_parameter_event(
            self,
@@ -215,6 +259,22 @@ Alternative one-remote-node shape:
 Use the simpler one-node shape only if early examples show that most observers
 target a single remote node.
 
+Suggested event shape:
+
+.. code-block:: python
+
+   @dataclass(frozen=True)
+   class ObservedParameterEvent:
+       node_name: str
+       parameter_name: str
+       value: object
+       previous_value: object | None
+       source: Literal["initial_read", "parameter_event"]
+
+``ObservedParameterSnapshot`` should expose the latest value, previous value if
+known, source, and explicit watch state. The snapshot API is the preferred way
+for tests and callers to inspect initial-read availability outcomes.
+
 ---
 
 Validation
@@ -222,7 +282,11 @@ Validation
 
 - [ ] External parameter watches can be registered.
 - [ ] Optional initial values can be read from a remote node.
-- [ ] Missing remote node or parameter is handled explicitly.
+- [ ] Missing remote node or parameter records explicit watch state without
+  failing ``configure()`` by default.
+- [ ] Unavailable initial reads record ``UNAVAILABLE`` without hiding the
+  condition behind logging only.
+- [ ] Available initial values record ``VALUE_AVAILABLE``.
 - [ ] Parameter events update local observed values.
 - [ ] User event callbacks are gated by lifecycle state.
 - [ ] Observer never declares remote parameters.
