@@ -2,6 +2,89 @@
 
 <!-- version list -->
 
+## v0.10.0 (2026-05-13)
+
+### Bug Fixes
+
+- **components**: Use ROS parameter observer APIs
+  ([`ed2e817`](https://github.com/apajon/lifecore_ros2/commit/ed2e817e867d6bed4fef16a40f6d190835646c35))
+
+### Documentation
+
+- Clarify public hook and callback contracts in core docs
+  ([`9115b1a`](https://github.com/apajon/lifecore_ros2/commit/9115b1a9dc2e293c5deda6439b25b33edce59378))
+
+- Name deferred sprint 19 and 20 cards explicitly
+  ([`5b98a90`](https://github.com/apajon/lifecore_ros2/commit/5b98a90b7670bc19b47a8d7679807283a31e95b4))
+
+- Post-Sprint-13 roadmap, backlog, and sprint reorganization
+  ([`a1f107c`](https://github.com/apajon/lifecore_ros2/commit/a1f107c540cb356ade99a60d1bd3f4d9c2199a82))
+
+- **api**: Document parameter component reference
+  ([`b521f32`](https://github.com/apajon/lifecore_ros2/commit/b521f3242339e3c67035f5c3e57f08b68e9d24a4))
+
+- **components**: Clarify parameter observer event docs
+  ([`008b9a0`](https://github.com/apajon/lifecore_ros2/commit/008b9a09b3720b795af3e6524d05d24a3bfc5bc8))
+
+- **parameter-observer**: Document observer behavior and example
+  ([`70e8a2c`](https://github.com/apajon/lifecore_ros2/commit/70e8a2c30ef5198127c239fc1ccf3c3463c2c977))
+
+- **parameters**: Add sprint 13 parameter example and sync parameter docs
+  ([`4313eed`](https://github.com/apajon/lifecore_ros2/commit/4313eed12d470641f4be87299f5875f5b9a21a43))
+
+- **planning**: Add lifecore_state architecture extraction report
+  ([`a100ce0`](https://github.com/apajon/lifecore_ros2/commit/a100ce03760657e2a0d226ae8c50d191b16ee2a8))
+
+- **planning**: Align roadmap, backlog, strategy after sprint 14 completion
+  ([`d075595`](https://github.com/apajon/lifecore_ros2/commit/d07559503bbaa43da996603907a46aecaaf29148))
+
+- **planning**: Archive completed sprints and activate sprint 16
+  ([`feda30e`](https://github.com/apajon/lifecore_ros2/commit/feda30e402755e449541561919cb67664a480a63))
+
+- **planning**: Change sprint 15 to planned
+  ([`481bd43`](https://github.com/apajon/lifecore_ros2/commit/481bd431eaca64c3fad795f429ac55b1e4443e90))
+
+- **planning**: Define sprint 12 ordering contract
+  ([`0b10bbc`](https://github.com/apajon/lifecore_ros2/commit/0b10bbc548f3cff459130b44a435bee5e036e29d))
+
+- **planning**: Mark sprint 13 complete in backlog and archive checklist
+  ([`93f229a`](https://github.com/apajon/lifecore_ros2/commit/93f229a0a922b784f27760fb8d849b62b5bda2f3))
+
+- **planning**: Mark sprint 15 adoption polish complete
+  ([`45807e9`](https://github.com/apajon/lifecore_ros2/commit/45807e9a674c17899aeff4e1aaf713be1d71d697))
+
+- **planning**: Promote sprint 13.1 to active and update index references
+  ([`dc3ddec`](https://github.com/apajon/lifecore_ros2/commit/dc3ddec0e80815f2744177a2de62d6485ee3e2e3))
+
+- **planning/sprints**: Archive sprint 14, activate sprint 15
+  ([`4ee3b75`](https://github.com/apajon/lifecore_ros2/commit/4ee3b759eb58aff211e215afbcbd256192986faa))
+
+- **sphinx**: Fix documentation warning cleanup
+  ([`53134a8`](https://github.com/apajon/lifecore_ros2/commit/53134a8b8d77aa651815a006fbab1ada0d2feb64))
+
+### Features
+
+- **components**: Add lifecycle-owned parameter component
+  ([`2536915`](https://github.com/apajon/lifecore_ros2/commit/2536915fb05a66dd08861b14dcfbb715c41868d4))
+
+- **components**: Add remote parameter observer component
+  ([`9bf4298`](https://github.com/apajon/lifecore_ros2/commit/9bf429888eb8e43220adc3f1bb758d60ca9e8cd2))
+
+### Testing
+
+- **components**: Cover parameter observer lifecycle behavior
+  ([`2e1d7fd`](https://github.com/apajon/lifecore_ros2/commit/2e1d7fd411433d35c5a5f86548b7829ec30b66e7))
+
+- **core**: Cover lifecycle ordering policy edges
+  ([`813b8b5`](https://github.com/apajon/lifecore_ros2/commit/813b8b558875688bf7315d075874384d7b334b93))
+
+- **parameters**: Cover missing lifecycle parameter scenarios
+  ([`e73c659`](https://github.com/apajon/lifecore_ros2/commit/e73c659ade22a5742b7b52dc859c0e16971ff293))
+
+- **typing**: Fix pyright errors in regression tests
+  ([`83aa0c3`](https://github.com/apajon/lifecore_ros2/commit/83aa0c3683d1d2bf96b34f5ba531697036f05c9c))
+
+
 ## v0.9.0 (2026-05-11)
 
 ### Bug Fixes
