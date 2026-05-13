@@ -8,7 +8,8 @@ available, but they do not drive current planning directly.
    :maxdepth: 1
    :hidden:
 
-  active/sprint_15_companion_adoption
+   active/sprint_13_1_parameter_observer
+   active/sprint_15_companion_adoption
    planned/sprint_16_test_ergonomics_diagnostics
    planned/sprint_17_lifecore_state_rfc
    planned/sprint_18_lifecore_state_msgs_abi
@@ -31,8 +32,11 @@ available, but they do not drive current planning directly.
    archived/sprint_13_parameters
   archived/sprint_14_project_alignment
 
-Active sprint
-------------
+Active sprints
+--------------
+
+- Sprint 13.1 - Parameter Observer Component
+  Location: :doc:`active/sprint_13_1_parameter_observer`
 
 - Sprint 15 - Companion Adoption Examples
   Location: :doc:`active/sprint_15_companion_adoption`

@@ -744,7 +744,7 @@ Parameters and runtime configuration — *``LifecycleParameterComponent`` shippe
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Sprint mapping: :doc:`sprints/archived/sprint_13_parameters` (completed) and
-:doc:`sprints/sprint_13_1_parameter_observer` (planned).
+:doc:`sprints/active/sprint_13_1_parameter_observer` (active).
 
 * [x] ``LifecycleParameterComponent`` for parameters owned by the local
   lifecycle node.

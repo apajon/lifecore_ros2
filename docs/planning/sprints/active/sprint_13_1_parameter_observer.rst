@@ -1,6 +1,12 @@
 Sprint 13.1 - Parameter observer component
 ==========================================
 
+Status:
+  Active
+
+Branch:
+  sprint/13.1-parameter-observer
+
 **Objective.** Add lifecycle-aware observation of parameters owned by other ROS
 2 nodes without blurring ownership boundaries or adding configuration-system
 behavior.
