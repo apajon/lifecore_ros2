@@ -135,6 +135,22 @@ standard fakes deliberately bypass, such as calls to ``create_publisher``,
 ``destroy_publisher``, callback group forwarding, QoS values, or custom resource
 rollback behavior.
 
+Contributor-Only Lifecycle Helpers
+----------------------------------
+
+Repository tests may also use private helpers from ``tests/helpers/lifecycle.py``
+when testing the framework's own lifecycle transitions. These helpers are not
+part of the public ``lifecore_ros2.testing`` API.
+
+Use ``FakeLifecycleComponent`` for core transition tests that need a minimal
+component covering successful hooks, controlled ``FAILURE`` returns, guarded
+exceptions, and hook order assertions. Prefer its assertion helpers when failure
+output should name the component, transition, contract state, and recorded hook
+order.
+
+Keep production exceptions unchanged unless a focused test demonstrates a
+diagnostic gap that assertion messages cannot cover.
+
 Reference
 ---------
 
