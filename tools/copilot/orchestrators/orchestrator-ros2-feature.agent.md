@@ -1,7 +1,7 @@
 ---
 name: "Orchestrator | ROS 2 Feature Delivery"
 description: "Use when orchestrating delivery of a new ROS 2 Jazzy lifecycle feature or component in this repository, coordinating core changes, tests, examples, API stability, and quality validation."
-tools: [read, edit, search, todo, agent, github/*, gitkraken/*, mempalace/*]
+tools: [vscode, read, agent, edit, search, web, 'mempalace/*', 'github/*', browser, 'gitkraken/*', todo]
 user-invocable: true
 agents:
   [
