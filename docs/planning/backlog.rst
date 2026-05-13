@@ -1,7 +1,7 @@
 Planning backlog
 ================
 
-Sprint 14 is complete. The project is past the old Sprint 8 / 0.4.0 planning
+Sprint 13.1 is active. Sprint 14 is complete. The project is past the old Sprint 8 / 0.4.0 planning
 state; the core is mature enough to shift focus toward adoption, documentation,
 testing, diagnostics, and future architecture without automatically adding new
 core abstractions.

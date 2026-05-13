@@ -2,7 +2,7 @@ Sprint 15 - Companion adoption examples
 =======================================
 
 Status:
-  Active
+  Planned
 
 Branch:
   sprint/15-companion-adoption
