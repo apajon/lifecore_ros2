@@ -103,6 +103,15 @@ Do not expand into these areas until a concrete user need forces the discussion:
 These may become tooling or companion-repository concerns later. They should not
 move into the core library prematurely.
 
+After Sprint 13, the same boundary applies to new attractive ideas: EventBus,
+ECS, StateStore, Codegen, DSLs, diagnostics, and advanced tooling may become
+separate modules, companion work, or research tracks. They must not
+automatically become part of ``lifecore_ros2``.
+
+The future distributed typed state model belongs to a separate ``lifecore_state``
+track. Lifecycle drives systems; systems modify state; state is the source of
+truth; events describe what happened; ROS 2 exposes what must leave the process.
+
 ---
 
 Adoption sequence
@@ -129,24 +138,28 @@ without hiding lifecycle semantics.
 
 ---
 
-Roadmap thesis
---------------
+Roadmap thesis after Sprint 14
+------------------------------
 
-Sprint numbers encode priority order. The strategic comparison example becomes
-Sprint 4 because it is the next proof point before additional library surface.
-Some new cards intentionally move ahead of older advanced surfaces when they are
-closer to the product differentiator.
+Sprint 14 completed the planning-alignment pass after the current core planning
+window. Future priority is
+location-neutral: a sprint may target core, companion, docs, architecture,
+tooling, DX, external modules, or research. Priority is based on risk reduction,
+adoption leverage, architectural clarification, and strategic sequencing, not on
+whether the sprint changes the ``lifecore_ros2`` package.
 
-Current sprint mapping:
+Recommended mapping:
 
-1. Sprint 4: lifecycle comparison example
-2. Sprint 5: internal component cascade, the main differentiator
-3. Sprint 6-9: runtime consistency and hardening: gating, cleanup, concurrency,
-   observability
-4. Sprint 10-11: health/status, then lightweight watchdog
-5. Sprint 12-14: broader advanced surfaces: policies, parameters, factory
-6. Sprint 15+: generated-node tooling; MCP or deeper automation only after the
-   runtime and examples prove useful
+1. Sprint 15: companion adoption examples — completed and archived.
+2. Sprint 16: test ergonomics and diagnostics polish — active.
+3. Sprint 17: ``lifecore_state`` architecture RFC.
+4. Sprint 18: ``lifecore_state_msgs`` ABI prototype, conditional on Sprint 17.
+5. Sprint 19: minimal factory and registry, conditional on repeated real pain.
+6. Sprint 20+: tooling and generated nodes, conditional on stable conventions.
+
+The historical factory and tooling cards that once held Sprint 14 and Sprint 15
+numbering are no longer default next steps. Factory and tooling should follow
+proven adoption, stable conventions, and clear state architecture boundaries.
 
 The project wins when a ROS 2 developer sees the example and thinks: "this would
 have prevented lifecycle pain in my own node." It loses if the reaction is only:

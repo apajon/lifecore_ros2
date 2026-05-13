@@ -54,6 +54,8 @@ Components live inside that node and are registered there.
       ├── LifecyclePublisherComponent
       ├── LifecycleSubscriberComponent
       ├── LifecycleTimerComponent
+      ├── LifecycleParameterComponent
+      ├── LifecycleParameterObserverComponent
       ├── LifecycleServiceServerComponent
       ├── LifecycleServiceClientComponent
       └── Custom LifecycleComponent
@@ -81,14 +83,17 @@ Components create and destroy ROS resources through explicit hooks.
 - Release ROS resources during cleanup.
 
 For standard ROS resources, the pre-built library components apply these
-rules automatically.  ``LifecycleTimerComponent``, ``LifecyclePublisherComponent``,
-``LifecycleSubscriberComponent``, and the service components each encapsulate
-the configure / activate / deactivate / cleanup plumbing internally.  A node
-that composes those components needs no ``_on_activate`` or ``_on_deactivate``
-overrides for those resources — the library gates each one based on activation
-state without any application code.  Reserve the explicit hook overrides for
-resources that have no library equivalent: hardware handles, custom sensor
-connections, or application-specific runtime state.
+rules automatically. ``LifecycleTimerComponent``, ``LifecyclePublisherComponent``,
+``LifecycleSubscriberComponent``, the service components,
+``LifecycleParameterComponent``, and
+``LifecycleParameterObserverComponent`` each encapsulate the lifecycle plumbing
+for their surface internally. A node that composes those components needs no
+``_on_activate`` or ``_on_deactivate`` overrides for those resources — the
+library handles activation-gated behavior, parameter ownership, and observed
+parameter callback gating without any application code.
+Reserve the explicit hook overrides for resources that have no library
+equivalent: hardware handles, custom sensor connections, or application-specific
+runtime state.
 
 .. raw:: html
 

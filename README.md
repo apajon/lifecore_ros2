@@ -1,4 +1,5 @@
 # lifecore_ros2
+
 ![lifecore_ros2 logo](https://raw.githubusercontent.com/apajon/lifecore_ros2/main/docs/_static/Logo_main_light_HD.png)
 
 [![CI](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/ci.yml) [![Docs](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/docs.yml) [![Release](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml/badge.svg?branch=main)](https://github.com/apajon/lifecore_ros2/actions/workflows/release.yml)
@@ -23,7 +24,9 @@ lifecore_ros2:
 LifecycleComponentNode
  ├── LifecyclePublisherComponent
  ├── LifecycleSubscriberComponent
- └── LifecycleTimerComponent
+ ├── LifecycleTimerComponent
+ ├── LifecycleParameterComponent
+ └── LifecycleParameterObserverComponent
 ```
 
 The node still owns the native ROS 2 lifecycle. The library adds a small composition layer so reusable components can follow the same lifecycle contract.
@@ -80,13 +83,21 @@ flowchart LR
 A small set of lifecycle-aware building blocks:
 
 | Symbol | Role |
-|---|---|
+| --- | --- |
 | `LifecycleComponentNode` | Lifecycle node that owns and drives registered `LifecycleComponent` instances |
 | `LifecycleComponent` | Base class for a lifecycle-aware managed entity (abstract by convention — override `_on_*` hooks) |
 | `TopicComponent` | Base class for topic-oriented components (pub/sub) |
 | `LifecyclePublisherComponent` | Lifecycle-gated ROS publisher |
 | `LifecycleSubscriberComponent` | Lifecycle-gated ROS subscriber |
 | `LifecycleTimerComponent` | Lifecycle-gated ROS timer |
+| `LifecycleParameter` | Frozen parameter definition used by `LifecycleParameterComponent` |
+| `LifecycleParameterComponent` | Lifecycle-aware owner for node parameters scoped to one component |
+| `LifecycleParameterObserverComponent` | Lifecycle-aware observer for parameters owned by other ROS 2 nodes |
+| `ParameterMutability` | Runtime mutability policy for component-owned parameters |
+| `WatchState` | Explicit initial-read availability state for a watched remote parameter |
+| `ObservedParameterEvent` | Frozen event object delivered for live remote parameter changes |
+| `ObservedParameterSnapshot` | Frozen query surface exposing the last observed value and watch state |
+| `ParameterWatchHandle` | Frozen identifier returned when registering a remote parameter watch |
 | `LifecycleWatchdogComponent` | Lifecycle-gated health watchdog — polls targets and logs DEGRADED / ERROR / STALE |
 | `HealthLevel` | Severity enum: `UNKNOWN \| OK \| DEGRADED \| ERROR` |
 | `HealthStatus` | Frozen dataclass capturing component health (`level`, `reason`, `last_error`) |
@@ -100,6 +111,12 @@ A small set of lifecycle-aware building blocks:
 ## Design rules
 
 The library stays lifecycle-native, keeps ownership in `LifecycleComponentNode`, and treats component hooks as explicit extension points rather than hidden orchestration.
+
+Post-Sprint 13 planning keeps the core deliberately small: companion examples,
+documentation, architecture RFCs, DX, or tooling work can outrank new core
+features when they reduce risk or improve adoption. Factory, generated nodes,
+state-store concepts, EventBus, ECS, and plugin frameworks remain deferred unless
+real use cases prove the need.
 
 When sibling components need deterministic ordering, prefer declaring `dependencies` and `priority` at `add_component(...)` so composition intent stays visible in the node assembly code. [examples/composed_ordered_pipeline.py](examples/composed_ordered_pipeline.py) shows this pattern without constructor pass-through on library components.
 
@@ -140,7 +157,7 @@ ros2 lifecycle set /minimal_lifecore_node configure
 ros2 lifecycle set /minimal_lifecore_node activate
 ```
 
-For the full walkthrough, see [docs/quickstart.rst](docs/quickstart.rst). For validation and documentation commands, see [docs/getting_started.rst](docs/getting_started.rst). For the activation-gated subscriber example, continue with [examples/minimal_subscriber.py](examples/minimal_subscriber.py) or [docs/examples.rst](docs/examples.rst).
+For the full walkthrough, see [docs/quickstart.rst](docs/quickstart.rst). For validation and documentation commands, see [docs/getting_started.rst](docs/getting_started.rst). For the activation-gated subscriber example where `on_message` is the public application callback, continue with [examples/minimal_subscriber.py](examples/minimal_subscriber.py). For lifecycle-aware parameter ownership, run [examples/minimal_parameter.py](examples/minimal_parameter.py). For remote parameter observation without ownership, run [examples/minimal_parameter_observer.py](examples/minimal_parameter_observer.py). The full example map lives in [docs/examples.rst](docs/examples.rst).
 
 ## Lifecycle reading path
 
@@ -187,6 +204,37 @@ Messages appear only after `activate`. Deactivation stops them.
 
 For the subscriber path, use the quickstart above or the full example walkthrough in [docs/examples.rst](docs/examples.rst).
 
+## Parameter example
+
+Run the parameter example to see component-scoped parameter declaration, active-only writes, and validation hooks:
+
+```bash
+uv run python examples/minimal_parameter.py
+# in another terminal:
+ros2 lifecycle set /parameter_demo_node configure
+ros2 lifecycle set /parameter_demo_node activate
+ros2 param set /parameter_demo_node sensor_params.gain 5.0
+ros2 param set /parameter_demo_node sensor_params.mode raw
+```
+
+`sensor_params.gain` is writable only while the component is active and must stay positive. `sensor_params.mode` is static and rejects runtime writes. `validate_parameter_update` is the simplest per-parameter hook; `on_pre_set_owned_parameters`, `on_validate_owned_parameters`, and `on_post_set_owned_parameters` form the full owned-parameter update pipeline when a component needs transform, batch validation, or accepted-write side effects.
+
+## Parameter observer example
+
+Run the observer example to see remote parameter observation without ownership:
+
+```bash
+uv run python examples/minimal_parameter_observer.py
+# in another terminal, start a remote node that owns the parameter:
+ros2 run demo_nodes_py parameter_blackboard
+# then drive the observer through lifecycle transitions:
+ros2 lifecycle set /observer_demo_node configure
+ros2 lifecycle set /observer_demo_node activate
+ros2 param set /parameter_blackboard rate 20.0
+```
+
+`configure` may record `unknown_node`, `unknown_parameter`, `unavailable`, or `value_available` and still succeed. While active, the per-watch `callback=` reaction point or the component-wide `on_observed_parameter_event` hook can react to remote parameter changes. While inactive, the snapshot still updates but user callbacks stay gated.
+
 ## Public API overview
 
 All exported symbols and their stability levels are documented in [ROADMAP.md](ROADMAP.md#public-api-and-extension-model).
@@ -205,7 +253,7 @@ This project is licensed under the Apache-2.0 License — see [LICENSE](LICENSE)
 
 ## Documentation
 
-Documentation: https://apajon.github.io/lifecore_ros2/
+Documentation: [https://apajon.github.io/lifecore_ros2/](https://apajon.github.io/lifecore_ros2/)
 
 Full documentation lives under `docs/` and is built with Sphinx:
 
@@ -215,6 +263,7 @@ uv run --group docs python -m sphinx -b html docs docs/_build/html
 ```
 
 Key pages:
+
 - `docs/getting_started.rst` — setup and validation commands
 - `docs/architecture.rst` — lifecycle design rules, error policy, member conventions
 - `docs/patterns.rst` — recommended patterns and anti-patterns

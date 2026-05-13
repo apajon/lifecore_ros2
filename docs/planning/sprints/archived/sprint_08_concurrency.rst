@@ -1,6 +1,19 @@
 Sprint 8 - Concurrency infrastructure
 =====================================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 **Objective.** Support safe multi-threaded callback execution and formalize the
 callback-group contract.
 

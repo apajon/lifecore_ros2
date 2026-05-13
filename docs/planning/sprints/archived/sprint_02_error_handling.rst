@@ -1,6 +1,19 @@
 Sprint 2 — Solid error handling
 ================================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 **Objective.** Define and enforce error propagation rules; guarantee no zombie states on partial failure.
 
 **Deliverable.** "Error semantics are explicit and lifecycle is always coherent on failure."
@@ -180,4 +193,4 @@ Success signal
 Related design notes
 --------------------
 
-- :doc:`../design_notes/error_handling_contract` — future reference for advanced policies
+- :doc:`../../../design_notes/error_handling_contract` — future reference for advanced policies

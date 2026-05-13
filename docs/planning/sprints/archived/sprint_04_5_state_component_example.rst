@@ -1,6 +1,19 @@
 Sprint 4.5 - State-only component example
 =========================================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 **Objective.** Add an explicit core example for a ``LifecycleComponent`` that
 owns lifecycle-managed state without owning ROS resources.
 

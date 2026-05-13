@@ -8,6 +8,7 @@ adoption hardening.
    :maxdepth: 2
 
    strategy
+   roadmap
    backlog
    adoption_hardening
    examples_repo

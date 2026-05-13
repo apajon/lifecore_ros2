@@ -1,6 +1,19 @@
 Sprint 1 — Service server and Service client components
 ========================================================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 .. note:: **Status: DELIVERED** — All implementation, tests, examples, and
    quality gates completed. See *Advancements* section below for a full
    delivery log.
@@ -30,7 +43,7 @@ consistent activation semantics, behind a uniform two-layer
      analogous to ``LifecycleSubscriberComponent``.
 
    This keeps naming symmetric, intent-explicit, and aligned with the
-  library naming convention ``Lifecycle<Capability>Component`` for concrete
+   library naming convention ``Lifecycle<Capability>Component`` for concrete
    managed entities (see ``.github/instructions/naming-conventions``).
 
 ---

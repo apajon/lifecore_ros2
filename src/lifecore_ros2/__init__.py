@@ -1,14 +1,22 @@
 """lifecore_ros2."""
 
 from .components import (
+    LifecycleParameter,
+    LifecycleParameterComponent,
+    LifecycleParameterObserverComponent,
     LifecyclePublisherComponent,
     LifecycleServiceClientComponent,
     LifecycleServiceServerComponent,
     LifecycleSubscriberComponent,
     LifecycleTimerComponent,
     LifecycleWatchdogComponent,
+    ObservedParameterEvent,
+    ObservedParameterSnapshot,
+    ParameterMutability,
+    ParameterWatchHandle,
     ServiceComponent,
     TopicComponent,
+    WatchState,
 )
 from .core import (
     ComponentDependencyError,
@@ -33,6 +41,14 @@ __all__ = [
     "LifecycleComponentNode",
     "LifecycleComponent",
     "TopicComponent",
+    "LifecycleParameter",
+    "LifecycleParameterComponent",
+    "LifecycleParameterObserverComponent",
+    "ObservedParameterEvent",
+    "ObservedParameterSnapshot",
+    "ParameterWatchHandle",
+    "WatchState",
+    "ParameterMutability",
     "LifecyclePublisherComponent",
     "LifecycleSubscriberComponent",
     "LifecycleTimerComponent",

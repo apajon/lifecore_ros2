@@ -1,6 +1,19 @@
 Sprint 11 - Lightweight watchdog
 ================================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 **Objective.** Observe and report unhealthy component state without dangerous
 automatic recovery.
 

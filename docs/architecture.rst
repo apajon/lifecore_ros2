@@ -541,11 +541,13 @@ Library type names are stable and must not be changed or aliased.
     # Wrong — do not embed library terms in application class names
     class LifecycleCameraNode(LifecycleComponentNode): ...
 
-  **Library-provided components** follow the pattern ``Lifecycle<Capability>Component``:
+**Library-provided components** follow the pattern ``Lifecycle<Capability>Component``:
 
 - ``LifecyclePublisherComponent``
 - ``LifecycleSubscriberComponent``
 - ``LifecycleTimerComponent``
+- ``LifecycleParameterComponent``
+- ``LifecycleParameterObserverComponent``
 - ``LifecycleServiceServerComponent``
 - ``LifecycleServiceClientComponent``
 
@@ -558,6 +560,8 @@ Library type names are stable and must not be changed or aliased.
 
 These rules are enforced in pull request review. Any new class that violates them
 must include an explicit justification in the PR description.
+
+.. _architecture-error-policy:
 
 Error Policy
 ------------

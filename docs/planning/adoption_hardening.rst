@@ -5,6 +5,13 @@ Strategic roadmap for making lifecore_ros2 adoptable beyond the author.
 
 This roadmap addresses structural feedback on the 0.x baseline: the core release is shipped, but scaling adoption requires clear positioning, ergonomic APIs, concurrency safety, strict lifecycle contract, and strong test coverage.
 
+Status note
+-----------
+
+This adoption-hardening planning window is complete through Sprint 13 and is
+kept as a historical reference for that phase. Current sprint sequencing now
+lives in :doc:`sprints/README`, :doc:`roadmap`, and :doc:`backlog`.
+
 It is organised by nine concerns, each declaring **intent**, **in-scope**, **out-of-scope**, and **success signal**. Actionable items are tracked in the planning backlog.
 
 ---
@@ -220,6 +227,9 @@ Every item below is validated against this principle. If a proposed change incre
 Sequencing
 ----------
 
+The sequencing below is historical within the completed adoption-hardening
+window.
+
 The nine sections are not independent. Recommended order:
 
 1. **Positioning (§1)** and **README (§8)** — cheap, unlock adoption feedback
@@ -236,7 +246,7 @@ Promotion to 1.0.0 is gated on §4, §5, §6 being complete and §1, §2, §8 be
 Related documents
 -----------------
 
-- :doc:`../../ROADMAP` — 0.x release scope and out-of-scope items
+- `ROADMAP.md <https://github.com/apajon/lifecore_ros2/blob/main/ROADMAP.md>`_ — 0.x release scope and out-of-scope items
 - :doc:`backlog` — planning backlog
 - `.github/instructions/naming-conventions.instructions.md` — naming rules
 - `CONTRIBUTING.md` — PR checklist including naming and regression discipline

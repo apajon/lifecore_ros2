@@ -1,6 +1,19 @@
 Sprint 5 - Internal component cascade
 =====================================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 **Objective.** Turn the ordering ideas surfaced by examples into a focused,
 minimal internal cascade.
 

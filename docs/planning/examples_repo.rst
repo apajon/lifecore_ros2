@@ -6,6 +6,14 @@ Planning for the ``lifecore_ros2_examples`` companion repository.
 This file records planning context for the companion repository at
 ``apajon/lifecore_ros2_examples``.
 
+Status note
+-----------
+
+This page is planning context for the companion repository, not the current
+core sprint index. The initial sensor watchdog comparison baseline is already
+shipped in the companion repo; the adoption follow-up is archived in
+:doc:`sprints/archived/sprint_15_companion_adoption`.
+
 Bootstrap status: the repository exists and the initial foundation lives on the
 ``bootstrap/repo-foundation`` branch. Since ``lifecore_ros2`` is published on PyPI,
 the companion repository should resolve the core dependency from PyPI by default.
@@ -95,8 +103,8 @@ the same behavior across implementations. That makes it a better fit for
 ``lifecore_ros2_examples`` than for the core repo's minimal ``examples/``
 directory.
 
-Applied examples — after Sprint 4
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Applied examples — after the comparison baseline
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 These examples are candidates for later applied validation after the lifecycle
 comparison has proven the basic value proposition. They should start in the
@@ -115,7 +123,7 @@ Multi-publisher / multi-subscriber pipelines with a fan-in or fan-out shape.
 Teaches activation gating across a topology, configure-time resource acquisition for simulated or real sensor handles, and how ``LifecycleComponent`` composition scales past the minimal examples already shown in the core repo.
 
 Lifecycle-aware diagnostics
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Components that publish to ``/diagnostics``, react to lifecycle transitions of *other* nodes, or aggregate health signals from sibling components. Teaches inter-component contracts, ``_on_error`` semantics, and graceful deactivation under partial failure.
 
@@ -181,7 +189,8 @@ Repository structure (planned)
    ├── tests/                        # smoke tests only, not a regression mirror
    └── docs/                         # optional, may stay README-only initially
 
-Layout is provisional. The first commit will lock it.
+The layout remains planning-oriented, but the repository now exists and uses
+this structure as its baseline.
 
 ---
 
@@ -209,8 +218,8 @@ Coupling to core releases
 Implementation phases
 ---------------------
 
-Strategic prerequisite — Sprint 4 lifecycle comparison in companion examples
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Strategic comparison baseline — shipped; Sprint 15 polish completed
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - [x] Build ``lifecore_ros2_examples/examples/lifecycle_comparison/``.
 - [x] Keep it dependency-light while still treating it as a concrete comparison
@@ -218,12 +227,20 @@ Strategic prerequisite — Sprint 4 lifecycle comparison in companion examples
 - [x] Include the shared plain ROS 2 sensor publisher as an external runtime
   stimulus for all watchdog variants.
 - [x] Complete the ``lifecore_ros2`` variant.
-- [ ] Add runtime tests that exercise publication, activation gating,
+- [x] Add runtime tests that exercise publication, activation gating,
    deactivation gating, and cleanup behavior.
-- [ ] Update core README/docs before broad public announcement.
+- [x] Document and test inactive runtime misuse as lifecycle gating behavior,
+   not as a new exception policy.
+- [x] Clarify that public component hooks such as ``on_message`` and
+   ``on_tick`` stay explicit while lifecycle gating remains framework-managed.
+- [x] Update core README/docs before broad public announcement.
 
-Applied validation phase (after Sprint 4)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+The adoption-polish follow-up is archived in
+:doc:`sprints/archived/sprint_15_companion_adoption`. The sprint passed the
+companion repository validation gate on 2026-05-13.
+
+Applied validation phase (after the comparison baseline)
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 After the lifecycle comparison exists, additional concrete examples should be
 validated in ``lifecore_ros2_examples/examples/`` by default:
@@ -236,7 +253,7 @@ validated in ``lifecore_ros2_examples/examples/`` by default:
    repo first
 
 Phase 0 — Repository bootstrap
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - [x] Create ``apajon/lifecore_ros2_examples`` on GitHub
 - [x] Add ``LICENSE`` (Apache-2.0)
@@ -262,23 +279,23 @@ This later example focuses on **sensor-fusion pipeline** — fan-in multi-sensor
 - [ ] Add ``examples/sensor_fusion/README.md`` explaining the topology
 
 Phase 2 — Quality gates
-^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^
 
 - [x] CI workflow: ``ruff check``, ``ruff format --check``, ``pyright``, ``pytest``
-- [ ] Smoke test that imports each example module without invoking ``rclpy.spin``
+- [x] Smoke test that imports each example module without invoking ``rclpy.spin``
 - [x] Document validation commands in the repo ``README.md``
 - [ ] Confirm install-from-scratch on a clean ROS 2 Jazzy environment
 
 Phase 3 — Signposting back to core
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-- [ ] Update ``lifecore_ros2/README.md`` to link to the live companion repo URL
-- [ ] Update ``lifecore_ros2/docs/examples.rst`` to link to the live companion repo URL
+- [x] Update ``lifecore_ros2/README.md`` to link to the live companion repo URL
+- [x] Update ``lifecore_ros2/docs/examples.rst`` to link to the live companion repo URL
 - [ ] Move planning artifacts from core repo into the companion repo
-- [ ] Update ``lifecore_ros2/ROADMAP.md`` to mark the companion repo as published
+- [x] Update ``lifecore_ros2/ROADMAP.md`` to mark the companion repo as published
 
 Phase 4 — Second example (post-Phase-3)
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - [ ] Choose between *lifecycle-aware diagnostics* and *multi-node orchestration* based on user feedback
 - [ ] Apply the same module-docstring discipline (one teaching axis, expected output)

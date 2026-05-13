@@ -1,6 +1,19 @@
 Sprint 3 — Testing infrastructure
 ==================================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 **Objective.** Provide reusable test utilities to accelerate library and application testing.
 
 **Deliverable.** "Application tests can verify lifecycle behavior without boilerplate."

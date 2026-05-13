@@ -1,6 +1,19 @@
 Sprint 5.1 - Composition surface
 =================================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 **Objective.** Make composition metadata visible and accessible at the point
 where a node assembles its components, without requiring constructor
 pass-through across every library component subclass.

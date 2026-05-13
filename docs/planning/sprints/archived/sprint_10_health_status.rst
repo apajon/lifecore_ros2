@@ -1,6 +1,19 @@
 Sprint 10 - Health status API
 =============================
 
+Status:
+  Archived / Completed
+
+Completed in:
+  Unknown
+
+Outcome:
+  See sprint body.
+
+Follow-ups:
+  See docs/planning/backlog.rst if applicable.
+
+
 **Objective.** Expose component health without introducing recovery behavior.
 
 **Deliverable.** Applications can ask a component or node for a small, stable
