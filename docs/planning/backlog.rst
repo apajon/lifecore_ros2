@@ -740,15 +740,38 @@ Observability
 
 **Rationale:** Observability patterns deserve a reserved design space to avoid scattered instrumentation.
 
-Parameters and runtime configuration
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Parameters and runtime configuration — *``LifecycleParameterComponent`` shipped in Sprint 13 (2026-05-13); Sprint 13.1 planned*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* [x] ``LifecycleParameterComponent`` — shipped; component-scoped parameter ownership with namespaced node parameters
-* [x] Parameter declaration helper — delivered via ``declare_lifecycle_parameter(...)``
-* [x] Parameter validation hook — delivered via ``validate_parameter_update(...)`` and ``on_validate_owned_parameters(...)``
-* [x] Lifecycle-aware parameter update policy — first implementation ships ``STATIC`` and ``ACTIVE`` mutability modes
+Sprint mapping: :doc:`sprints/archived/sprint_13_parameters` (completed) and
+:doc:`sprints/sprint_13_1_parameter_observer` (planned).
 
-**Rationale:** Parameters are a first-class runtime concern, not just another component type.
+* [x] ``LifecycleParameterComponent`` for parameters owned by the local
+  lifecycle node.
+* [x] Declare local owned parameters during configure.
+* [x] Read initial local values during configure.
+* [x] Use ``STATIC`` / ``ACTIVE`` mutability instead of a broad policy matrix.
+* [x] Accept runtime writes to mutable local parameters only while active.
+* [x] Expose explicit owned-parameter hooks for pre-set, validation, and
+  post-set behavior.
+* [x] Scope owned parameter names by default as
+  ``<component_name>.<parameter_name>``.
+* [x] Ignore parameters not owned by the component so callbacks do not interfere
+  across components.
+* [ ] ``LifecycleParameterObserverComponent`` for parameters owned by other
+  nodes.
+* [ ] Observe remote parameter events without declaring, owning, validating, or
+  rejecting remote updates.
+
+**Delivered:** ``LifecycleParameterComponent``, ``LifecycleParameter``, and
+``ParameterMutability`` exported from ``lifecore_ros2``. 12 regression tests in
+``tests/components/test_lifecycle_parameter_component.py`` and example in
+``examples/minimal_parameter.py``.
+
+**Rationale:** Parameters are a first-class runtime concern, but local ownership
+and remote observation have different ROS 2 authority boundaries. Keep them as
+separate lifecycle-aware component concerns and do not turn them into an
+application configuration system.
 
 Config and specs — *deferred / conditional*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
