@@ -1,7 +1,7 @@
 Planning backlog
 ================
 
-Sprint 16 is active. Sprint 13.1, Sprint 14, and Sprint 15 are archived. The
+Sprint 16 is completed and awaiting archive. Sprint 13.1, Sprint 14, and Sprint 15 are archived. The
 project is past the old Sprint 8 / 0.4.0 planning state; the core is mature
 enough to shift focus toward adoption, documentation, testing, diagnostics, and
 future architecture without automatically adding new core abstractions.
@@ -78,7 +78,7 @@ P5 — Advanced tooling, generation, and automation
 Current and upcoming sprints
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Sprint 16 — :doc:`sprints/active/sprint_16_test_ergonomics_diagnostics` (Track A + D, P1/P3; active)
+* Sprint 16 — :doc:`sprints/active/sprint_16_test_ergonomics_diagnostics` (Track A + D, P1/P3; completed, awaiting archive)
 * Sprint 17 — :doc:`sprints/planned/sprint_17_lifecore_state_rfc` (Track C + F, P2)
 * Sprint 18 — :doc:`sprints/planned/sprint_18_lifecore_state_msgs_abi` (Track C, P2 conditional)
 * Sprint 19 — :doc:`sprints/deferred/sprint_19_factory_registry` (Track A extension, P4 conditional; historical Sprint 14)
@@ -722,12 +722,20 @@ Execution and timing
 **Rationale:** Callback gating is core behavior. Timing assumptions and missed
 tick tracking remain optional future observability work.
 
-Testing utilities
-^^^^^^^^^^^^^^^^^
+Testing utilities — *shipped in Sprint 3 and Sprint 16 (2026-05-13)*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* [ ] Lifecycle component test fixtures
-* [ ] Fake components for transition tests
-* [ ] Helpers for callback gating tests
+* [x] Lifecycle component test fixtures.
+* [x] Fake components for transition tests.
+* [x] Helpers for callback gating tests.
+* [x] Private ``FakeLifecycleComponent`` for core transition tests covering
+  success, failure, guarded exceptions, and hook order.
+* [x] Assertion helpers report component name, transition, contract state, and
+  recorded hook order.
+
+**Delivered:** Public testing utilities remain in ``lifecore_ros2.testing``.
+Framework-internal transition helpers live in ``tests/helpers/lifecycle.py`` and
+are documented as contributor-only helpers in :doc:`../testing`.
 
 **Rationale:** Accelerates adoption and reduces friction for library-based testing across applications.
 

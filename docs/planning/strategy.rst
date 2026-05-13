@@ -151,7 +151,7 @@ whether the sprint changes the ``lifecore_ros2`` package.
 Recommended mapping:
 
 1. Sprint 15: companion adoption examples — completed and archived.
-2. Sprint 16: test ergonomics and diagnostics polish — active.
+2. Sprint 16: test ergonomics and diagnostics polish — completed, awaiting archive.
 3. Sprint 17: ``lifecore_state`` architecture RFC.
 4. Sprint 18: ``lifecore_state_msgs`` ABI prototype, conditional on Sprint 17.
 5. Sprint 19: minimal factory and registry, conditional on repeated real pain.

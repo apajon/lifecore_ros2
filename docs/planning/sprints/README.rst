@@ -5,8 +5,8 @@ This index shows the current planning state. Historical sprint files remain
 available, but they do not drive current planning directly.
 
 .. toctree::
-   :maxdepth: 1
-   :hidden:
+    :maxdepth: 1
+    :hidden:
 
     active/sprint_16_test_ergonomics_diagnostics
     planned/sprint_17_lifecore_state_rfc
@@ -35,8 +35,7 @@ available, but they do not drive current planning directly.
 Active sprints
 --------------
 
-- Sprint 16 - Test Ergonomics and Diagnostics Polish
-  Location: :doc:`active/sprint_16_test_ergonomics_diagnostics`
+No active sprint is currently listed.
 
 Next planned sprints
 --------------------
@@ -50,7 +49,8 @@ Next planned sprints
 Completed sprints awaiting archive
 ----------------------------------
 
-No completed sprint is currently awaiting archive.
+- Sprint 16 - Test Ergonomics and Diagnostics Polish
+  Location: :doc:`active/sprint_16_test_ergonomics_diagnostics`
 
 Deferred / conditional sprints
 ------------------------------
