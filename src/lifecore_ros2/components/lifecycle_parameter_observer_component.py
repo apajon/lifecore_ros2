@@ -120,7 +120,7 @@ def _value_from_ros_parameter_value(pv: Any) -> tuple[bool, object]:
     if t == 4:
         return True, str(pv.string_value)
     if t == 5:
-        return True, bytes(pv.bytes_value)
+        return True, bytes(pv.byte_array_value)
     if t == 6:
         return True, list(pv.bool_array_value)
     if t == 7:
@@ -212,8 +212,7 @@ class LifecycleParameterObserverComponent(LifecycleComponent):
         """
         if self._is_configured:
             raise RuntimeError(
-                f"Component '{self.name}' cannot register a watch while configured; "
-                "register watches before configure"
+                f"Component '{self.name}' cannot register a watch while configured; register watches before configure"
             )
         key = (node_name, parameter_name)
         with self._watches_lock:
@@ -297,9 +296,7 @@ class LifecycleParameterObserverComponent(LifecycleComponent):
             with self._watches_lock:
                 self._update_snapshot(entry, watch_state, value)
             if watch_state == WatchState.VALUE_AVAILABLE:
-                self.get_logger().debug(
-                    f"[{self.name}] initial '{entry.node_name}/{entry.parameter_name}': {value!r}"
-                )
+                self.get_logger().debug(f"[{self.name}] initial '{entry.node_name}/{entry.parameter_name}': {value!r}")
             else:
                 self.get_logger().info(
                     f"[{self.name}] initial '{entry.node_name}/{entry.parameter_name}': {watch_state}"
@@ -329,7 +326,7 @@ class LifecycleParameterObserverComponent(LifecycleComponent):
         from rclpy.parameter_client import AsyncParameterClient  # type: ignore[import-untyped]
 
         client = AsyncParameterClient(self.node, node_name)
-        if not client.wait_for_service(timeout_sec=self._read_timeout_sec):
+        if not client.wait_for_services(timeout_sec=self._read_timeout_sec):
             return WatchState.UNKNOWN_NODE, None
 
         future = client.get_parameters([parameter_name])

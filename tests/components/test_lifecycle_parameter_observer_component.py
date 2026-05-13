@@ -46,7 +46,7 @@ def _make_parameter_event(
         elif t == Parameter.Type.STRING:
             pv.string_value = value
         elif t == Parameter.Type.BYTE_ARRAY:
-            pv.bytes_value = list(value)
+            pv.byte_array_value = list(value)
         p = RclParam()
         p.name = name
         p.value = pv
@@ -240,9 +240,7 @@ class TestGetObservedParameter:
 
         assert component.get_observed_parameter("/sensor", "rate") is None
 
-    def test_returns_snapshot_for_registered_watch(
-        self, node: LifecycleComponentNode, mock_sub: MagicMock
-    ) -> None:
+    def test_returns_snapshot_for_registered_watch(self, node: LifecycleComponentNode, mock_sub: MagicMock) -> None:
         component = LifecycleParameterObserverComponent("obs")
         component.watch_parameter(node_name="/sensor", parameter_name="rate")
         node.add_component(component)
@@ -276,9 +274,7 @@ class TestParameterEventHandling:
             component.on_configure(DUMMY_STATE)
         component.on_activate(DUMMY_STATE)
 
-    def test_event_updates_snapshot_when_active(
-        self, node: LifecycleComponentNode, mock_sub: MagicMock
-    ) -> None:
+    def test_event_updates_snapshot_when_active(self, node: LifecycleComponentNode, mock_sub: MagicMock) -> None:
         component = LifecycleParameterObserverComponent("obs")
         component.watch_parameter(node_name="/sensor", parameter_name="rate")
         self._setup_active(component, node, mock_sub)
@@ -291,9 +287,7 @@ class TestParameterEventHandling:
         assert snapshot.state == WatchState.VALUE_AVAILABLE
         assert snapshot.value == 42
 
-    def test_event_updates_snapshot_when_inactive(
-        self, node: LifecycleComponentNode, mock_sub: MagicMock
-    ) -> None:
+    def test_event_updates_snapshot_when_inactive(self, node: LifecycleComponentNode, mock_sub: MagicMock) -> None:
         """Snapshot updates happen regardless of activation state."""
         component = LifecycleParameterObserverComponent("obs")
         component.watch_parameter(node_name="/sensor", parameter_name="rate")
@@ -309,9 +303,7 @@ class TestParameterEventHandling:
         assert snapshot is not None
         assert snapshot.value == 7
 
-    def test_callback_called_only_when_active(
-        self, node: LifecycleComponentNode, mock_sub: MagicMock
-    ) -> None:
+    def test_callback_called_only_when_active(self, node: LifecycleComponentNode, mock_sub: MagicMock) -> None:
         received: list[ObservedParameterEvent] = []
         component = LifecycleParameterObserverComponent("obs")
         component.watch_parameter(node_name="/sensor", parameter_name="rate", callback=received.append)
@@ -358,9 +350,7 @@ class TestParameterEventHandling:
         assert len(hook_calls) == 1
         assert hook_calls[0][2].value == 1.0
 
-    def test_event_carries_previous_value(
-        self, node: LifecycleComponentNode, mock_sub: MagicMock
-    ) -> None:
+    def test_event_carries_previous_value(self, node: LifecycleComponentNode, mock_sub: MagicMock) -> None:
         received: list[ObservedParameterEvent] = []
         component = LifecycleParameterObserverComponent("obs")
         component.watch_parameter(node_name="/sensor", parameter_name="rate", callback=received.append)
@@ -387,9 +377,7 @@ class TestParameterEventHandling:
         assert snapshot is not None
         assert snapshot.state == WatchState.UNKNOWN_PARAMETER
 
-    def test_event_for_different_node_is_ignored(
-        self, node: LifecycleComponentNode, mock_sub: MagicMock
-    ) -> None:
+    def test_event_for_different_node_is_ignored(self, node: LifecycleComponentNode, mock_sub: MagicMock) -> None:
         received: list[ObservedParameterEvent] = []
         component = LifecycleParameterObserverComponent("obs")
         component.watch_parameter(node_name="/sensor", parameter_name="rate", callback=received.append)
@@ -409,9 +397,7 @@ class TestParameterEventHandling:
 
 
 class TestCleanupAndRelease:
-    def test_cleanup_destroys_subscription(
-        self, node: LifecycleComponentNode, mock_sub: MagicMock
-    ) -> None:
+    def test_cleanup_destroys_subscription(self, node: LifecycleComponentNode, mock_sub: MagicMock) -> None:
         component = LifecycleParameterObserverComponent("obs")
         node.add_component(component)
         with patch.object(component, "_read_initial_parameter", return_value=(WatchState.UNAVAILABLE, None)):
@@ -422,9 +408,7 @@ class TestCleanupAndRelease:
         node.destroy_subscription.assert_called_once_with(mock_sub)  # type: ignore[attr-defined]
         assert component._event_subscription is None
 
-    def test_cleanup_allows_reconfigure(
-        self, node: LifecycleComponentNode, mock_sub: MagicMock
-    ) -> None:
+    def test_cleanup_allows_reconfigure(self, node: LifecycleComponentNode, mock_sub: MagicMock) -> None:
         component = LifecycleParameterObserverComponent("obs")
         component.watch_parameter(node_name="/sensor", parameter_name="rate")
         node.add_component(component)
@@ -441,9 +425,7 @@ class TestCleanupAndRelease:
         assert snapshot is not None
         assert snapshot.value == 2
 
-    def test_shutdown_destroys_subscription(
-        self, node: LifecycleComponentNode, mock_sub: MagicMock
-    ) -> None:
+    def test_shutdown_destroys_subscription(self, node: LifecycleComponentNode, mock_sub: MagicMock) -> None:
         component = LifecycleParameterObserverComponent("obs")
         node.add_component(component)
         with patch.object(component, "_read_initial_parameter", return_value=(WatchState.UNAVAILABLE, None)):
@@ -454,9 +436,7 @@ class TestCleanupAndRelease:
         node.destroy_subscription.assert_called_once_with(mock_sub)  # type: ignore[attr-defined]
         assert component._event_subscription is None
 
-    def test_error_destroys_subscription(
-        self, node: LifecycleComponentNode, mock_sub: MagicMock
-    ) -> None:
+    def test_error_destroys_subscription(self, node: LifecycleComponentNode, mock_sub: MagicMock) -> None:
         component = LifecycleParameterObserverComponent("obs")
         node.add_component(component)
         with patch.object(component, "_read_initial_parameter", return_value=(WatchState.UNAVAILABLE, None)):
