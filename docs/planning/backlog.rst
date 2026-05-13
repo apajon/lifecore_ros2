@@ -81,8 +81,8 @@ Recommended upcoming sprints
 * Sprint 16 — :doc:`sprints/planned/sprint_16_test_ergonomics_diagnostics` (Track A + D, P1/P3)
 * Sprint 17 — :doc:`sprints/planned/sprint_17_lifecore_state_rfc` (Track C + F, P2)
 * Sprint 18 — :doc:`sprints/planned/sprint_18_lifecore_state_msgs_abi` (Track C, P2 conditional)
-* Sprint 19 — :doc:`sprints/deferred/former_sprint_14_factory_registry` (Track A extension, P4 conditional; historical Sprint 14)
-* Sprint 20+ — :doc:`sprints/deferred/former_sprint_15_tooling_codegen` (Track E, P5 conditional; historical Sprint 15)
+* Sprint 19 — :doc:`sprints/deferred/sprint_19_factory_registry` (Track A extension, P4 conditional; historical Sprint 14)
+* Sprint 20+ — :doc:`sprints/deferred/sprint_20_tooling_codegen` (Track E, P5 conditional; historical Sprint 15)
 
 Deferred sprints
 ^^^^^^^^^^^^^^^^
@@ -651,7 +651,7 @@ Long-term candidates
 Tooling and generated nodes — *deferred / conditional, Sprint 20+ or later*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Sprint mapping: :doc:`sprints/deferred/former_sprint_15_tooling_codegen`.
+Sprint mapping: :doc:`sprints/deferred/sprint_20_tooling_codegen`.
 
 * [ ] Explore a Copilot skill or generator that creates ``lifecore_ros2`` node
   skeletons.
