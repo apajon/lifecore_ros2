@@ -70,6 +70,10 @@ Example map
      - ``LifecycleParameterComponent`` with active-only writes, static parameters, and validation hooks.
      - Read after the subscriber example to see lifecycle-aware parameter ownership without turning the node into a config system.
      - ``uv run python examples/minimal_parameter.py``
+   * - `minimal_parameter_observer.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_parameter_observer.py>`_
+     - ``LifecycleParameterObserverComponent`` with explicit initial-read states, active-gated callbacks, and no remote ownership.
+     - Read after ``minimal_parameter.py`` to see how remote observation stays separate from local parameter ownership.
+     - ``uv run python examples/minimal_parameter_observer.py``
    * - `minimal_service_server.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_service_server.py>`_
      - ``LifecycleServiceServerComponent`` with activation-gated request handling.
      - Read when you want to see how inactive requests are answered with a default response.
@@ -110,6 +114,7 @@ Suggested reading path
 - Continue with ``minimal_state_component.py`` to see lifecycle management applied to owned state with no ROS resources.
 - Move to timer, publisher, and subscriber examples to see activation gating on long-lived ROS resources.
 - Continue with ``minimal_parameter.py`` to see lifecycle-aware parameter ownership and runtime update policy.
+- Continue with ``minimal_parameter_observer.py`` to see remote parameter observation without turning observation into ownership or validation authority.
 - Continue with service server and client examples to compare inbound versus outbound gating behavior.
 - Finish with ``telemetry_publisher.py``, ``composed_pipeline.py``, and ``composed_ordered_pipeline.py`` for full lifecycle separation across multiple responsibilities.
 - Read ``composed_ordered_pipeline.py`` after ``telemetry_publisher.py`` to see how ``dependencies`` declared at ``add_component(...)`` impose a guaranteed transition order across independently managed components.
@@ -236,8 +241,31 @@ What to look for
 
 - ``configure`` declares ``sensor_params.gain`` and ``sensor_params.mode`` on the parent node if they do not already exist.
 - ``activate`` enables runtime writes for ``gain`` only; ``mode`` remains read-only for the full lifecycle.
+- ``validate_parameter_update`` is the simplest per-parameter validation hook; the full owned-parameter pipeline is ``on_pre_set_owned_parameters`` → ``on_validate_owned_parameters`` (which calls ``validate_parameter_update`` by default) → ``on_post_set_owned_parameters``.
 - Invalid active writes are rejected by ``validate_parameter_update`` with a clear reason.
 - ``cleanup`` clears the component's runtime tracking and callback registration, but the ROS 2 parameters stay declared on the node and are reused on the next configure.
+
+Minimal Parameter Observer
+--------------------------
+
+Source: `examples/minimal_parameter_observer.py <https://github.com/apajon/lifecore_ros2/blob/main/examples/minimal_parameter_observer.py>`_
+
+What it demonstrates
+~~~~~~~~~~~~~~~~~~~~
+
+A ``LifecycleParameterObserverComponent`` that watches a parameter owned by
+another ROS 2 node. The component may read an initial value during
+``configure`` and later react to ``/parameter_events``, but it never declares,
+owns, validates, or rejects remote parameter updates.
+
+What to look for
+~~~~~~~~~~~~~~~~
+
+- ``configure`` creates the parameter-event subscription and optionally attempts an initial remote read.
+- Missing remote nodes or parameters do not fail ``configure`` by default; the watch records ``UNKNOWN_NODE``, ``UNKNOWN_PARAMETER``, ``UNAVAILABLE``, or ``VALUE_AVAILABLE``.
+- ``watch_parameter(..., callback=...)`` is the per-watch reaction point; ``on_observed_parameter_event`` is the component-wide hook when one reaction should apply to all observed parameters.
+- ``activate`` gates both watch-specific callbacks and the component-wide hook; the component still keeps the latest observed snapshot queryable while inactive.
+- ``cleanup`` destroys the observer-owned subscription and leaves no ownership claim on the remote parameter.
 
 Minimal Service Server
 ----------------------

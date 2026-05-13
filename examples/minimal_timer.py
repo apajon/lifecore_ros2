@@ -40,6 +40,11 @@ class Heartbeat(LifecycleTimerComponent):
         self._counter: int = 0
 
     def on_tick(self) -> None:
+        """Handle one timer tick while the component is active.
+
+        This is the public timer callback contract. The framework drops ticks
+        while inactive instead of calling this hook.
+        """
         self.node.get_logger().info(f"[{self.name}] tick #{self._counter}")
         self._counter += 1
 

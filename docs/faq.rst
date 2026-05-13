@@ -33,7 +33,8 @@ A lifecycle node that directly owns publishers, subscriptions, timers, and domai
 logic tends to blur two concerns: *when* a resource exists and *what* it does.
 Components separate those concerns. ``TopicComponent`` owns the ROS resource across
 configure/cleanup. ``LifecyclePublisherComponent``, ``LifecycleSubscriberComponent``,
-``LifecycleTimerComponent``, and ``LifecycleParameterComponent`` additionally gate runtime behavior on activation.
+``LifecycleTimerComponent``, ``LifecycleParameterComponent``, and
+``LifecycleParameterObserverComponent`` additionally gate runtime behavior on activation.
 ``ServiceComponent`` mirrors that pattern for ROS services, with
 ``LifecycleServiceServerComponent`` and ``LifecycleServiceClientComponent`` gating
 request handling and outbound calls on activation. Application code composes these

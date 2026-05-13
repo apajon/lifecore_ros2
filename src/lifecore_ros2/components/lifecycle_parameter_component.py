@@ -56,6 +56,12 @@ class LifecycleParameterComponent(LifecycleComponent):
     are ignored so multiple parameter components can attach callbacks to the
     same node safely.
 
+    Owned parameter update flow while active is ordered and explicit:
+    ``on_pre_set_owned_parameters`` runs first, then
+    ``on_validate_owned_parameters`` (which delegates to
+    ``validate_parameter_update`` by default), then
+    ``on_post_set_owned_parameters`` after internal value tracking is updated.
+
     Owned ROS 2 parameters are declared on the parent node during configure and
     are **not undeclared during cleanup or shutdown**. A subsequent configure
     cycle reuses the existing node-level value. Parameter names are scoped as
@@ -153,6 +159,11 @@ class LifecycleParameterComponent(LifecycleComponent):
         original batch. The returned list replaces those entries before the
         validation callbacks run.
 
+        This is the first application-visible hook in the owned-parameter write
+        pipeline. Use it to rewrite or normalize incoming values before
+        validation. For most components, ``validate_parameter_update`` is the
+        simpler extension point.
+
         The default implementation returns ``parameters`` unchanged.
         """
         return parameters
@@ -164,6 +175,11 @@ class LifecycleParameterComponent(LifecycleComponent):
         passes pre-filtering. By the time this hook runs, type compatibility and
         mutability (``STATIC`` rejection) have already been checked by the
         framework. This hook handles application-level constraints.
+
+        This is the batch-validation hook for the owned-parameter write
+        pipeline. Override it only when validation depends on relationships
+        across multiple owned parameters in the same batch. For simple
+        per-parameter rules, prefer ``validate_parameter_update``.
 
         The default implementation delegates each parameter to
         ``validate_parameter_update``. Override this method directly only for
@@ -182,8 +198,11 @@ class LifecycleParameterComponent(LifecycleComponent):
         """Validate one active parameter update.
 
         Returns ``None`` to accept the update. Return a string to reject it with
-        that reason. Override this for simple per-parameter validation; override
-        ``on_validate_owned_parameters`` for advanced batch validation.
+        that reason. This is the simplest validation extension point: the
+        default ``on_validate_owned_parameters`` implementation calls it once
+        per owned parameter after ``on_pre_set_owned_parameters`` and before
+        ``on_post_set_owned_parameters``. Override
+        ``on_validate_owned_parameters`` instead for advanced batch validation.
         """
         return None
 
@@ -193,6 +212,10 @@ class LifecycleParameterComponent(LifecycleComponent):
         Called after the component's internal value tracking has been updated.
         ``get_parameter_value`` already reflects the new values when this hook
         runs. ``parameters`` carries the scoped names (``<component>.<name>``).
+
+        This is the final application-visible hook in the owned-parameter write
+        pipeline. Use it for side effects that should observe the accepted,
+        already-stored values.
         """
 
     def _on_configure(self, state: LifecycleState) -> TransitionCallbackReturn:

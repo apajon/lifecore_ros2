@@ -33,7 +33,8 @@ concerns.
 
 Do not mix local parameter ownership with remote parameter observation in the
 same component. Sprint 13 covers only ``LifecycleParameterComponent``. Remote
-parameter observation is split into :doc:`sprint_13_1_parameter_observer`.
+parameter observation is split into
+:doc:`../active/sprint_13_1_parameter_observer`.
 
 The local component owns parameters on the same lifecycle node that owns the
 component. It may declare, read, validate, and track those owned parameters. It

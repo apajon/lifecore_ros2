@@ -1,6 +1,13 @@
 """Lifecycle-aware components for lifecore_ros2 (topics, services, watchdog, and parameters)."""
 
 from .lifecycle_parameter_component import LifecycleParameter, LifecycleParameterComponent, ParameterMutability
+from .lifecycle_parameter_observer_component import (
+    LifecycleParameterObserverComponent,
+    ObservedParameterEvent,
+    ObservedParameterSnapshot,
+    ParameterWatchHandle,
+    WatchState,
+)
 from .lifecycle_publisher_component import LifecyclePublisherComponent
 from .lifecycle_service_client_component import LifecycleServiceClientComponent
 from .lifecycle_service_server_component import LifecycleServiceServerComponent
@@ -15,6 +22,11 @@ __all__ = [
     "LifecycleParameter",
     "LifecycleParameterComponent",
     "ParameterMutability",
+    "LifecycleParameterObserverComponent",
+    "ObservedParameterEvent",
+    "ObservedParameterSnapshot",
+    "ParameterWatchHandle",
+    "WatchState",
     "LifecyclePublisherComponent",
     "LifecycleSubscriberComponent",
     "LifecycleTimerComponent",

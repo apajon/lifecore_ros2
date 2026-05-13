@@ -740,7 +740,7 @@ Observability
 
 **Rationale:** Observability patterns deserve a reserved design space to avoid scattered instrumentation.
 
-Parameters and runtime configuration — *``LifecycleParameterComponent`` shipped in Sprint 13 (2026-05-13); Sprint 13.1 planned*
+Parameters and runtime configuration — *Sprint 13 and Sprint 13.1 shipped (2026-05-13)*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Sprint mapping: :doc:`sprints/archived/sprint_13_parameters` (completed) and
@@ -758,15 +758,19 @@ Sprint mapping: :doc:`sprints/archived/sprint_13_parameters` (completed) and
   ``<component_name>.<parameter_name>``.
 * [x] Ignore parameters not owned by the component so callbacks do not interfere
   across components.
-* [ ] ``LifecycleParameterObserverComponent`` for parameters owned by other
+* [x] ``LifecycleParameterObserverComponent`` for parameters owned by other
   nodes.
-* [ ] Observe remote parameter events without declaring, owning, validating, or
+* [x] Observe remote parameter events without declaring, owning, validating, or
   rejecting remote updates.
 
-**Delivered:** ``LifecycleParameterComponent``, ``LifecycleParameter``, and
-``ParameterMutability`` exported from ``lifecore_ros2``. 12 regression tests in
-``tests/components/test_lifecycle_parameter_component.py`` and example in
-``examples/minimal_parameter.py``.
+**Delivered:** ``LifecycleParameterComponent``, ``LifecycleParameter``,
+``ParameterMutability``, ``LifecycleParameterObserverComponent``,
+``WatchState``, ``ObservedParameterEvent``, ``ObservedParameterSnapshot``, and
+``ParameterWatchHandle`` exported from ``lifecore_ros2``. Regression tests in
+``tests/components/test_lifecycle_parameter_component.py`` and
+``tests/components/test_lifecycle_parameter_observer_component.py`` plus
+examples in ``examples/minimal_parameter.py`` and
+``examples/minimal_parameter_observer.py``.
 
 **Rationale:** Parameters are a first-class runtime concern, but local ownership
 and remote observation have different ROS 2 authority boundaries. Keep them as
