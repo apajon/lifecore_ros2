@@ -2,7 +2,7 @@ Sprint 15 - Companion adoption examples
 =======================================
 
 Status:
-  Planned
+  Completed
 
 Branch:
   sprint/15-companion-adoption
@@ -37,7 +37,36 @@ Non-goals
 Acceptance criteria
 -------------------
 
-- [ ] A new user can understand the value by reading and running one example.
-- [ ] The example does not require knowing the full internal architecture.
-- [ ] The example demonstrates less boilerplate, cleaner transitions, clearer
+- [x] A new user can understand the value by reading and running one example.
+- [x] The example does not require knowing the full internal architecture.
+- [x] The example demonstrates less boilerplate, cleaner transitions, clearer
   errors, safer activation/deactivation, and deterministic cleanup.
+
+Delivered
+---------
+
+- Companion README and lifecycle comparison README now frame inactive runtime
+  misuse as lifecycle gating behavior: configured-but-inactive or deactivated
+  nodes drop incoming samples, block timer-driven status publication, and keep
+  running without introducing a new exception policy.
+- The companion comparison also clarifies that ``on_message`` and ``on_tick``
+  remain explicit public application hooks while framework-managed lifecycle
+  gates decide when those hooks run.
+- Companion runtime tests cover active publication, inactive publication
+  blocking, activation gating, deactivation gating, cleanup, and inactive
+  runtime misuse.
+- Core README and ROADMAP keep short links to the companion comparison instead
+  of duplicating the walkthrough.
+
+Validation
+----------
+
+From ``lifecore_ros2_examples`` on 2026-05-13:
+
+.. code-block:: bash
+
+  uv run ruff check .
+  uv run pyright
+  uv run pytest
+
+Result: passed, with ``9 passed`` from pytest.

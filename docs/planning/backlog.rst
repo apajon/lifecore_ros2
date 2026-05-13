@@ -426,7 +426,7 @@ Lifecycle comparison example — baseline shipped; follow-up in Sprint 15
 
 Sprint mapping: :doc:`sprints/archived/sprint_04_lifecycle_comparison` for the
 initial companion comparison baseline; :doc:`sprints/active/sprint_15_companion_adoption`
-for the current adoption-polish follow-up.
+for the completed adoption-polish follow-up.
 
 * [x] Create ``lifecore_ros2_examples/examples/lifecycle_comparison/`` in the
   companion examples repository.
@@ -439,7 +439,7 @@ for the current adoption-polish follow-up.
 * [x] Document the observable difference: plain is simple but fragile, classic
   lifecycle is controlled but verbose, ``lifecore_ros2`` is structured and
   lifecycle-native.
-* [ ] Tighten the shortest path so one new user can read and run the comparison
+* [x] Tighten the shortest path so one new user can read and run the comparison
   as the primary adoption proof without needing broader architecture context.
 
 **Rationale:** This is the strongest adoption asset. The project should not
@@ -451,9 +451,9 @@ README and public signposting follow-up
 
 * [x] Link to the full comparison from core-facing README/docs surfaces instead
   of duplicating the full walkthrough.
-* [ ] Decide whether ``README.md`` needs a dedicated concise comparison section
+* [x] Decide whether ``README.md`` needs a dedicated concise comparison section
   or whether the current signposting is sufficient.
-* [ ] Keep the adoption-facing message "build predictable ROS 2 nodes"
+* [x] Keep the adoption-facing message "build predictable ROS 2 nodes"
   prominent in public material without turning README into the technical
   reference.
 

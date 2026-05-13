@@ -8,8 +8,8 @@ available, but they do not drive current planning directly.
     :maxdepth: 1
     :hidden:
 
-  active/sprint_13_1_parameter_observer
-  active/sprint_15_companion_adoption
+    active/sprint_13_1_parameter_observer
+    active/sprint_15_companion_adoption
     planned/sprint_16_test_ergonomics_diagnostics
     planned/sprint_17_lifecore_state_rfc
     planned/sprint_18_lifecore_state_msgs_abi
@@ -48,9 +48,6 @@ Next planned sprints
 - Sprint 13.1 - Parameter Observer
   Location: :doc:`active/sprint_13_1_parameter_observer`
 
-- Sprint 15 - Companion Adoption Examples
-  Location: :doc:`active/sprint_15_companion_adoption`
-
 - Sprint 16 - Test Ergonomics and Diagnostics Polish
   Location: :doc:`planned/sprint_16_test_ergonomics_diagnostics`
 
@@ -59,6 +56,12 @@ Next planned sprints
 
 - Sprint 18 - lifecore_state_msgs ABI Prototype
   Location: :doc:`planned/sprint_18_lifecore_state_msgs_abi`
+
+Completed sprints awaiting archive
+----------------------------------
+
+- Sprint 15 - Companion Adoption Examples
+  Location: :doc:`active/sprint_15_companion_adoption`
 
 Deferred / conditional sprints
 ------------------------------
