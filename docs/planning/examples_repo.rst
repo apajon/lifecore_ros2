@@ -218,8 +218,8 @@ Coupling to core releases
 Implementation phases
 ---------------------
 
-Strategic comparison baseline — shipped; follow-up in Sprint 15
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+Strategic comparison baseline — shipped; Sprint 15 polish completed
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 - [x] Build ``lifecore_ros2_examples/examples/lifecycle_comparison/``.
 - [x] Keep it dependency-light while still treating it as a concrete comparison
@@ -229,11 +229,15 @@ Strategic comparison baseline — shipped; follow-up in Sprint 15
 - [x] Complete the ``lifecore_ros2`` variant.
 - [x] Add runtime tests that exercise publication, activation gating,
    deactivation gating, and cleanup behavior.
+- [x] Document and test inactive runtime misuse as lifecycle gating behavior,
+   not as a new exception policy.
+- [x] Clarify that public component hooks such as ``on_message`` and
+   ``on_tick`` stay explicit while lifecycle gating remains framework-managed.
 - [x] Update core README/docs before broad public announcement.
 
-The remaining adoption-polish work now belongs to
-:doc:`sprints/active/sprint_15_companion_adoption`, not to the repository
-bootstrap checklist.
+The adoption-polish follow-up is tracked in
+:doc:`sprints/active/sprint_15_companion_adoption`. The sprint passed the
+companion repository validation gate on 2026-05-13.
 
 Applied validation phase (after the comparison baseline)
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

@@ -1,7 +1,7 @@
 Planning backlog
 ================
 
-Sprint 14 is complete. The project is past the old Sprint 8 / 0.4.0 planning
+Sprint 13.1 is active. Sprint 14 is complete. The project is past the old Sprint 8 / 0.4.0 planning
 state; the core is mature enough to shift focus toward adoption, documentation,
 testing, diagnostics, and future architecture without automatically adding new
 core abstractions.
@@ -81,8 +81,8 @@ Recommended upcoming sprints
 * Sprint 16 — :doc:`sprints/planned/sprint_16_test_ergonomics_diagnostics` (Track A + D, P1/P3)
 * Sprint 17 — :doc:`sprints/planned/sprint_17_lifecore_state_rfc` (Track C + F, P2)
 * Sprint 18 — :doc:`sprints/planned/sprint_18_lifecore_state_msgs_abi` (Track C, P2 conditional)
-* Sprint 19 — :doc:`sprints/deferred/former_sprint_14_factory_registry` (Track A extension, P4 conditional; historical Sprint 14)
-* Sprint 20+ — :doc:`sprints/deferred/former_sprint_15_tooling_codegen` (Track E, P5 conditional; historical Sprint 15)
+* Sprint 19 — :doc:`sprints/deferred/sprint_19_factory_registry` (Track A extension, P4 conditional; historical Sprint 14)
+* Sprint 20+ — :doc:`sprints/deferred/sprint_20_tooling_codegen` (Track E, P5 conditional; historical Sprint 15)
 
 Deferred sprints
 ^^^^^^^^^^^^^^^^
@@ -426,7 +426,7 @@ Lifecycle comparison example — baseline shipped; follow-up in Sprint 15
 
 Sprint mapping: :doc:`sprints/archived/sprint_04_lifecycle_comparison` for the
 initial companion comparison baseline; :doc:`sprints/active/sprint_15_companion_adoption`
-for the current adoption-polish follow-up.
+for the completed adoption-polish follow-up.
 
 * [x] Create ``lifecore_ros2_examples/examples/lifecycle_comparison/`` in the
   companion examples repository.
@@ -439,7 +439,7 @@ for the current adoption-polish follow-up.
 * [x] Document the observable difference: plain is simple but fragile, classic
   lifecycle is controlled but verbose, ``lifecore_ros2`` is structured and
   lifecycle-native.
-* [ ] Tighten the shortest path so one new user can read and run the comparison
+* [x] Tighten the shortest path so one new user can read and run the comparison
   as the primary adoption proof without needing broader architecture context.
 
 **Rationale:** This is the strongest adoption asset. The project should not
@@ -451,9 +451,9 @@ README and public signposting follow-up
 
 * [x] Link to the full comparison from core-facing README/docs surfaces instead
   of duplicating the full walkthrough.
-* [ ] Decide whether ``README.md`` needs a dedicated concise comparison section
+* [x] Decide whether ``README.md`` needs a dedicated concise comparison section
   or whether the current signposting is sufficient.
-* [ ] Keep the adoption-facing message "build predictable ROS 2 nodes"
+* [x] Keep the adoption-facing message "build predictable ROS 2 nodes"
   prominent in public material without turning README into the technical
   reference.
 
@@ -651,7 +651,7 @@ Long-term candidates
 Tooling and generated nodes — *deferred / conditional, Sprint 20+ or later*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Sprint mapping: :doc:`sprints/deferred/former_sprint_15_tooling_codegen`.
+Sprint mapping: :doc:`sprints/deferred/sprint_20_tooling_codegen`.
 
 * [ ] Explore a Copilot skill or generator that creates ``lifecore_ros2`` node
   skeletons.

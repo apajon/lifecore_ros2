@@ -33,16 +33,20 @@ available, but they do not drive current planning directly.
   archived/sprint_14_project_alignment
 
 Active sprints
+
 --------------
 
 - Sprint 13.1 - Parameter Observer Component
   Location: :doc:`active/sprint_13_1_parameter_observer`
 
-- Sprint 15 - Companion Adoption Examples
-  Location: :doc:`active/sprint_15_companion_adoption`
+- Sprint 13.1 - Parameter Observer
+  Location: :doc:`active/sprint_13_1_parameter_observer`
 
 Next planned sprints
 --------------------
+
+- Sprint 13.1 - Parameter Observer
+  Location: :doc:`active/sprint_13_1_parameter_observer`
 
 - Sprint 16 - Test Ergonomics and Diagnostics Polish
   Location: :doc:`planned/sprint_16_test_ergonomics_diagnostics`
@@ -53,14 +57,20 @@ Next planned sprints
 - Sprint 18 - lifecore_state_msgs ABI Prototype
   Location: :doc:`planned/sprint_18_lifecore_state_msgs_abi`
 
+Completed sprints awaiting archive
+----------------------------------
+
+- Sprint 15 - Companion Adoption Examples
+  Location: :doc:`active/sprint_15_companion_adoption`
+
 Deferred / conditional sprints
 ------------------------------
 
 - Former Sprint 14 - Minimal Factory and Registry
-  Location: :doc:`deferred/former_sprint_14_factory_registry`
+  Location: :doc:`deferred/sprint_19_factory_registry`
 
 - Former Sprint 15 - Tooling and Generated Nodes
-  Location: :doc:`deferred/former_sprint_15_tooling_codegen`
+  Location: :doc:`deferred/sprint_20_tooling_codegen`
 
 Archived sprints
 ----------------

@@ -96,10 +96,9 @@ Priority model:
 
 ## Next planning window
 
-Sprint 14 completed the planning-alignment pass. The recommended sequence after
-Sprint 14 is:
+Sprint 14 completed the planning-alignment pass, and Sprint 15 completed the
+companion adoption-polish pass. The recommended sequence after Sprint 15 is:
 
-- **Sprint 15 — Companion Adoption Examples** (Companion / Adoption, P1): strengthen concrete comparison examples and runtime proof.
 - **Sprint 16 — Test Ergonomics and Diagnostics Polish** (Core + DX, P1/P3): make lifecycle tests easier and failures clearer without large abstractions.
 - **Sprint 17 — lifecore_state Architecture RFC** (State Architecture / Research, P2): decide boundaries, naming, concepts, and go/no-go before coding.
 - **Sprint 18 — lifecore_state_msgs ABI Prototype** (State Architecture / ROS ABI, P2 conditional): prototype minimal ROS messages only if Sprint 17 validates the direction.
@@ -145,7 +144,7 @@ Each item includes a rationale for deferral and placement notes for future imple
 
 **See [Examples Repository Plan](docs/planning/examples_repo.rst)** for the full planning.
 
-**Status**: repository exists and already hosts the applied sensor watchdog comparison used as the first companion proof point. After Sprint 14, companion adoption work is a high-priority track: strengthening that proof can be more valuable than a new internal feature.
+**Status**: repository exists and hosts the applied sensor watchdog comparison used as the first companion proof point. Sprint 15 strengthened that proof with clearer adoption docs and runtime tests for inactive lifecycle gating behavior.
 
 Start with the [sensor watchdog lifecycle comparison](https://github.com/apajon/lifecore_ros2_examples/blob/main/examples/lifecycle_comparison/README.md) in the companion repository.
 
