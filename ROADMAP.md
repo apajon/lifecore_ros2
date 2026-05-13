@@ -5,11 +5,11 @@ lifecore_ros2 is a minimal lifecycle composition library for ROS 2 Jazzy — no 
 
 ---
 
-## Current status — post-Sprint 14
+## Current status — post-Sprint 15
 
-Sprint 14 is complete. The project is past the old Sprint 8 / 0.4.0 planning
-state; the core library is usable for professional evaluation while API
-stability remains experimental until `1.0.0`.
+Sprint 13.1, Sprint 14, and Sprint 15 are complete. The project is past the old
+Sprint 8 / 0.4.0 planning state; the core library is usable for professional
+evaluation while API stability remains experimental until `1.0.0`.
 
 The core library provides:
 
@@ -23,6 +23,7 @@ The core library provides:
 - Strict lifecycle contract with error handling and rollback
 - Health/status reporting and lightweight watchdog observation
 - Lifecycle-aware parameter ownership and runtime mutability policies
+- Lifecycle-aware remote parameter observation without ownership authority
 - Comprehensive test coverage (unit, concurrency, integration)
 - Complete documentation and examples
 
@@ -42,11 +43,11 @@ Before pursuing new features, the project is focused on making the library adopt
 
 **See [Adoption & Hardening Roadmap](docs/planning/adoption_hardening.rst)** for the nine-concern roadmap.
 
-Current status: adoption hardening is complete through Sprint 13, and Sprint 14
-closed the planning-alignment pass. The next work
-does not automatically have to extend the core package; companion examples,
-documentation, architecture RFCs, DX, and tooling can outrank core features when
-they reduce risk or improve adoption.
+Current status: adoption hardening is complete through Sprint 13.1, Sprint 14
+closed the planning-alignment pass, and Sprint 15 closed the companion
+adoption-polish pass. The next work does not automatically have to extend the
+core package; companion examples, documentation, architecture RFCs, DX, and
+tooling can outrank core features when they reduce risk or improve adoption.
 
 ---
 
@@ -96,10 +97,10 @@ Priority model:
 
 ## Next planning window
 
-Sprint 14 completed the planning-alignment pass, and Sprint 15 completed the
-companion adoption-polish pass. The recommended sequence after Sprint 15 is:
+Sprint 14 completed the planning-alignment pass, Sprint 15 completed the
+companion adoption-polish pass, and Sprint 16 is now active. The recommended
+sequence after Sprint 16 is:
 
-- **Sprint 16 — Test Ergonomics and Diagnostics Polish** (Core + DX, P1/P3): make lifecycle tests easier and failures clearer without large abstractions.
 - **Sprint 17 — lifecore_state Architecture RFC** (State Architecture / Research, P2): decide boundaries, naming, concepts, and go/no-go before coding.
 - **Sprint 18 — lifecore_state_msgs ABI Prototype** (State Architecture / ROS ABI, P2 conditional): prototype minimal ROS messages only if Sprint 17 validates the direction.
 - **Sprint 19 — Minimal Factory and Registry** (Core Extension, P4 conditional): launch only after repeated real pain proves manual instantiation is insufficient.
@@ -131,7 +132,7 @@ ideas that remain deliberately deferred until there is a concrete user need.
 - Factory and registry (dynamic component loading, conditional Sprint 19+)
 - Tooling and generated nodes (conditional Sprint 20+)
 - ~~Callback group management (per-component groups, concurrency utilities)~~ **Shipped Sprint 8**
-- Additional components (`ActionComponent`, parameter components)
+- Additional components (`ActionComponent`; parameter components shipped in Sprint 13 and Sprint 13.1)
 - Binding layer (if component hierarchy becomes overloaded)
 - Release status metadata (`Development Status :: 4 - Beta` promotion gate)
 - README badges (once on PyPI)

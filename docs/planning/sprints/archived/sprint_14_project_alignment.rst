@@ -22,7 +22,8 @@ Outcome:
   baseline is tracked as shipped rather than as missing work.
 
 Follow-ups:
-  Sprint 15 remains planned under ``docs/planning/sprints/planned/``.
+  Sprint 15 companion adoption is now archived under
+  ``docs/planning/sprints/archived/``.
 
 Goal:
   Reconcile roadmap, backlog, sprint history, and documentation with the real

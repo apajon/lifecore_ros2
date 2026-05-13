@@ -1,10 +1,10 @@
 Planning backlog
 ================
 
-Sprint 13.1 is active. Sprint 14 is complete. The project is past the old Sprint 8 / 0.4.0 planning
-state; the core is mature enough to shift focus toward adoption, documentation,
-testing, diagnostics, and future architecture without automatically adding new
-core abstractions.
+Sprint 16 is active. Sprint 13.1, Sprint 14, and Sprint 15 are archived. The
+project is past the old Sprint 8 / 0.4.0 planning state; the core is mature
+enough to shift focus toward adoption, documentation, testing, diagnostics, and
+future architecture without automatically adding new core abstractions.
 
 What remains is split into strategic near-term work, future feature candidates,
 and deliberately deferred ideas.
@@ -75,10 +75,10 @@ P4 — New core abstractions
 P5 — Advanced tooling, generation, and automation
   Automate stabilized conventions only.
 
-Recommended upcoming sprints
+Current and upcoming sprints
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Sprint 16 — :doc:`sprints/planned/sprint_16_test_ergonomics_diagnostics` (Track A + D, P1/P3)
+* Sprint 16 — :doc:`sprints/active/sprint_16_test_ergonomics_diagnostics` (Track A + D, P1/P3; active)
 * Sprint 17 — :doc:`sprints/planned/sprint_17_lifecore_state_rfc` (Track C + F, P2)
 * Sprint 18 — :doc:`sprints/planned/sprint_18_lifecore_state_msgs_abi` (Track C, P2 conditional)
 * Sprint 19 — :doc:`sprints/deferred/sprint_19_factory_registry` (Track A extension, P4 conditional; historical Sprint 14)
@@ -425,7 +425,7 @@ Lifecycle comparison example — baseline shipped; follow-up in Sprint 15
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Sprint mapping: :doc:`sprints/archived/sprint_04_lifecycle_comparison` for the
-initial companion comparison baseline; :doc:`sprints/active/sprint_15_companion_adoption`
+initial companion comparison baseline; :doc:`sprints/archived/sprint_15_companion_adoption`
 for the completed adoption-polish follow-up.
 
 * [x] Create ``lifecore_ros2_examples/examples/lifecycle_comparison/`` in the
@@ -743,8 +743,8 @@ Observability
 Parameters and runtime configuration — *Sprint 13 and Sprint 13.1 shipped (2026-05-13)*
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Sprint mapping: :doc:`sprints/archived/sprint_13_parameters` (completed) and
-:doc:`sprints/active/sprint_13_1_parameter_observer` (active).
+Sprint mapping: :doc:`sprints/archived/sprint_13_parameters` and
+:doc:`sprints/archived/sprint_13_1_parameter_observer`.
 
 * [x] ``LifecycleParameterComponent`` for parameters owned by the local
   lifecycle node.

@@ -34,7 +34,8 @@ concerns.
 Do not mix local parameter ownership with remote parameter observation in the
 same component. Sprint 13 covers only ``LifecycleParameterComponent``. Remote
 parameter observation is split into
-:doc:`../active/sprint_13_1_parameter_observer`.
+:doc:`sprint_13_1_parameter_observer`, which later delivered the
+dedicated observer component.
 
 The local component owns parameters on the same lifecycle node that owns the
 component. It may declare, read, validate, and track those owned parameters. It
@@ -73,8 +74,8 @@ Decisions already made
 - Parameter support must remain lifecycle-aware.
 - Sprint 13 introduces ``LifecycleParameterComponent`` for local owned
    parameters.
-- Remote parameter observation is a separate component concern and is deferred
-   to Sprint 13.1.
+- Remote parameter observation is a separate component concern and was delivered
+   by Sprint 13.1 after this sprint.
 - Parameter ownership and cleanup must follow the component lifecycle contract.
 - The default namespace convention is ``<component_name>.<parameter_name>``.
 - Runtime parameter writes are accepted only while the owning component is
@@ -516,8 +517,8 @@ parameters it does not own and reject only its own parameters. Add a
 multi-component coexistence test if practical.
 
 **Risk: local callbacks are confused with remote events.** Keep
-``LifecycleParameterComponent`` limited to local owned parameters and split
-remote observation into Sprint 13.1.
+``LifecycleParameterComponent`` limited to local owned parameters and keep remote
+observation in the Sprint 13.1 observer component.
 
 ---
 
@@ -527,7 +528,7 @@ Dependencies
 - Requires: stable component lifecycle semantics.
 - Requires: Sprint 8 concurrency rules for update callbacks.
 - Benefits from: Sprint 9 observability for rejected updates.
-- Feeds: Sprint 13.1 remote parameter observation.
+- Fed: Sprint 13.1 remote parameter observation, now completed.
 
 ---
 

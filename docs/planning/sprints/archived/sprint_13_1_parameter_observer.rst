@@ -2,10 +2,13 @@ Sprint 13.1 - Parameter observer component
 ==========================================
 
 Status:
-  Active
+  Archived / Completed
 
 Branch:
   sprint/13.1-parameter-observer
+
+Completed:
+  2026-05-13
 
 **Objective.** Add lifecycle-aware observation of parameters owned by other ROS
 2 nodes without blurring ownership boundaries or adding configuration-system
@@ -15,6 +18,10 @@ behavior.
 parameter values through ROS 2 remote parameter mechanisms. It may read initial
 remote values and react to parameter events, but it never declares, owns,
 validates, or rejects remote parameter updates.
+
+**Progress.** Delivered in code, tests, examples, README, and Sphinx docs. The
+component is exported from ``lifecore_ros2`` and documented in the generated
+components API reference.
 
 ---
 
@@ -42,10 +49,10 @@ Important ROS 2 distinction
 External parameter events observe changes after they happen. They do not
 participate in setting or validating remote parameters.
 
-Expected mechanisms:
+Implemented mechanisms:
 
 - ``AsyncParameterClient`` for optional initial reads or remote requests
-- ``ParameterEventHandler`` or ``/parameter_events`` for change observation
+- ``/parameter_events`` subscription for change observation
 
 Remote access can read or request updates on parameters owned by another node,
 but the remote node remains the owner and applies its own validation callbacks.
@@ -66,8 +73,9 @@ Decisions already made
 - Initial-read outcomes are recorded as explicit, testable watch state:
   ``UNKNOWN_NODE``, ``UNKNOWN_PARAMETER``, ``UNAVAILABLE``, or
   ``VALUE_AVAILABLE``.
-- Event processing or user observer callbacks must be lifecycle-gated.
-- Cleanup, shutdown, and error release event/client tracking owned by the
+- User observer callbacks must be lifecycle-gated; snapshots may still update
+  while inactive.
+- Cleanup, shutdown, and error release observer-owned ROS handles created by the
   component.
 - This sprint does not add config-file parsing, schemas, Pydantic models,
   persistence, registries, factories, or distributed configuration behavior.
@@ -76,9 +84,9 @@ Guiding rule:
 
 ::
 
-   configure initializes observation
-   active observes
-   cleanup forgets
+    configure attaches observation
+    active notifies user code
+    cleanup releases observer-owned handles
 
 Authority rule:
 
@@ -129,10 +137,10 @@ Responsibilities
 - define remote parameters to observe
 - optionally read initial values from a remote node during configure
 - attach callbacks to parameter events
-- store last observed values locally if requested
+- store last observed snapshots locally
 - expose a documented API for observed values
 - gate user event callbacks by lifecycle state
-- clean event handles, clients, and tracking during cleanup, shutdown, and error
+- release observer-owned ROS handles during cleanup, shutdown, and error
 
 Non-responsibilities
 ^^^^^^^^^^^^^^^^^^^^
@@ -161,7 +169,7 @@ Construction
 Configure
 ^^^^^^^^^
 
-- create required remote client or event-handler plumbing
+- create the parameter-event subscription and initial-read client requests
 - optionally read initial remote values
 - store initial observed values if available
 - record explicit watch state for missing nodes, missing parameters, and
@@ -174,13 +182,13 @@ Inactive / configured
 
 - known values may be read through the component API
 - event callbacks should not run user active behavior
+- incoming events may still refresh queryable snapshots
 - remote observation state may remain attached if the underlying ROS 2 handle
   requires it, but user behavior remains gated
 
 Active
 ^^^^^^
 
-- process remote parameter events
 - update last observed values
 - call user observer hooks for watched parameters
 
@@ -194,33 +202,30 @@ Deactivate
 Cleanup
 ^^^^^^^
 
-- remove event callback handles if possible
-- clear local watch, value, client, and event-handler tracking as appropriate
+- destroy the parameter-event subscription if configured
+- keep registered watches so a later configure can recreate handles and reread values
 - return to a reconfigurable state
 
 Shutdown
 ^^^^^^^^
 
 - use the same cleanup intent
-- release event/client tracking if possible
-- clear local tracking
+- release observer-owned ROS handles if configured
+- leave the component in a safe terminal state
 
 Error
 ^^^^^
 
-- clear local tracking
+- release observer-owned ROS handles if configured
 - avoid corrective lifecycle transitions
 - log useful diagnostics when relevant
 
 ---
 
-Suggested public API
+Delivered public API
 --------------------
 
-Exact signatures are decided during implementation planning. The public names
-must make observation explicit.
-
-General multi-node shape:
+The delivered API uses explicit remote-node and parameter names for each watch:
 
 .. code-block:: python
 
@@ -244,22 +249,10 @@ General multi-node shape:
            self,
            node_name: str,
            parameter_name: str,
-           value: Any,
+           event: ObservedParameterEvent,
        ) -> None: ...
 
-Alternative one-remote-node shape:
-
-.. code-block:: python
-
-   class LifecycleParameterObserverComponent(LifecycleComponent):
-       def __init__(self, ..., remote_node_name: str) -> None: ...
-
-       def watch_parameter(self, parameter_name: str, *, read_initial: bool = True) -> None: ...
-
-Use the simpler one-node shape only if early examples show that most observers
-target a single remote node.
-
-Suggested event shape:
+Delivered event shape:
 
 .. code-block:: python
 
@@ -271,30 +264,31 @@ Suggested event shape:
        previous_value: object | None
        source: Literal["initial_read", "parameter_event"]
 
-``ObservedParameterSnapshot`` should expose the latest value, previous value if
-known, source, and explicit watch state. The snapshot API is the preferred way
-for tests and callers to inspect initial-read availability outcomes.
+``ObservedParameterSnapshot`` exposes the latest value, previous value if
+known, and explicit watch state. Initial reads update snapshots and do not run
+user event hooks as active runtime behavior. The snapshot API is the preferred
+way for tests and callers to inspect initial-read availability outcomes.
 
 ---
 
 Validation
 ----------
 
-- [ ] External parameter watches can be registered.
-- [ ] Optional initial values can be read from a remote node.
-- [ ] Missing remote node or parameter records explicit watch state without
+- [x] External parameter watches can be registered.
+- [x] Optional initial values can be read from a remote node.
+- [x] Missing remote node or parameter records explicit watch state without
   failing ``configure()`` by default.
-- [ ] Unavailable initial reads record ``UNAVAILABLE`` without hiding the
+- [x] Unavailable initial reads record ``UNAVAILABLE`` without hiding the
   condition behind logging only.
-- [ ] Available initial values record ``VALUE_AVAILABLE``.
-- [ ] Parameter events update local observed values.
-- [ ] User event callbacks are gated by lifecycle state.
-- [ ] Observer never declares remote parameters.
-- [ ] Observer never rejects remote updates.
-- [ ] Cleanup removes event handles and local tracking.
-- [ ] Shutdown and error also clear tracking.
-- [ ] Tests distinguish remote observation from local ownership.
-- [ ] No config-file, schema, Pydantic, registry, factory, persistence, or
+- [x] Available initial values record ``VALUE_AVAILABLE``.
+- [x] Parameter events update local observed values.
+- [x] User event callbacks are gated by lifecycle state.
+- [x] Observer never declares remote parameters.
+- [x] Observer never rejects remote updates.
+- [x] Cleanup removes observer-owned ROS handles while keeping watches reconfigurable.
+- [x] Shutdown and error also release observer-owned ROS handles.
+- [x] Tests distinguish remote observation from local ownership.
+- [x] No config-file, schema, Pydantic, registry, factory, persistence, or
   distributed configuration feature is introduced.
 
 ---
@@ -339,7 +333,7 @@ In scope:
 - parameter event observation
 - active-gated observer callbacks
 - local tracking of last observed values
-- cleanup of event/client tracking
+- cleanup of observer-owned ROS handles
 - focused examples and tests
 
 Out of scope:
@@ -358,22 +352,22 @@ Out of scope:
 
 ---
 
-Implementation notes
---------------------
+Delivered implementation
+------------------------
 
-Prefer the component location:
+Component location:
 
 ::
 
    src/lifecore_ros2/components/lifecycle_parameter_observer_component.py
 
-Add focused tests under:
+Focused tests:
 
 ::
 
    tests/components/test_lifecycle_parameter_observer_component.py
 
-Suggested validation commands if this sprint is implemented:
+Validation commands used for this sprint scope:
 
 .. code-block:: bash
 
@@ -392,10 +386,11 @@ If docs are updated:
 Success signal
 --------------
 
-- [ ] External parameters are observed through a dedicated component.
-- [ ] Optional initial remote reads are lifecycle-aware.
-- [ ] Remote parameter events update local observed state while active.
-- [ ] Observer callbacks never imply ownership or validation authority.
-- [ ] Cleanup, shutdown, and error clear observer-owned tracking.
-- [ ] The library remains a ROS 2 lifecycle component toolkit, not a
+- [x] External parameters are observed through a dedicated component.
+- [x] Optional initial remote reads are lifecycle-aware.
+- [x] Remote parameter events update local observed state, with user callbacks
+  gated by active lifecycle state.
+- [x] Observer callbacks never imply ownership or validation authority.
+- [x] Cleanup, shutdown, and error release observer-owned ROS handles.
+- [x] The library remains a ROS 2 lifecycle component toolkit, not a
   distributed configuration framework.

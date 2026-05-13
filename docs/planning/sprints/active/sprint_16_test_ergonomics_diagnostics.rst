@@ -1,11 +1,17 @@
 Sprint 16 - Test ergonomics and diagnostics polish
 ==================================================
 
-**Track.** Core + DX / Testing / Diagnostics.
+Status:
+  Active
 
-**Branch.** ``sprint/16-test-ergonomics``.
+Branch:
+  sprint/16-test-ergonomics
 
-**Priority.** P1/P3 - adoption leverage and API hardening.
+Track:
+  Core + DX / Testing / Diagnostics
+
+Priority:
+  P1/P3 - adoption leverage and API hardening
 
 **Objective.** Make lifecycle behavior easier to test and diagnose without
 expanding the core conceptual model.

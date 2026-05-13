@@ -2,7 +2,7 @@ Sprint 15 - Companion adoption examples
 =======================================
 
 Status:
-  Completed
+  Archived / Completed
 
 Branch:
   sprint/15-companion-adoption

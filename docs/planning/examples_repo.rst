@@ -11,8 +11,8 @@ Status note
 
 This page is planning context for the companion repository, not the current
 core sprint index. The initial sensor watchdog comparison baseline is already
-shipped in the companion repo; current adoption follow-up is tracked in
-:doc:`sprints/active/sprint_15_companion_adoption`.
+shipped in the companion repo; the adoption follow-up is archived in
+:doc:`sprints/archived/sprint_15_companion_adoption`.
 
 Bootstrap status: the repository exists and the initial foundation lives on the
 ``bootstrap/repo-foundation`` branch. Since ``lifecore_ros2`` is published on PyPI,
@@ -235,8 +235,8 @@ Strategic comparison baseline — shipped; Sprint 15 polish completed
    ``on_tick`` stay explicit while lifecycle gating remains framework-managed.
 - [x] Update core README/docs before broad public announcement.
 
-The adoption-polish follow-up is tracked in
-:doc:`sprints/active/sprint_15_companion_adoption`. The sprint passed the
+The adoption-polish follow-up is archived in
+:doc:`sprints/archived/sprint_15_companion_adoption`. The sprint passed the
 companion repository validation gate on 2026-05-13.
 
 Applied validation phase (after the comparison baseline)
