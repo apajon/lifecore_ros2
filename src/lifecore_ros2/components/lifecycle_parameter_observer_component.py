@@ -57,7 +57,7 @@ class ObservedParameterEvent:
     """Last value known to this observer before the change, or ``None`` if not previously observed."""
 
     source: Literal["initial_read", "parameter_event"]
-    """Whether this event originated from an initial read during configure or a live parameter event."""
+    """Event source label. Built-in callbacks receive live parameter events; initial reads update snapshots."""
 
 
 @dataclass(frozen=True)
@@ -417,7 +417,7 @@ class LifecycleParameterObserverComponent(LifecycleComponent):
             self.on_observed_parameter_event(event.node_name, event.parameter_name, event)
 
     def _release_resources(self) -> None:
-        """Destroy the parameter event subscription and clear observer-owned tracking."""
+        """Destroy the parameter event subscription created during configure."""
         if self._event_subscription is not None:
             self.node.destroy_subscription(self._event_subscription)
             self._event_subscription = None

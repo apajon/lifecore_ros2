@@ -95,7 +95,7 @@ A small set of lifecycle-aware building blocks:
 | `LifecycleParameterObserverComponent` | Lifecycle-aware observer for parameters owned by other ROS 2 nodes |
 | `ParameterMutability` | Runtime mutability policy for component-owned parameters |
 | `WatchState` | Explicit initial-read availability state for a watched remote parameter |
-| `ObservedParameterEvent` | Frozen event object delivered for initial reads and live remote parameter changes |
+| `ObservedParameterEvent` | Frozen event object delivered for live remote parameter changes |
 | `ObservedParameterSnapshot` | Frozen query surface exposing the last observed value and watch state |
 | `ParameterWatchHandle` | Frozen identifier returned when registering a remote parameter watch |
 | `LifecycleWatchdogComponent` | Lifecycle-gated health watchdog — polls targets and logs DEGRADED / ERROR / STALE |
