@@ -1,7 +1,7 @@
 Planning backlog
 ================
 
-Sprint 16 is completed and awaiting archive. Sprint 13.1, Sprint 14, and Sprint 15 are archived. The
+Sprint 17 is now active. Sprint 16, Sprint 13.1, Sprint 14, and Sprint 15 are archived. The
 project is past the old Sprint 8 / 0.4.0 planning state; the core is mature
 enough to shift focus toward adoption, documentation, testing, diagnostics, and
 future architecture without automatically adding new core abstractions.
@@ -78,8 +78,7 @@ P5 — Advanced tooling, generation, and automation
 Current and upcoming sprints
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-* Sprint 16 — :doc:`sprints/active/sprint_16_test_ergonomics_diagnostics` (Track A + D, P1/P3; completed, awaiting archive)
-* Sprint 17 — :doc:`sprints/planned/sprint_17_lifecore_state_rfc` (Track C + F, P2)
+* Sprint 17 — :doc:`sprints/active/sprint_17_lifecore_state_rfc` (Track C + F, P2; active)
 * Sprint 18 — :doc:`sprints/planned/sprint_18_lifecore_state_msgs_abi` (Track C, P2 conditional)
 * Sprint 19 — :doc:`sprints/deferred/sprint_19_factory_registry` (Track A extension, P4 conditional; historical Sprint 14)
 * Sprint 20+ — :doc:`sprints/deferred/sprint_20_tooling_codegen` (Track E, P5 conditional; historical Sprint 15)

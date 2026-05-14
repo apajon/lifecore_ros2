@@ -8,8 +8,7 @@ available, but they do not drive current planning directly.
     :maxdepth: 1
     :hidden:
 
-    active/sprint_16_test_ergonomics_diagnostics
-    planned/sprint_17_lifecore_state_rfc
+    active/sprint_17_lifecore_state_rfc
     planned/sprint_18_lifecore_state_msgs_abi
     deferred/sprint_19_factory_registry
     deferred/sprint_20_tooling_codegen
@@ -31,26 +30,19 @@ available, but they do not drive current planning directly.
     archived/sprint_13_1_parameter_observer
     archived/sprint_14_project_alignment
     archived/sprint_15_companion_adoption
+    archived/sprint_16_test_ergonomics_diagnostics
 
 Active sprints
 --------------
 
-No active sprint is currently listed.
+- Sprint 17 - lifecore_state Architecture RFC
+  Location: :doc:`active/sprint_17_lifecore_state_rfc`
 
 Next planned sprints
 --------------------
 
-- Sprint 17 - lifecore_state Architecture RFC
-  Location: :doc:`planned/sprint_17_lifecore_state_rfc`
-
 - Sprint 18 - lifecore_state_msgs ABI Prototype
   Location: :doc:`planned/sprint_18_lifecore_state_msgs_abi`
-
-Completed sprints awaiting archive
-----------------------------------
-
-- Sprint 16 - Test Ergonomics and Diagnostics Polish
-  Location: :doc:`active/sprint_16_test_ergonomics_diagnostics`
 
 Deferred / conditional sprints
 ------------------------------
