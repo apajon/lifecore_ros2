@@ -84,7 +84,7 @@ Impacted modules
 ----------------
 
 ``docs/planning/sprints/active/``
-  Holds this active Sprint 17 coordinator and the active Sprint 17.2 planning
+  Holds this active Sprint 17 coordinator and the active Sprint 17.3 planning
   card.
 
 ``docs/planning/sprints/sprint_17_substeps/``
@@ -106,8 +106,8 @@ Impacted modules
 Active sub-sprint
 -----------------
 
-- Sprint 17.2 - Create Documentation Structure for lifecore_state/
-  Location: :doc:`sprint_17_2_documentation_structure`
+- Sprint 17.3 - Write Principal Architecture RFC
+  Location: :doc:`sprint_17_3_rfc`
 
 Deliverables
 ------------
@@ -115,9 +115,10 @@ Deliverables
 - **17.1 - Repository audit.** Validated and archived. Audit the repository
   structure, identify risks, and recommend safe placement for
   ``lifecore_state`` documentation.
-- **17.2 - Documentation structure.** Active. Create documentation-only
-  ``lifecore_state/`` skeleton files after placement is confirmed.
-- **17.3 - RFC 001.** Write the principal architecture RFC.
+- **17.2 - Documentation structure.** Archived after validation. Created the
+  documentation-only ``lifecore_state/`` skeleton files after placement was
+  confirmed.
+- **17.3 - RFC 001.** Active. Write the principal architecture RFC.
 - **17.4 - Terminology glossary.** Define accessible French terminology.
 - **17.5 - Lifecycle/state separation.** Clarify semantic gating and inactive
   behavior.
@@ -158,13 +159,13 @@ Acceptance criteria
 -------------------
 
 - [x] Sprint 17.1 is archived after validation.
-- [x] Sprint 17.2 is active and linked from the planning index.
+- [x] Sprint 17.2 is archived after validation.
+- [x] Sprint 17.3 is active and linked from the planning index.
 - [x] Repository audit document exists and is validated.
-- [ ] ``lifecore_state/`` exists as a documentation-only logical group when
-  structure work begins.
-- [ ] No ``package.xml`` exists in the ``lifecore_state/`` parent folder.
-- [ ] No runtime code is added.
-- [ ] ``lifecore_ros2`` remains behaviorally unchanged.
+- [x] ``lifecore_state/`` exists as a documentation-only logical group.
+- [x] No ``package.xml`` exists in the ``lifecore_state/`` parent folder.
+- [x] No runtime code is added.
+- [x] ``lifecore_ros2`` remains behaviorally unchanged.
 - [ ] Package dependency rules are documented.
 - [ ] Lifecycle/state separation is documented.
 - [ ] ``StateDescription`` inactive caching is documented.

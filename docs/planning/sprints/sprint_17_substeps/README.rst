@@ -29,10 +29,10 @@ Follow this sequence to build coherence:
 
    Output: Audit document with review notes.
 
-2. **17.2: Create Documentation Structure** — promoted to active.
+2. **17.2: Create Documentation Structure** — archived after validation.
 
-   Active planning card:
-   ``docs/planning/sprints/active/sprint_17_2_documentation_structure.rst``
+   Archived planning card:
+   ``docs/planning/sprints/archived/sprint_17_2_documentation_structure.rst``
 
    Deliverable: ``lifecore_state/`` folder with skeleton files
 
@@ -41,7 +41,10 @@ Follow this sequence to build coherence:
 
    Output: Folder structure ready for content.
 
-3. **17.3: Write Principal RFC**
+3. **17.3: Write Principal RFC** — promoted to active.
+
+   Active planning card:
+   ``docs/planning/sprints/active/sprint_17_3_rfc.rst``
 
    Deliverable: ``lifecore_state/rfcs/rfc_001_lifecore_state_architecture.rst``
 
@@ -213,10 +216,10 @@ phrase.
 Integration with Main Sprint
 ----------------------------
 
-Sub-sprints 17.3–17.13 remain **separate files** in the
-``sprint_17_substeps/`` folder. Sprint 17.1 has been archived after validation,
-and Sprint 17.2 has been promoted to ``docs/planning/sprints/active/`` for
-execution.
+Sub-sprints 17.4–17.13 remain **separate files** in the
+``sprint_17_substeps/`` folder. Sprint 17.1 and Sprint 17.2 have been archived
+after validation, and Sprint 17.3 has been promoted to
+``docs/planning/sprints/active/`` for execution.
 
 The main Sprint 17 file (``docs/planning/sprints/active/sprint_17_lifecore_state_rfc.rst``)
 coordinates the active sub-sprint and the remaining sub-sprints.

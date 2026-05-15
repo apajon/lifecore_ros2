@@ -1,13 +1,13 @@
 Sprint 17.2 - Create Documentation Structure for lifecore_state/
 =================================================================
 
-**Status.** Active.
+**Status.** Archived.
 
 **Track.** Architecture / Research.
 
 **Type.** Documentation structure setup.
 
-**Parent sprint.** :doc:`sprint_17_lifecore_state_rfc`.
+**Parent sprint.** :doc:`../active/sprint_17_lifecore_state_rfc`.
 
 Feature goal
 ------------
@@ -19,11 +19,11 @@ runtime code, compiled messages, or ROS 2 package metadata.
 Lifecycle behavior contract
 ---------------------------
 
-This sub-sprint has no runtime lifecycle behavior. It must not change configure,
-activate, deactivate, cleanup, shutdown, or error behavior for any
+This sub-sprint had no runtime lifecycle behavior. It did not change
+configure, activate, deactivate, cleanup, shutdown, or error behavior for any
 ``lifecore_ros2`` node or component.
 
-The expected lifecycle impact is explicit non-impact:
+The expected lifecycle impact was explicit non-impact:
 
 - **configure:** no code path changed; no resources created by runtime code.
 - **activate:** no activation behavior changed.
@@ -39,7 +39,7 @@ Sprint 17.1 validated the recommended placement: create ``lifecore_state/`` at
 the repository root as a documentation-only logical folder during Sprint 17.
 That folder is not a ROS 2 installable package.
 
-Sprint 17.2 creates only the folder structure and skeleton RST files that
+Sprint 17.2 created only the folder structure and skeleton RST files that
 explain purpose and organization. Later sub-sprints fill the architecture
 content.
 
@@ -47,17 +47,22 @@ Impacted modules
 ----------------
 
 ``lifecore_state/``
-  New documentation-only logical folder for Sprint 17 architecture documents.
+  Documentation-only logical folder created for Sprint 17 architecture
+  documents.
 
 ``lifecore_state/rfcs/``
-  New documentation-only RFC folder for Sprint 17 RFC and review artifacts.
+  Documentation-only RFC folder created for Sprint 17 RFC and review
+  artifacts.
 
-``docs/planning/sprints/``
-  Planning files track Sprint 17.2 as the active sub-sprint and keep Sprint 17.1
-  archived.
+``docs/planning/sprints/archived/``
+  This folder now contains the archived Sprint 17.2 planning card.
+
+``docs/planning/sprints/active/``
+  Planning files archive Sprint 17.2 and promote Sprint 17.3 as the active
+  sub-sprint.
 
 ``src/``, ``tests/``, and ``examples/``
-  Not impacted. Sprint 17.2 must not change runtime code, public APIs, tests, or
+  Not impacted. Sprint 17.2 did not change runtime code, public APIs, tests, or
   examples.
 
 Constraints
@@ -121,20 +126,20 @@ Deliverables
 Acceptance criteria
 -------------------
 
-- [ ] Directory structure created at repository root.
-- [ ] All required RST skeleton files exist.
-- [ ] ``lifecore_state/`` has no ``package.xml``.
-- [ ] ``lifecore_state/`` has no build metadata.
-- [ ] ``lifecore_state/`` has no Python runtime code.
-- [ ] ``lifecore_state/`` has no compilable ROS 2 interface files.
-- [ ] All folders have minimal README explaining content.
-- [ ] Each file ends with mandatory review phrase.
-- [ ] Folder is not discoverable by ``colcon`` as a package.
+- [x] Directory structure created at repository root.
+- [x] All required RST skeleton files exist.
+- [x] ``lifecore_state/`` has no ``package.xml``.
+- [x] ``lifecore_state/`` has no build metadata.
+- [x] ``lifecore_state/`` has no Python runtime code.
+- [x] ``lifecore_state/`` has no compilable ROS 2 interface files.
+- [x] All folders have minimal README explaining content.
+- [x] Each file ends with mandatory review phrase.
+- [x] Folder is not discoverable by ``colcon`` as a package.
 
 Validation plan
 ---------------
 
-For Sprint 17.2 execution, use documentation-scoped validation:
+Sprint 17.2 used documentation-scoped validation:
 
 - inspect the produced RST files for coherent headings and internal references;
 - run a Sphinx documentation build if the new folder is linked into the docs
@@ -143,7 +148,7 @@ For Sprint 17.2 execution, use documentation-scoped validation:
 - confirm ``src/``, ``tests/``, and ``examples/`` remain untouched.
 
 Full Python validation with ``uv run ruff check .``, ``uv run pyright``, and
-``uv run pytest`` is not required unless Sprint 17.2 unexpectedly touches Python
+``uv run pytest`` was not required because Sprint 17.2 did not touch Python
 code or project configuration.
 
 Non-goals
@@ -161,7 +166,7 @@ Non-goals
 Clarifications needed
 ---------------------
 
-None for activation. Sprint 17.1 validated root-level, documentation-only
+None for archival. Sprint 17.1 validated root-level, documentation-only
 placement for ``lifecore_state/``.
 
 Review notes
