@@ -84,7 +84,7 @@ Impacted modules
 ----------------
 
 ``docs/planning/sprints/active/``
-  Holds this active Sprint 17 coordinator and the active Sprint 17.3 planning
+  Holds this active Sprint 17 coordinator and the active Sprint 17.4 planning
   card.
 
 ``docs/planning/sprints/sprint_17_substeps/``
@@ -106,8 +106,8 @@ Impacted modules
 Active sub-sprint
 -----------------
 
-- Sprint 17.3 - Write Principal Architecture RFC
-  Location: :doc:`sprint_17_3_rfc`
+- Sprint 17.4 - Write Accessible Glossary
+  Location: :doc:`sprint_17_4_glossary`
 
 Deliverables
 ------------
@@ -118,8 +118,8 @@ Deliverables
 - **17.2 - Documentation structure.** Archived after validation. Created the
   documentation-only ``lifecore_state/`` skeleton files after placement was
   confirmed.
-- **17.3 - RFC 001.** Active. Write the principal architecture RFC.
-- **17.4 - Terminology glossary.** Define accessible French terminology.
+- **17.3 - RFC 001.** Archived. Principal architecture RFC written.
+- **17.4 - Terminology glossary.** Active. Define accessible French terminology.
 - **17.5 - Lifecycle/state separation.** Clarify semantic gating and inactive
   behavior.
 - **17.6 - Package boundaries.** Define future package responsibilities and
@@ -160,18 +160,19 @@ Acceptance criteria
 
 - [x] Sprint 17.1 is archived after validation.
 - [x] Sprint 17.2 is archived after validation.
-- [x] Sprint 17.3 is active and linked from the planning index.
+- [x] Sprint 17.3 is archived after review.
+- [x] Sprint 17.4 is active and linked from the planning index.
 - [x] Repository audit document exists and is validated.
 - [x] ``lifecore_state/`` exists as a documentation-only logical group.
 - [x] No ``package.xml`` exists in the ``lifecore_state/`` parent folder.
 - [x] No runtime code is added.
 - [x] ``lifecore_ros2`` remains behaviorally unchanged.
-- [ ] Package dependency rules are documented.
-- [ ] Lifecycle/state separation is documented.
-- [ ] ``StateDescription`` inactive caching is documented.
-- [ ] ``StateUpdate`` inactive delta rejection is documented.
-- [ ] ``StateCommand`` active-only handling is documented.
-- [ ] Sprint 18 entry criteria are documented.
+- [x] Package dependency rules are documented.
+- [x] Lifecycle/state separation is documented.
+- [x] ``StateDescription`` inactive caching is documented.
+- [x] ``StateUpdate`` inactive delta rejection is documented.
+- [x] ``StateCommand`` active-only handling is documented.
+- [x] Sprint 18 entry criteria are documented.
 - [ ] All sub-sprint deliverables exist.
 - [ ] Mandatory review phrase appears in required review deliverables.
 
@@ -205,7 +206,7 @@ Review checklist
 ----------------
 
 - [x] Repository audit exists and is accurate.
-- [ ] RFC is complete and reviewable.
+- [x] RFC is complete and reviewable.
 - [ ] Glossary is accessible.
 - [ ] Package boundaries are clear.
 - [ ] Message semantics are consistent.
@@ -213,8 +214,8 @@ Review checklist
 - [ ] Anti-patterns are rejected.
 - [ ] No implementation is present.
 - [ ] ``lifecore_ros2`` independence is maintained.
-- [ ] Mandatory review phrases are present where required.
-- [ ] Sprint 18 entry criteria are explicit.
+- [x] Mandatory review phrases are present where required.
+- [x] Sprint 18 entry criteria are explicit.
 
 Clarifications needed
 ---------------------

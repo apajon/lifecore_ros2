@@ -41,10 +41,10 @@ Follow this sequence to build coherence:
 
    Output: Folder structure ready for content.
 
-3. **17.3: Write Principal RFC** — promoted to active.
+3. **17.3: Write Principal RFC** — archived.
 
-   Active planning card:
-   ``docs/planning/sprints/active/sprint_17_3_rfc.rst``
+   Archived planning card:
+   ``docs/planning/sprints/archived/sprint_17_3_rfc.rst``
 
    Deliverable: ``lifecore_state/rfcs/rfc_001_lifecore_state_architecture.rst``
 
@@ -54,7 +54,10 @@ Follow this sequence to build coherence:
 
    Output: Complete RFC 001.
 
-4. **17.4: Write Accessible Glossary**
+4. **17.4: Write Accessible Glossary** — promoted to active.
+
+   Active planning card:
+   ``docs/planning/sprints/active/sprint_17_4_glossary.rst``
 
    Deliverable: ``lifecore_state/terminology.rst``
 
@@ -216,9 +219,9 @@ phrase.
 Integration with Main Sprint
 ----------------------------
 
-Sub-sprints 17.4–17.13 remain **separate files** in the
-``sprint_17_substeps/`` folder. Sprint 17.1 and Sprint 17.2 have been archived
-after validation, and Sprint 17.3 has been promoted to
+Sub-sprints 17.5–17.13 remain **separate files** in the
+``sprint_17_substeps/`` folder. Sprint 17.1, Sprint 17.2, and Sprint 17.3 have
+been archived, and Sprint 17.4 has been promoted to
 ``docs/planning/sprints/active/`` for execution.
 
 The main Sprint 17 file (``docs/planning/sprints/active/sprint_17_lifecore_state_rfc.rst``)

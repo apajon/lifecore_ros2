@@ -1,9 +1,13 @@
 Sprint 17.4 — Write Accessible Glossary
 ========================================
 
+**Status.** Active.
+
 **Track.** Architecture / Research.
 
 **Type.** Documentation.
+
+**Parent sprint.** :doc:`sprint_17_lifecore_state_rfc`.
 
 **Objective.** Define all terms used in Sprint 17 in clear, pedagogical French
 accessible to people without formal CS background.
