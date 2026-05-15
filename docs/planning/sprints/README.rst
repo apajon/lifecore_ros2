@@ -9,10 +9,12 @@ available, but they do not drive current planning directly.
     :hidden:
 
     active/sprint_17_lifecore_state_rfc
-    active/sprint_17_1_repository_audit
+    active/sprint_17_2_documentation_structure
+    sprint_17_repository_audit
     planned/sprint_18_lifecore_state_msgs_abi
     deferred/sprint_19_factory_registry
     deferred/sprint_20_tooling_codegen
+    archived/sprint_17_1_repository_audit
     archived/sprint_01_service_client
     archived/sprint_02_error_handling
     archived/sprint_03_testing_infrastructure
@@ -39,8 +41,11 @@ Active sprints
 - Sprint 17 - lifecore_state Architecture RFC
   Location: :doc:`active/sprint_17_lifecore_state_rfc`
 
-- Sprint 17.1 - Repository Audit and Framework
-  Location: :doc:`active/sprint_17_1_repository_audit`
+- Sprint 17.2 - Create Documentation Structure for lifecore_state/
+  Location: :doc:`active/sprint_17_2_documentation_structure`
+
+- Sprint 17.1 audit deliverable
+  Location: :doc:`sprint_17_repository_audit`
 
 Next planned sprints
 --------------------
@@ -59,6 +64,9 @@ Deferred / conditional sprints
 
 Archived sprints
 ----------------
+
+- Sprint 17.1 - Repository Audit and Framework
+  Location: :doc:`archived/sprint_17_1_repository_audit`
 
 - Sprint 1 to Sprint 15, including Sprint 13.1, are archived under
   ``archived/``.

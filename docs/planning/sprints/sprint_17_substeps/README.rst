@@ -17,10 +17,10 @@ Execution Order (Recommended)
 
 Follow this sequence to build coherence:
 
-1. **17.1: Repository Audit** — promoted to active.
+1. **17.1: Repository Audit** — validated and archived.
 
-   Active planning card:
-   ``docs/planning/sprints/active/sprint_17_1_repository_audit.rst``
+   Archived planning card:
+   ``docs/planning/sprints/archived/sprint_17_1_repository_audit.rst``
 
    Deliverable: ``docs/planning/sprints/sprint_17_repository_audit.rst``
 
@@ -29,7 +29,10 @@ Follow this sequence to build coherence:
 
    Output: Audit document with review notes.
 
-2. **17.2: Create Documentation Structure**
+2. **17.2: Create Documentation Structure** — promoted to active.
+
+   Active planning card:
+   ``docs/planning/sprints/active/sprint_17_2_documentation_structure.rst``
 
    Deliverable: ``lifecore_state/`` folder with skeleton files
 
@@ -210,9 +213,10 @@ phrase.
 Integration with Main Sprint
 ----------------------------
 
-Sub-sprints 17.2–17.13 remain **separate files** in the
-``sprint_17_substeps/`` folder. Sprint 17.1 has been promoted to
-``docs/planning/sprints/active/`` for execution.
+Sub-sprints 17.3–17.13 remain **separate files** in the
+``sprint_17_substeps/`` folder. Sprint 17.1 has been archived after validation,
+and Sprint 17.2 has been promoted to ``docs/planning/sprints/active/`` for
+execution.
 
 The main Sprint 17 file (``docs/planning/sprints/active/sprint_17_lifecore_state_rfc.rst``)
 coordinates the active sub-sprint and the remaining sub-sprints.

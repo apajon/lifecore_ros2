@@ -84,7 +84,7 @@ Impacted modules
 ----------------
 
 ``docs/planning/sprints/active/``
-  Holds this active Sprint 17 coordinator and the active Sprint 17.1 planning
+  Holds this active Sprint 17 coordinator and the active Sprint 17.2 planning
   card.
 
 ``docs/planning/sprints/sprint_17_substeps/``
@@ -106,15 +106,16 @@ Impacted modules
 Active sub-sprint
 -----------------
 
-- Sprint 17.1 - Repository Audit and Framework
-  Location: :doc:`sprint_17_1_repository_audit`
+- Sprint 17.2 - Create Documentation Structure for lifecore_state/
+  Location: :doc:`sprint_17_2_documentation_structure`
 
 Deliverables
 ------------
 
-- **17.1 - Repository audit.** Audit the repository structure, identify risks,
-  and recommend safe placement for ``lifecore_state`` documentation.
-- **17.2 - Documentation structure.** Create documentation-only
+- **17.1 - Repository audit.** Validated and archived. Audit the repository
+  structure, identify risks, and recommend safe placement for
+  ``lifecore_state`` documentation.
+- **17.2 - Documentation structure.** Active. Create documentation-only
   ``lifecore_state/`` skeleton files after placement is confirmed.
 - **17.3 - RFC 001.** Write the principal architecture RFC.
 - **17.4 - Terminology glossary.** Define accessible French terminology.
@@ -156,8 +157,9 @@ Explicit decisions to capture
 Acceptance criteria
 -------------------
 
-- [ ] Sprint 17.1 is active and linked from the planning index.
-- [ ] Repository audit document exists.
+- [x] Sprint 17.1 is archived after validation.
+- [x] Sprint 17.2 is active and linked from the planning index.
+- [x] Repository audit document exists and is validated.
 - [ ] ``lifecore_state/`` exists as a documentation-only logical group when
   structure work begins.
 - [ ] No ``package.xml`` exists in the ``lifecore_state/`` parent folder.
@@ -201,7 +203,7 @@ approved by a follow-up plan.
 Review checklist
 ----------------
 
-- [ ] Repository audit exists and is accurate.
+- [x] Repository audit exists and is accurate.
 - [ ] RFC is complete and reviewable.
 - [ ] Glossary is accessible.
 - [ ] Package boundaries are clear.
