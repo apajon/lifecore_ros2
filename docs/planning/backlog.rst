@@ -662,6 +662,61 @@ Sprint mapping: :doc:`sprints/deferred/sprint_20_tooling_codegen`.
 the comparison examples, conventions, core API, documentation, and any
 ``lifecore_state`` boundary are stable enough to generate confidently.
 
+Visual development tooling (Lifecore Studio / Composer) — *research / deferred, post-1.0 or Sprint 25+*
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Inspired by visual editors in Unity, Unreal Engine, and VSCode, a visual development
+tool for ``lifecore_ros2`` systems would focus on composition, introspection, and
+validation before runtime execution.
+
+**Prerequisites (must complete before design sprint):**
+
+* [ ] ``lifecore_state`` architecture stabilized and accepted (Sprint 17+)
+* [ ] Runtime introspection APIs exposed (component registry, dependencies, lifecycle state)
+* [ ] Stable identity model for nodes, components, and connections (deterministic IDs or paths)
+* [ ] Example specs or configuration model at least sketched
+
+**Phase 1 MVP — Read-only visualization and export (no editing):**
+
+* [ ] Visualize running ROS 2 nodes built with ``lifecore_ros2``
+* [ ] Display component graph (boxes for components, arrows for dependencies)
+* [ ] Show lifecycle state transitions (configure → activate → deactivate → cleanup)
+* [ ] Display ROS 2 topic/service/timer connections per component
+* [ ] Display ownership relationships between nodes, components, and runtime resources
+* [ ] Export runtime graph as JSON (nodes, components, connections, lifecycle state, QoS)
+* [ ] Read-only inspection of component specs (if available)
+* [ ] Validate simple coherence checks (e.g., unsatisfied dependencies, lifecycle state mismatches)
+
+**Phase 2 (later sprint) — Specs editing and generation:**
+
+* [ ] Visual editing of component instantiation and wiring (spec-driven)
+* [ ] Codegen from edited specs to Python node skeleton
+* [ ] Validation of generated specs against lifecycle and dependency rules
+* [ ] Export specs as YAML or JSON for later instantiation
+
+**Future directions (deferred, post-Phase 2):**
+
+* [ ] Future integration point for shared state registries or ECS-like runtime views (post-Sprint 17+ ``lifecore_state`` stabilization)
+* [ ] Deferred: runtime recording and time-travel introspection (replay lifecycle transitions, state changes, and event sequences for debugging and failure analysis)
+
+**Design constraints:**
+
+* [ ] Not a generic diagram editor (no free-form drawing)
+* [ ] Data model is primary; visual rendering is secondary and pluggable
+* [ ] Architecture must enable independent UI (VSCode extension, web dashboard, CLI, TUI)
+* [ ] Must remain non-intrusive to runtime (no agent required in production nodes)
+* [ ] Initial deployment target: development machine only (not a distributed runtime tool)
+
+**Rationale:** Today, ROS 2 introspection tooling (rqt, RViz, Foxglove) focuses on
+visualization and debugging. No existing tool supports architectural composition
+and validation for component-based systems. A ``lifecore_ros2``-aware visual
+editor would leverage the explicit component model and lifecycle semantics to
+offer a higher-level composition experience than generic DAG editors. The tool
+must be designed around a clean data model first (JSON export, spec contracts)
+to avoid lock-in to a single UI framework and to enable non-visual automation
+(CLI, CI/CD validation, linting). This is a post-1.0 research direction; entry
+conditions are stable runtime introspection and specs.
+
 ---
 
 Deferred backlog
