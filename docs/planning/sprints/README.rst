@@ -9,6 +9,7 @@ available, but they do not drive current planning directly.
     :hidden:
 
     active/sprint_17_lifecore_state_rfc
+    active/sprint_17_1_repository_audit
     planned/sprint_18_lifecore_state_msgs_abi
     deferred/sprint_19_factory_registry
     deferred/sprint_20_tooling_codegen
@@ -37,6 +38,9 @@ Active sprints
 
 - Sprint 17 - lifecore_state Architecture RFC
   Location: :doc:`active/sprint_17_lifecore_state_rfc`
+
+- Sprint 17.1 - Repository Audit and Framework
+  Location: :doc:`active/sprint_17_1_repository_audit`
 
 Next planned sprints
 --------------------
