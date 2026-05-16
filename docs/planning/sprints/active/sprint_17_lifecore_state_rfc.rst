@@ -106,8 +106,8 @@ Impacted modules
 Active sub-sprint
 -----------------
 
-- Sprint 17.8 - Write Anti-Goals and Anti-Patterns
-  Location: :doc:`sprint_17_8_anti_goals`
+- Sprint 17.9 - Update Main Sprint 17 File
+  Status: Active. Location: :doc:`sprint_17_9_main_update`
 
 Deliverables
 ------------
@@ -129,9 +129,10 @@ Deliverables
   ``lifecore_state/package_boundaries.rst``.
 - **17.7 - Message semantics.** Archived after validation. Message semantics
   are now documented in ``lifecore_state/message_semantics.rst``.
-- **17.8 - Anti-goals.** Active. Reject unsafe architectural directions.
-- **17.9 - Main sprint coordination.** Maintain this file as the coordination
-  hub.
+- **17.8 - Anti-goals.** Archived after validation. Unsafe architectural
+  directions are explicitly rejected in ``lifecore_state/anti_goals.rst``.
+- **17.9 - Main sprint coordination.** Active. Keep this file synchronized with
+  sub-sprint status and act as the Sprint 17 coordination hub.
 - **17.10 - Consistency review.** Check terminology, architecture, lifecycle,
   and message alignment.
 - **17.11 - Final checklist.** Provide reviewer sign-off checklist.
@@ -168,7 +169,8 @@ Acceptance criteria
 - [x] Sprint 17.5 lifecycle/state separation exists and is reviewable.
 - [x] Sprint 17.6 package boundaries exist and are reviewable.
 - [x] Sprint 17.7 is archived after validation.
-- [x] Sprint 17.8 is active and linked from the planning index.
+- [x] Sprint 17.8 is archived after validation.
+- [x] Sprint 17.9 is active and linked from the planning index.
 - [x] Repository audit document exists and is validated.
 - [x] ``lifecore_state/`` exists as a documentation-only logical group.
 - [x] No ``package.xml`` exists in the ``lifecore_state/`` parent folder.
@@ -218,9 +220,9 @@ Review checklist
 - [x] Package boundaries are clear.
 - [x] Message semantics are consistent.
 - [x] Lifecycle/state separation is sound.
-- [ ] Anti-patterns are rejected.
-- [ ] No implementation is present.
-- [ ] ``lifecore_ros2`` independence is maintained.
+- [x] Anti-patterns are rejected.
+- [x] No implementation is present.
+- [x] ``lifecore_ros2`` independence is maintained.
 - [x] Mandatory review phrases are present where required.
 - [x] Sprint 18 entry criteria are explicit.
 
