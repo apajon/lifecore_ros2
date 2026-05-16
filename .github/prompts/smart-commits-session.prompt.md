@@ -3,7 +3,7 @@ description: "Use when: creating clean, atomic Git commits from changes made dur
 name: "Smart Commits Session"
 argument-hint: "Optional: format=conventional|free, granularity=fine|medium|large, prefix, scope, lang=english|french"
 agent: "agent"
-tools: [read, edit, search, 'mempalace/*', 'github/*', 'gitkraken/*']
+tools: [vscode/toolSearch, execute, read, 'github/*', 'mempalace/*', edit, search, 'gitkraken/*']
 ---
 
 # Smart Commits - Current Session
