@@ -1,6 +1,8 @@
 Sprint 17.11 — Final Review Checklist
 ====================================
 
+**Status.** Active.
+
 **Track.** Architecture / Research.
 
 **Type.** Quality Gate.

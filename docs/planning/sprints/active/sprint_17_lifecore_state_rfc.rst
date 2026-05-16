@@ -89,14 +89,14 @@ Impacted modules
 ----------------
 
 ``docs/planning/sprints/active/``
-  Holds this active Sprint 17 coordinator and the active Sprint 17.10 planning
+  Holds this active Sprint 17 coordinator and the active Sprint 17.11 planning
   card.
 
 ``docs/planning/sprints/archived/``
   Holds validated Sprint 17.1 through Sprint 17.9 planning cards after review.
 
 ``docs/planning/sprints/sprint_17_substeps/``
-  Keeps the remaining execution cards for Sprint 17.11 through Sprint 17.13.
+  Keeps the remaining execution cards for Sprint 17.12 through Sprint 17.13.
 
 ``docs/planning/sprints/sprint_17_repository_audit.rst``
   Expected output of Sprint 17.1 after audit execution.
@@ -113,8 +113,8 @@ planning decision changes scope.
 Active sub-sprint
 -----------------
 
-- Sprint 17.10 - Documentary Consistency Pass
-  Status: Active. Location: :doc:`sprint_17_10_consistency`
+- Sprint 17.11 - Final Review Checklist
+  Status: Active. Location: :doc:`sprint_17_11_checklist`
 
 Deliverables
 ------------
@@ -140,9 +140,9 @@ Deliverables
   directions are explicitly rejected in ``lifecore_state/anti_goals.rst``.
 - **17.9 - Main sprint coordination.** Status: Archived. Kept this file
   synchronized with sub-sprint status and made it the Sprint 17 coordination hub.
-- **17.10 - Consistency review.** Status: Active. Check terminology,
+- **17.10 - Consistency review.** Status: Archived. Check terminology,
   architecture, lifecycle, and message alignment.
-- **17.11 - Final checklist.** Status: Pending. Provide reviewer sign-off
+- **17.11 - Final checklist.** Status: Active. Provide reviewer sign-off
   checklist.
 - **17.12 - Static verification.** Status: Pending. Verify file presence,
   forbidden files, key phrases, and documentation integrity.
@@ -182,8 +182,9 @@ Acceptance criteria
 - [x] Sprint 17.7 is archived after validation.
 - [x] Sprint 17.8 is archived after validation.
 - [x] Sprint 17.9 is archived after validation.
-- [x] Sprint 17.10 is active and linked from the planning index.
-- [x] Sprint 17.11 through Sprint 17.13 remain listed as pending work.
+- [x] Sprint 17.10 is archived after validation.
+- [x] Sprint 17.11 is active and linked from the planning index.
+- [x] Sprint 17.12 through Sprint 17.13 remain listed as pending work.
 - [x] Repository audit document exists and is validated.
 - [x] ``lifecore_state/`` exists as a documentation-only logical group.
 - [x] No ``package.xml`` exists in the ``lifecore_state/`` parent folder.
@@ -251,4 +252,5 @@ Review requirement
 ------------------
 
 Mandatory phrase:
-"ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17."
+
+ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.

@@ -1,7 +1,7 @@
 Sprint 17.10 — Documentary Consistency Pass
 ============================================
 
-**Status.** Active.
+**Status.** Completed, awaiting validation.
 
 **Track.** Architecture / Research.
 
@@ -134,16 +134,16 @@ This document reports findings and corrections:
 Acceptance Criteria
 -------------------
 
-- [ ] All documents checked for terminology consistency
-- [ ] Weak terms identified and corrected
-- [ ] No contradictions between documents
-- [ ] Architectural boundaries consistent
-- [ ] Message semantics aligned
-- [ ] Lifecycle/state separation consistent throughout
-- [ ] All mandatory phrases present
-- [ ] Report complete with findings and corrections
-- [ ] Remaining issues documented
-- [ ] Recommendations clear
+- [x] All documents checked for terminology consistency
+- [x] Weak terms identified and corrected
+- [x] No contradictions between documents
+- [x] Architectural boundaries consistent
+- [x] Message semantics aligned
+- [x] Lifecycle/state separation consistent throughout
+- [x] All mandatory phrases present
+- [x] Report complete with findings and corrections
+- [x] Remaining issues documented
+- [x] Recommendations clear
 
 Success Criteria
 ----------------
@@ -154,3 +154,20 @@ After this pass, all Sprint 17 documents:
 - Agree on architectural boundaries
 - Support each other without contradiction
 - Are ready for formal architectural review
+
+Implementation notes
+--------------------
+
+Completed in ``lifecore_state/rfcs/sprint_17_consistency_review.rst``. The
+review found no weak terminology requiring replacement. Corrections were limited
+to mandatory phrase normalization, open-question alignment between the RFC and
+message semantics document, and adding the consistency report to the RFC index
+and folder layout. No runtime code, tests, examples, ROS interfaces, or package
+metadata were added.
+
+Review requirement
+------------------
+
+Mandatory phrase:
+
+ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.
