@@ -581,16 +581,25 @@ ABI definitions without a later review.
 Open questions
 --------------
 
-- Should ``uuid`` appear in every sample, or should samples normally reference
-	descriptors by compact IDs after a description is known?
+- What is the minimal descriptor identity that remains stable across launches,
+	and should samples carry UUIDs directly or normally reference compact
+	descriptor IDs after a description is known?
+- Which fields belong in ABI messages versus pure Python validation helpers,
+	including whether ``default_value`` belongs in ``StateDescriptor`` or in a
+	separate semantic policy layer?
 - Is a compact sample type needed for high-rate state streams?
-- Does ``default_value`` belong in ``StateDescriptor``, or should defaults live
-	in a separate semantic policy layer?
-- Should command feedback be a message, service, or action?
+- Should command feedback be represented as a message, service, or action?
 - Should quality be represented as a fixed enum, extensible flags, or a
 	structured status field?
-- Which compatibility rules should govern ``description_version`` changes?
+- How should delta continuity, sequence recovery, and resynchronization be
+	represented in ROS messages?
+- Which compatibility rules should govern ``description_version`` and future
+	descriptor versioning changes?
 - Should future ABI work name source and publish timestamps directly, or use
 	distinct headers with documented timestamp meaning?
+- Should projections be declared by descriptors, policy objects, or separate
+	projection documents?
+- Does Sprint 18 need explicit terminology for ``StateStore`` or
+	``StateMirror``, or is the registry distinction sufficient?
 
 ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.

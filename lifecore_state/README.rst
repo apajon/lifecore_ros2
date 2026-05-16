@@ -45,6 +45,7 @@ Folder layout
       rfcs/
         README.rst
         rfc_001_lifecore_state_architecture.rst
+        sprint_17_consistency_review.rst
 
 Sprint 17 rule
 --------------
