@@ -1,7 +1,7 @@
 Sprint 17.12 — Lightweight Static Verification
 ===============================================
 
-**Status.** Active.
+**Status.** Archived.
 
 **Track.** Architecture / Research.
 
@@ -118,13 +118,13 @@ The report documents:
 Acceptance Criteria
 -------------------
 
-- [ ] Verification report complete
-- [ ] All checks documented
-- [ ] Results clear (PASS/FAIL/WARNING)
-- [ ] Anomalies clearly identified
-- [ ] No critical issues outstanding
-- [ ] Recommendations actionable
-- [ ] Mandatory phrase included
+- [x] Verification report complete
+- [x] All checks documented
+- [x] Results clear (PASS/FAIL/WARNING)
+- [x] Anomalies clearly identified
+- [x] No critical issues outstanding
+- [x] Recommendations actionable
+- [x] Mandatory phrase included
 
 Example Verification Commands
 ------------------------------

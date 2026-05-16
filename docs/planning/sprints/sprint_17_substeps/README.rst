@@ -210,7 +210,8 @@ finale du Sprint 17" must appear in:
 
 - The main Sprint 17 file (``docs/planning/sprints/active/sprint_17_lifecore_state_rfc.rst``)
 - The final review checklist (``sprint_17_11_checklist.rst``)
-- The PR description draft (``sprint_17_13_pr_description.rst``)
+- The PR description draft
+   (``docs/planning/sprints/active/sprint_17_13_pr_description.rst``)
 
 Architecture documents (terminology, message semantics, package boundaries,
 lifecycle/state separation, anti-goals) remain clean and reusable without this
@@ -219,9 +220,8 @@ phrase.
 Integration with Main Sprint
 ----------------------------
 
-Sub-sprints 17.5–17.13 remain **separate files** in the
-``sprint_17_substeps/`` folder. Sprint 17.1, Sprint 17.2, and Sprint 17.3 have
-been archived, and Sprint 17.4 has been promoted to
+This folder remains a historical execution overview. Completed sub-sprint cards
+are archived, and the current sub-sprint card is promoted to
 ``docs/planning/sprints/active/`` for execution.
 
 The main Sprint 17 file (``docs/planning/sprints/active/sprint_17_lifecore_state_rfc.rst``)

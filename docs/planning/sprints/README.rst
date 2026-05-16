@@ -9,11 +9,13 @@ available, but they do not drive current planning directly.
     :hidden:
 
     active/sprint_17_lifecore_state_rfc
-    active/sprint_17_12_static_check
+    active/sprint_17_13_pr_description
     sprint_17_repository_audit
+    sprint_17_substeps/README
     planned/sprint_18_lifecore_state_msgs_abi
     deferred/sprint_19_factory_registry
     deferred/sprint_20_tooling_codegen
+    archived/sprint_17_12_static_check
     archived/sprint_17_11_checklist
     archived/sprint_17_10_consistency
     archived/sprint_17_9_main_update
@@ -51,8 +53,8 @@ Active sprints
 - Sprint 17 - lifecore_state Architecture RFC
   Location: :doc:`active/sprint_17_lifecore_state_rfc`
 
-- Sprint 17.12 - Static Verification
-  Location: :doc:`active/sprint_17_12_static_check`
+- Sprint 17.13 - PR Description Draft
+  Location: :doc:`active/sprint_17_13_pr_description`
 
 Next planned sprints
 --------------------
@@ -71,6 +73,9 @@ Deferred / conditional sprints
 
 Archived sprints
 ----------------
+
+- Sprint 17.12 - Lightweight Static Verification
+  Location: :doc:`archived/sprint_17_12_static_check`
 
 - Sprint 17.11 - Final Review Checklist
   Location: :doc:`archived/sprint_17_11_checklist`

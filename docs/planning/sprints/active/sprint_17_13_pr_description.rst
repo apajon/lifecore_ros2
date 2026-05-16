@@ -1,6 +1,8 @@
 Sprint 17.13 — Prepare PR Description Draft
 ============================================
 
+**Status.** Active.
+
 **Track.** Architecture / Research.
 
 **Type.** Final deliverable summary.

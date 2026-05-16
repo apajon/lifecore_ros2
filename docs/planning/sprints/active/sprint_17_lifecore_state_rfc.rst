@@ -95,7 +95,7 @@ Impacted modules
   Holds validated Sprint 17.1 through Sprint 17.9 planning cards after review.
 
 ``docs/planning/sprints/sprint_17_substeps/``
-  Keeps the remaining execution cards for Sprint 17.12 through Sprint 17.13.
+  Keeps the historical execution overview for Sprint 17 sub-sprints.
 
 ``docs/planning/sprints/sprint_17_repository_audit.rst``
   Expected output of Sprint 17.1 after audit execution.
@@ -112,8 +112,8 @@ planning decision changes scope.
 Active sub-sprint
 -----------------
 
-- Sprint 17.12 - Static Verification
-  Status: Active. Location: :doc:`sprint_17_12_static_check`
+- Sprint 17.13 - PR Description Draft
+  Status: Active. Location: :doc:`sprint_17_13_pr_description`
 
 Deliverables
 ------------
@@ -143,9 +143,9 @@ Deliverables
   architecture, lifecycle, and message alignment.
 - **17.11 - Final checklist.** Status: Archived. Created the reviewer
   sign-off checklist.
-- **17.12 - Static verification.** Status: Active. Verify file presence,
+- **17.12 - Static verification.** Status: Archived. Verified file presence,
   forbidden files, key phrases, and documentation integrity.
-- **17.13 - PR description draft.** Status: Pending. Prepare a ready-to-use PR
+- **17.13 - PR description draft.** Status: Active. Prepare a ready-to-use PR
   summary.
 
 Explicit decisions to capture
@@ -183,8 +183,8 @@ Acceptance criteria
 - [x] Sprint 17.9 is archived after validation.
 - [x] Sprint 17.10 is archived after validation.
 - [x] Sprint 17.11 is archived after validation.
-- [x] Sprint 17.12 is active and linked from the planning index.
-- [x] Sprint 17.13 remains listed as pending work.
+- [x] Sprint 17.12 is archived and linked from the planning index.
+- [x] Sprint 17.13 is active and linked from the planning index.
 - [x] Repository audit document exists and is validated.
 - [x] ``lifecore_state/`` exists as a documentation-only logical group.
 - [x] No ``package.xml`` exists in the ``lifecore_state/`` parent folder.
@@ -197,7 +197,7 @@ Acceptance criteria
 - [x] ``StateCommand`` active-only handling is documented.
 - [x] Sprint 18 entry criteria are documented.
 - [ ] All sub-sprint deliverables exist.
-- [ ] Mandatory review phrase appears in required review deliverables.
+- [x] Mandatory review phrase appears in required review deliverables.
 
 Validation plan
 ---------------
