@@ -9,11 +9,12 @@ available, but they do not drive current planning directly.
     :hidden:
 
     active/sprint_17_lifecore_state_rfc
-    active/sprint_17_7_message_semantics
+    active/sprint_17_8_anti_goals
     sprint_17_repository_audit
     planned/sprint_18_lifecore_state_msgs_abi
     deferred/sprint_19_factory_registry
     deferred/sprint_20_tooling_codegen
+    archived/sprint_17_7_message_semantics
     archived/sprint_17_6_package_boundaries
     archived/sprint_17_5_lifecycle_separation
     archived/sprint_17_4_glossary
@@ -46,8 +47,8 @@ Active sprints
 - Sprint 17 - lifecore_state Architecture RFC
   Location: :doc:`active/sprint_17_lifecore_state_rfc`
 
-- Sprint 17.7 - Write Message Semantics
-  Location: :doc:`active/sprint_17_7_message_semantics`
+- Sprint 17.8 - Write Anti-Goals and Anti-Patterns
+  Location: :doc:`active/sprint_17_8_anti_goals`
 
 Next planned sprints
 --------------------
@@ -66,6 +67,9 @@ Deferred / conditional sprints
 
 Archived sprints
 ----------------
+
+- Sprint 17.7 - Write Message Semantics
+  Location: :doc:`archived/sprint_17_7_message_semantics`
 
 - Sprint 17.6 - Write Package Boundaries
   Location: :doc:`archived/sprint_17_6_package_boundaries`

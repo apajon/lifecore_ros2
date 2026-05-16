@@ -106,8 +106,8 @@ Impacted modules
 Active sub-sprint
 -----------------
 
-- Sprint 17.7 - Write Message Semantics
-  Location: :doc:`sprint_17_7_message_semantics`
+- Sprint 17.8 - Write Anti-Goals and Anti-Patterns
+  Location: :doc:`sprint_17_8_anti_goals`
 
 Deliverables
 ------------
@@ -127,9 +127,9 @@ Deliverables
 - **17.6 - Package boundaries.** Archived after validation. Future package
   responsibilities and dependency rules are now documented in
   ``lifecore_state/package_boundaries.rst``.
-- **17.7 - Message semantics.** Active. Document descriptor, description,
-  sample, update, and command semantics.
-- **17.8 - Anti-goals.** Reject unsafe architectural directions.
+- **17.7 - Message semantics.** Archived after validation. Message semantics
+  are now documented in ``lifecore_state/message_semantics.rst``.
+- **17.8 - Anti-goals.** Active. Reject unsafe architectural directions.
 - **17.9 - Main sprint coordination.** Maintain this file as the coordination
   hub.
 - **17.10 - Consistency review.** Check terminology, architecture, lifecycle,
@@ -167,7 +167,8 @@ Acceptance criteria
 - [x] Sprint 17.4 glossary exists and is accessible.
 - [x] Sprint 17.5 lifecycle/state separation exists and is reviewable.
 - [x] Sprint 17.6 package boundaries exist and are reviewable.
-- [x] Sprint 17.7 is active and linked from the planning index.
+- [x] Sprint 17.7 is archived after validation.
+- [x] Sprint 17.8 is active and linked from the planning index.
 - [x] Repository audit document exists and is validated.
 - [x] ``lifecore_state/`` exists as a documentation-only logical group.
 - [x] No ``package.xml`` exists in the ``lifecore_state/`` parent folder.
@@ -215,7 +216,7 @@ Review checklist
 - [x] RFC is complete and reviewable.
 - [x] Glossary is accessible.
 - [x] Package boundaries are clear.
-- [ ] Message semantics are consistent.
+- [x] Message semantics are consistent.
 - [x] Lifecycle/state separation is sound.
 - [ ] Anti-patterns are rejected.
 - [ ] No implementation is present.
