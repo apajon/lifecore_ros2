@@ -1,7 +1,7 @@
 Sprint 17.7 — Write Message Semantics
 =====================================
 
-**Status.** Active.
+**Status.** Archived. See :doc:`../archived/sprint_17_7_message_semantics`.
 
 **Track.** Architecture / Research.
 
