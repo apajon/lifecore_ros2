@@ -1,7 +1,7 @@
 Sprint 17.11 — Final Review Checklist
-====================================
+======================================
 
-**Status.** Active.
+**Status.** Archived.
 
 **Track.** Architecture / Research.
 
@@ -185,19 +185,19 @@ Required Sections
 Acceptance Criteria
 -------------------
 
-- [ ] Checklist is complete
-- [ ] All sections checked
-- [ ] No blockers found
-- [ ] All mandatory phrases present
-- [ ] Reviewer can sign off
+- [x] Checklist is complete
+- [x] All sections checked
+- [x] No blockers found
+- [x] All mandatory phrases present
+- [x] Reviewer can sign off
 
 Content Quality Checklist
 -------------------------
 
-- [ ] Checklist items are specific (not vague)
-- [ ] Checklist is exhaustive
-- [ ] Checklist is concise (easy to review)
-- [ ] Checklist can be automated if needed
+- [x] Checklist items are specific (not vague)
+- [x] Checklist is exhaustive
+- [x] Checklist is concise (easy to review)
+- [x] Checklist can be automated if needed
 
 Success Criteria
 ----------------
@@ -209,5 +209,20 @@ A reviewer using this checklist can:
 - Confirm architectural decisions
 - Sign off with confidence
 
+Implementation notes
+--------------------
+
+Completed in ``lifecore_state/rfcs/sprint_17_final_review_checklist.rst``. The
+checklist covers repository structure, scope, naming, package boundaries,
+message semantics, lifecycle/state separation, anti-patterns, documentation
+quality, Sprint 18 readiness, mandatory review phrases, build integrity, and
+reviewer sign-off. The RFC index, root ``lifecore_state`` folder layout, and
+sprint planning index now point to the new checklist. No runtime code, tests,
+examples, ROS interfaces, or package metadata were added.
+
+Review requirement
+------------------
+
 Mandatory phrase:
-"ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17."
+
+ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.

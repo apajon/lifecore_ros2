@@ -89,8 +89,7 @@ Impacted modules
 ----------------
 
 ``docs/planning/sprints/active/``
-  Holds this active Sprint 17 coordinator and the active Sprint 17.11 planning
-  card.
+  Holds this active Sprint 17 coordinator.
 
 ``docs/planning/sprints/archived/``
   Holds validated Sprint 17.1 through Sprint 17.9 planning cards after review.
@@ -113,8 +112,8 @@ planning decision changes scope.
 Active sub-sprint
 -----------------
 
-- Sprint 17.11 - Final Review Checklist
-  Status: Active. Location: :doc:`sprint_17_11_checklist`
+- Sprint 17.12 - Static Verification
+  Status: Active. Location: :doc:`../sprint_17_substeps/sprint_17_12_static_check`
 
 Deliverables
 ------------
@@ -142,9 +141,9 @@ Deliverables
   synchronized with sub-sprint status and made it the Sprint 17 coordination hub.
 - **17.10 - Consistency review.** Status: Archived. Check terminology,
   architecture, lifecycle, and message alignment.
-- **17.11 - Final checklist.** Status: Active. Provide reviewer sign-off
-  checklist.
-- **17.12 - Static verification.** Status: Pending. Verify file presence,
+- **17.11 - Final checklist.** Status: Archived. Created the reviewer
+  sign-off checklist.
+- **17.12 - Static verification.** Status: Active. Verify file presence,
   forbidden files, key phrases, and documentation integrity.
 - **17.13 - PR description draft.** Status: Pending. Prepare a ready-to-use PR
   summary.
@@ -183,8 +182,9 @@ Acceptance criteria
 - [x] Sprint 17.8 is archived after validation.
 - [x] Sprint 17.9 is archived after validation.
 - [x] Sprint 17.10 is archived after validation.
-- [x] Sprint 17.11 is active and linked from the planning index.
-- [x] Sprint 17.12 through Sprint 17.13 remain listed as pending work.
+- [x] Sprint 17.11 is archived after validation.
+- [x] Sprint 17.12 is active and linked from the planning index.
+- [x] Sprint 17.13 remains listed as pending work.
 - [x] Repository audit document exists and is validated.
 - [x] ``lifecore_state/`` exists as a documentation-only logical group.
 - [x] No ``package.xml`` exists in the ``lifecore_state/`` parent folder.

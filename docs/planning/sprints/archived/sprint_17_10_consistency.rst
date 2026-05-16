@@ -10,7 +10,7 @@ Sprint 17.10 — Documentary Consistency Pass
 **Objective.** Verify terminology consistency across all Sprint 17 documents
 and resolve ambiguities before final review.
 
-**Parent sprint.** :doc:`sprint_17_lifecore_state_rfc`.
+**Parent sprint.** :doc:`/planning/sprints/active/sprint_17_lifecore_state_rfc`.
 
 Context
 -------
