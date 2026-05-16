@@ -9,7 +9,7 @@ available, but they do not drive current planning directly.
     :hidden:
 
     active/sprint_17_lifecore_state_rfc
-    sprint_17_substeps/sprint_17_12_static_check
+    active/sprint_17_12_static_check
     sprint_17_repository_audit
     planned/sprint_18_lifecore_state_msgs_abi
     deferred/sprint_19_factory_registry
@@ -52,7 +52,7 @@ Active sprints
   Location: :doc:`active/sprint_17_lifecore_state_rfc`
 
 - Sprint 17.12 - Static Verification
-  Location: :doc:`sprint_17_substeps/sprint_17_12_static_check`
+  Location: :doc:`active/sprint_17_12_static_check`
 
 Next planned sprints
 --------------------

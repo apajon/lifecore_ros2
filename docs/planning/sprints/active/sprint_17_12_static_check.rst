@@ -1,6 +1,8 @@
 Sprint 17.12 — Lightweight Static Verification
 ===============================================
 
+**Status.** Active.
+
 **Track.** Architecture / Research.
 
 **Type.** Verification.

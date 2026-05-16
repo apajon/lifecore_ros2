@@ -113,7 +113,7 @@ Active sub-sprint
 -----------------
 
 - Sprint 17.12 - Static Verification
-  Status: Active. Location: :doc:`../sprint_17_substeps/sprint_17_12_static_check`
+  Status: Active. Location: :doc:`sprint_17_12_static_check`
 
 Deliverables
 ------------
