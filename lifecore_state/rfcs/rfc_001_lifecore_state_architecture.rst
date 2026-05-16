@@ -184,21 +184,30 @@ integration responsibilities.
 	names, units, constraints, owner metadata, and semantic hints. It helps
 	consumers understand a descriptor without becoming the observed value.
 
+``StateOwner``
+	Entity considered authoritative for producing observed state, accepting
+	commands, or rejecting mutations for a descriptor within a registry scope.
+	Ownership is semantic and must not be inferred only from the ROS node
+	currently publishing a message.
+
 ``StateSample``
-	Observed state value at a point in time, including identity, value payload,
-	timestamp information, and quality information.
+	Observed semantic value at a point in time, including identity, value
+	payload, timestamp information, and quality information.
 
 ``StateUpdate``
-	Delta or partial change against known state. An update is not the complete
-	state unless explicitly marked as a snapshot-equivalent update.
+	Synchronization event that carries one or more observed changes for a known
+	scope. An update may transport one or more samples, partial mutations,
+	invalidation information, or a snapshot-equivalent payload depending on the
+	accepted message semantics.
 
 ``StateCommand``
 	Requested mutation or operation. A command is an intent sent toward an owner,
 	not observed truth.
 
 ``StateRegistry``
-	Scoped collection of descriptors, descriptions, and current knowledge about
-	state. A registry scope bounds identity and synchronization.
+	Scoped catalog of descriptors and descriptions for a known state space. A
+	registry scope bounds identity and synchronization, but a registry must not
+	be treated as a global mutable store by default.
 
 ``StateProjection``
 	Consumer-oriented view over registry state. A projection may filter, rename,
@@ -248,6 +257,21 @@ Command outcomes must be represented separately from the command itself. A
 future implementation may acknowledge, reject, or report the observed result of
 a command, but the command message remains intent rather than truth.
 
+Sample vs update
+----------------
+
+A sample is the semantic unit of observed value. It answers what value was
+observed for a descriptor at a given time and with what quality.
+
+An update is a synchronization event. It describes how observed changes are
+transported or synchronized for a scope and may carry one sample, multiple
+samples, partial mutations, invalidation markers, or another accepted update
+form.
+
+This distinction matters for future ABI review. A future message package must
+not assume that ``StateSample`` and ``StateUpdate`` are interchangeable names
+for the same transport contract.
+
 Snapshot vs delta
 -----------------
 
@@ -280,6 +304,11 @@ Identity should include:
 - descriptor key;
 - type or schema identity;
 - version or compatibility marker when needed.
+
+When descriptors originate from structured registries or external
+specifications, identity should preferably be derived from stable semantic
+paths rather than generated UUIDs. Generated UUIDs are acceptable only when the
+source identity is explicitly persistent and controlled.
 
 Identity must not depend on object memory addresses, temporary Python object
 names, process-local counters, or subscription order.
@@ -323,6 +352,30 @@ Registry-scoped synchronization should support:
 Cross-registry projection may be useful later, but Sprint 17 does not define
 cross-registry merge semantics.
 
+Registry, store, and mirror terminology
+---------------------------------------
+
+A ``StateRegistry`` is primarily a scoped catalog of known contracts. It
+defines which descriptors exist, how they are identified, and how descriptions
+can be discovered inside a registry scope.
+
+A registry must not be treated as a global mutable blackboard by default.
+Future implementations may maintain local stores, caches, or mirrors of
+observed values, but those responsibilities must remain explicit and must not
+silently change the meaning of the registry itself.
+
+Possible future terms:
+
+``StateStore``
+	Local storage for current known samples or values.
+
+``StateMirror``
+	Local synchronized view of a remote registry scope.
+
+These names are not accepted implementation concepts during Sprint 17.3, but
+the distinction prevents ``StateRegistry`` from becoming an overloaded runtime
+object.
+
 Lifecycle/state separation
 --------------------------
 
@@ -343,20 +396,40 @@ Rules for future integration:
 	message type;
 - no future package may add a parallel lifecycle state machine.
 
-Description subscriber lifecycle behavior
------------------------------------------
+Inactive lifecycle behavior by message type
+-------------------------------------------
 
 Future ROS integration may subscribe to ``StateDescription`` messages while a
 component is inactive because descriptions are metadata, not observed state
 values. This supports discovery and UI/tool preparation without implying that
 the owner is active or that current values are valid.
 
-The intended lifecycle behavior is:
+The intended inactive behavior is:
 
-- ``StateDescription`` may be cached while inactive;
-- cached descriptions must not imply active behavior;
-- ``StateUpdate`` deltas are not applied while inactive;
-- ``StateCommand`` handling requires active lifecycle state;
+.. list-table::
+	:header-rows: 1
+
+	* - Message type
+	  - Inactive behavior direction
+	* - ``StateDescription``
+	  - May be received and cached while inactive because it is metadata rather
+		than observed truth.
+	* - ``StateSnapshot``
+	  - May be received for resynchronization preparation, but must not by itself
+		imply active behavior or current valid live truth.
+	* - ``StateSample``
+	  - Must not update live state interpretation while inactive unless a later
+		review explicitly accepts a narrower policy for cached observation.
+	* - ``StateUpdate`` or ``StateDelta``
+	  - Must not be applied while inactive because continuity assumptions cannot
+		be trusted across inactive periods.
+	* - ``StateCommand``
+	  - Requires active lifecycle state and must be rejected, ignored, or not
+		handled according to the accepted policy.
+
+Additional rules:
+
+- cached descriptions or snapshots must not imply active behavior;
 - activation does not by itself validate cached values;
 - reactivation after inactive time may require a fresh snapshot before deltas
 	can be trusted.
@@ -462,6 +535,8 @@ Open questions
 - Should projections be declared by descriptors, policy objects, or separate
 	projection documents?
 - What compatibility rules should govern future descriptor versioning?
+- Does Sprint 18 need explicit terminology for ``StateStore`` or
+	``StateMirror``, or is the registry distinction sufficient?
 
 Decision summary
 ----------------
@@ -476,8 +551,13 @@ Decision summary
 - Keep ``lifecore_ros2`` independent from future ``lifecore_state`` packages by
 	default.
 - Preserve native ROS 2 lifecycle semantics and avoid parallel state machines.
+- Treat ``StateRegistry`` as a scoped contract catalog, not a default global
+	mutable store.
+- Prefer stable semantic paths over generated UUIDs when deriving descriptor
+	identity.
 - Keep lifecycle activation separate from state validity.
 - Allow ``StateDescription`` metadata caching while inactive.
+- Reject live ``StateSample`` interpretation changes while inactive by default.
 - Reject ``StateUpdate`` delta application while inactive.
 - Require active lifecycle state for ``StateCommand`` handling.
 - Treat future message ABI work as conditional on Sprint 17.3 review.
