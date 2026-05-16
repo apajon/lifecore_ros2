@@ -84,7 +84,7 @@ Impacted modules
 ----------------
 
 ``docs/planning/sprints/active/``
-  Holds this active Sprint 17 coordinator and the active Sprint 17.4 planning
+  Holds this active Sprint 17 coordinator and the active Sprint 17.5 planning
   card.
 
 ``docs/planning/sprints/sprint_17_substeps/``
@@ -106,8 +106,8 @@ Impacted modules
 Active sub-sprint
 -----------------
 
-- Sprint 17.4 - Write Accessible Glossary
-  Location: :doc:`sprint_17_4_glossary`
+- Sprint 17.5 - Write Lifecycle/State Separation
+  Location: :doc:`sprint_17_5_lifecycle_separation`
 
 Deliverables
 ------------
@@ -119,9 +119,10 @@ Deliverables
   documentation-only ``lifecore_state/`` skeleton files after placement was
   confirmed.
 - **17.3 - RFC 001.** Archived. Principal architecture RFC written.
-- **17.4 - Terminology glossary.** Active. Define accessible French terminology.
-- **17.5 - Lifecycle/state separation.** Clarify semantic gating and inactive
-  behavior.
+- **17.4 - Terminology glossary.** Archived after validation. Accessible French
+  terminology is now documented in ``lifecore_state/terminology.rst``.
+- **17.5 - Lifecycle/state separation.** Active. Clarify semantic gating and
+  inactive behavior.
 - **17.6 - Package boundaries.** Define future package responsibilities and
   dependency rules.
 - **17.7 - Message semantics.** Document descriptor, description, sample,
@@ -161,7 +162,8 @@ Acceptance criteria
 - [x] Sprint 17.1 is archived after validation.
 - [x] Sprint 17.2 is archived after validation.
 - [x] Sprint 17.3 is archived after review.
-- [x] Sprint 17.4 is active and linked from the planning index.
+- [x] Sprint 17.4 glossary exists and is accessible.
+- [x] Sprint 17.5 is active and linked from the planning index.
 - [x] Repository audit document exists and is validated.
 - [x] ``lifecore_state/`` exists as a documentation-only logical group.
 - [x] No ``package.xml`` exists in the ``lifecore_state/`` parent folder.
@@ -207,7 +209,7 @@ Review checklist
 
 - [x] Repository audit exists and is accurate.
 - [x] RFC is complete and reviewable.
-- [ ] Glossary is accessible.
+- [x] Glossary is accessible.
 - [ ] Package boundaries are clear.
 - [ ] Message semantics are consistent.
 - [ ] Lifecycle/state separation is sound.

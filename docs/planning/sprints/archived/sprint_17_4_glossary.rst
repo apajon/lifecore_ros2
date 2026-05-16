@@ -1,13 +1,13 @@
 Sprint 17.4 — Write Accessible Glossary
 ========================================
 
-**Status.** Active.
+**Status.** Archived.
 
 **Track.** Architecture / Research.
 
 **Type.** Documentation.
 
-**Parent sprint.** :doc:`sprint_17_lifecore_state_rfc`.
+**Parent sprint.** :doc:`../active/sprint_17_lifecore_state_rfc`.
 
 **Objective.** Define all terms used in Sprint 17 in clear, pedagogical French
 accessible to people without formal CS background.
@@ -29,12 +29,12 @@ Style Guidance
 - Avoid over-definition
 
 Document Location
-------------------
+-----------------
 
 **File:** ``lifecore_state/terminology.rst``
 
 Required Terminology
----------------------
+--------------------
 
 1. **RFC** – Request For Comments, design document submitted for discussion before implementation
 2. **API** – contract used by source code (Python method example)
@@ -80,27 +80,37 @@ Required Terminology
 Acceptance Criteria
 -------------------
 
-- [ ] All 40 terms defined
-- [ ] Definitions use clear French, not academic jargon
-- [ ] Examples tie to ROS 2, robotics, or ``lifecore_state`` context
-- [ ] Ambiguous terms explicitly flagged as such
-- [ ] No tutorial tangents
-- [ ] Focused on Sprint 17 context
-- [ ] Mandatory review phrase included
+- [x] All 40 required terms defined
+- [x] Definitions use clear French, not academic jargon
+- [x] Examples tie to ROS 2, robotics, or ``lifecore_state`` context
+- [x] Ambiguous terms explicitly flagged as such
+- [x] No tutorial tangents
+- [x] Focused on Sprint 17 context
+- [x] Mandatory review phrase included
+- [x] Authority, canonical path, and wire format added to reduce future ambiguity
 
 Content Quality Checklist
 -------------------------
 
 For each term:
 
-- [ ] Definition is 1–3 sentences
-- [ ] At least one concrete example
-- [ ] Confusions with similar terms addressed
-- [ ] Accessible to non-CS background readers
-- [ ] Tied to ``lifecore_state`` or lifecycle concepts where applicable
+- [x] Definition is 1–3 sentences
+- [x] At least one concrete example
+- [x] Confusions with similar terms addressed
+- [x] Accessible to non-CS background readers
+- [x] Tied to ``lifecore_state`` or lifecycle concepts where applicable
+
+Implementation Notes
+--------------------
+
+Completed in ``lifecore_state/terminology.rst``. The glossary keeps Sprint 17
+documentation-only scope and does not create any runtime class, package,
+message ABI, or public API change.
 
 Success Criteria
 ----------------
 
 The glossary enables all future developers to read Sprint 17 and 18 documents
 without external lookups. It is the single source of truth for project terminology.
+
+ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.
