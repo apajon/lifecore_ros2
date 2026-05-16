@@ -30,5 +30,6 @@ Current RFCs
 
    rfc_001_lifecore_state_architecture
    sprint_17_consistency_review
+   sprint_17_final_review_checklist
 
 ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.
