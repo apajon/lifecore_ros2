@@ -1,12 +1,16 @@
 Sprint 17.10 — Documentary Consistency Pass
 ============================================
 
+**Status.** Active.
+
 **Track.** Architecture / Research.
 
 **Type.** Quality Assurance.
 
 **Objective.** Verify terminology consistency across all Sprint 17 documents
 and resolve ambiguities before final review.
+
+**Parent sprint.** :doc:`sprint_17_lifecore_state_rfc`.
 
 Context
 -------
@@ -102,9 +106,9 @@ This document reports findings and corrections:
 
 9. **Mandatory phrase consistency**
 
-   Verify:
-   - Every document ends with:
-     "ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17."
+   Verify that every document ends with the mandatory phrase::
+
+       ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.
 
 10. **Problems found and corrections applied**
 

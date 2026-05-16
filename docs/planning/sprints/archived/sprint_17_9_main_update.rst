@@ -1,7 +1,7 @@
 Sprint 17.9 — Update Main Sprint 17 File
 ========================================
 
-**Status.** Active.
+**Status.** Archived after validation.
 
 **Track.** Architecture / Research.
 
@@ -10,7 +10,7 @@ Sprint 17.9 — Update Main Sprint 17 File
 **Objective.** Keep the main Sprint 17 file accurate as a coordination hub for
 all sub-sprints, with current status, deliverables, and review checklist.
 
-**Parent sprint.** :doc:`sprint_17_lifecore_state_rfc`.
+**Parent sprint.** :doc:`../active/sprint_17_lifecore_state_rfc`.
 
 Feature goal
 ------------
@@ -73,27 +73,27 @@ Required content
 Acceptance criteria
 -------------------
 
-- [ ] Main Sprint 17 file lists 17.1 through 17.8 as archived or completed.
-- [ ] Main Sprint 17 file lists 17.9 as the active sub-sprint.
-- [ ] Main Sprint 17 file lists 17.10 through 17.13 as remaining work.
-- [ ] Sprint coordinator points to the correct active sub-sprint card.
-- [ ] Lifecycle non-impact rules remain explicit.
-- [ ] Explicit decisions section stays consistent with the other Sprint 17
+- [x] Main Sprint 17 file lists 17.1 through 17.8 as archived or completed.
+- [x] Main Sprint 17 file listed 17.9 as the active sub-sprint during execution.
+- [x] Main Sprint 17 file lists 17.10 through 17.13 as remaining work.
+- [x] Sprint coordinator pointed to the correct active sub-sprint card.
+- [x] Lifecycle non-impact rules remain explicit.
+- [x] Explicit decisions section stays consistent with the other Sprint 17
   documents.
-- [ ] Review checklist covers anti-patterns, independence, and no-implementation
+- [x] Review checklist covers anti-patterns, independence, and no-implementation
   rule.
-- [ ] Mandatory review phrase present.
+- [x] Mandatory review phrase present.
 
 Content quality checklist
 -------------------------
 
-- [ ] Status values match the planning index (``archived``, ``active``,
+- [x] Status values match the planning index (``archived``, ``active``,
   ``completed``).
-- [ ] No sub-sprint is advanced ahead of validation.
-- [ ] Wording stays consistent with sub-sprint deliverables.
-- [ ] No runtime API, message ABI, or Python implementation is referenced as
+- [x] No sub-sprint is advanced ahead of validation.
+- [x] Wording stays consistent with sub-sprint deliverables.
+- [x] No runtime API, message ABI, or Python implementation is referenced as
   implemented.
-- [ ] Document is usable as a single Sprint 17 review entry point.
+- [x] Document is usable as a single Sprint 17 review entry point.
 
 Success criteria
 ----------------
@@ -108,9 +108,9 @@ A reviewer reading the main Sprint 17 file can:
 Implementation notes
 --------------------
 
-This sub-sprint maintains the existing main Sprint 17 file rather than
-creating a new one. It must not delete validated history from the deliverables
-section and must not advance sub-sprints that have not been completed.
+Completed by updating the existing main Sprint 17 file rather than creating a
+new one. Validated deliverable history stayed in place, and later sub-sprints
+were not advanced ahead of validation.
 
 Review requirement
 ------------------
