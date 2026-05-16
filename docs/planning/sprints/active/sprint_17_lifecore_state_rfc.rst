@@ -51,6 +51,11 @@ implement during this sprint. The future model should be treated as a
 distributed typed state space or semantic synchronized state model, not as a
 generic industrial I/O bus hidden inside ``lifecore_ros2``.
 
+``lifecore_ros2`` remains independent from future ``lifecore_state`` work during
+Sprint 17. The current lifecycle framework keeps its existing public API,
+package dependencies, lifecycle transition behavior, and examples unchanged
+while architecture decisions are documented separately.
+
 Goals
 -----
 
@@ -84,12 +89,14 @@ Impacted modules
 ----------------
 
 ``docs/planning/sprints/active/``
-  Holds this active Sprint 17 coordinator and the active Sprint 17.5 planning
+  Holds this active Sprint 17 coordinator and the active Sprint 17.9 planning
   card.
 
+``docs/planning/sprints/archived/``
+  Holds validated Sprint 17.1 through Sprint 17.8 planning cards after review.
+
 ``docs/planning/sprints/sprint_17_substeps/``
-  Keeps the remaining execution cards for Sprint 17 sub-sprints that are not
-  yet active.
+  Keeps the remaining execution cards for Sprint 17.10 through Sprint 17.13.
 
 ``docs/planning/sprints/sprint_17_repository_audit.rst``
   Expected output of Sprint 17.1 after audit execution.
@@ -99,9 +106,9 @@ Impacted modules
   It must not be a ROS 2 package and must not contain ``package.xml`` at the
   parent level.
 
-``src/``, ``tests/``, and ``examples/``
-  Not impacted. Sprint 17 must not change code, runtime behavior, tests, or
-  examples unless a later explicit planning decision changes scope.
+``src/``, ``tests/``, and ``examples/`` remain out of scope. Sprint 17 must not
+change code, runtime behavior, tests, or examples unless a later explicit
+planning decision changes scope.
 
 Active sub-sprint
 -----------------
@@ -112,33 +119,35 @@ Active sub-sprint
 Deliverables
 ------------
 
-- **17.1 - Repository audit.** Validated and archived. Audit the repository
+- **17.1 - Repository audit.** Status: Archived. Audit the repository
   structure, identify risks, and recommend safe placement for
   ``lifecore_state`` documentation.
-- **17.2 - Documentation structure.** Archived after validation. Created the
+- **17.2 - Documentation structure.** Status: Archived. Created the
   documentation-only ``lifecore_state/`` skeleton files after placement was
   confirmed.
-- **17.3 - RFC 001.** Archived. Principal architecture RFC written.
-- **17.4 - Terminology glossary.** Archived after validation. Accessible French
+- **17.3 - RFC 001.** Status: Archived. Principal architecture RFC written.
+- **17.4 - Terminology glossary.** Status: Archived. Accessible French
   terminology is now documented in ``lifecore_state/terminology.rst``.
-- **17.5 - Lifecycle/state separation.** Archived after validation. Semantic
+- **17.5 - Lifecycle/state separation.** Status: Archived. Semantic
   gating and inactive behavior are now documented in
   ``lifecore_state/lifecycle_state_separation.rst``.
-- **17.6 - Package boundaries.** Archived after validation. Future package
+- **17.6 - Package boundaries.** Status: Archived. Future package
   responsibilities and dependency rules are now documented in
   ``lifecore_state/package_boundaries.rst``.
-- **17.7 - Message semantics.** Archived after validation. Message semantics
+- **17.7 - Message semantics.** Status: Archived. Message semantics
   are now documented in ``lifecore_state/message_semantics.rst``.
-- **17.8 - Anti-goals.** Archived after validation. Unsafe architectural
+- **17.8 - Anti-goals.** Status: Archived. Unsafe architectural
   directions are explicitly rejected in ``lifecore_state/anti_goals.rst``.
-- **17.9 - Main sprint coordination.** Active. Keep this file synchronized with
-  sub-sprint status and act as the Sprint 17 coordination hub.
-- **17.10 - Consistency review.** Check terminology, architecture, lifecycle,
-  and message alignment.
-- **17.11 - Final checklist.** Provide reviewer sign-off checklist.
-- **17.12 - Static verification.** Verify file presence, forbidden files, key
-  phrases, and documentation integrity.
-- **17.13 - PR description draft.** Prepare a ready-to-use PR summary.
+- **17.9 - Main sprint coordination.** Status: Active. Keep this file
+  synchronized with sub-sprint status and act as the Sprint 17 coordination hub.
+- **17.10 - Consistency review.** Status: Pending. Check terminology,
+  architecture, lifecycle, and message alignment.
+- **17.11 - Final checklist.** Status: Pending. Provide reviewer sign-off
+  checklist.
+- **17.12 - Static verification.** Status: Pending. Verify file presence,
+  forbidden files, key phrases, and documentation integrity.
+- **17.13 - PR description draft.** Status: Pending. Prepare a ready-to-use PR
+  summary.
 
 Explicit decisions to capture
 -----------------------------
@@ -153,6 +162,8 @@ Explicit decisions to capture
 - ``lifecore_state_core`` must remain pure Python and independent from ROS 2.
 - ``StateDescription`` can be cached while inactive.
 - ``StateUpdate`` deltas are not applied while inactive.
+- ``StateUpdate`` snapshot-like inactive refresh is narrower and optional, not
+  assumed as a global rule.
 - ``StateCommand`` handling requires active lifecycle state.
 - A command is a requested mutation, not observed truth.
 - Quality describes reliability of a value, not business state.
@@ -171,6 +182,7 @@ Acceptance criteria
 - [x] Sprint 17.7 is archived after validation.
 - [x] Sprint 17.8 is archived after validation.
 - [x] Sprint 17.9 is active and linked from the planning index.
+- [x] Sprint 17.10 through Sprint 17.13 remain listed as pending work.
 - [x] Repository audit document exists and is validated.
 - [x] ``lifecore_state/`` exists as a documentation-only logical group.
 - [x] No ``package.xml`` exists in the ``lifecore_state/`` parent folder.
@@ -223,6 +235,8 @@ Review checklist
 - [x] Anti-patterns are rejected.
 - [x] No implementation is present.
 - [x] ``lifecore_ros2`` independence is maintained.
+- [x] Future ``lifecore_state`` packages are not treated as existing runtime
+  packages.
 - [x] Mandatory review phrases are present where required.
 - [x] Sprint 18 entry criteria are explicit.
 
