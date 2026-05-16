@@ -1,7 +1,7 @@
 ---
 name: "Orchestrator | ROS 2 Documentation Sync"
 description: "Use when a feature or public API changed and you need to synchronize README, Sphinx docs, and Google-style docstrings for this Python ROS 2 repository."
-tools: [vscode, read, agent, edit, search, web, 'mempalace/*', 'github/*', browser, 'gitkraken/*', todo]
+tools: [vscode, execute, read, agent, browser, 'github/*', mcp_docker/fetch, 'mempalace/*', edit, search, web, gitkraken/git_add_or_commit, gitkraken/git_blame, gitkraken/git_branch, gitkraken/git_checkout, gitkraken/git_fetch, gitkraken/git_graph, gitkraken/git_log_or_diff, gitkraken/git_pull, gitkraken/git_push, gitkraken/git_stash, gitkraken/git_status, gitkraken/git_worktree, gitkraken/gitkraken_workspace_list, gitkraken/issues_add_comment, gitkraken/issues_assigned_to_me, gitkraken/issues_get_detail, gitkraken/pull_request_assigned_to_me, gitkraken/pull_request_create_review, gitkraken/pull_request_get_comments, gitkraken/pull_request_get_detail, gitkraken/repository_get_file_content, gitkraken/pull_request_create, gitkraken/issues_create, todo]
 user-invocable: true
 agents:
   [
