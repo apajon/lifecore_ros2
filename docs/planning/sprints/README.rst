@@ -9,11 +9,13 @@ available, but they do not drive current planning directly.
     :hidden:
 
     active/sprint_17_lifecore_state_rfc
-    active/sprint_17_5_lifecycle_separation
+    active/sprint_17_7_message_semantics
     sprint_17_repository_audit
     planned/sprint_18_lifecore_state_msgs_abi
     deferred/sprint_19_factory_registry
     deferred/sprint_20_tooling_codegen
+    archived/sprint_17_6_package_boundaries
+    archived/sprint_17_5_lifecycle_separation
     archived/sprint_17_4_glossary
     archived/sprint_17_3_rfc
     archived/sprint_17_2_documentation_structure
@@ -44,8 +46,8 @@ Active sprints
 - Sprint 17 - lifecore_state Architecture RFC
   Location: :doc:`active/sprint_17_lifecore_state_rfc`
 
-- Sprint 17.5 - Write Lifecycle/State Separation
-  Location: :doc:`active/sprint_17_5_lifecycle_separation`
+- Sprint 17.7 - Write Message Semantics
+  Location: :doc:`active/sprint_17_7_message_semantics`
 
 Next planned sprints
 --------------------
@@ -64,6 +66,12 @@ Deferred / conditional sprints
 
 Archived sprints
 ----------------
+
+- Sprint 17.6 - Write Package Boundaries
+  Location: :doc:`archived/sprint_17_6_package_boundaries`
+
+- Sprint 17.5 - Write Lifecycle/State Separation
+  Location: :doc:`archived/sprint_17_5_lifecycle_separation`
 
 - Sprint 17.4 - Write Accessible Glossary
   Location: :doc:`archived/sprint_17_4_glossary`

@@ -106,8 +106,8 @@ Impacted modules
 Active sub-sprint
 -----------------
 
-- Sprint 17.5 - Write Lifecycle/State Separation
-  Location: :doc:`sprint_17_5_lifecycle_separation`
+- Sprint 17.7 - Write Message Semantics
+  Location: :doc:`sprint_17_7_message_semantics`
 
 Deliverables
 ------------
@@ -121,12 +121,14 @@ Deliverables
 - **17.3 - RFC 001.** Archived. Principal architecture RFC written.
 - **17.4 - Terminology glossary.** Archived after validation. Accessible French
   terminology is now documented in ``lifecore_state/terminology.rst``.
-- **17.5 - Lifecycle/state separation.** Active. Clarify semantic gating and
-  inactive behavior.
-- **17.6 - Package boundaries.** Define future package responsibilities and
-  dependency rules.
-- **17.7 - Message semantics.** Document descriptor, description, sample,
-  update, and command semantics.
+- **17.5 - Lifecycle/state separation.** Archived after validation. Semantic
+  gating and inactive behavior are now documented in
+  ``lifecore_state/lifecycle_state_separation.rst``.
+- **17.6 - Package boundaries.** Archived after validation. Future package
+  responsibilities and dependency rules are now documented in
+  ``lifecore_state/package_boundaries.rst``.
+- **17.7 - Message semantics.** Active. Document descriptor, description,
+  sample, update, and command semantics.
 - **17.8 - Anti-goals.** Reject unsafe architectural directions.
 - **17.9 - Main sprint coordination.** Maintain this file as the coordination
   hub.
@@ -163,7 +165,9 @@ Acceptance criteria
 - [x] Sprint 17.2 is archived after validation.
 - [x] Sprint 17.3 is archived after review.
 - [x] Sprint 17.4 glossary exists and is accessible.
-- [x] Sprint 17.5 is active and linked from the planning index.
+- [x] Sprint 17.5 lifecycle/state separation exists and is reviewable.
+- [x] Sprint 17.6 package boundaries exist and are reviewable.
+- [x] Sprint 17.7 is active and linked from the planning index.
 - [x] Repository audit document exists and is validated.
 - [x] ``lifecore_state/`` exists as a documentation-only logical group.
 - [x] No ``package.xml`` exists in the ``lifecore_state/`` parent folder.
@@ -210,9 +214,9 @@ Review checklist
 - [x] Repository audit exists and is accurate.
 - [x] RFC is complete and reviewable.
 - [x] Glossary is accessible.
-- [ ] Package boundaries are clear.
+- [x] Package boundaries are clear.
 - [ ] Message semantics are consistent.
-- [ ] Lifecycle/state separation is sound.
+- [x] Lifecycle/state separation is sound.
 - [ ] Anti-patterns are rejected.
 - [ ] No implementation is present.
 - [ ] ``lifecore_ros2`` independence is maintained.
