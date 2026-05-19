@@ -184,67 +184,78 @@ StateSample
 with quality and source context. A sample is the semantic unit of observed
 state; it is not by itself a synchronization batch.
 
-Conceptual fields:
+Decided fields (Sprint 18.5):
 
 ``header``
-	Header whose timestamp represents the source timestamp when the value was
-	observed. A future ABI may also name this field ``source_timestamp`` directly
-	if that proves clearer than overloading a transport header.
+	``header.stamp`` is the source timestamp: the time when the value was
+	observed at the source. This is not the publication time of the containing
+	``StateUpdate``. See the timestamp semantics section.
 
-``descriptor_id`` or ``descriptor_uuid``
-	Link to the descriptor being sampled. Whether every sample carries a UUID or
-	uses compact IDs remains open for ABI review.
+``descriptor_id``
+	Compact numeric identifier within the ``StateDescription`` scope. Matches
+	``StateDescriptor.id``. Efficient for high-frequency streaming.
+
+``descriptor_uuid``
+	Stable persistent identifier across launches and bridges. Matches
+	``StateDescriptor.uuid``.
 
 ``key``
-	Optional canonical key when readability or bridge behavior requires it.
+	Canonical path or logical name for readability and bridge behavior. Matches
+	``StateDescriptor.key``.
 
 ``type``
-	Declared active value type for this sample.
+	Declared active value type for this sample. Uses the same ``TYPE_*``
+	constants as ``StateDescriptor.msg``.
 
 ``quality``
-	Reliability state for the value, such as ``VALID``, ``STALE``, or
-	``COMM_ERROR``. Quality describes value reliability, not lifecycle state.
+	Reliability and validity state of the observed value. Quality describes the
+	sample, not lifecycle state. Constants: ``QUALITY_UNKNOWN=0``,
+	``QUALITY_VALID=1``, ``QUALITY_STALE=2``, ``QUALITY_INVALID=3``,
+	``QUALITY_COMM_ERROR=4``, ``QUALITY_OUT_OF_RANGE=5``, ``QUALITY_FORCED=6``,
+	``QUALITY_SIMULATED=7``, ``QUALITY_DISABLED=8``, ``QUALITY_NOT_AVAILABLE=9``.
 
 ``source``
-	Source or owner identity responsible for the observation. This is semantic
-	source context and must not be inferred only from the ROS node relaying the
-	message.
+	Semantic identity of the observation origin. Not the same as the ROS node
+	relaying the message. Constants: ``SOURCE_UNKNOWN=0``,
+	``SOURCE_HARDWARE=1``, ``SOURCE_SOFTWARE=2``, ``SOURCE_SIMULATION=3``,
+	``SOURCE_OPERATOR=4``, ``SOURCE_REPLAY=5``. ``SOURCE_COMMANDED`` is excluded
+	because a sample reports observed truth; ``StateCommand`` expresses intent.
 
 ``bool_value``
-	Active only when ``type`` selects a boolean value.
+	Active only when ``type = TYPE_BOOL``.
 
 ``int_value``
-	Active only when ``type`` selects a signed integer value.
+	Active only when ``type`` selects a signed integer type.
 
 ``uint_value``
-	Active only when ``type`` selects an unsigned integer value.
+	Active only when ``type`` selects an unsigned integer type.
 
 ``float_value``
-	Active only when ``type`` selects a floating-point value.
+	Active only when ``type`` selects a floating-point type.
 
 ``string_value``
-	Active only when ``type`` selects a string value.
+	Active only when ``type = TYPE_STRING``.
 
 The ``type`` field selects exactly one active value field. Consumers must treat
 multiple populated value fields, or a populated field that does not match
 ``type``, as invalid or quarantined input according to the accepted mismatch
 policy.
 
-Non-final example sketch::
-
-		[NON-FINAL SKETCH]
+Example (Sprint 18.5)::
 
 		StateSample
 			header.stamp: 2026-05-16T10:30:00.125Z  # source observation time
 			descriptor_id: 17
-			type: FLOAT
-			quality: VALID
-			source: robot_1/battery_controller
-			bool_value: inactive
-			int_value: inactive
-			uint_value: inactive
+			descriptor_uuid: 5a8e2c8e-3f25-5e48-8f31-8a8a4f1df9b2
+			key: "battery/pack/main/voltage"
+			type: TYPE_FLOAT64
+			quality: QUALITY_VALID
+			source: SOURCE_HARDWARE
+			bool_value: false
+			int_value: 0
+			uint_value: 0
 			float_value: 24.7
-			string_value: inactive
+			string_value: ""
 
 StateUpdate
 -----------
