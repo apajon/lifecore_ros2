@@ -8,6 +8,7 @@ find_package(unique_identifier_msgs REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   msg/StateDescriptor.msg
+  msg/StateDescription.msg
   DEPENDENCIES std_msgs unique_identifier_msgs
 )
 
