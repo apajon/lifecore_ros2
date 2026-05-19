@@ -46,7 +46,7 @@ Scope Checklist
 - [ ] No code generation tool was added.
 - [ ] No plugin framework was added.
 - [ ] No factory system was added.
-- [ ] ``src/``, ``tests/``, and ``examples/`` remain unchanged by Sprint 17.11.
+- [ ] ``src/``, ``tests/``, and ``examples/`` remain unchanged by Sprint 17.
 
 Naming Checklist
 ----------------
@@ -58,6 +58,8 @@ Naming Checklist
 - [ ] ``StateSample`` is used consistently.
 - [ ] ``StateUpdate`` is used consistently.
 - [ ] ``StateCommand`` is used consistently.
+- [ ] ``StateDescription`` is defined as a versioned collection of
+  ``StateDescriptor`` entries for a schema/scope.
 - [ ] ``manager`` terminology is avoided except in anti-pattern contexts.
 - [ ] ``SmartValue`` is not used as accepted terminology.
 - [ ] ``CommManager`` is not used.
@@ -87,6 +89,8 @@ Message Semantics Checklist
 - [ ] Source and publish timestamps are explained separately.
 - [ ] QoS recommendations are provided as direction, not final ABI.
 - [ ] Pseudo-sketches are marked as non-final.
+- [ ] ``StateCommand`` v0 semantics are single-target and batched commands are
+  deferred until a concrete need is established.
 
 Lifecycle/State Checklist
 -------------------------
@@ -146,20 +150,12 @@ Sprint 18 Readiness Checklist
 Mandatory Review Phrase Checklist
 ---------------------------------
 
-- [ ] ``docs/planning/sprints/active/sprint_17_lifecore_state_rfc.rst`` ends
-  with the mandatory phrase.
+- [ ] Sprint review/process documents may retain the mandatory phrase where
+  useful.
 - [ ] ``docs/planning/sprints/sprint_17_repository_audit.rst`` ends with the
   mandatory phrase.
-- [ ] ``lifecore_state/README.rst`` ends with the mandatory phrase.
-- [ ] ``lifecore_state/rfcs/README.rst`` ends with the mandatory phrase.
-- [ ] ``lifecore_state/rfcs/rfc_001_lifecore_state_architecture.rst`` ends with
-  the mandatory phrase.
-- [ ] ``lifecore_state/terminology.rst`` ends with the mandatory phrase.
-- [ ] ``lifecore_state/message_semantics.rst`` ends with the mandatory phrase.
-- [ ] ``lifecore_state/lifecycle_state_separation.rst`` ends with the mandatory
-  phrase.
-- [ ] ``lifecore_state/anti_goals.rst`` ends with the mandatory phrase.
-- [ ] ``lifecore_state/package_boundaries.rst`` ends with the mandatory phrase.
+- [ ] Durable architecture documents under ``lifecore_state/`` do not contain
+  the process-specific ChatGPT/Codex review phrase.
 - [ ] ``lifecore_state/rfcs/sprint_17_consistency_review.rst`` ends with the
   mandatory phrase.
 - [ ] ``lifecore_state/rfcs/sprint_17_final_review_checklist.rst`` ends with the
@@ -199,7 +195,7 @@ Acceptance Criteria
 - [ ] Checklist is complete.
 - [ ] All required sections are present.
 - [ ] No blocker is found during final review.
-- [ ] All mandatory phrases are present.
+- [ ] Review phrase scope is correct.
 - [ ] Reviewer can sign off from this file.
 
 Content Quality Checklist

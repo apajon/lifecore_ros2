@@ -47,6 +47,8 @@ This matters because the future state model must remain separate from the existi
 - `lifecore_state` is the chosen architecture name; `lifecore_io` is rejected as too narrow.
 - `lifecore_state/` is a logical documentation folder during Sprint 17, not a ROS 2 package or Python runtime package.
 - The parent `lifecore_state/` folder must not contain `package.xml`.
+- `StateDescription` is a versioned collection of `StateDescriptor` entries for a schema/scope.
+- Initial `StateCommand` semantics are single-target; batched commands are deferred until a concrete need is established.
 - Future package boundaries are `lifecore_state_msgs`, `lifecore_state_core`, and `lifecore_state_ros`.
 - Lifecycle readiness and state validity remain cleanly separated.
 - Anti-patterns such as hidden orchestration, giant managers, EventBus design, ECS runtime design, magical observable values, codegen-first design, and hidden synchronization are explicitly rejected.
@@ -121,7 +123,7 @@ Rejected patterns:
 - [ ] Package boundaries are clear
 - [ ] Message semantics are complete
 - [ ] Anti-goals protect the architecture
-- [ ] All documents end with mandatory review phrase
+- [ ] Durable architecture documents omit process-only ChatGPT/Codex review phrases
 - [ ] No architectural contradictions
 
 ## File Listing
@@ -144,8 +146,9 @@ New files:
 
 Modified files:
 
-- `docs/planning/sprints/active/sprint_17_lifecore_state_rfc.rst`
-- `docs/planning/sprints/active/sprint_17_13_pr_description.rst`
+- `docs/planning/sprints/archived/sprint_17_lifecore_state_rfc.rst`
+- `docs/planning/sprints/archived/sprint_17_13_pr_description.rst`
+- Final closure polish updates to Sprint 17 review/process documents
 
 ## Open Questions
 
@@ -168,9 +171,9 @@ Decision timeline: resolve the message ABI questions before or during Sprint 18 
 
 ## Related Issues/PRs
 
-- Sprint 17 planning: `docs/planning/sprints/active/sprint_17_lifecore_state_rfc.rst`
-- Sprint 17.13 planning card: `docs/planning/sprints/active/sprint_17_13_pr_description.rst`
-- Sprint 18 candidate planning: `docs/planning/sprints/planned/sprint_18_lifecore_state_msgs_abi.rst`
+- Sprint 17 planning: `docs/planning/sprints/archived/sprint_17_lifecore_state_rfc.rst`
+- Sprint 17.13 planning card: `docs/planning/sprints/archived/sprint_17_13_pr_description.rst`
+- Sprint 18 candidate planning: `docs/planning/sprints/active/sprint_18_lifecore_state_msgs_abi.rst`
 - Original Sprint 17 issue: not linked in the current planning documents
 - Related architecture discussions: captured in the Sprint 17 RFC and review documents listed above
 
