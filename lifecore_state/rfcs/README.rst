@@ -33,4 +33,5 @@ Current RFCs
    sprint_17_final_review_checklist
    sprint_17_static_check
 
-ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.
+The Sprint 17 PR description draft is also available as
+``lifecore_state/rfcs/sprint_17_pr_description.md``.

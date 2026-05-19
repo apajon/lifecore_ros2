@@ -231,7 +231,7 @@ tooling or to a single release train for every concern.
 Decision summary
 ----------------
 
-Sprint 17.6 records the following package boundary decisions:
+Sprint 17 records the following package boundary decisions:
 
 - ``lifecore_state/`` remains a documentation-only logical folder during Sprint
   17;
@@ -249,5 +249,3 @@ Review note
 
 This document defines package responsibilities and dependency rules only. It
 does not create packages, public APIs, ROS interfaces, or runtime code.
-
-ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.

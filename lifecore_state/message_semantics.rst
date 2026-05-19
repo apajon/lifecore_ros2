@@ -17,7 +17,7 @@ current ``lifecore_ros2`` public API.
 Lifecycle behavior contract
 ---------------------------
 
-Sprint 17.7 is documentation-only. It does not change lifecycle behavior for
+Sprint 17 message semantics documentation is documentation-only. It does not change lifecycle behavior for
 any existing node, component, publisher, subscriber, timer, service, or
 watchdog.
 
@@ -601,5 +601,3 @@ Open questions
 	projection documents?
 - Does Sprint 18 need explicit terminology for ``StateStore`` or
 	``StateMirror``, or is the registry distinction sufficient?
-
-ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.

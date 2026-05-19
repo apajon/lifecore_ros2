@@ -19,7 +19,7 @@ This document is architecture-only. It does not create enforcement code,
 runtime checks, package hooks, public APIs, ROS interfaces, or Python runtime
 modules.
 
-Sprint 17.8 does not change lifecycle behavior for any existing
+Sprint 17 does not change lifecycle behavior for any existing
 ``lifecore_ros2`` node or component:
 
 - **configure:** no runtime resource creation changes;
@@ -295,7 +295,7 @@ the state layer.
 Decision summary
 ----------------
 
-Sprint 17.8 rejects the following architectural directions:
+Sprint 17 rejects the following architectural directions:
 
 - a robotics operating system;
 - a global orchestration runtime;
@@ -323,5 +323,3 @@ Review note
 Reviewers may cite this document to reject architectural overreach, require
 simpler alternatives, enforce separation of concerns, and prevent hidden
 complexity before implementation starts.
-
-ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.

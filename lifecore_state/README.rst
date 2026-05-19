@@ -48,6 +48,7 @@ Folder layout
         sprint_17_consistency_review.rst
         sprint_17_final_review_checklist.rst
         sprint_17_static_check.rst
+        sprint_17_pr_description.md
 
 Sprint 17 rule
 --------------
@@ -55,5 +56,3 @@ Sprint 17 rule
 If future work requires packages, runtime modules, ROS 2 interfaces, or build
 metadata, that work belongs in a later sprint after the architecture review is
 accepted.
-
-ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.

@@ -286,5 +286,3 @@ Review note
 
 Ce glossaire décrit le vocabulaire de Sprint 17 sans créer de runtime, de
 package ROS 2, de package Python ni de contrat ABI effectif.
-
-ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.

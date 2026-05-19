@@ -281,7 +281,7 @@ gating only and must not be copied as final implementation code.
 Design decision summary
 -----------------------
 
-Sprint 17.5 documents the following boundary:
+Sprint 17 documents the following boundary:
 
 - ``lifecore_ros2`` owns lifecycle transitions and local readiness;
 - future ``lifecore_state`` work owns state truth and synchronization semantics;
@@ -299,5 +299,3 @@ Review note
 
 This document clarifies architectural direction only. It does not create a
 runtime API, a message ABI, or a new lifecycle policy surface in current code.
-
-ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.
