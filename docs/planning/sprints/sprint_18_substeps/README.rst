@@ -10,35 +10,34 @@ Sprint 18 is organized into 13 focused sub-sprints. The lock for every step is:
 ``lifecore_state_ros``, registries, publishers, subscribers, lifecycle
 integration, CLI tools, code generation, or runtime behavior.
 
-**Current sub-sprint.** :doc:`sprint_18_1_pre_audit` is active.
+**Current sub-sprint.** :doc:`../active/sprint_18_1_preflight_check` is active.
 
 .. toctree::
-    :maxdepth: 1
-    :hidden:
+   :maxdepth: 1
+   :hidden:
 
-    sprint_18_1_pre_audit
-    sprint_18_2_package_scaffold
-    sprint_18_3_state_descriptor
-    sprint_18_4_state_description
-    sprint_18_5_state_sample
-    sprint_18_6_state_update
-    sprint_18_7_state_command
-    sprint_18_8_constants_decision
-    sprint_18_9_build_validation
-    sprint_18_10_docs_consistency
-    sprint_18_11_main_sprint_file
-    sprint_18_12_pr_description
-    sprint_18_13_final_review
+   ../active/sprint_18_1_preflight_check
+   sprint_18_2_package_scaffold
+   sprint_18_3_state_descriptor
+   sprint_18_4_state_description
+   sprint_18_5_state_sample
+   sprint_18_6_state_update
+   sprint_18_7_state_command
+   sprint_18_8_constants_decision
+   sprint_18_9_build_validation
+   sprint_18_10_docs_consistency
+   sprint_18_11_main_sprint_file
+   sprint_18_12_pr_description
+   sprint_18_13_final_review
 
 Execution Order
 ---------------
 
-1. :doc:`sprint_18_1_pre_audit` — active.
+1. :doc:`../active/sprint_18_1_preflight_check` — active.
 
-   Audit repository conventions before creating files. Confirm existing ROS 2
-   package layout, package metadata style, interface package precedent, lint and
-   test conventions, current ``lifecore_state/`` placement, absence of a parent
-   ``package.xml``, and Sprint 17 references to ``lifecore_state_msgs``.
+   Run the Sprint 18 pre-flight check only. Confirm that the repository still
+   matches the Sprint 17 closure assumptions before creating
+   ``lifecore_state_msgs``.
 
 2. :doc:`sprint_18_2_package_scaffold`
 

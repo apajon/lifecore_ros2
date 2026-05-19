@@ -55,8 +55,8 @@ Active sprints
 - Sprint 18 Sub-sprints Overview
   Location: :doc:`sprint_18_substeps/README`
 
-- Sprint 18.1 - Pre-implementation Audit
-  Location: :doc:`sprint_18_substeps/sprint_18_1_pre_audit`
+- Sprint 18.1 - Pre-flight Check
+  Location: :doc:`active/sprint_18_1_preflight_check`
 
 Next planned sprints
 --------------------

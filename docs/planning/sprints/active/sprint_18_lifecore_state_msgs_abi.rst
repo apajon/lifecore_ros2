@@ -172,11 +172,11 @@ Sub-sprints
 Sprint 18 is organized into focused execution cards under
 :doc:`../sprint_18_substeps/README`.
 
-**Current sub-sprint.** Sprint 18.1 - Pre-implementation Audit is active.
+**Current sub-sprint.** Sprint 18.1 - Pre-flight Check is active.
 
 Recommended execution order:
 
-1. Sprint 18.1 - Pre-implementation Audit — active
+1. Sprint 18.1 - Pre-flight Check — active
 2. Sprint 18.2 - Package Scaffold
 3. Sprint 18.3 - Define StateDescriptor.msg
 4. Sprint 18.4 - Define StateDescription.msg
@@ -200,7 +200,7 @@ Deliverables
 - ``lifecore_state/lifecore_state_msgs/msg/StateSample.msg``
 - ``lifecore_state/lifecore_state_msgs/msg/StateUpdate.msg``
 - ``lifecore_state/lifecore_state_msgs/msg/StateCommand.msg``
-- ``lifecore_state/rfcs/sprint_18_pre_audit.rst``
+- ``lifecore_state/rfcs/sprint_18_preflight_check.rst``
 - ``lifecore_state/rfcs/sprint_18_package_scaffold.rst``
 - ``lifecore_state/rfcs/sprint_18_message_notes.rst``
 - ``lifecore_state/rfcs/sprint_18_constants_decision.rst``
