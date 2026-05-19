@@ -10,14 +10,14 @@ Sprint 18 is organized into 13 focused sub-sprints. The lock for every step is:
 ``lifecore_state_ros``, registries, publishers, subscribers, lifecycle
 integration, CLI tools, code generation, or runtime behavior.
 
-**Current sub-sprint.** :doc:`../active/sprint_18_1_preflight_check` is active.
+**Current sub-sprint.** :doc:`../active/sprint_18_2_package_scaffold` is active.
 
 .. toctree::
    :maxdepth: 1
    :hidden:
 
-   ../active/sprint_18_1_preflight_check
-   sprint_18_2_package_scaffold
+   ../archived/sprint_18_1_preflight_check
+   ../active/sprint_18_2_package_scaffold
    sprint_18_3_state_descriptor
    sprint_18_4_state_description
    sprint_18_5_state_sample
@@ -33,13 +33,13 @@ integration, CLI tools, code generation, or runtime behavior.
 Execution Order
 ---------------
 
-1. :doc:`../active/sprint_18_1_preflight_check` — active.
+1. :doc:`../archived/sprint_18_1_preflight_check` — archived.
 
    Run the Sprint 18 pre-flight check only. Confirm that the repository still
    matches the Sprint 17 closure assumptions before creating
    ``lifecore_state_msgs``.
 
-2. :doc:`sprint_18_2_package_scaffold`
+2. :doc:`../active/sprint_18_2_package_scaffold` — active.
 
    Create only ``lifecore_state/lifecore_state_msgs/`` with ``package.xml``,
    ``CMakeLists.txt``, and ``msg/``. Keep the parent ``lifecore_state/`` as a

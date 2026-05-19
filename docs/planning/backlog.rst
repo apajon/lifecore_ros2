@@ -79,7 +79,7 @@ Current and upcoming sprints
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 * Sprint 17 — :doc:`sprints/active/sprint_17_lifecore_state_rfc` (Track C + F, P2; active)
-* Sprint 18 — :doc:`sprints/planned/sprint_18_lifecore_state_msgs_abi` (Track C, P2 conditional)
+* Sprint 18 — :doc:`sprints/active/sprint_18_lifecore_state_msgs_abi` (Track C, P2; active)
 * Sprint 19 — :doc:`sprints/deferred/sprint_19_factory_registry` (Track A extension, P4 conditional; historical Sprint 14)
 * Sprint 20+ — :doc:`sprints/deferred/sprint_20_tooling_codegen` (Track E, P5 conditional; historical Sprint 15)
 

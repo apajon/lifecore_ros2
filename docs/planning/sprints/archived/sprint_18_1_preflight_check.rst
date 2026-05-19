@@ -1,13 +1,13 @@
 Sprint 18.1 - Pre-flight Check
 ===============================
 
-**Status.** Active.
+**Status.** Archived.
 
 **Track.** State Architecture / ROS ABI.
 
 **Type.** Pre-flight check.
 
-**Parent sprint.** :doc:`sprint_18_lifecore_state_msgs_abi`.
+**Parent sprint.** :doc:`../active/sprint_18_lifecore_state_msgs_abi`.
 
 Reference documents
 -------------------

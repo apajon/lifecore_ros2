@@ -1,13 +1,13 @@
 Sprint 18.2 - Package Scaffold
 ==============================
 
-**Status.** Planned.
+**Status.** Active.
 
 **Track.** State Architecture / ROS ABI.
 
 **Type.** ROS 2 interface package scaffolding.
 
-**Parent sprint.** :doc:`../active/sprint_18_lifecore_state_msgs_abi`.
+**Parent sprint.** :doc:`sprint_18_lifecore_state_msgs_abi`.
 
 Reference documents
 -------------------
