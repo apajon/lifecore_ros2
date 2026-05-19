@@ -55,8 +55,8 @@ Active sprints
 - Sprint 18 Sub-sprints Overview
   Location: :doc:`sprint_18_substeps/README`
 
-- Sprint 18.2 - Package Scaffold
-  Location: :doc:`active/sprint_18_2_package_scaffold`
+- Sprint 18.3 - Define StateDescriptor.msg
+  Location: :doc:`active/sprint_18_3_state_descriptor`
 
 Next planned sprints
 --------------------
@@ -76,6 +76,9 @@ Deferred / conditional sprints
 
 Archived sprints
 ----------------
+
+- Sprint 18.2 - Package Scaffold
+  Location: :doc:`archived/sprint_18_2_package_scaffold`
 
 - Sprint 18.1 - Pre-flight Check
   Location: :doc:`archived/sprint_18_1_preflight_check`

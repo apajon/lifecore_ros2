@@ -10,15 +10,15 @@ Sprint 18 is organized into 13 focused sub-sprints. The lock for every step is:
 ``lifecore_state_ros``, registries, publishers, subscribers, lifecycle
 integration, CLI tools, code generation, or runtime behavior.
 
-**Current sub-sprint.** :doc:`../active/sprint_18_2_package_scaffold` is active.
+**Current sub-sprint.** :doc:`../active/sprint_18_3_state_descriptor` is active.
 
 .. toctree::
    :maxdepth: 1
    :hidden:
 
    ../archived/sprint_18_1_preflight_check
-   ../active/sprint_18_2_package_scaffold
-   sprint_18_3_state_descriptor
+   ../archived/sprint_18_2_package_scaffold
+   ../active/sprint_18_3_state_descriptor
    sprint_18_4_state_description
    sprint_18_5_state_sample
    sprint_18_6_state_update
@@ -39,13 +39,13 @@ Execution Order
    matches the Sprint 17 closure assumptions before creating
    ``lifecore_state_msgs``.
 
-2. :doc:`../active/sprint_18_2_package_scaffold` — active.
+2. :doc:`../archived/sprint_18_2_package_scaffold` — archived.
 
    Create only ``lifecore_state/lifecore_state_msgs/`` with ``package.xml``,
    ``CMakeLists.txt``, and ``msg/``. Keep the parent ``lifecore_state/`` as a
    logical folder with no package metadata.
 
-3. :doc:`sprint_18_3_state_descriptor`
+3. :doc:`../active/sprint_18_3_state_descriptor` — active.
 
    Define ``StateDescriptor.msg`` as one state field contract. It describes
    identity, type, direction, metadata, constraints, and flags. It carries no
@@ -97,6 +97,10 @@ Execution Order
     non-goals, validation, and review focus.
 
 13. :doc:`sprint_18_13_final_review`
+
+    Perform the final Sprint 18 review across structure, build, message
+    semantics, field-level ABI, scope control, documentation, risks, and Sprint
+    19 readiness.
 
     Perform the final Sprint 18 review across structure, build, message
     semantics, field-level ABI, scope control, documentation, risks, and Sprint
