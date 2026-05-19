@@ -172,14 +172,14 @@ Sub-sprints
 Sprint 18 is organized into focused execution cards under
 :doc:`../sprint_18_substeps/README`.
 
-**Current sub-sprint.** Sprint 18.3 - Define StateDescriptor.msg is active.
+**Current sub-sprint.** Sprint 18.4 - Define StateDescription.msg is active.
 
 Recommended execution order:
 
 1. Sprint 18.1 - Pre-flight Check — archived
 2. Sprint 18.2 - Package Scaffold — archived
-3. Sprint 18.3 - Define StateDescriptor.msg — active
-4. Sprint 18.4 - Define StateDescription.msg
+3. Sprint 18.3 - Define StateDescriptor.msg — archived
+4. Sprint 18.4 - Define StateDescription.msg — active
 5. Sprint 18.5 - Define StateSample.msg
 6. Sprint 18.6 - Define StateUpdate.msg
 7. Sprint 18.7 - Define StateCommand.msg

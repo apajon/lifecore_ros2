@@ -1,7 +1,7 @@
 Sprint 18.3 - Define StateDescriptor.msg
 ========================================
 
-**Status.** Planned.
+**Status.** Completed.
 
 **Track.** State Architecture / ROS ABI.
 
