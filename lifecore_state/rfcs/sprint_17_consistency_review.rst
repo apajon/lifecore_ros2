@@ -224,7 +224,29 @@ Problems found and corrections applied
 Remaining inconsistencies
 -------------------------
 
-No unresolved documentary inconsistencies remain in the reviewed scope.
+No unresolved documentary inconsistencies remain in the reviewed scope after the
+Sprint 17.14 finition pass.
+
+Sprint 17.14 corrections applied after this review:
+
+- ``StateDescription`` definition corrected in RFC 001 from "metadata for a
+  descriptor" to "versioned collection of ``StateDescriptor`` entries". The sketch
+  in the "Descriptor vs description" section was updated accordingly.
+- Process-specific ChatGPT/Codex review phrases removed from all durable
+  architecture documents: ``README.rst``, ``rfcs/README.rst``,
+  ``rfc_001_lifecore_state_architecture.rst``, ``terminology.rst``,
+  ``message_semantics.rst``, ``lifecycle_state_separation.rst``,
+  ``package_boundaries.rst``, and ``anti_goals.rst``. The phrase is retained only
+  in sprint review documents.
+- Sprint 17.x substep labels replaced with ``Sprint 17`` in all durable
+  architecture documents (``Sprint 17.3``, ``Sprint 17.5``, ``Sprint 17.6``,
+  ``Sprint 17.7``, ``Sprint 17.8``).
+- ``StateCommand`` single-target ABI decision recorded in
+  ``message_semantics.rst`` open questions and ``sprint_17_pr_description.md``.
+- ``StateOwner`` marked as deferred candidate vocabulary in RFC 001.
+- ``sprint_17_pr_description.md`` added to folder layout in ``README.rst`` and
+  mentioned in ``rfcs/README.rst``.
+- Three finition checks added to ``sprint_17_final_review_checklist.rst``.
 
 The remaining open questions are design questions for review and Sprint 18
 entry planning, not contradictions between Sprint 17 documents.

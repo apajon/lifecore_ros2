@@ -126,6 +126,11 @@ Documentation Quality Checklist
 - [ ] RFC 001 is reviewable by architects.
 - [ ] Open questions are listed explicitly.
 - [ ] Future directions are clarified without becoming commitments.
+- [ ] RFC 001 defines ``StateDescription`` consistently as a versioned collection
+  of ``StateDescriptor`` entries, not as metadata for an individual descriptor.
+- [ ] Durable architecture documents do not contain process-specific ChatGPT or
+  Codex review phrases.
+- [ ] Durable architecture documents do not retain Sprint 17.x substep labels.
 
 Sprint 18 Readiness Checklist
 -----------------------------
