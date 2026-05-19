@@ -1,6 +1,8 @@
 Sprint 18 - lifecore_state_msgs ABI prototype
 =============================================
 
+**Status.** Active.
+
 **Track.** State Architecture / ROS ABI.
 
 **Branch.** ``sprint/18-lifecore-state-msgs-abi``.

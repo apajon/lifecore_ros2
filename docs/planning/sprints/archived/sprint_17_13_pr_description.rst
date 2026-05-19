@@ -1,7 +1,7 @@
 Sprint 17.13 — Prepare PR Description Draft
 ============================================
 
-**Status.** Active.
+**Status.** Completed.
 
 **Track.** Architecture / Research.
 
@@ -229,24 +229,24 @@ The PR description should contain:
 Acceptance Criteria
 -------------------
 
-- [ ] PR description is clear and complete
-- [ ] All deliverables listed
-- [ ] Key architectural decisions highlighted
-- [ ] Review focus areas identified
-- [ ] Acceptance checklist present
-- [ ] No ambiguity about scope or intent
-- [ ] Mandatory review phrase included
+- [x] PR description is clear and complete
+- [x] All deliverables listed
+- [x] Key architectural decisions highlighted
+- [x] Review focus areas identified
+- [x] Acceptance checklist present
+- [x] No ambiguity about scope or intent
+- [x] Mandatory review phrase included
 
 Content Quality Checklist
 -------------------------
 
-- [ ] Title is descriptive
-- [ ] Summary is concise but complete
-- [ ] Sections are well-organized
-- [ ] Critical decisions highlighted
-- [ ] Reviewers know where to focus
-- [ ] No unnecessary detail
-- [ ] Professional tone
+- [x] Title is descriptive
+- [x] Summary is concise but complete
+- [x] Sections are well-organized
+- [x] Critical decisions highlighted
+- [x] Reviewers know where to focus
+- [x] No unnecessary detail
+- [x] Professional tone
 
 Success Criteria
 ----------------
@@ -260,4 +260,5 @@ A reviewer reading this PR description understands:
 - How to accept or request changes
 
 Mandatory phrase:
-"ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17."
+
+ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.

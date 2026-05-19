@@ -1,7 +1,7 @@
 Sprint 17 - lifecore_state Architecture and RFC
 ===============================================
 
-**Status.** Active.
+**Status.** Completed.
 
 **Track.** Architecture / RFC / no implementation.
 
@@ -113,7 +113,7 @@ Active sub-sprint
 -----------------
 
 - Sprint 17.13 - PR Description Draft
-  Status: Active. Location: :doc:`sprint_17_13_pr_description`
+  Status: Completed. Location: :doc:`sprint_17_13_pr_description`
 
 Deliverables
 ------------
@@ -145,7 +145,7 @@ Deliverables
   sign-off checklist.
 - **17.12 - Static verification.** Status: Archived. Verified file presence,
   forbidden files, key phrases, and documentation integrity.
-- **17.13 - PR description draft.** Status: Active. Prepare a ready-to-use PR
+- **17.13 - PR description draft.** Status: Completed. Prepared a ready-to-use PR
   summary.
 
 Explicit decisions to capture
@@ -184,7 +184,7 @@ Acceptance criteria
 - [x] Sprint 17.10 is archived after validation.
 - [x] Sprint 17.11 is archived after validation.
 - [x] Sprint 17.12 is archived and linked from the planning index.
-- [x] Sprint 17.13 is active and linked from the planning index.
+- [x] Sprint 17.13 is completed and linked from the planning index.
 - [x] Repository audit document exists and is validated.
 - [x] ``lifecore_state/`` exists as a documentation-only logical group.
 - [x] No ``package.xml`` exists in the ``lifecore_state/`` parent folder.
@@ -196,7 +196,7 @@ Acceptance criteria
 - [x] ``StateUpdate`` inactive delta rejection is documented.
 - [x] ``StateCommand`` active-only handling is documented.
 - [x] Sprint 18 entry criteria are documented.
-- [ ] All sub-sprint deliverables exist.
+- [x] All sub-sprint deliverables exist.
 - [x] Mandatory review phrase appears in required review deliverables.
 
 Validation plan
