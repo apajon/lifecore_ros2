@@ -88,11 +88,11 @@ Non-goals
 Impacted modules
 ----------------
 
-``docs/planning/sprints/active/``
-  Holds this active Sprint 17 coordinator.
+``docs/planning/sprints/archived/sprint_17_lifecore_state_rfc.rst``
+  Holds this completed Sprint 17 coordinator.
 
 ``docs/planning/sprints/archived/``
-  Holds validated Sprint 17.1 through Sprint 17.9 planning cards after review.
+  Holds validated Sprint 17 planning cards after review.
 
 ``docs/planning/sprints/sprint_17_substeps/``
   Keeps the historical execution overview for Sprint 17 sub-sprints.
@@ -109,11 +109,11 @@ Impacted modules
 change code, runtime behavior, tests, or examples unless a later explicit
 planning decision changes scope.
 
-Active sub-sprint
------------------
+Closure status
+--------------
 
-- Sprint 17.13 - PR Description Draft
-  Status: Completed. Location: :doc:`sprint_17_13_pr_description`
+Sprint 17.13 is complete. Sprint 17 is closed as documentation-only
+architecture work after final polish corrections.
 
 Deliverables
 ------------
@@ -147,6 +147,9 @@ Deliverables
   forbidden files, key phrases, and documentation integrity.
 - **17.13 - PR description draft.** Status: Completed. Prepared a ready-to-use PR
   summary.
+- **Final closure polish.** Status: Completed. Removed process-only review
+  phrases from durable architecture docs, normalized ``StateDescription``, and
+  recorded the single-target ``StateCommand`` v0 decision.
 
 Explicit decisions to capture
 -----------------------------
@@ -164,10 +167,14 @@ Explicit decisions to capture
 - ``StateUpdate`` snapshot-like inactive refresh is narrower and optional, not
   assumed as a global rule.
 - ``StateCommand`` handling requires active lifecycle state.
+- Initial ``StateCommand`` semantics are single-target; batched commands are
+  deferred until a concrete need is established.
 - A command is a requested mutation, not observed truth.
 - Quality describes reliability of a value, not business state.
 - Snapshot and delta semantics must remain distinct.
 - Descriptor and description semantics must remain distinct.
+- ``StateDescription`` is a versioned collection of ``StateDescriptor`` entries
+  for a schema/scope.
 
 Acceptance criteria
 -------------------
@@ -185,6 +192,7 @@ Acceptance criteria
 - [x] Sprint 17.11 is archived after validation.
 - [x] Sprint 17.12 is archived and linked from the planning index.
 - [x] Sprint 17.13 is completed and linked from the planning index.
+- [x] Final closure polish is complete.
 - [x] Repository audit document exists and is validated.
 - [x] ``lifecore_state/`` exists as a documentation-only logical group.
 - [x] No ``package.xml`` exists in the ``lifecore_state/`` parent folder.
@@ -197,7 +205,8 @@ Acceptance criteria
 - [x] ``StateCommand`` active-only handling is documented.
 - [x] Sprint 18 entry criteria are documented.
 - [x] All sub-sprint deliverables exist.
-- [x] Mandatory review phrase appears in required review deliverables.
+- [x] Mandatory review phrase remains only in Sprint review/process documents
+  where useful.
 
 Validation plan
 ---------------
@@ -241,6 +250,10 @@ Review checklist
   packages.
 - [x] Mandatory review phrases are present where required.
 - [x] Sprint 18 entry criteria are explicit.
+- [x] ``StateDescription`` is defined consistently as a versioned collection of
+  ``StateDescriptor`` entries for a schema/scope.
+- [x] ``StateCommand`` v0 semantics are single-target and batch commands are
+  deferred.
 
 Clarifications needed
 ---------------------

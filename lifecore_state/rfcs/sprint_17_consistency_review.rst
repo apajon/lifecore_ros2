@@ -20,7 +20,7 @@ Scope of review
 
 Reviewed documents:
 
-- ``docs/planning/sprints/active/sprint_17_lifecore_state_rfc.rst``;
+- ``docs/planning/sprints/archived/sprint_17_lifecore_state_rfc.rst``;
 - ``lifecore_state/README.rst``;
 - ``lifecore_state/rfcs/README.rst``;
 - ``lifecore_state/rfcs/rfc_001_lifecore_state_architecture.rst``;
@@ -105,8 +105,8 @@ Verified message points:
 - ``StateUpdate`` carries observed truth or synchronization events for observed
   changes, not command intent.
 - ``StateDescriptor`` defines a field or stream contract.
-- ``StateDescription`` is a versioned set of descriptors and metadata, not live
-  observed truth.
+- ``StateDescription`` is a versioned collection of ``StateDescriptor`` entries
+  for a schema/scope, not live observed truth.
 - Snapshot and delta semantics remain distinct: snapshots are complete for a
   declared scope, while deltas require continuity from a known prior state.
 - ``sequence`` and ``description_version`` are explained as separate ordering
@@ -170,23 +170,22 @@ version compatibility, timestamp naming, projection declaration, and whether
 
 There are no orphaned open questions after this correction.
 
-Mandatory phrase consistency
-----------------------------
+Review phrase scope consistency
+-------------------------------
 
-The required phrase is:
+The Sprint review/process phrase is:
 
     ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.
 
-Before this pass, RFC 001 ended with a Sprint-specific variant that said
-``Sprint 17.3``. The main Sprint 17 coordinator also ended with the phrase in
-quotation marks, and the Sprint 17.10 planning card did not end with the phrase.
+Final closure review keeps this phrase only in Sprint review/process documents
+where useful. Durable architecture documents must not contain it.
 
 Corrections applied:
 
-- RFC 001 now ends with the exact mandatory Sprint 17 phrase.
-- The main Sprint 17 coordinator now ends with the exact phrase without quotes.
-- The Sprint 17.10 planning card now ends with the exact phrase.
-- The new consistency report ends with the exact phrase.
+- Durable architecture documents no longer contain the process-specific
+  ChatGPT/Codex review phrase.
+- Sprint review/process documents may retain the phrase for historical review
+  traceability.
 
 Problems found and corrections applied
 --------------------------------------
@@ -198,19 +197,15 @@ Problems found and corrections applied
      - Documents affected
      - Correction
      - Impact
-   * - Mandatory phrase variant used ``Sprint 17.3``.
+   * - Process-specific review phrase appeared in durable architecture docs.
      - ``lifecore_state/rfcs/rfc_001_lifecore_state_architecture.rst``
-     - Replaced with the exact Sprint 17 mandatory phrase.
-     - Removes a review-gate inconsistency.
-   * - Mandatory phrase formatting included trailing quotation marks.
-     - ``docs/planning/sprints/active/sprint_17_lifecore_state_rfc.rst``
-     - Rewrote the ending so the document ends with the exact phrase.
-     - Makes automated or manual phrase checks simpler.
-   * - Sprint 17.10 planning card did not end with the mandatory phrase.
-     - ``docs/planning/sprints/active/sprint_17_10_consistency.rst``
-     - Added implementation notes and a review requirement ending with the exact
-       phrase.
-     - Keeps the execution card consistent with the reviewed deliverables.
+     - Removed the phrase from durable architecture docs and retained it only in
+       Sprint review/process docs where useful.
+     - Keeps durable docs independent from review-process instructions.
+   * - Archived planning paths were referenced as active paths.
+     - ``docs/planning/sprints/archived/sprint_17_lifecore_state_rfc.rst``
+     - Updated references to the archived Sprint 17 coordinator.
+     - Matches current repository layout.
    * - Open questions overlapped but did not match exactly.
      - RFC 001 and ``lifecore_state/message_semantics.rst``
      - Replaced both lists with the same shared open-question set.
@@ -225,13 +220,14 @@ Remaining inconsistencies
 -------------------------
 
 No unresolved documentary inconsistencies remain in the reviewed scope after the
-Sprint 17.14 finition pass.
+Sprint 17 closure polish pass.
 
-Sprint 17.14 corrections applied after this review:
+Sprint 17 closure corrections applied after this review:
 
-- ``StateDescription`` definition corrected in RFC 001 from "metadata for a
-  descriptor" to "versioned collection of ``StateDescriptor`` entries". The sketch
-  in the "Descriptor vs description" section was updated accordingly.
+- ``StateDescription`` definition corrected in RFC 001 and durable architecture
+  docs to "a versioned collection of ``StateDescriptor`` entries for a
+  schema/scope". The sketch in the "Descriptor vs description" section was
+  updated accordingly.
 - Process-specific ChatGPT/Codex review phrases removed from all durable
   architecture documents: ``README.rst``, ``rfcs/README.rst``,
   ``rfc_001_lifecore_state_architecture.rst``, ``terminology.rst``,
@@ -242,7 +238,8 @@ Sprint 17.14 corrections applied after this review:
   architecture documents (``Sprint 17.3``, ``Sprint 17.5``, ``Sprint 17.6``,
   ``Sprint 17.7``, ``Sprint 17.8``).
 - ``StateCommand`` single-target ABI decision recorded in
-  ``message_semantics.rst`` open questions and ``sprint_17_pr_description.md``.
+  ``message_semantics.rst`` decided ABI scope and
+  ``sprint_17_pr_description.md``.
 - ``StateOwner`` marked as deferred candidate vocabulary in RFC 001.
 - ``sprint_17_pr_description.md`` added to folder layout in ``README.rst`` and
   mentioned in ``rfcs/README.rst``.

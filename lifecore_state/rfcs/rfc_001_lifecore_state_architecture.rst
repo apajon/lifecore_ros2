@@ -180,10 +180,9 @@ integration responsibilities.
 	descriptor answers what state exists and how it is identified.
 
 ``StateDescription``
-	Versioned description of a registry scope or schema. It contains a coherent
-	collection of ``StateDescriptor`` entries and the schema identity and version
-	needed to interpret future ``StateSample``, ``StateUpdate``, and
-	``StateCommand`` messages.
+	A versioned collection of ``StateDescriptor`` entries for a schema/scope. It
+	contains the schema identity and version needed to interpret future
+	``StateSample``, ``StateUpdate``, and ``StateCommand`` messages.
 
 ``StateOwner``
 	Entity considered authoritative for producing observed state, accepting
@@ -241,7 +240,7 @@ the descriptor, but it must not silently change identity.
 Non-final sketch::
 
 		StateDescriptor = one field contract (identity + type + registry scope)
-		StateDescription = versioned collection of descriptors for a schema/scope
+		StateDescription = versioned collection of StateDescriptor entries for a schema/scope
 without a later ABI review.
 
 State vs command

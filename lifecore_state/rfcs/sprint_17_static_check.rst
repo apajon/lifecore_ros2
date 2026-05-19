@@ -15,8 +15,8 @@ Purpose
 This report records lightweight static verification of Sprint 17 deliverables
 before formal review. The check is intentionally narrow: it verifies that the
 ``lifecore_state`` documentation set exists, remains documentation-only, uses
-the agreed terminology, includes mandatory review phrases, and does not create
-runtime or ROS 2 package artifacts.
+the agreed terminology, keeps process-only review phrases out of durable
+architecture docs, and does not create runtime or ROS 2 package artifacts.
 
 Verification method
 -------------------
@@ -28,7 +28,7 @@ The verification used repository-local shell checks from the repository root:
   files, and ROS interface files;
 - grep checks for contextual or rejected terminology;
 - grep checks for required state terminology;
-- grep checks for the mandatory Sprint 17 review phrase;
+- grep checks for the Sprint 17 review phrase scope;
 - Git status and ``git check-ignore`` checks for accidental ignore rules;
 - a documentation build and standalone RST parsing pass after the report was
   added.
@@ -70,22 +70,13 @@ Semantic checks:
 - [x] No Python runtime code exists in ``lifecore_state/``.
 - [x] No compilable message, service, or action definitions exist.
 
-Mandatory phrase checks:
+Review phrase scope checks:
 
-- [x] ``docs/planning/sprints/active/sprint_17_lifecore_state_rfc.rst`` contains
-  the mandatory phrase.
+- [x] Sprint review/process documents may contain the review phrase.
 - [x] ``docs/planning/sprints/sprint_17_repository_audit.rst`` contains the
   mandatory phrase.
-- [x] ``lifecore_state/README.rst`` contains the mandatory phrase.
-- [x] ``lifecore_state/rfcs/README.rst`` contains the mandatory phrase.
-- [x] ``lifecore_state/rfcs/rfc_001_lifecore_state_architecture.rst`` contains
-  the mandatory phrase.
-- [x] ``lifecore_state/terminology.rst`` contains the mandatory phrase.
-- [x] ``lifecore_state/message_semantics.rst`` contains the mandatory phrase.
-- [x] ``lifecore_state/lifecycle_state_separation.rst`` contains the mandatory
-  phrase.
-- [x] ``lifecore_state/anti_goals.rst`` contains the mandatory phrase.
-- [x] ``lifecore_state/package_boundaries.rst`` contains the mandatory phrase.
+- [x] Durable architecture documents under ``lifecore_state/`` do not contain the
+  process-specific ChatGPT/Codex review phrase.
 
 Verification results
 --------------------
@@ -149,13 +140,14 @@ Future package names
   ``lifecore_state_ros`` are documented as future package boundaries only. They
   are not implemented as real packages.
 
-Mandatory review phrase
+Review phrase scope
   **Result:** PASS.
 
-  **Method:** ``grep -RIn`` for the exact mandatory phrase across the required
-  Sprint 17 deliverables.
+  **Method:** ``grep -RIn`` for the exact review phrase across Sprint 17
+  deliverables and durable architecture documents.
 
-  **Details:** Every required document contains the mandatory phrase.
+  **Details:** The phrase is retained only in Sprint review/process documents
+  where useful and absent from durable architecture documents.
 
 Git ignore and working tree scope
   **Result:** PASS.
@@ -181,11 +173,13 @@ Anomalies found
 
 No critical, high, medium, or low anomalies were found.
 
-Notes:
+Final closure notes:
 
 - ``rg`` was unavailable in the dev container, so grep was used for the checks.
 - Rejected terms are present only where the Sprint 17 review material explains
   or forbids them; this is compliant with the Sprint 17.12 criteria.
+- Final closure polish confirmed ``StateDescription`` wording, single-target
+  ``StateCommand`` v0 semantics, and documentation-only package boundaries.
 
 Recommendations
 ---------------

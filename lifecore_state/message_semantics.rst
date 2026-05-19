@@ -134,9 +134,9 @@ Non-final example sketch::
 StateDescription
 ----------------
 
-``StateDescription`` is a versioned collection of descriptors for a known
-schema or registry scope. It is metadata, not observed truth. Consumers use it
-to understand later samples, updates, projections, and commands.
+``StateDescription`` is a versioned collection of ``StateDescriptor`` entries
+for a schema/scope. It is metadata, not observed truth. Consumers use it to
+understand later samples, updates, projections, and commands.
 
 Conceptual fields:
 
@@ -578,15 +578,16 @@ ABI definitions without a later review.
 			float64 float_value
 			string string_value
 
+Decided ABI scope
+-----------------
+
+Initial ``StateCommand`` semantics are single-target: one ``StateCommand``
+targets one descriptor. Batched commands are deferred until a concrete need is
+established. Sprint 18 must not assume batched command semantics without
+explicitly reopening this decision.
+
 Open questions
 --------------
-
-StateCommand ABI shape decision:
-
-	Initial ``StateCommand`` semantics are single-target: one ``StateCommand``
-	targets one descriptor. Batched commands are deferred until a concrete need is
-	established. Sprint 18 must not assume batched command semantics without
-	explicitly reopening this decision.
 
 - What is the minimal descriptor identity that remains stable across launches,
 	and should samples carry UUIDs directly or normally reference compact

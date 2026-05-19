@@ -120,10 +120,11 @@ Descriptor
   volts mesurée sur un robot.
 
 Description
-  Une description est un ensemble versionné de descriptors cohérents. On peut
-  la lire comme une future ``StateDescription``. Exemple: une
-  ``StateDescription`` peut dire qu'un robot publie ``battery.voltage``,
-  ``battery.current`` et ``battery.temperature`` dans une même structure.
+  Une description est une collection versionnée d'entrées
+  ``StateDescriptor`` pour un schéma ou périmètre. On peut la lire comme une
+  future ``StateDescription``. Exemple: une ``StateDescription`` peut dire
+  qu'un robot publie ``battery.voltage``, ``battery.current`` et
+  ``battery.temperature`` dans une même structure.
 
 State
   ``State`` désigne l'ensemble des valeurs connues à un instant donné pour un

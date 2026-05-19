@@ -34,9 +34,10 @@ Definitions
 	apply a delta.
 
 ``StateDescription``
-	A description is metadata about descriptors and schema-like structure. It is
-	not observed truth. A future component may need the latest description before
-	activation to interpret later updates safely.
+	A ``StateDescription`` is a versioned collection of ``StateDescriptor``
+	entries for a schema/scope. It is metadata, not observed truth. A future
+	component may need the latest description before activation to interpret later
+	updates safely.
 
 ``StateUpdate``
 	An update is a synchronization event for a known scope. It carries observed
