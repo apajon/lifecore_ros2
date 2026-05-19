@@ -1,7 +1,7 @@
-Sprint 18.5 - Define StateSample.msg
+Sprint 18.6 - Define StateUpdate.msg
 ====================================
 
-**Status.** Planned.
+**Status.** In Progress.
 
 **Track.** State Architecture / ROS ABI.
 
@@ -46,14 +46,14 @@ conflict instead of inventing a third interpretation.
 Objective
 ---------
 
-Create ``lifecore_state/lifecore_state_msgs/msg/StateSample.msg``.
+Create ``lifecore_state/lifecore_state_msgs/msg/StateUpdate.msg``.
 
 Purpose
 -------
 
-``StateSample`` represents one observed state value at a source timestamp. It is
-runtime truth as observed by a source, but only for one field. It is not
-metadata, a descriptor, or a command.
+``StateUpdate`` represents a published batch of observed ``StateSample`` values.
+It reports observed truth. It does not express requested mutation, and it is not
+a command or descriptor list.
 
 Required Semantics
 ------------------
@@ -61,11 +61,12 @@ Required Semantics
 Include:
 
 - header;
-- descriptor identity reference;
-- type;
-- quality;
-- source;
-- explicit variant value fields.
+- source UUID;
+- schema UUID;
+- sequence;
+- description version;
+- update mode;
+- array of ``StateSample`` entries.
 
 Recommended fields
 ------------------
@@ -74,46 +75,51 @@ Recommended fields
 
     std_msgs/Header header
 
-    uint32 descriptor_id
-    unique_identifier_msgs/UUID descriptor_uuid
-    string key
+    unique_identifier_msgs/UUID source_uuid
+    unique_identifier_msgs/UUID schema_uuid
 
-    uint8 type
-    uint8 quality
-    uint8 source
+    uint64 sequence
+    uint64 description_version
+    uint8 update_mode
 
-    bool bool_value
-    int64 int_value
-    uint64 uint_value
-    float64 float_value
-    string string_value
+    StateSample[] samples
+
+    uint8 UPDATE_UNKNOWN=0
+    uint8 UPDATE_FULL=1
+    uint8 UPDATE_DELTA=2
 
 Timestamp Semantics
 -------------------
 
-``StateSample.header.stamp`` is the source timestamp: the time when this value
-was true or observed at the source. It is not necessarily the publication time
-of the containing ``StateUpdate``.
+``StateUpdate.header.stamp`` is the publish/batch timestamp. Each
+``StateSample.header.stamp`` is the source observation timestamp. These
+timestamps may differ.
 
-Variant Semantics
------------------
+Sequence and Version Semantics
+------------------------------
 
-``type`` selects exactly one active value field. Never interpret multiple value
-fields at the same time.
+``sequence`` is per ``source_uuid`` stream and helps detect lost, duplicated,
+out-of-order, or discontinuous updates.
 
-Constants
----------
+``description_version`` identifies the ``StateDescription`` version used to
+interpret descriptor ids, types, and semantics. Receivers must not blindly apply
+updates against a different description version.
 
-Include quality and source constants unless Sprint 18.8 creates separate
-enum-like messages. Repeat type constants consistently unless Sprint 18.8
-extracts ``StateType.msg``.
+Update Mode Semantics
+---------------------
+
+``UPDATE_FULL`` contains a complete snapshot for the publisher scope.
+``UPDATE_DELTA`` contains only changed samples and assumes compatible prior
+state.
 
 Constraints
 -----------
 
-- Do not add metadata or descriptor fields such as ``unit`` or ``description``.
-- Do not add command or lifecycle semantics.
-- Do not add callback, registry, publisher, or subscriber behavior.
+- Do not add command fields.
+- Do not add registry behavior.
+- Do not add QoS or lifecycle implementation.
+- Preserve that delta updates should not be applied while inactive, while full
+  snapshots may be cached while inactive only by explicit policy.
 
 Documentation
 -------------

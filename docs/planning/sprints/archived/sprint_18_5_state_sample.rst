@@ -1,7 +1,7 @@
 Sprint 18.5 - Define StateSample.msg
 ====================================
 
-**Status.** In Progress.
+**Status.** Completed.
 
 **Track.** State Architecture / ROS ABI.
 

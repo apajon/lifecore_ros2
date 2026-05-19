@@ -172,7 +172,7 @@ Sub-sprints
 Sprint 18 is organized into focused execution cards under
 :doc:`../sprint_18_substeps/README`.
 
-**Current sub-sprint.** :doc:`archived/sprint_18_4_state_description` Sprint 18.5 - Define StateSample.msg is active.
+**Current sub-sprint.** Sprint 18.6 - Define StateUpdate.msg is active.
 
 Recommended execution order:
 
@@ -180,8 +180,8 @@ Recommended execution order:
 2. Sprint 18.2 - Package Scaffold — archived
 3. Sprint 18.3 - Define StateDescriptor.msg — archived
 4. Sprint 18.4 - Define StateDescription.msg — :doc:`archived/sprint_18_4_state_description`
-5. Sprint 18.5 - Define StateSample.msg — :doc:`active/sprint_18_5_state_sample` (active)
-6. Sprint 18.6 - Define StateUpdate.msg
+5. Sprint 18.5 - Define StateSample.msg — :doc:`archived/sprint_18_5_state_sample`
+6. Sprint 18.6 - Define StateUpdate.msg — :doc:`../sprint_18_substeps/sprint_18_6_state_update` (active)
 7. Sprint 18.7 - Define StateCommand.msg
 8. Sprint 18.8 - Constants Decision
 9. Sprint 18.9 - Build Validation
@@ -204,7 +204,7 @@ Deliverables
 - ``lifecore_state/rfcs/sprint_18_package_scaffold.rst``
 - ``lifecore_state/rfcs/sprint_18_message_notes.rst`` (Sprint 18.3 - StateDescriptor)
 - ``lifecore_state/rfcs/sprint_18_4_state_description_design_notes.rst`` (Sprint 18.4 - StateDescription)
-- ``lifecore_state/rfcs/sprint_18_5_state_sample_design_notes.rst`` (Sprint 18.5 - StateSample, in progress)
+- ``lifecore_state/rfcs/sprint_18_5_state_sample_design_notes.rst`` (Sprint 18.5 - StateSample)
 - ``lifecore_state/rfcs/sprint_18_constants_decision.rst``
 - ``lifecore_state/rfcs/sprint_18_build_validation.rst``
 - ``lifecore_state/rfcs/sprint_18_docs_consistency_review.rst``
@@ -229,8 +229,8 @@ Acceptance criteria
       entries. (Sprint 18.4 completed)
 - [ ] ``StateUpdate`` contains ``sequence``, ``description_version``, and
       ``update_mode``. (Sprint 18.6)
-- [ ] ``StateSample`` carries type, quality, source, timestamp, and explicit
-      variant fields. (Sprint 18.5)
+- [x] ``StateSample`` carries type, quality, source, timestamp, and explicit
+      variant fields. (Sprint 18.5 completed)
 - [ ] ``StateCommand`` is documented as intent, not observed truth. (Sprint 18.7)
 - [ ] Documentation consistency review is complete. (Sprint 18.10)
 
