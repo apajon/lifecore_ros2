@@ -172,15 +172,15 @@ Sub-sprints
 Sprint 18 is organized into focused execution cards under
 :doc:`../sprint_18_substeps/README`.
 
-**Current sub-sprint.** Sprint 18.4 - Define StateDescription.msg is active.
+**Current sub-sprint.** :doc:`archived/sprint_18_4_state_description` Sprint 18.5 - Define StateSample.msg is active.
 
 Recommended execution order:
 
 1. Sprint 18.1 - Pre-flight Check — archived
 2. Sprint 18.2 - Package Scaffold — archived
 3. Sprint 18.3 - Define StateDescriptor.msg — archived
-4. Sprint 18.4 - Define StateDescription.msg — active
-5. Sprint 18.5 - Define StateSample.msg
+4. Sprint 18.4 - Define StateDescription.msg — :doc:`archived/sprint_18_4_state_description`
+5. Sprint 18.5 - Define StateSample.msg — :doc:`active/sprint_18_5_state_sample` (active)
 6. Sprint 18.6 - Define StateUpdate.msg
 7. Sprint 18.7 - Define StateCommand.msg
 8. Sprint 18.8 - Constants Decision
@@ -202,7 +202,9 @@ Deliverables
 - ``lifecore_state/lifecore_state_msgs/msg/StateCommand.msg``
 - ``lifecore_state/rfcs/sprint_18_preflight_check.rst``
 - ``lifecore_state/rfcs/sprint_18_package_scaffold.rst``
-- ``lifecore_state/rfcs/sprint_18_message_notes.rst``
+- ``lifecore_state/rfcs/sprint_18_message_notes.rst`` (Sprint 18.3 - StateDescriptor)
+- ``lifecore_state/rfcs/sprint_18_4_state_description_design_notes.rst`` (Sprint 18.4 - StateDescription)
+- ``lifecore_state/rfcs/sprint_18_5_state_sample_design_notes.rst`` (Sprint 18.5 - StateSample, in progress)
 - ``lifecore_state/rfcs/sprint_18_constants_decision.rst``
 - ``lifecore_state/rfcs/sprint_18_build_validation.rst``
 - ``lifecore_state/rfcs/sprint_18_docs_consistency_review.rst``
@@ -212,25 +214,25 @@ Deliverables
 Acceptance criteria
 -------------------
 
-- [ ] ``lifecore_state/lifecore_state_msgs`` exists as a real ROS 2 package.
-- [ ] ``lifecore_state/`` parent has no ``package.xml``.
-- [ ] Messages compile with ``colcon``.
-- [ ] No runtime Python code is added.
-- [ ] No ``lifecore_state_core`` package is created.
-- [ ] No ``lifecore_state_ros`` package is created.
-- [ ] No registry, projection, publisher, subscriber, or command handling
-      behavior is implemented.
-- [ ] Message semantics match Sprint 17 docs.
-- [ ] ``StateCommand`` v0 is single-target.
-- [ ] Batched commands are deferred.
-- [ ] ``StateDescription`` is a versioned collection of ``StateDescriptor``
-      entries.
+- [x] ``lifecore_state/lifecore_state_msgs`` exists as a real ROS 2 package. (Sprint 18.2)
+- [x] ``lifecore_state/`` parent has no ``package.xml``. (Sprint 18.2)
+- [ ] Messages compile with ``colcon``. (Sprint 18.9)
+- [x] No runtime Python code is added. (Verified)
+- [x] No ``lifecore_state_core`` package is created. (Verified)
+- [x] No ``lifecore_state_ros`` package is created. (Verified)
+- [x] No registry, projection, publisher, subscriber, or command handling
+      behavior is implemented. (Verified)
+- [x] Message semantics match Sprint 17 docs. (Verified)
+- [ ] ``StateCommand`` v0 is single-target. (Sprint 18.7)
+- [ ] Batched commands are deferred. (Sprint 18.7)
+- [x] ``StateDescription`` is a versioned collection of ``StateDescriptor``
+      entries. (Sprint 18.4 completed)
 - [ ] ``StateUpdate`` contains ``sequence``, ``description_version``, and
-      ``update_mode``.
+      ``update_mode``. (Sprint 18.6)
 - [ ] ``StateSample`` carries type, quality, source, timestamp, and explicit
-      variant fields.
-- [ ] ``StateCommand`` is documented as intent, not observed truth.
-- [ ] Documentation consistency review is complete.
+      variant fields. (Sprint 18.5)
+- [ ] ``StateCommand`` is documented as intent, not observed truth. (Sprint 18.7)
+- [ ] Documentation consistency review is complete. (Sprint 18.10)
 
 Open questions
 --------------

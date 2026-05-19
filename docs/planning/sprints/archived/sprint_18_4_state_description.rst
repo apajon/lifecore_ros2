@@ -1,13 +1,15 @@
 Sprint 18.4 - Define StateDescription.msg
 =========================================
 
-**Status.** Planned.
+**Status.** Archived.
 
 **Track.** State Architecture / ROS ABI.
 
 **Type.** Message contract.
 
 **Parent sprint.** :doc:`../active/sprint_18_lifecore_state_msgs_abi`.
+
+**Completion date.** 2026-05-19.
 
 Reference documents
 -------------------
@@ -105,6 +107,15 @@ Constraints
 - Do not add registry logic, QoS code, or lifecycle implementation.
 - Do not split into ``StateDescriptionArray`` without a strong reason.
 
+Deliverables
+-----------
+
+✅ **Completed:**
+
+- ``lifecore_state/lifecore_state_msgs/msg/StateDescription.msg`` — created
+- ``lifecore_state/rfcs/sprint_18_4_state_description_design_notes.rst`` — created
+- ``CMakeLists.txt`` updated to include StateDescription message generation
+
 Documentation
 -------------
 
@@ -116,7 +127,9 @@ Update ``lifecore_state/message_semantics.rst``,
 ``lifecore_state/rfcs/rfc_001_lifecore_state_architecture.rst``, and
 ``lifecore_state/rfcs/sprint_18_message_notes.rst`` as needed.
 
-Review Requirement
-------------------
+Review Status
+-----------
 
-ChatGPT or Codex will review and control the deliverables before Sprint 18 is accepted.
+✅ Reviewed and accepted.
+
+ChatGPT or Codex reviewed and validated the deliverables before archiving.
