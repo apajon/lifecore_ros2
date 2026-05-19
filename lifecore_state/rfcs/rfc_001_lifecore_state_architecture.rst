@@ -4,14 +4,14 @@ RFC 001: lifecore_state architecture direction
 Status
 ------
 
-Draft for Sprint 17.3.
+Draft for Sprint 17.
 
 This document is architecture-only. It records a proposed direction for future
 ``lifecore_state`` work and does not create an implementation commitment,
 runtime package, ROS 2 interface package, public API, or lifecycle behavior
 change.
 
-During Sprint 17.3, ``lifecore_state/`` remains a documentation-only logical
+During Sprint 17, ``lifecore_state/`` remains a documentation-only logical
 folder at the repository root. Future package names in this RFC are planning
 labels until a later sprint explicitly creates packages.
 
@@ -86,7 +86,7 @@ Non-goals
 - a factory/spec system;
 - a code generation-first design;
 - a reason to add runtime state storage inside ``lifecore_ros2``;
-- a reason to change lifecycle transition behavior during Sprint 17.3.
+- a reason to change lifecycle transition behavior during Sprint 17.
 
 Naming decision
 ---------------
@@ -104,7 +104,7 @@ that it owns lifecycle orchestration.
 Repository organization decision
 --------------------------------
 
-During Sprint 17.3, ``lifecore_state/`` remains a root-level documentation group.
+During Sprint 17, ``lifecore_state/`` remains a root-level documentation group.
 It is not importable runtime code and is not a ROS 2 package.
 
 The Sprint 17 folder may contain only architecture documents, RFC material, and
@@ -180,15 +180,18 @@ integration responsibilities.
 	descriptor answers what state exists and how it is identified.
 
 ``StateDescription``
-	Descriptive metadata for a descriptor. A description may include display
-	names, units, constraints, owner metadata, and semantic hints. It helps
-	consumers understand a descriptor without becoming the observed value.
+	Versioned description of a registry scope or schema. It contains a coherent
+	collection of ``StateDescriptor`` entries and the schema identity and version
+	needed to interpret future ``StateSample``, ``StateUpdate``, and
+	``StateCommand`` messages.
 
 ``StateOwner``
 	Entity considered authoritative for producing observed state, accepting
 	commands, or rejecting mutations for a descriptor within a registry scope.
 	Ownership is semantic and must not be inferred only from the ROS node
-	currently publishing a message.
+	currently publishing a message. ``StateOwner`` is noted here as a candidate
+	concept; Sprint 17 does not accept it as finalized core vocabulary. Its
+	definition is deferred to a later review.
 
 ``StateSample``
 	Observed semantic value at a point in time, including identity, value
@@ -237,10 +240,8 @@ the descriptor, but it must not silently change identity.
 
 Non-final sketch::
 
-		StateDescriptor = identity + type + registry scope
-		StateDescription = descriptor identity + metadata + constraints + hints
-
-The sketch is not a message schema and must not be copied into a ``.msg`` file
+		StateDescriptor = one field contract (identity + type + registry scope)
+		StateDescription = versioned collection of descriptors for a schema/scope
 without a later ABI review.
 
 State vs command
@@ -372,7 +373,7 @@ Possible future terms:
 ``StateMirror``
 	Local synchronized view of a remote registry scope.
 
-These names are not accepted implementation concepts during Sprint 17.3, but
+These names are not accepted implementation concepts during Sprint 17, but
 the distinction prevents ``StateRegistry`` from becoming an overloaded runtime
 object.
 
@@ -474,7 +475,7 @@ Candidate policy areas:
 - quality downgrade rules.
 
 Policies must be explicit. Hidden defaults that change state truth, lifecycle
-behavior, or command handling are out of scope for Sprint 17.3.
+behavior, or command handling are out of scope for Sprint 17.
 
 Anti-patterns
 -------------
@@ -489,7 +490,7 @@ Future work must reject these patterns:
 - applying deltas after inactive periods without continuity checks;
 - generating message schemas before semantics are accepted;
 - making ``lifecore_state_core`` depend on ROS 2 or ``rclpy``;
-- adding package metadata under ``lifecore_state/`` during Sprint 17.3;
+- adding package metadata under ``lifecore_state/`` during Sprint 17;
 - exporting speculative ``lifecore_state`` names from ``lifecore_ros2``.
 
 Future implementation phases
@@ -511,7 +512,7 @@ Next sprint entry criteria
 --------------------------
 
 The next implementation-oriented sprint may consider message ABI work only
-after Sprint 17.3 confirms:
+after Sprint 17 confirms:
 
 - this RFC is reviewed;
 - terminology is stable enough for message naming;
@@ -552,9 +553,9 @@ Decision summary
 ----------------
 
 - Use ``lifecore_state`` as the architecture name.
-- Keep ``lifecore_state/`` documentation-only during Sprint 17.3.
+- Keep ``lifecore_state/`` documentation-only during Sprint 17.
 - Do not create packages, build metadata, runtime modules, or ROS interfaces in
-	Sprint 17.3.
+	Sprint 17.
 - Split future implementation responsibilities across
 	``lifecore_state_msgs``, ``lifecore_state_core``, and
 	``lifecore_state_ros`` if the architecture is accepted.
@@ -570,6 +571,4 @@ Decision summary
 - Reject live ``StateSample`` interpretation changes while inactive by default.
 - Reject ``StateUpdate`` delta application while inactive.
 - Require active lifecycle state for ``StateCommand`` handling.
-- Treat future message ABI work as conditional on Sprint 17.3 review.
-
-ChatGPT ou Codex relira et contrôlera ces livrables avant validation finale du Sprint 17.
+- Treat future message ABI work as conditional on Sprint 17 review.
