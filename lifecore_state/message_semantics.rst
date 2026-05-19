@@ -581,6 +581,13 @@ ABI definitions without a later review.
 Open questions
 --------------
 
+StateCommand ABI shape decision:
+
+	Initial ``StateCommand`` semantics are single-target: one ``StateCommand``
+	targets one descriptor. Batched commands are deferred until a concrete need is
+	established. Sprint 18 must not assume batched command semantics without
+	explicitly reopening this decision.
+
 - What is the minimal descriptor identity that remains stable across launches,
 	and should samples carry UUIDs directly or normally reference compact
 	descriptor IDs after a description is known?
