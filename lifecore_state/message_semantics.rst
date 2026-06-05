@@ -264,50 +264,64 @@ StateUpdate
 carries a batch of samples and enough ordering metadata for consumers to detect
 loss, duplicates, schema mismatches, and snapshot or delta meaning.
 
-Conceptual fields:
+Decided fields (Sprint 18.6):
 
-``header``
-	Header whose timestamp represents the publish timestamp when the update was
-	sent on the transport.
+``header`` (std_msgs/Header)
+	``header.stamp`` is the publish/batch timestamp: the time when this update
+	was assembled and sent on the transport. Each contained
+	``StateSample.header.stamp`` is the source observation timestamp. These
+	timestamps may differ. See the timestamp semantics section.
 
-``source_uuid``
-	Stable identity of the source, owner, registry, or publisher scope for this
-	update.
+``source_uuid`` (unique_identifier_msgs/UUID)
+	Stable identity of the source, owner, or publisher scope for this update.
+	Sequence numbers are per ``source_uuid`` stream.
 
-``schema_uuid``
-	Identity of the schema or description used to interpret the samples.
+``schema_uuid`` (unique_identifier_msgs/UUID)
+	Identity of the schema or ``StateDescription`` used to interpret the
+	samples. Must match ``StateDescription.schema_uuid`` for the declared
+	``description_version``.
 
-``sequence``
-	Ordered sequence number used to detect loss, duplicates, and order
-	violations within the source and schema scope.
+``sequence`` (uint64)
+	Monotonically increasing sequence number per ``source_uuid`` stream.
+	Used to detect lost, duplicated, out-of-order, or discontinuous updates.
 
-``description_version``
-	Version of the description expected by this update. Consumers compare it to
-	their cached ``StateDescription`` before interpreting samples.
+``description_version`` (uint64)
+	``StateDescription`` version used to interpret descriptor ids, types, and
+	semantics. Receivers must not blindly apply updates against a different
+	version. A mismatch signals potential semantic incompatibility.
 
-``update_mode``
-	Either ``FULL`` or ``DELTA``. ``FULL`` means a snapshot for the declared
-	scope. ``DELTA`` means partial changes that require known continuity.
+``update_mode`` (uint8)
+	Declares whether this update is a full snapshot or a partial delta.
+	Constants: ``UPDATE_UNKNOWN=0``, ``UPDATE_FULL=1``, ``UPDATE_DELTA=2``.
 
-``samples``
-	Array of ``StateSample`` entries.
+	``UPDATE_FULL``: complete snapshot for the publisher's declared scope.
+	Useful for startup, resynchronization, and debugging.
 
-Non-final example sketch::
+	``UPDATE_DELTA``: only changed samples since the prior update. Assumes
+	receiver has compatible prior state. Should not be applied after unknown
+	history unless explicit checks allow it.
 
-		[NON-FINAL SKETCH]
+``samples`` (StateSample[])
+	Array of observed ``StateSample`` values. For ``UPDATE_FULL``, this
+	represents a complete snapshot. For ``UPDATE_DELTA``, only changed
+	samples are included.
+
+Example (Sprint 18.6)::
 
 		StateUpdate
-			header.stamp: 2026-05-16T10:30:00.140Z  # publish time
+			header.stamp: 2026-05-16T10:30:00.140Z  # publish/batch time
 			source_uuid: 1c5d7d6e-3a40-5fc8-bd7e-bd4c7c39f0db
 			schema_uuid: 8ed3b983-59e3-54b2-9a1d-77ff0c5964ea
 			sequence: 2042
 			description_version: 12
-			update_mode: DELTA
+			update_mode: UPDATE_DELTA
 			samples:
-				- descriptor_id: 17
-					type: FLOAT
-					quality: VALID
-					float_value: 24.7
+				- header.stamp: 2026-05-16T10:30:00.125Z  # source observation time
+				  descriptor_id: 17
+				  type: TYPE_FLOAT64
+				  quality: QUALITY_VALID
+				  source: SOURCE_HARDWARE
+				  float_value: 24.7
 
 StateCommand
 ------------

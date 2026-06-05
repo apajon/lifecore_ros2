@@ -277,14 +277,35 @@ Reference documents have been reviewed for consistency with the message design:
 - **lifecycle_state_separation.rst:** Confirms that ``StateDescriptor`` is
   independent from lifecycle activation. No lifecycle state integration is added.
 
-Verification
-------------
+Sprint 18.6 - StateUpdate.msg Design Notes
+==========================================
 
-``StateDescriptor.msg`` is a message definition file. Verification will occur
-in Sprint 18.9 (Build Validation) with ``colcon build``.
+**Status.** Completed.
 
-Review Requirement
-------------------
+**Track.** State Architecture / ROS ABI.
 
-ChatGPT or Codex will review and control the deliverables before Sprint 18 is
-accepted.
+**Scope.** Message definition design and implementation for ``StateUpdate``.
+
+See ``sprint_18_6_state_update_design_notes.rst`` for the full design rationale.
+
+Summary
+-------
+
+``StateUpdate`` represents a published batch of observed ``StateSample`` values.
+It reports observed truth.
+
+Fields: ``header``, ``source_uuid``, ``schema_uuid``, ``sequence``,
+``description_version``, ``update_mode``, ``samples`` (``StateSample[]``).
+
+Constants: ``UPDATE_UNKNOWN=0``, ``UPDATE_FULL=1``, ``UPDATE_DELTA=2``.
+
+Key semantics:
+
+- ``header.stamp`` is the publish/batch timestamp.
+- Each ``StateSample.header.stamp`` is the source observation timestamp.
+- ``sequence`` is per ``source_uuid`` stream.
+- ``description_version`` identifies the ``StateDescription`` version.
+- ``UPDATE_FULL`` is a complete snapshot; ``UPDATE_DELTA`` is a partial change set.
+
+Delta updates should not be applied while inactive. Full snapshots may be
+cached while inactive only by explicit policy.
