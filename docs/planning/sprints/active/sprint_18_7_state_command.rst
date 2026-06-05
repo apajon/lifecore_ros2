@@ -1,13 +1,13 @@
-Sprint 18.6 - Define StateUpdate.msg
-====================================
+Sprint 18.7 - Define StateCommand.msg
+=====================================
 
-**Status.** Completed.
+**Status.** In Progress.
 
 **Track.** State Architecture / ROS ABI.
 
 **Type.** Message contract.
 
-**Parent sprint.** :doc:`../active/sprint_18_lifecore_state_msgs_abi`.
+**Parent sprint.** :doc:`sprint_18_lifecore_state_msgs_abi`.
 
 Reference documents
 -------------------
@@ -46,14 +46,14 @@ conflict instead of inventing a third interpretation.
 Objective
 ---------
 
-Create ``lifecore_state/lifecore_state_msgs/msg/StateUpdate.msg``.
+Create ``lifecore_state/lifecore_state_msgs/msg/StateCommand.msg``.
 
 Purpose
 -------
 
-``StateUpdate`` represents a published batch of observed ``StateSample`` values.
-It reports observed truth. It does not express requested mutation, and it is not
-a command or descriptor list.
+``StateCommand`` v0 represents a single-target requested mutation. It expresses
+intent. It is not observed truth. Batched command semantics are explicitly
+deferred until a future need reopens the decision.
 
 Required Semantics
 ------------------
@@ -62,11 +62,13 @@ Include:
 
 - header;
 - source UUID;
+- target UUID;
 - schema UUID;
 - sequence;
 - description version;
-- update mode;
-- array of ``StateSample`` entries.
+- target descriptor identity;
+- type;
+- desired value as explicit variant fields.
 
 Recommended fields
 ------------------
@@ -76,56 +78,57 @@ Recommended fields
     std_msgs/Header header
 
     unique_identifier_msgs/UUID source_uuid
+    unique_identifier_msgs/UUID target_uuid
     unique_identifier_msgs/UUID schema_uuid
 
     uint64 sequence
     uint64 description_version
-    uint8 update_mode
 
-    StateSample[] samples
+    uint32 target_descriptor_id
+    unique_identifier_msgs/UUID target_descriptor_uuid
+    string target_key
 
-    uint8 UPDATE_UNKNOWN=0
-    uint8 UPDATE_FULL=1
-    uint8 UPDATE_DELTA=2
+    uint8 type
 
-Timestamp Semantics
--------------------
+    bool bool_value
+    int64 int_value
+    uint64 uint_value
+    float64 float_value
+    string string_value
 
-``StateUpdate.header.stamp`` is the publish/batch timestamp. Each
-``StateSample.header.stamp`` is the source observation timestamp. These
-timestamps may differ.
+Semantics
+---------
 
-Sequence and Version Semantics
-------------------------------
+``StateCommand`` means: I request this target field to change to this desired
+value.
 
-``sequence`` is per ``source_uuid`` stream and helps detect lost, duplicated,
-out-of-order, or discontinuous updates.
+It does not mean: this value is already true.
 
-``description_version`` identifies the ``StateDescription`` version used to
-interpret descriptor ids, types, and semantics. Receivers must not blindly apply
-updates against a different description version.
-
-Update Mode Semantics
----------------------
-
-``UPDATE_FULL`` contains a complete snapshot for the publisher scope.
-``UPDATE_DELTA`` contains only changed samples and assumes compatible prior
-state.
+Acceptance or rejection is not encoded by ``StateCommand`` itself. Future
+feedback may be represented through ``StateUpdate`` reflecting an observed
+change, service responses, action feedback, or a dedicated command status
+message.
 
 Constraints
 -----------
 
-- Do not add command fields.
-- Do not add registry behavior.
-- Do not add QoS or lifecycle implementation.
-- Preserve that delta updates should not be applied while inactive, while full
-  snapshots may be cached while inactive only by explicit policy.
+- Do not make ``StateCommand`` a batch.
+- Do not include ``StateSample[]`` in v0.
+- Do not describe command as truth.
+- Do not implement command handling, lifecycle behavior, registry behavior, or
+  validation logic.
 
 Documentation
 -------------
 
-Update ``lifecore_state/message_semantics.rst`` and
+Update ``lifecore_state/message_semantics.rst``,
+``lifecore_state/rfcs/rfc_001_lifecore_state_architecture.rst``, and
 ``lifecore_state/rfcs/sprint_18_message_notes.rst`` as needed.
+
+Ensure docs say:
+
+- ``StateCommand`` v0 is single-target.
+- Batched commands are deferred.
 
 Review Requirement
 ------------------
