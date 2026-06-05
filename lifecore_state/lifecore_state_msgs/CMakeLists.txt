@@ -11,6 +11,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   msg/StateDescription.msg
   msg/StateSample.msg
   msg/StateUpdate.msg
+  msg/StateCommand.msg
   DEPENDENCIES std_msgs unique_identifier_msgs
 )
 
