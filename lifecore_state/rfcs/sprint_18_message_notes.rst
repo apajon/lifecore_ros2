@@ -309,3 +309,151 @@ Key semantics:
 
 Delta updates should not be applied while inactive. Full snapshots may be
 cached while inactive only by explicit policy.
+
+Sprint 18.7 - StateCommand.msg Design Notes
+===========================================
+
+**Status.** Completed.
+
+**Track.** State Architecture / ROS ABI.
+
+**Scope.** Message definition design and implementation for ``StateCommand``.
+
+Purpose
+-------
+
+``StateCommand`` v0 represents a single-target requested mutation. It expresses
+intent: "I request this target descriptor to change to this desired value." It
+is not observed truth and does not claim that the requested value is already
+true or has been accepted.
+
+Batched command semantics are explicitly deferred.
+
+Field Ordering Rationale
+------------------------
+
+Fields are organized logically for readability (command metadata, not
+high-frequency transport).
+
+Grouping:
+
+1. **Transport header.** ``std_msgs/Header`` carries command request event
+   metadata.
+
+2. **Command identity and scoping group.** ``source_uuid``, ``target_uuid``,
+   ``schema_uuid``.
+   - ``source_uuid``: requester identity for authorization and audit.
+   - ``target_uuid``: intended receiver (not broadcast by default in v0).
+   - ``schema_uuid``: identifies the ``StateDescription`` used to interpret the
+     target descriptor and value type.
+
+3. **Ordering and versioning group.** ``sequence``, ``description_version``.
+   - ``sequence``: per ``source_uuid`` stream, for loss/duplicate/order detection.
+   - ``description_version``: ``StateDescription`` version for schema compatibility.
+
+4. **Target descriptor identity group.** ``target_descriptor_id``,
+   ``target_descriptor_uuid``, ``target_key``.
+   - Triple identity pattern matching ``StateDescriptor`` and ``StateSample``.
+
+5. **Requested value group.** ``type``, ``bool_value``, ``int_value``,
+   ``uint_value``, ``float_value``, ``string_value``.
+   - Same variant pattern as ``StateSample``. ``type`` selects exactly one active
+     value field.
+
+Field Decisions
+---------------
+
+Single-target v0
+~~~~~~~~~~~~~~~~
+
+``StateCommand`` v0 commands exactly one target descriptor per message. No
+``StateSample[]`` array, no multi-target batch. This keeps the v0 contract
+simple, reviewable, and aligned with the Sprint 17 RFC decision.
+
+Batched commands are deferred until a concrete use case reopens the discussion.
+The expected approach for multi-target commands would be separate
+``StateCommand`` messages per target, not a batch list in a single message.
+
+Command UUID Not Included
+~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Sprint 17 conceptual sketch included ``command_uuid``. Sprint 18.7 omits it
+for v0. The triple ``(source_uuid, sequence, target_descriptor_uuid)`` is
+sufficient to correlate commands with outcomes. A dedicated ``command_uuid``
+can be added in a future ABI revision if feedback paths require explicit
+correlation beyond what sequence-based tracking provides.
+
+Source and Target as UUIDs
+~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The conceptual sketch used ``source`` and ``receiver`` as generic identities.
+Sprint 18.7 uses ``source_uuid`` and ``target_uuid`` as
+``unique_identifier_msgs/UUID`` for consistency with ``StateUpdate``
+(``source_uuid``, ``schema_uuid``) and for deterministic identity across
+launches and bridges.
+
+Schema UUID
+~~~~~~~~~~~
+
+``schema_uuid`` is included for the same reason it appears in ``StateUpdate``:
+a command receiver must know which ``StateDescription`` defines the target
+descriptor. Without it, a receiver with multiple schemas cannot safely
+interpret ``target_descriptor_id``.
+
+Sequence per Source
+~~~~~~~~~~~~~~~~~~~
+
+``sequence`` is per ``source_uuid`` stream, matching ``StateUpdate`` semantics.
+This allows receivers to detect gaps, duplicates, or out-of-order commands
+from a known requester.
+
+Description Version
+~~~~~~~~~~~~~~~~~~~
+
+``description_version`` carries the ``StateDescription`` version used by the
+sender. If a receiver has a different version, it must not blindly apply the
+command. The mismatch signals potential semantic incompatibility.
+
+Type Constants
+~~~~~~~~~~~~~~
+
+``TYPE_*`` constants are duplicated from ``StateDescriptor.msg`` and
+``StateSample.msg`` for v0 consistency. Sprint 18.8 will decide whether to
+extract a shared ``StateType.msg``.
+
+Command Acceptance Not Encoded
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+``StateCommand`` does not encode acceptance, rejection, or progress. Future
+feedback paths (``StateUpdate``, service responses, action feedback, dedicated
+command status) are deferred. The message contract only expresses the requested
+mutation.
+
+Constraints Not Encoded
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Validation expectations (descriptor existence, type match, writable flag,
+direction, description_version, target ownership, lifecycle active state) are
+documented as future receiver responsibilities. None are implemented in the
+message package.
+
+Deferred Non-Goals
+-------------------
+
+- **Batched commands.** ``StateSample[]`` and multi-target lists are deferred.
+- **Command feedback.** No ``command_status``, ``command_result``, or
+  ``command_ack`` messages.
+- **Command validation logic.** No Python code for validation, authorization,
+  or lifecycle gating.
+- **Lifecycle integration.** ``StateCommand`` handling rules are documented
+  but not implemented.
+- **Registry behavior.** No ``StateRegistry`` lookup or ownership resolution.
+
+Documentation Consistency
+-------------------------
+
+- ``message_semantics.rst``: Updated to reflect actual message fields with a
+  concrete example.
+- ``rfc_001_lifecore_state_architecture.rst``: Already states "StateCommand v0
+  is single-target" and "Batched commands are deferred."
+- ``sprint_18_lifecore_state_msgs_abi.rst``: Acceptance criteria updated.

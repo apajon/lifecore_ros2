@@ -326,60 +326,89 @@ Example (Sprint 18.6)::
 StateCommand
 ------------
 
-``StateCommand`` is requested intent. It asks an owner or receiver to mutate a
-state target, perform an operation, or move toward a desired value. It is not
+``StateCommand`` v0 is a single-target requested mutation. It expresses intent:
+"I request this target descriptor to change to this desired value." It is not
 observed truth and must not be interpreted as proof that the requested state has
-already happened.
+already happened or has been accepted.
 
-Conceptual fields:
+Batched command semantics (multiple targets in one message) are explicitly
+deferred until a concrete future need reopens the decision.
 
-``header``
-	Transport timestamp for the command request.
+Decided fields (Sprint 18.7):
 
-``command_uuid``
-	Unique identity for the command request so receivers and feedback paths can
-	correlate outcomes.
+``header`` (std_msgs/Header)
+	Transport header for the command request event metadata.
 
-``target_descriptor_id`` or ``target_descriptor_uuid``
-	Descriptor being commanded.
+``source_uuid`` (unique_identifier_msgs/UUID)
+	Stable identity of the requester issuing this command. Used to correlate
+	commands with a specific source for authorization and audit.
 
-``target_key``
-	Optional canonical key for readability or bridge behavior.
+``target_uuid`` (unique_identifier_msgs/UUID)
+	Intended owner or receiver for this command. When the command is not
+	broadcast to a scoped authority, ``target_uuid`` identifies the expected
+	receiver.
 
-``type``
-	Requested value type. It follows the same one-active-value-field rule as
-	samples.
+``schema_uuid`` (unique_identifier_msgs/UUID)
+	Schema used to interpret the target descriptor and value type. Must match
+	``StateDescription.schema_uuid`` for the declared ``description_version``.
 
-``source``
-	Identity of the requester.
+``sequence`` (uint64)
+	Monotonically increasing sequence number per ``source_uuid`` stream. Used to
+	detect lost, duplicated, or out-of-order commands.
 
-``receiver``
-	Intended owner or receiver, when the command is not broadcast to a scoped
-	authority.
+``description_version`` (uint64)
+	``StateDescription`` version used to interpret the target descriptor identity,
+	type, and semantics. Receivers must not blindly apply commands against a
+	different ``description_version``.
+
+``target_descriptor_id`` (uint32)
+	Compact numeric identifier of the target descriptor within the schema scope.
+	Matches ``StateDescriptor.id``.
+
+``target_descriptor_uuid`` (unique_identifier_msgs/UUID)
+	Stable persistent identifier for the target descriptor. Matches
+	``StateDescriptor.uuid``.
+
+``target_key`` (string)
+	Canonical path or logical name for readability and bridge behavior. Matches
+	``StateDescriptor.key``.
+
+``type`` (uint8)
+	Declared value type for the requested mutation. Selects exactly one active
+	value field below. Uses the same ``TYPE_*`` constants as
+	``StateDescriptor.msg`` and ``StateSample.msg``.
 
 ``bool_value``, ``int_value``, ``uint_value``, ``float_value``, ``string_value``
-	Explicit requested value fields. The ``type`` field selects exactly one active
-	field.
+	Desired value as explicit variant fields. Exactly one field is active,
+	selected by ``type``.
+
+Acceptance or rejection is not encoded by ``StateCommand`` itself. Future
+feedback may be represented through ``StateUpdate`` reflecting an observed
+change, service responses, action feedback, or a dedicated command status
+message. None of these feedback paths are implemented in Sprint 18.
 
 The receiver must validate descriptor existence, authority, lifecycle readiness,
 safety policy, type compatibility, and range constraints before acting.
-Acceptance of a command is separate from command success. A later
-``StateUpdate`` may show the observed result, or an explicit feedback path may
-acknowledge, reject, or report progress for the request.
+Acceptance of a command is separate from command success.
 
-Non-final example sketch::
-
-		[NON-FINAL SKETCH]
+Example (Sprint 18.7)::
 
 		StateCommand
 			header.stamp: 2026-05-16T10:31:00.000Z
-			command_uuid: b4ff54d7-2068-5e8d-9d6f-3cc912a0a95f
+			source_uuid: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+			target_uuid: f0e1d2c3-b4a5-9687-8fed-cba987654321
+			schema_uuid: 8ed3b983-59e3-54b2-9a1d-77ff0c5964ea
+			sequence: 157
+			description_version: 12
 			target_descriptor_id: 42
-			target_key: drive/linear_velocity/setpoint
-			type: FLOAT
-			source: operator_console
-			receiver: robot_1/drive_controller
+			target_descriptor_uuid: 7f8e9d0c-1b2a-3456-7890-abcdef123456
+			target_key: "drive/linear_velocity/setpoint"
+			type: TYPE_FLOAT64
+			bool_value: false
+			int_value: 0
+			uint_value: 0
 			float_value: 0.4
+			string_value: ""
 
 Snapshot semantics
 ------------------
