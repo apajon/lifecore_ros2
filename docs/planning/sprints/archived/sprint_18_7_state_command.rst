@@ -7,7 +7,7 @@ Sprint 18.7 - Define StateCommand.msg
 
 **Type.** Message contract.
 
-**Parent sprint.** :doc:`sprint_18_lifecore_state_msgs_abi`.
+**Parent sprint.** :doc:`../active/sprint_18_lifecore_state_msgs_abi`.
 
 Reference documents
 -------------------
