@@ -1,0 +1,42 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "type": "command",
+        "command": "./.github/hooks/mempal_wake_hook_copilot.sh",
+        "timeout": 15
+      },
+      {
+        "type": "command",
+        "command": "./.github/hooks/rsm_wake_hook_copilot.sh",
+        "timeout": 15
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "type": "command",
+        "command": "./.github/hooks/mempal_wake_hook_copilot.sh",
+        "timeout": 15
+      },
+      {
+        "type": "command",
+        "command": "./.github/hooks/rsm_wake_hook_copilot.sh",
+        "timeout": 15
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "./.github/hooks/mempal_save_hook_copilot.sh",
+        "timeout": 30
+      }
+    ],
+    "PreCompact": [
+      {
+        "type": "command",
+        "command": "./.github/hooks/mempal_precompact_hook_copilot.sh",
+        "timeout": 30
+      }
+    ]
+  }
+}
